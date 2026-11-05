@@ -1,0 +1,919 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>L'atmosphère : vents, nuages et précipitations</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Layout : simulation au centre, réglages à droite, indicateurs dessous ; bandeau « chaîne des phénomènes » en pied */
+:root{
+  --bg:#edf2f5; --surface:#ffffff; --ink:#13283a; --muted:#566a7b; --line:#d2dce4;
+  --accent:#1d6aa8; --accent-ink:#ffffff; --warm:#d9532a; --cold:#2a79bd; --ok:#23804f; --chip:#e2ebf2;
+  --display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --body:'Atkinson Hyperlegible',system-ui,'Segoe UI',Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1720; --surface:#16222d; --ink:#e3ecf2; --muted:#9bb0c0; --line:#2a3b49;
+  --accent:#68aee6; --accent-ink:#0e1720; --warm:#ff8b5e; --cold:#6cb2ea; --ok:#5cc28a; --chip:#1f2f3c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1720; --surface:#16222d; --ink:#e3ecf2; --muted:#9bb0c0; --line:#2a3b49;
+  --accent:#68aee6; --accent-ink:#0e1720; --warm:#ff8b5e; --cold:#6cb2ea; --ok:#5cc28a; --chip:#1f2f3c; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 28px}
+.app{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(22px,3vw,32px);line-height:1.1;margin:2px 0 0;text-wrap:balance}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{font:inherit;font-weight:700;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);
+  padding:9px 14px;border-radius:10px;cursor:pointer;display:flex;gap:8px;align-items:center}
+.tab .n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--chip);font-size:12px}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tab[aria-selected="true"] .n{background:rgba(255,255,255,.25)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;grid-template-rows:auto 1fr;align-items:start;grid-template-areas:"stage panel" "ind panel";gap:14px}
+.stage{grid-area:stage;min-width:0;display:flex;flex-direction:column;gap:8px}
+.cv-wrap{width:100%;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#cfe4f2}
+canvas{display:block;width:100%}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:inherit;font-weight:700;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 13px;border-radius:9px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.spacer{flex:1}
+.seg{display:inline-flex;border:1.5px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface)}
+.seg button{font:inherit;font-weight:700;border:0;background:transparent;color:var(--ink);padding:7px 11px;cursor:pointer;font-variant-numeric:tabular-nums}
+.seg button+button{border-left:1.5px solid var(--line)}
+.seg button[aria-checked="true"]{background:var(--chip);color:var(--accent)}
+.seg.full{display:flex}.seg.full button{flex:1}
+.toolbar .lbl{font-size:13px;color:var(--muted);font-weight:700}
+
+.panel{grid-area:panel;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:16px;align-self:start}
+.panel h2{font-family:var(--display);font-size:18px;margin:0;font-weight:800}
+.ctrl{display:flex;flex-direction:column;gap:6px}
+.ctrl .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctrl label,.ctrl .name{font-weight:700;font-size:14px}
+.ctrl output{font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent);font-size:15px}
+.ctrl .ends{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);height:24px}
+.switch{display:flex;align-items:center;gap:10px;font-weight:700;cursor:pointer}
+.switch input{width:20px;height:20px;accent-color:var(--accent)}
+.info{background:var(--chip);border-radius:10px;padding:12px 13px;font-size:14px}
+.info p{margin:0}
+.info .note{margin-top:8px;font-size:12.5px;color:var(--muted)}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.presets .btn{font-size:13px;padding:6px 10px}
+.scen{display:flex;flex-direction:column;gap:6px}
+.scen button{font:inherit;text-align:left;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:8px 10px;cursor:pointer;display:grid;grid-template-columns:22px 1fr;gap:1px 10px;align-items:center}
+.scen button:hover{border-color:var(--accent)}
+.scen button[aria-checked="true"]{border-color:var(--accent);background:var(--chip);box-shadow:inset 0 0 0 1px var(--accent)}
+.scen .sw{grid-row:span 2;width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,.12)}
+.scen b{font-size:14px}
+.scen small{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.scen button[disabled]{opacity:.4;cursor:not-allowed}
+.sgroup{display:flex;flex-direction:column;gap:5px}
+.sgt{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:6px}
+.why .wt{font-family:var(--display);font-weight:800;font-size:18px;margin:0;color:var(--accent)}
+.why #why-text{margin:6px 0 0;font-size:15px;line-height:1.55;min-height:4.6em}
+.gauge{margin-top:12px;display:flex;flex-direction:column;gap:5px;border-top:1px solid var(--line);padding-top:10px}
+.gl{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-variant-numeric:tabular-nums}
+.gb{height:14px;background:var(--chip);border-radius:7px;overflow:hidden}
+.gb span{display:block;height:100%;border-radius:7px;transition:width .2s linear}
+.gb .c{background:var(--cold)}
+.gb .m{background:repeating-linear-gradient(135deg,var(--muted) 0 6px,transparent 6px 10px);opacity:.7}
+.gstate{font-size:13.5px;font-weight:700;margin:4px 0 0}
+.steps li{padding:3px 6px;border-radius:8px}
+.steps li.cur{background:var(--chip)}
+.steps li.no{opacity:.45}
+@media (prefers-reduced-motion: reduce){.gb span{transition:none}}
+.stepcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.stepper{display:flex;flex-wrap:wrap;gap:6px}
+.stepper button{font:inherit;font-size:12.5px;font-weight:700;border:1.5px solid var(--line);background:var(--surface);color:var(--muted);border-radius:99px;padding:4px 10px;cursor:pointer}
+.stepper button.done{color:var(--ink);border-color:var(--accent)}
+.stepper button.cur{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.stepper button:disabled{opacity:.4;cursor:not-allowed;text-decoration:line-through}
+.sc-body{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:18px;align-items:start}
+.sc-num{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+#sc-title{font-family:var(--display);font-weight:800;font-size:21px;margin:2px 0 0;color:var(--accent)}
+#sc-text{margin:6px 0 0;font-size:15.5px;line-height:1.55}
+.sc-body .gauge{margin-top:0;border-top:0;padding-top:0;border-left:1px solid var(--line);padding-left:16px}
+.sc-nav{display:flex;gap:8px;flex-wrap:wrap}
+.sc-nav #sc-next{margin-left:auto}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+@media (max-width:700px){.sc-body{grid-template-columns:minmax(0,1fr)}.sc-body .gauge{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:10px}}
+.stepnav{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+.sn-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sn-sel{display:flex;align-items:center;gap:8px;min-width:0;max-width:100%;font-weight:700;font-size:13px;color:var(--muted)}
+.sn-sel select{min-width:0;flex:1;font:inherit;font-size:14px;font-weight:700;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:9px;padding:7px 10px;max-width:100%}
+.sn-nav{display:flex;gap:6px;margin-left:auto}
+.sn-row .stepper{flex:1;min-width:0}
+.expl{display:flex;flex-direction:column;gap:10px}
+.expl h2{font-size:21px;color:var(--accent)}
+.expl #sc-text{margin:0;font-size:15.5px;line-height:1.55}
+.expl .note{font-size:12.5px;color:var(--muted);margin:0}
+.expl .gauge{margin-top:2px;border-top:1px solid var(--line);padding-top:10px}
+.layout.wide-panel{grid-template-columns:minmax(0,1fr) 340px}
+.chips-wrap{display:flex;gap:10px;align-items:flex-start}
+.chips-l{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding-top:7px;min-width:98px}
+.chips{display:flex;flex-wrap:wrap;gap:8px 18px;min-width:0;flex:1}
+.cgroup{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.cg{font-size:12px;font-weight:700;color:var(--muted);margin-right:2px}
+.chips button{font:inherit;font-size:13px;font-weight:700;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:5px 11px 5px 6px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.chips button:hover{border-color:var(--accent)}
+.chips button[aria-checked="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chips button:disabled{opacity:.35;cursor:not-allowed}
+.chips .sw{width:14px;height:14px;border-radius:50%;border:1.5px solid rgba(0,0,0,.15);flex:none}
+@media (max-width:600px){.chips-wrap{flex-direction:column;gap:4px}.chips-l{padding-top:0}}
+.pschema{display:flex;flex-direction:column;gap:8px}
+.schema{width:100%;height:auto;max-width:300px;align-self:center}
+.schema .colw{fill:rgba(217,83,42,.14);stroke:var(--warm);stroke-width:1.5}
+.schema .colc{fill:rgba(42,121,189,.18);stroke:var(--cold);stroke-width:1.5}
+.schema .pw{fill:var(--warm)}.schema .pc{fill:var(--cold)}
+.schema .aw,.schema .ac{stroke-width:3;fill:none}.schema .aw{stroke:var(--warm)}.schema .ac{stroke:var(--cold)}
+.schema .hw{fill:var(--warm)}.schema .hc{fill:var(--cold)}
+.schema .sol{fill:var(--muted);opacity:.5}
+.schema .wt1{stroke:var(--ink);stroke-width:2}.schema .wh1{fill:var(--ink)}
+.schema .wt2{stroke:var(--ink);stroke-width:5}.schema .wh2{fill:var(--ink)}
+.schema text{text-anchor:middle;font-family:var(--body);fill:var(--ink)}
+.schema .tt{font-size:13px;font-weight:700}.schema .tb{font-size:13px;font-weight:700}.schema .ts{font-size:12px;fill:var(--muted)}
+.schema .tw{fill:var(--warm)}.schema .tc{fill:var(--cold)}
+.schema .wind{stroke:var(--ink);stroke-width:2.5;fill:none}.schema .windh{fill:var(--ink)}
+.hint{font-size:12.5px;color:var(--muted);margin:0}
+
+.ind{grid-area:ind;min-width:0}
+.ind:empty{display:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.card .k{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.02em}
+.card .v{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
+.card .v small{font-size:12px;color:var(--muted);font-weight:400}
+.meter{height:10px;border-radius:5px;background:var(--chip);overflow:hidden;margin-top:6px}
+.meter span{display:block;height:100%;background:linear-gradient(90deg,var(--cold),var(--warm));border-radius:5px;transition:width .3s}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:14px;font-weight:700;background:var(--chip)}
+.badge.yes{background:var(--accent);color:var(--accent-ink)}
+.cmp{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:11px;overflow:hidden;font-variant-numeric:tabular-nums}
+.cmp th,.cmp td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);font-size:14px}
+.cmp th{font-size:12px;color:var(--muted)}
+.cmp tr:last-child td{border-bottom:0}
+.tablewrap{overflow-x:auto}
+.m3grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:10px;margin-top:10px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:12px 14px;min-width:0}
+.box h3{margin:0 0 8px;font-size:14px;font-family:var(--display);font-weight:800}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.steps li{display:grid;grid-template-columns:24px 1fr auto;gap:8px;align-items:center;font-size:14px;color:var(--muted)}
+.steps li .num{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--chip);font-size:12px;font-weight:700}
+.steps li.on{color:var(--ink);font-weight:700}
+.steps li.on .num{background:var(--accent);color:var(--accent-ink)}
+.steps li .st{font-size:12px}
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar-row .lab{font-size:12.5px;color:var(--muted);margin-bottom:3px}
+.bar{display:grid;grid-template-columns:96px 1fr 58px;gap:6px;align-items:center;font-size:12.5px;font-variant-numeric:tabular-nums}
+.bar .track{height:12px;background:var(--chip);border-radius:6px;overflow:hidden}
+.bar .fill{height:100%;border-radius:6px}
+.bar .fill.up{background:var(--cold)}.bar .fill.dn{background:var(--warm)}
+.bar .val{text-align:right;font-weight:700}
+.empty{font-size:13px;color:var(--muted);margin:0}
+.boxhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.boxhead h3{margin:0}
+.linkbtn{font:inherit;font-size:12.5px;background:none;border:0;color:var(--accent);cursor:pointer;text-decoration:underline;padding:2px}
+
+.chain{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px}
+.chain span.s{padding:4px 10px;border-radius:99px;background:var(--surface);border:1px solid var(--line);color:var(--muted)}
+.chain span.s.on{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700}
+.chain span.arr{color:var(--muted)}
+
+@media (max-width:900px){
+  .layout{grid-template-columns:minmax(0,1fr);grid-template-rows:auto;grid-template-areas:"stage" "panel" "ind"}
+  .layout.wide-panel{grid-template-columns:minmax(0,1fr)}
+  .m3grid{grid-template-columns:minmax(0,1fr)}
+}
+@media (prefers-reduced-motion: reduce){.meter span{transition:none}}
+</style>
+
+<div class="app">
+  <header>
+    <div>
+      <div class="eyebrow">SVT · 5e · Simulation</div>
+      <h1>L'atmosphère : vents, nuages et précipitations</h1>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Modules">
+      <button class="tab" role="tab" id="tab-1" data-m="1" aria-selected="true"><span class="n">1</span>Origine du vent</button>
+      <button class="tab" role="tab" id="tab-2" data-m="2" aria-selected="false"><span class="n">2</span>Nuages et pluie</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="stage">
+      <div class="toolbar">
+        <button class="btn primary" id="play" type="button">❚❚ Pause</button>
+        <button class="btn" id="reset" type="button">↺ Réinitialiser</button>
+        <button class="btn" id="compare" type="button" aria-pressed="false" hidden>Comparer</button>
+        <span class="spacer"></span>
+        <span class="lbl" id="speed-lbl">Vitesse</span>
+        <div class="seg" role="radiogroup" aria-labelledby="speed-lbl" id="speed">
+          <button type="button" role="radio" data-v="0.5" aria-checked="false">×0,5</button>
+          <button type="button" role="radio" data-v="1" aria-checked="true">×1</button>
+          <button type="button" role="radio" data-v="2" aria-checked="false">×2</button>
+        </div>
+      </div>
+      <div class="stepnav" id="stepnav" hidden>
+        <div class="chips-wrap"><span class="chips-l">Situation</span><div class="chips" id="scen-a" role="radiogroup" aria-label="Situation"></div></div>
+        <div class="chips-wrap" id="scen-b-wrap" hidden><span class="chips-l">Comparer avec</span><div class="chips" id="scen-b" role="radiogroup" aria-label="Comparer avec"></div></div>
+        <div class="sn-row">
+          <div class="stepper" id="stepper" aria-label="Étapes"></div>
+          <div class="sn-nav" id="sn-nav">
+            <button class="btn" id="sc-prev" type="button" title="Étape précédente">◀</button>
+            <button class="btn" id="sc-replay" type="button" title="Revoir l'étape">↻</button>
+            <button class="btn primary" id="sc-next" type="button">Étape suivante ▶</button>
+          </div>
+        </div>
+      </div>
+      <div class="cv-wrap" id="wrap"><canvas id="cv" role="img" aria-label="Simulation"></canvas></div>
+    </section>
+
+    <aside class="panel">
+      <!-- Module 1 -->
+      <div class="pgroup" data-for="1">
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <h2>Paramètres</h2>
+          <div class="ctrl">
+            <div class="top"><label for="m1-TA">Température de la région A</label><output id="o-m1-TA">30 °C</output></div>
+            <input type="range" id="m1-TA" data-mod="1" data-key="TA" min="0" max="40" step="1" value="30">
+            <div class="ends"><span>0 °C</span><span>40 °C</span></div>
+          </div>
+          <div class="ctrl">
+            <div class="top"><label for="m1-TB">Température de la région B</label><output id="o-m1-TB">10 °C</output></div>
+            <input type="range" id="m1-TB" data-mod="1" data-key="TB" min="0" max="40" step="1" value="10">
+            <div class="ends"><span>0 °C</span><span>40 °C</span></div>
+          </div>
+          <div class="info">
+            <p>Le Soleil chauffe davantage la région au-dessus de laquelle il se trouve. Le sol réchauffe ensuite l'air à son contact.</p>
+          </div>
+          <div class="info pschema">
+            <p><b>La pression atmosphérique</b>, c'est le poids de l'air au-dessus du sol.</p>
+            <svg class="schema" viewBox="0 0 270 300" role="img" aria-label="Schéma : une colonne d'air chaud pèse moins sur le sol qu'une colonne d'air froid">
+              <rect x="14" y="20" width="76" height="196" rx="6" class="colw"/>
+              <rect x="144" y="20" width="76" height="196" rx="6" class="colc"/>
+              <circle cx="30" cy="40" r="4" class="pw"/><circle cx="62" cy="72" r="4" class="pw"/><circle cx="40" cy="105" r="4" class="pw"/><circle cx="75" cy="135" r="4" class="pw"/><circle cx="28" cy="160" r="4" class="pw"/><circle cx="66" cy="190" r="4" class="pw"/><circle cx="186" cy="48" r="4" class="pc"/><circle cx="195" cy="58" r="4" class="pc"/><circle cx="176" cy="101" r="4" class="pc"/><circle cx="225" cy="172" r="4" class="pc"/><circle cx="216" cy="70" r="4" class="pc"/><circle cx="203" cy="79" r="4" class="pc"/><circle cx="182" cy="49" r="4" class="pc"/><circle cx="184" cy="195" r="4" class="pc"/><circle cx="220" cy="174" r="4" class="pc"/><circle cx="218" cy="64" r="4" class="pc"/><circle cx="190" cy="142" r="4" class="pc"/><circle cx="214" cy="182" r="4" class="pc"/><circle cx="223" cy="45" r="4" class="pc"/><circle cx="207" cy="150" r="4" class="pc"/><circle cx="201" cy="62" r="4" class="pc"/><circle cx="199" cy="46" r="4" class="pc"/><circle cx="226" cy="184" r="4" class="pc"/><circle cx="204" cy="83" r="4" class="pc"/><circle cx="225" cy="132" r="4" class="pc"/><circle cx="223" cy="181" r="4" class="pc"/><circle cx="201" cy="104" r="4" class="pc"/><circle cx="207" cy="107" r="4" class="pc"/><circle cx="181" cy="84" r="4" class="pc"/><circle cx="219" cy="38" r="4" class="pc"/><circle cx="175" cy="141" r="4" class="pc"/><circle cx="188" cy="125" r="4" class="pc"/><circle cx="199" cy="91" r="4" class="pc"/><circle cx="230" cy="65" r="4" class="pc"/><circle cx="196" cy="66" r="4" class="pc"/><circle cx="209" cy="79" r="4" class="pc"/>
+              <path d="M104 160 V70" class="aw"/><path d="M98 80 L104 66 L110 80 Z" class="hw"/>
+              <path d="M234 70 V160" class="ac"/><path d="M228 150 L234 164 L240 150 Z" class="hc"/>
+              <text x="52" y="12" class="tt tw">Air chaud</text>
+              <text x="182" y="12" class="tt tc">Air froid</text>
+              <rect x="6" y="216" width="258" height="10" class="sol"/>
+              <path d="M52 218 v14" class="wt1"/><path d="M45 228 L52 238 L59 228 Z" class="wh1"/>
+              <path d="M182 218 v14" class="wt2"/><path d="M172 226 L182 242 L192 226 Z" class="wh2"/>
+              <text x="52" y="258" class="tb tw">Basse pression</text>
+              <text x="52" y="274" class="ts">l'air pèse moins</text>
+              <text x="182" y="258" class="tb tc">Haute pression</text>
+              <text x="182" y="274" class="ts">l'air pèse plus</text>
+              <path d="M160 292 H82" class="wind"/><path d="M90 286 L76 292 L90 298 Z" class="windh"/>
+              <text x="120" y="288" class="ts">vent</text>
+            </svg>
+            <p>L'air chaud est léger et monte : il pèse moins sur le sol. L'air froid est lourd et descend : il pèse plus. Près du sol, l'air va de la haute vers la basse pression : c'est le vent.</p>
+            <p class="note">Modèle simplifié : la rotation de la Terre et les frottements ne sont pas pris en compte.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 2 -->
+      <div class="pgroup" data-for="2" hidden>
+        <div class="expl" id="expl">
+          <span class="sc-num" id="sc-num"></span>
+          <h2 id="sc-title"></h2>
+          <p id="sc-text"></p>
+        </div>
+        <div class="expl" id="expl-cmp" hidden>
+          <h2>Mode comparaison</h2>
+          <p>Les deux situations sont montrées à leur état final. Compare le tableau sous la simulation : humidité, point de rosée, altitude de condensation, précipitations.</p>
+        </div>
+      </div>
+    </aside>
+
+    <section class="ind" id="ind" aria-live="off"></section>
+  </div>
+
+  <div class="chain" id="chain" aria-label="Chaîne des phénomènes"></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const W=1000,H=560,TAU=Math.PI*2;
+const FONT="'Atkinson Hyperlegible', system-ui, 'Segoe UI', sans-serif";
+let TS=1;
+const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t;
+const sstep=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t)};
+function rng(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const R=Math.random;
+const nf=new Intl.NumberFormat('fr-FR');
+const fT=v=>nf.format(Math.round(v)||0)+' °C';
+const fM=v=>nf.format(Math.round(v/50)*50)+' m';
+const fMM=v=>v<0.05?'0 mm':(v<10?v.toFixed(1).replace('.',','):nf.format(Math.round(v)))+' mm';
+
+/* ---------- Physique commune aux 3 modules ----------
+   Air non saturé : refroidit de 10 °C/km. Air saturé (dans le nuage) : 6 °C/km.
+   Point de rosée : formule de Magnus. Altitude de condensation ≈ 125 × (T − Td).
+   Pluie : seulement si le nuage est assez épais (> 400 m) pour que les gouttelettes grossissent. */
+const P={
+  es:T=>6.112*Math.exp(17.67*T/(T+243.5)),
+  dew(T,RH){const g=Math.log(RH/100)+17.67*T/(T+243.5);return 243.5*g/(17.67-g)},
+  lcl:(T,Td)=>Math.max(0,125*(T-Td)),
+  p:z=>1013*Math.exp(-z/8000),
+  w:(e,p)=>622*e/(p-e),
+  Tz:(T0,L,z)=>z<=L?T0-0.01*z:T0-0.01*L-0.006*(z-L)
+};
+const Y=z=>480-z*0.09;   // altitude (m) -> ordonnée dans la scène
+
+/* ---------- Dessin ---------- */
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+function pill(c,text,x,y,o={}){
+  const fs=(o.size||14)*TS;c.font=`${o.bold?700:400} ${fs}px ${FONT}`;
+  const w=c.measureText(text).width+fs*1.1,h=fs*1.75;
+  let x0=x-w/2;if(o.align==='left')x0=x;else if(o.align==='right')x0=x-w;
+  c.save();c.shadowColor='rgba(19,40,58,.22)';c.shadowBlur=8*TS;c.shadowOffsetY=2;
+  c.fillStyle=o.bg||'rgba(255,255,255,.95)';rr(c,x0,y-h/2,w,h,h/2);c.fill();c.restore();
+  if(o.border){c.strokeStyle=o.border;c.lineWidth=2;rr(c,x0,y-h/2,w,h,h/2);c.stroke()}
+  c.fillStyle=o.color||'#13283a';c.textBaseline='middle';c.textAlign='left';c.fillText(text,x0+fs*0.55,y+fs*0.05);
+  return w;
+}
+function txt(c,s,x,y,o={}){c.font=`${o.bold?700:400} ${(o.size||12)*TS}px ${FONT}`;c.fillStyle=o.color||'rgba(19,40,58,.75)';c.textAlign=o.align||'left';c.textBaseline='middle';c.fillText(s,x,y)}
+function head(c,x,y,a,s,col){c.fillStyle=col;c.beginPath();c.moveTo(x,y);c.lineTo(x-s*Math.cos(a-0.45),y-s*Math.sin(a-0.45));c.lineTo(x-s*Math.cos(a+0.45),y-s*Math.sin(a+0.45));c.closePath();c.fill()}
+function arrow(c,x1,y1,x2,y2,col,w,halo){
+  const a=Math.atan2(y2-y1,x2-x1),hs=w*2.6+7;
+  if(halo){c.save();c.globalAlpha=0.55;arrow(c,x1,y1,x2,y2,'#ffffff',w+4,false);c.restore()}
+  c.strokeStyle=col;c.lineWidth=w;c.lineCap='round';c.beginPath();c.moveTo(x1,y1);c.lineTo(x2-Math.cos(a)*hs*0.7,y2-Math.sin(a)*hs*0.7);c.stroke();head(c,x2,y2,a,hs,col)}
+function ellArrow(c,cx,cy,rx,ry,a1,a2,col,w){
+  const n=26,pts=[];for(let i=0;i<=n;i++){const a=a1+(a2-a1)*i/n;pts.push([cx+rx*Math.cos(a),cy+ry*Math.sin(a)])}
+  const line=(cl,lw)=>{c.strokeStyle=cl;c.lineWidth=lw;c.lineCap='round';c.beginPath();for(let i=0;i<=n-3;i++){i?c.lineTo(pts[i][0],pts[i][1]):c.moveTo(pts[i][0],pts[i][1])}c.stroke()};
+  c.save();c.globalAlpha=0.5;line('#ffffff',w+5);const p1=pts[n-4],p2=pts[n];head(c,p2[0],p2[1],Math.atan2(p2[1]-p1[1],p2[0]-p1[0]),w*2.6+11,'#ffffff');c.restore();
+  line(col,w);arrow(c,p1[0],p1[1],p2[0],p2[1],col,w);
+}
+function sky(c,pale){
+  const g=c.createLinearGradient(0,0,0,480);
+  if(pale){g.addColorStop(0,'#7a9fc4');g.addColorStop(.55,'#b4cde2');g.addColorStop(1,'#eef3f7')}
+  else{g.addColorStop(0,'#3d7fc2');g.addColorStop(.55,'#86bde6');g.addColorStop(1,'#e2f1f9')}
+  c.fillStyle=g;c.fillRect(0,0,W,H);
+}
+function sun(c,x,y,r,t){
+  const gl=c.createRadialGradient(x,y,r*.5,x,y,r*5);gl.addColorStop(0,'rgba(255,230,140,.55)');gl.addColorStop(1,'rgba(255,230,140,0)');
+  c.fillStyle=gl;c.beginPath();c.arc(x,y,r*5,0,TAU);c.fill();
+  c.save();c.translate(x,y);c.rotate(t*0.08);c.strokeStyle='rgba(255,196,60,.9)';c.lineWidth=3;c.lineCap='round';
+  for(let i=0;i<12;i++){c.rotate(TAU/12);c.beginPath();c.moveTo(r+5,0);c.lineTo(r+(i%2?11:16),0);c.stroke()}c.restore();
+  const g=c.createRadialGradient(x-r*.3,y-r*.3,2,x,y,r);g.addColorStop(0,'#fffbe0');g.addColorStop(1,'#ffbb22');c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,TAU);c.fill();
+  txt(c,'Soleil',x,y+r+24,{size:12,bold:true,align:'center',color:'rgba(19,40,58,.8)'});
+}
+function ocean(c,x1,x2,t,T){
+  const k=T===undefined?.5:clamp((T-5)/30,0,1);
+  const g=c.createLinearGradient(0,478,0,560);g.addColorStop(0,`hsl(${lerp(208,184,k)},60%,${lerp(46,48,k)}%)`);g.addColorStop(1,'#123a63');
+  c.fillStyle=g;c.fillRect(x1,478,x2-x1,82);
+  for(let row=0;row<4;row++){c.strokeStyle=`rgba(255,255,255,${.5-row*.1})`;c.lineWidth=2-row*.3;c.beginPath();
+    for(let x=x1;x<=x2;x+=5){const y=482+row*17+Math.sin(x*0.045+t*1.4+row*1.7)*2.2;x===x1?c.moveTo(x,y):c.lineTo(x,y)}c.stroke()}
+}
+function tree(c,x,s){const y=480;c.fillStyle='#5d4127';c.fillRect(x-1.5*s,y-12*s,3*s,12*s);
+  c.fillStyle='#2f6b33';[[0,-20,9],[-6,-14,7],[6,-14,7]].forEach(([dx,dy,r])=>{c.beginPath();c.arc(x+dx*s,y+dy*s,r*s,0,TAU);c.fill()});
+  c.fillStyle='rgba(255,255,255,.18)';c.beginPath();c.arc(x-3*s,y-23*s,4*s,0,TAU);c.fill()}
+function house(c,x,s){const y=480;c.fillStyle='#efe6d6';c.fillRect(x-10*s,y-13*s,20*s,13*s);
+  c.fillStyle='#b4553a';c.beginPath();c.moveTo(x-13*s,y-13*s);c.lineTo(x,y-23*s);c.lineTo(x+13*s,y-13*s);c.closePath();c.fill();
+  c.fillStyle='#6a5136';c.fillRect(x-2.5*s,y-7*s,5*s,7*s);c.fillStyle='#8cc0e3';c.fillRect(x+4*s,y-10*s,4*s,4*s)}
+function palm(c,x,s){const y=480;c.strokeStyle='#7a5a36';c.lineWidth=3.5*s;c.lineCap='round';c.beginPath();c.moveTo(x,y);c.quadraticCurveTo(x+2*s,y-18*s,x+6*s,y-32*s);c.stroke();
+  c.strokeStyle='#2f7a3a';c.lineWidth=3*s;const tx=x+6*s,ty=y-32*s;[[-16,4],[-10,-8],[0,-12],[10,-8],[16,4]].forEach(([dx,dy])=>{c.beginPath();c.moveTo(tx,ty);c.quadraticCurveTo(tx+dx*.6*s,ty+dy*s-6*s,tx+dx*s,ty+dy*s+6*s);c.stroke()})}
+function olive(c,x,s){const y=480;c.fillStyle='#6b5034';c.fillRect(x-1.5*s,y-10*s,3*s,10*s);c.fillStyle='#7d8f55';[[0,-15,8],[-6,-11,6],[6,-11,6]].forEach(([dx,dy,r])=>{c.beginPath();c.arc(x+dx*s,y+dy*s,r*s,0,TAU);c.fill()})}
+function cactus(c,x,s){const y=480;c.fillStyle='#4f8a46';rr(c,x-3*s,y-26*s,6*s,26*s,3*s);c.fill();rr(c,x-11*s,y-18*s,5*s,10*s,2.5*s);c.fill();c.fillRect(x-11*s,y-10*s,9*s,4*s);rr(c,x+6*s,y-22*s,5*s,9*s,2.5*s);c.fill();c.fillRect(x+2*s,y-15*s,9*s,4*s)}
+function igloo(c,x,s){const y=480;c.fillStyle='#ffffff';c.strokeStyle='rgba(19,40,58,.3)';c.lineWidth=1;c.beginPath();c.arc(x,y,16*s,Math.PI,0);c.fill();c.stroke();c.fillStyle='#46617a';c.beginPath();c.arc(x+9*s,y,5*s,Math.PI,0);c.fill()}
+function plain(c,x1,deco,col,sandy){
+  col=col||['#86b85d','#4b7433'];
+  const g=c.createLinearGradient(0,478,0,560);g.addColorStop(0,col[0]);g.addColorStop(1,col[1]);
+  c.fillStyle=g;c.fillRect(x1,478,W-x1,82);
+  if(!sandy){c.fillStyle='#e7d39c';c.fillRect(x1,478,16,5)}
+  else{c.strokeStyle='rgba(150,105,50,.25)';c.lineWidth=2;for(let k=0;k<3;k++){c.beginPath();for(let x=x1;x<=W;x+=8){const y=495+k*20+Math.sin(x*0.02+k)*4;x===x1?c.moveTo(x,y):c.lineTo(x,y)}c.stroke()}}
+  const f={t:tree,h:house,p:palm,o:olive,c:cactus,i:igloo};
+  for(const d of deco||[])f[d[0]](c,d[1],d[2]||1);
+}
+function altAxis(c,max){
+  c.setLineDash([3,7]);c.strokeStyle='rgba(19,40,58,.16)';c.lineWidth=1;
+  for(let z=1000;z<=max;z+=1000){c.beginPath();c.moveTo(0,Y(z));c.lineTo(W,Y(z));c.stroke();txt(c,nf.format(z)+' m',8,Y(z)-9,{size:11,color:'rgba(19,40,58,.62)'})}
+  c.setLineDash([]);
+}
+/* Nuage : bouffées empilées entre une base (condensation) et un sommet, rendues hors écran pour un volume propre */
+function makePuffs(x1,x2,topFn,baseFn,seed){
+  const rnd=rng(seed),out=[];if(x1<0||x2<=x1)return out;
+  for(let x=x1;x<=x2;x+=20){
+    const base=baseFn(x),th=Math.max(80,topFn(x)-base)*0.09;
+    const r=clamp(th*0.42,10,46),rows=Math.max(1,Math.ceil((th-r*0.6)/(r*1.1)));
+    for(let k=0;k<rows;k++){
+      const f=rows>1?k/(rows-1):0;
+      out.push({x:x+(rnd()-0.5)*14,y:Y(base)-r*0.55-f*(th-r*1.1),r:r*(1-f*0.25)*(0.85+rnd()*0.35)});
+    }
+  }
+  out.sort((a,b)=>a.y-b.y);
+  return out;
+}
+let offC=null;
+function drawCloud(c,puffs,alpha,shade,baseFn){
+  if(alpha<0.01||!puffs.length)return;
+  const cw=c.canvas.width,ch=c.canvas.height;
+  if(!offC)offC=document.createElement('canvas');
+  if(offC.width!==cw||offC.height!==ch){offC.width=cw;offC.height=ch}
+  const o=offC.getContext('2d');o.setTransform(1,0,0,1,0,0);o.clearRect(0,0,cw,ch);o.setTransform(c.getTransform());
+  o.save();o.beginPath();o.moveTo(-20,-20);o.lineTo(W+20,-20);for(let x=W+20;x>=-20;x-=10)o.lineTo(x,Y(baseFn(x))+3);o.closePath();o.clip();
+  const l=Math.round(lerp(248,200,shade)),d=Math.round(lerp(226,160,shade));
+  for(const p of puffs){
+    const g=o.createRadialGradient(p.x-p.r*.3,p.y-p.r*.4,p.r*.15,p.x,p.y,p.r*1.05);
+    g.addColorStop(0,'#ffffff');g.addColorStop(.72,`rgb(${l},${l+2},${Math.min(255,l+6)})`);g.addColorStop(1,`rgb(${d},${d+4},${d+10})`);
+    o.fillStyle=g;o.beginPath();o.arc(p.x,p.y,p.r,0,TAU);o.fill();
+  }
+  // ombre d'ensemble : le bas du nuage est plus sombre (encore plus s'il pleut)
+  o.globalCompositeOperation='source-atop';
+  const gv=o.createLinearGradient(0,120,0,480);gv.addColorStop(0,'rgba(90,105,125,0)');gv.addColorStop(1,`rgba(80,95,115,${0.28+0.4*shade})`);
+  o.fillStyle=gv;o.fillRect(-20,0,W+40,H);o.globalCompositeOperation='source-over';
+  o.restore();
+  c.save();c.setTransform(1,0,0,1,0,0);c.globalAlpha=alpha;c.drawImage(offC,0,0);c.restore();
+}
+function flow(c,fn,x1,x2,col){
+  c.setLineDash([8,8]);c.strokeStyle=col;c.lineWidth=2.5;c.beginPath();
+  for(let x=x1;x<=x2;x+=5){const y=Y(fn(x));x===x1?c.moveTo(x,y):c.lineTo(x,y)}c.stroke();c.setLineDash([]);
+  for(let x=x1+80;x<x2-10;x+=150){const ya=Y(fn(x)),yb=Y(fn(x+6));head(c,x+6,yb,Math.atan2(yb-ya,6),13,col)}
+}
+function vapor(c,x,y,a){c.fillStyle=`rgba(32,100,185,${a})`;c.beginPath();c.arc(x,y,2.7,0,TAU);c.fill()}
+function droplet(c,x,y){c.fillStyle='#ffffff';c.strokeStyle='rgba(19,40,58,.4)';c.lineWidth=1;c.beginPath();c.arc(x,y,2.8,0,TAU);c.fill();c.stroke()}
+function legend(c){
+  c.fillStyle='rgba(10,30,50,.45)';rr(c,10,530,420,22,11);c.fill();
+  vapor(c,24,541,.95);txt(c,'vapeur d\'eau (invisible en réalité)',32,541,{size:11.5,color:'#fff'});
+  droplet(c,240,541);txt(c,'gouttelette d\'eau',249,541,{size:11.5,color:'#fff'});
+  c.strokeStyle='#bfe0ff';c.lineWidth=2;c.beginPath();c.moveTo(355,535);c.lineTo(353,546);c.stroke();txt(c,'pluie',362,541,{size:11.5,color:'#fff'});
+}
+const hex=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+const mix=(a,b,t)=>{a=hex(a);b=hex(b);return `rgb(${a.map((v,i)=>Math.round(lerp(v,b[i],t))).join(',')})`};
+const tempCol=(t,al)=>{const a=[38,118,196],b=[224,78,36];return `rgba(${a.map((v,i)=>Math.round(lerp(v,b[i],t))).join(',')},${al})`};
+
+/* =========================================================
+   MODULE 1 — Origine du vent
+   ========================================================= */
+/* Champ de vitesse d'une cellule de circulation thermique (fonction de courant asymétrique) :
+   ascendance étroite et rapide au-dessus de la région chaude, descente large et lente au-dessus de la région froide,
+   vent fort près du sol, retour plus faible en altitude. Le champ est sans divergence : pas de cercle imposé. */
+const CX0=30,CX1=970,CY0=150,CY1=468,CLW=CX1-CX0,CLH=CY1-CY0;
+const skew=(u,k)=>(1-Math.exp(-k*u))/(1-Math.exp(-k)),dskew=(u,k)=>k*Math.exp(-k*u)/(1-Math.exp(-k));
+function cellV(x,y){   // région chaude à gauche ; renvoie {vx, vy} écran (vy>0 vers le bas)
+  const u=clamp((x-CX0)/CLW,0,1),e=clamp((CY1-y)/CLH,0,1);
+  const su=skew(u,1.5),se=skew(e,1.3);
+  const f=Math.sin(Math.PI*su),fp=Math.PI*Math.cos(Math.PI*su)*dskew(u,1.5);
+  const g=Math.sin(Math.PI*se),gp=Math.PI*Math.cos(Math.PI*se)*dskew(e,1.3);
+  return {vx:-f*gp/CLH,vy:-(fp*g/CLW)};
+}
+let CELLN=1;{let m=0;for(let x=CX0;x<=CX1;x+=10)for(let y=CY0;y<=CY1;y+=10){const v=cellV(x,y);m=Math.max(m,Math.hypot(v.vx,v.vy))}CELLN=1/m}
+const M1={
+  TA:30,TB:10,amp:0.5,parts:[],sunX:500,sunY:60,
+  defaults(){this.TA=30;this.TB=10},
+  get d(){return this.TA-this.TB},
+  sunTarget(){return {x:500-300*Math.tanh(this.d/12),y:lerp(118,48,Math.max(this.TA,this.TB)/40)}},
+  spawn(p){p.x=CX0+R()*CLW;p.y=CY0+R()*CLH;p.trail=[];p.T=this.groundT(p.x)-(CY1-p.y)/CLH*4;return p},
+  groundT(x){return lerp(this.TA,this.TB,sstep(380,620,x))},
+  init(){this.parts=[];for(let i=0;i<230;i++)this.parts.push(this.spawn({}));this.amp=clamp(this.d/40,-1,1);const s=this.sunTarget();this.sunX=s.x;this.sunY=s.y},
+  changed(){},
+  vel(x,y){   // vitesse (px/s) pour l'intensité actuelle ; inversion si la région chaude est à droite
+    const a=this.amp;if(Math.abs(a)<1e-4)return {vx:0,vy:0};
+    const sp=150*Math.abs(a)*CELLN;
+    if(a>0){const v=cellV(x,y);return {vx:v.vx*sp,vy:v.vy*sp}}
+    const v=cellV(CX0+CX1-x,y);return {vx:-v.vx*sp,vy:v.vy*sp};
+  },
+  update(dt){
+    this.amp+=(clamp(this.d/40,-1,1)-this.amp)*Math.min(1,dt*1.5);
+    const s=this.sunTarget();this.sunX+=(s.x-this.sunX)*Math.min(1,dt*2);this.sunY+=(s.y-this.sunY)*Math.min(1,dt*2);
+    for(const p of this.parts){
+      const v=this.vel(p.x,p.y),tur=18+30*Math.abs(this.amp);
+      p.x+=(v.vx+(R()-0.5)*tur)*dt;p.y+=(v.vy+(R()-0.5)*tur)*dt;
+      // l'air prend la température du sol quand il le touche, et se refroidit un peu en altitude
+      const near=sstep(395,455,p.y);p.T+=((this.groundT(p.x)-p.T)*(near*1.4+0.12)-(v.vy<0?0.5:-0.5)*(1-near))*dt;
+      p.trail.push(p.x,p.y);if(p.trail.length>56)p.trail.splice(0,2);
+      if(p.x<CX0)p.x=2*CX0-p.x;if(p.x>CX1)p.x=2*CX1-p.x;if(p.y<CY0-10)p.y=2*(CY0-10)-p.y;if(p.y>CY1-2)p.y=2*(CY1-2)-p.y;
+    }
+  },
+  ground(c,x0,T,t){
+    const f=clamp(T/40,0,1);
+    const g=c.createLinearGradient(0,470,0,560);g.addColorStop(0,mix('#a9c3d0','#e0ac63',f));g.addColorStop(1,mix('#7e98a6','#a8743a',f));
+    c.fillStyle=g;c.fillRect(x0,470,500,90);
+    c.fillStyle=mix('#eef6fb','#f3cf8a',f);c.fillRect(x0,470,500,4);
+    const n=Math.round(T/6),a=0.12+0.5*f;c.strokeStyle=`rgba(230,110,40,${a})`;c.lineWidth=2;
+    for(let i=0;i<n;i++){const x=x0+70+i*(360/Math.max(1,n-1||1));c.beginPath();for(let y=468;y>=440;y-=2){const xx=x+Math.sin(y*0.35+t*4+i)*3;y===468?c.moveTo(xx,y):c.lineTo(xx,y)}c.stroke()}
+  },
+  pres(){const dp=0.1*this.d;return {A:1013-dp/2,B:1013+dp/2}},
+  draw(c,t){
+    const TA=this.TA,TB=this.TB,d=this.d,sx=this.sunX,sy=this.sunY;
+    sky(c);
+    // rayons : verticaux sous le Soleil, de plus en plus obliques ailleurs
+    for(const gx of [90,200,310,420,580,690,800,910]){const a=0.08+0.22*Math.exp(-Math.abs(gx-sx)/260);c.strokeStyle=`rgba(255,210,90,${a})`;c.lineWidth=3;c.beginPath();c.moveTo(sx,sy+20);c.lineTo(gx,468);c.stroke()}
+    sun(c,sx,sy,24,t);
+    this.ground(c,0,TA,t);this.ground(c,500,TB,t);
+    c.fillStyle='rgba(19,40,58,.18)';c.fillRect(499,470,2,90);
+    // grandes flèches de la cellule (épaisseur ∝ intensité)
+    const I=Math.abs(this.amp);
+    if(I>0.02){
+      const w=2.5+5*I,L=this.amp>0,X=x=>L?x:1000-x;
+      const cw='#d9532a',cc='#2a79bd',ck='#1b3a55';
+      c.save();c.globalAlpha=clamp(I*4,0,1);
+      arrow(c,X(760),447,X(270),447,ck,w,true);           // vent au sol : haute → basse pression
+      arrow(c,X(150),420,X(150),205,cw,w+1,true);         // ascendance
+      arrow(c,X(270),178,X(760),178,'rgba(27,58,85,.75)',w*0.7,true); // retour en altitude
+      arrow(c,X(830),215,X(830),415,cc,w*0.8,true);       // descente
+      c.restore();
+    }
+    // particules : traînées qui suivent le vent
+    const mn=Math.min(TA,TB)-1,mx=Math.max(TA,TB);
+    c.lineCap='round';
+    for(const p of this.parts){
+      const tt=Math.abs(d)>=1?clamp((p.T-mn)/(mx-mn),0,1):clamp(p.T/40,0,1);
+      const fade=1,tr=p.trail;
+      if(tr.length>=4){c.strokeStyle=tempCol(tt,.45*fade);c.lineWidth=2.4;c.beginPath();c.moveTo(tr[0],tr[1]);for(let i=2;i<tr.length;i+=2)c.lineTo(tr[i],tr[i+1]);c.stroke()}
+      c.fillStyle=tempCol(tt,.95*fade);c.beginPath();c.arc(p.x,p.y,3.2,0,TAU);c.fill();
+    }
+    this.thermo(c,40,TA,'A');this.thermo(c,960,TB,'B');
+    pill(c,'Région A',250,540,{bold:true});pill(c,'Région B',750,540,{bold:true});
+    if(Math.abs(d)>=1){
+      const xw=d>0?260:740,xc=d>0?740:260;
+      pill(c,'Air chaud qui monte ↑',d>0?160:840,240,{bold:true,color:'#a83a14',border:'rgba(217,83,42,.6)'});
+      pill(c,'Air froid qui descend ↓',d>0?830:170,300,{bold:true,color:'#1d5a8f',border:'rgba(42,121,189,.6)'});
+      pill(c,d>0?'← Vent près du sol':'Vent près du sol →',500,425,{bold:true});
+      pill(c,'Retour en altitude',500,154,{size:12,bg:'rgba(255,255,255,.85)'});
+      pill(c,'Sol chaud',xw,500,{size:12.5,bold:true,color:'#a83a14'});
+      pill(c,'Sol froid',xc,500,{size:12.5,bold:true,color:'#1d5a8f'});
+    } else {
+      pill(c,'Températures identiques : pas de vent dans ce modèle',500,300,{bold:true});
+    }
+  },
+  thermo(c,x,T,lab){
+    const top=300,bot=448,f=clamp(T/40,0,1);
+    c.save();c.shadowColor='rgba(19,40,58,.25)';c.shadowBlur=6;c.fillStyle='rgba(255,255,255,.97)';rr(c,x-8,top,16,bot-top+4,8);c.fill();c.restore();
+    c.strokeStyle='rgba(19,40,58,.45)';c.lineWidth=1.5;rr(c,x-8,top,16,bot-top+4,8);c.stroke();
+    c.fillStyle='#d23b23';const h=(bot-top-8)*f;c.fillRect(x-3.5,bot-h,7,h+4);
+    c.beginPath();c.arc(x,bot+8,11,0,TAU);c.fill();c.strokeStyle='rgba(19,40,58,.45)';c.stroke();
+    c.strokeStyle='rgba(19,40,58,.4)';c.lineWidth=1;for(let i=0;i<=4;i++){const yy=bot-(bot-top-8)*i/4;c.beginPath();c.moveTo(x+8,yy);c.lineTo(x+13,yy);c.stroke()}
+    pill(c,`${lab} : ${T} °C`,x,280,{bold:true,size:13,align:x<500?'left':'right'});
+  },
+  ind(){
+    const d=this.d,I=Math.round(Math.min(1,Math.abs(d)/40)*100);
+    const dir=Math.abs(d)<1?'Aucun':(d>0?'De B vers A':'De A vers B');
+    return `<div class="cards">
+      <div class="card"><span class="k">Région A</span><span class="v">${this.TA} °C</span></div>
+      <div class="card"><span class="k">Région B</span><span class="v">${this.TB} °C</span></div>
+      <div class="card"><span class="k">Écart de température</span><span class="v">${Math.abs(d)} °C</span></div>
+      <div class="card"><span class="k">Intensité du vent</span><span class="v">${I} %</span><div class="meter"><span style="width:${I}%"></span></div></div>
+      <div class="card"><span class="k">Vent près du sol</span><span class="v" style="font-size:16px">${dir}</span></div>
+    </div>`;
+  },
+  aria(){return `Coupe : région A à ${this.TA} °C, région B à ${this.TB} °C.`},
+  chain:[0,1,2]
+};
+
+/* =========================================================
+   MODULE 2 — Nuages et pluie (climats et saisons)
+   ========================================================= */
+const XF=440,XW=860;   // pied du front et fin de la pente du front (situations « air chaud contre air froid »)
+const DK={
+  tempere:[['t',440,1],['h',505,1],['t',530,.9],['t',790,1.1],['h',850,1],['t',905,1],['t',955,.8]],
+  hiver:[['t',470,1],['h',540,1],['t',700,1],['h',790,1],['t',900,1]],
+  med:[['o',450,1],['h',505,1],['o',545,.9],['o',800,1],['h',860,1],['o',920,1]],
+  trop:[['p',440,1.1],['p',495,.9],['t',540,1.25],['p',800,1],['t',860,1.25],['p',930,1.1]],
+  des:[['c',300,1],['c',470,.9],['c',830,1],['c',935,1.15]]
+};
+const SCEN=[
+  {clim:'Climat tempéré (France)',short:'Printemps',season:'Printemps · journée ensoleillée',type:'conv',T:16,RH:70,z:1500,sea:true,g:['#86b85d','#4b7433'],deco:DK.tempere,sunY:70},
+  {clim:'Climat tempéré (France)',short:'Été orageux',season:'Été · après-midi orageux',type:'conv',T:28,RH:65,z:4000,sea:true,g:['#8fb455','#56762f'],deco:DK.tempere,sunY:50},
+  {clim:'Climat tempéré (France)',short:'Automne',season:'Automne · air de l\'océan contre air froid',type:'front',T:16,RH:90,Tc:6,sea:true,g:['#a3a24f','#6a7434'],deco:DK.tempere,sunY:110},
+  {clim:'Climat tempéré (France)',short:'Hiver neigeux',season:'Hiver · air doux contre air glacé',type:'front',T:9,RH:90,Tc:-2,sea:true,g:['#c9d2cf','#95a7a8'],deco:DK.hiver,sunY:175,pale:true,snowGround:true},
+  {clim:'Climat méditerranéen',short:'Été',season:'Été · journée chaude',type:'conv',T:30,RH:30,z:2000,sea:true,g:['#cdbf72','#918845'],deco:DK.med,sunY:50},
+  {clim:'Climat tropical humide (Guyane)',short:'Saison des pluies',season:'Saison des pluies',type:'conv',T:28,RH:85,z:4000,sea:true,g:['#4f9c45','#2c6a2c'],deco:DK.trop,sunY:45},
+  {clim:'Climat tropical humide (Guyane)',short:'Saison sèche',season:'Saison sèche',type:'conv',T:30,RH:35,z:3200,sea:true,g:['#7aa648','#466e2c'],deco:DK.trop,sunY:45},
+  {clim:'Climat désertique (Sahara)',short:'Été',season:'Été',type:'conv',T:38,RH:12,z:3500,sea:false,g:['#e8c67f','#b98f4c'],deco:DK.des,sunY:45}
+];
+const STEPS=['Évaporation','L\'air humide monte','L\'air se refroidit','Condensation','Formation d\'un nuage','Les gouttelettes grossissent','Précipitations'];
+
+/* Loupe : ce que devient l'eau de la masse d'air suivie */
+function teardrop(c,x,y,s){c.beginPath();c.moveTo(x,y-7*s);c.bezierCurveTo(x+5*s,y,x+5*s,y+5*s,x,y+5*s);c.bezierCurveTo(x-5*s,y+5*s,x-5*s,y,x,y-7*s);c.fill()}
+function flake(c,x,y,s){c.strokeStyle='#ffffff';c.lineWidth=1.6;for(let k=0;k<3;k++){const a=k*Math.PI/3;c.beginPath();c.moveTo(x-Math.cos(a)*5*s,y-Math.sin(a)*5*s);c.lineTo(x+Math.cos(a)*5*s,y+Math.sin(a)*5*s);c.stroke()}}
+function loupe(c,t,ph,snow,px,py){
+  const cx=905,cy=108,r=60;
+  c.setLineDash([4,5]);c.strokeStyle='rgba(19,40,58,.55)';c.lineWidth=1.5;c.beginPath();c.moveTo(px,py);c.lineTo(cx-r*0.75,cy+r*0.66);c.stroke();c.setLineDash([]);
+  c.save();c.shadowColor='rgba(19,40,58,.3)';c.shadowBlur=12;c.fillStyle=ph==='rain'&&snow?'#9fb4c6':'#eef6fb';c.beginPath();c.arc(cx,cy,r,0,TAU);c.fill();c.restore();
+  c.save();c.beginPath();c.arc(cx,cy,r-2,0,TAU);c.clip();
+  const rn=rng(7);
+  if(ph==='vap'||ph==='dry'){for(let i=0;i<26;i++){const x=cx+(rn()*2-1)*r*.8+Math.sin(t*2+i)*7,y=cy+(rn()*2-1)*r*.8+Math.cos(t*1.7+i*1.3)*7;vapor(c,x,y,.85)}}
+  else if(ph==='drop'){for(let i=0;i<34;i++){const x=cx+(rn()*2-1)*r*.82+Math.sin(t*.9+i)*3,y=cy+(rn()*2-1)*r*.82+Math.cos(t*.8+i)*3;droplet(c,x,y)}}
+  else if(ph==='grow'){
+    for(let i=0;i<9;i++){const a=i*TAU/9+t*.15,d=r*.55*(0.55+0.45*Math.cos(t*1.2+i)),rad=3+rn()*5;
+      const x=cx+Math.cos(a)*d,y=cy+Math.sin(a)*d;c.fillStyle='#ffffff';c.strokeStyle='rgba(30,90,160,.6)';c.lineWidth=1.2;c.beginPath();c.arc(x,y,rad,0,TAU);c.fill();c.stroke()}
+    c.fillStyle='#ffffff';c.strokeStyle='rgba(30,90,160,.8)';c.lineWidth=1.5;c.beginPath();c.arc(cx,cy,9+3*Math.sin(t),0,TAU);c.fill();c.stroke();
+  } else if(ph==='rain'){
+    for(let i=0;i<7;i++){const x=cx-r*.7+i*r*.23,y=cy-r+((t*(snow?28:70)+i*37)%(2*r));if(snow)flake(c,x+Math.sin(t*2+i)*4,y,1.2);else{c.fillStyle='#2f7fd0';teardrop(c,x,y,1.5)}}
+  }
+  c.restore();
+  c.strokeStyle='#ffffff';c.lineWidth=5;c.beginPath();c.arc(cx,cy,r,0,TAU);c.stroke();
+  c.strokeStyle='#13283a';c.lineWidth=2;c.beginPath();c.arc(cx,cy,r+2.5,0,TAU);c.stroke();
+  txt(c,'Loupe sur la masse d\'air',cx,cy-r-12,{size:11.5,bold:true,align:'center',color:'#13283a'});
+  const cap={vap:'Vapeur d\'eau : un gaz invisible',dry:'Encore de la vapeur : pas assez froid',drop:'Gouttelettes minuscules : elles flottent',grow:'Les gouttelettes se heurtent et grossissent',rain:snow?'Flocons de neige : ils tombent':'Gouttes lourdes : elles tombent'}[ph];
+  pill(c,cap,W-8,cy+r+18,{size:11.5,bold:true,align:'right'});
+}
+
+class Sim{
+  constructor(seed){this.seed=seed}
+  zf(x){return this.type==='front'?clamp((x-XF)/(XW-XF),0,1)*this.Hf:0}
+  path(x){
+    if(this.type==='conv'){const z0=200,zm=this.zTop;return x<=720?lerp(z0,zm,sstep(470,690,x)):lerp(zm,z0,sstep(760,1000,x))}
+    return this.zf(x)+130;
+  }
+  base(x){return this.type==='front'?Math.max(this.L,this.zf(x)+60):this.L}
+  top(x){return this.type==='front'?Math.min(this.zTop+300,this.path(x)+1200):this.path(x)+260}
+  pz(x){return this.path(x)*sstep(20,260,x)}
+  set(sc){
+    this.sc=sc;this.type=sc.type;const T=sc.T,RH=sc.RH;this.T=T;this.RH=RH;
+    if(sc.type==='front'){this.Tc=sc.Tc;this.Hf=clamp(700+80*(T-sc.Tc),700,3500);this.zTop=this.Hf+130}else this.zTop=sc.z;
+    this.Td=P.dew(T,RH);this.L=P.lcl(T,this.Td);
+    this.cloudy=this.zTop>this.L+30;
+    this.Ttop=P.Tz(T,this.L,this.zTop);
+    this.w0=P.w(P.es(this.Td),P.p(0));this.wsat0=P.w(P.es(T),P.p(0));
+    const ws=P.w(P.es(this.Ttop),P.p(this.zTop));
+    this.cond=this.cloudy?Math.max(0,this.w0-ws):0;
+    const eff=clamp((this.zTop-this.L-800)/2000,0,0.85);
+    let Pr=this.cond*eff*5;if(Pr<1.5)Pr=0;this.Pr=Pr;
+    this.Tground=sc.type==='front'?sc.Tc:T;this.snow=Pr>0&&this.Tground<=1;
+    let x1=-1,x2=-1;for(let x=0;x<=W;x+=5){if(this.path(x)>=this.L){if(x1<0)x1=x;x2=x}}
+    this.cx1=x1;this.cx2=x2;
+    let r1=-1,r2=-1;if(Pr>0)for(let x=Math.max(0,x1);x<=x2;x+=4){if(this.top(x)-this.base(x)>=(this.type==='conv'?1500:1000)){if(r1<0)r1=x;r2=x}}
+    this.r1=r1;this.r2=r2;
+    this.puffs=this.cloudy?makePuffs(x1,x2,x=>this.top(x),x=>this.base(x),this.seed):[];
+    // étapes possibles et repères du trajet de la masse d'air
+    this.maxS=!this.cloudy?2:this.Pr<=0?4:6;
+    const xA=this.type==='conv'?470:XF;
+    this.xTop=this.type==='conv'?700:XW;
+    const xAt=zt=>{for(let x=xA;x<=this.xTop;x+=2){if(this.pz(x)>=zt)return x}return this.xTop};
+    this.x0=150;
+    this.xMid=xAt(0.5*Math.min(this.L,this.zTop));
+    this.xL=this.cloudy?xAt(this.L):this.xTop;
+    this.xC=this.cloudy?Math.max(Math.min(this.xTop,this.xL+30),xAt(this.L+250)):this.xTop;
+    // contenu de la bulle : nombre de points ∝ quantité de vapeur
+    this.N=Math.round(clamp(6+26*this.w0/20,6,32));
+    const rn=rng(this.seed+1);this.dots=[];
+    for(let i=0;i<this.N;i++){const a=rn()*TAU,d=Math.sqrt(rn());this.dots.push({dx:Math.cos(a)*d,dy:Math.sin(a)*d,j:rn()*TAU})}
+    this.drops=[];this.racc=0;this.goto(0);
+  }
+  goto(s){this.st=clamp(s,0,this.maxS);this.ts=0;this.evap=[];this.eacc=0;if(this.st<6){this.drops=[];this.rainA=0}}
+  get prog(){return clamp(this.ts/4,0,1)}
+  seg(){return [[this.x0,this.x0],[this.x0,this.xMid],[this.xMid,this.xL],[this.xL,this.xC],[this.xC,this.xTop],[this.xTop,this.xTop],[this.xTop,this.xTop]][this.st]}
+  get px(){const [a,b]=this.seg();return lerp(a,b,sstep(0,1,this.prog))}
+  rainStep(dt,final){
+    if(this.Pr<=0||this.r1<0)return;
+    this.rainA=final?1:Math.min(1,this.rainA+dt*0.5);
+    this.racc+=this.rainA*this.Pr*3*dt;
+    while(this.racc>=1){this.racc--;const x=lerp(this.r1,this.r2,R());this.drops.push({x,y:Y(this.base(x))+2,j:R()*TAU})}
+    for(const d of this.drops){d.y+=(this.snow?70:280)*dt;d.x+=(this.snow?Math.sin(d.y*0.05+d.j)*20:10)*dt}
+    this.drops=this.drops.filter(d=>d.y<480);
+  }
+  update(dt,final){
+    if(final){this.rainStep(dt,true);return}
+    this.ts+=dt;
+    if(this.st===0&&this.sc.sea){
+      this.eacc+=(this.prog<1?14:3)*dt;
+      while(this.eacc>=1){this.eacc--;this.evap.push({x:this.x0+(R()-0.5)*110,y:478})}
+      const by=Math.min(Y(this.pz(this.x0)),444);
+      for(const e of this.evap){e.y-=55*dt;e.x+=(this.x0-e.x)*dt*0.6}
+      this.evap=this.evap.filter(e=>e.y>by);
+    }
+    if(this.st===6)this.rainStep(dt,false);
+  }
+  phase(){
+    const s=this.st;
+    if(s>=6)return 'rain';if(s===5)return 'grow';if(s>=3)return 'drop';
+    return !this.cloudy&&s===2&&this.prog>=1?'dry':'vap';
+  }
+  bubble(c,t){
+    const s=this.st,p=this.prog,x=this.px,z=this.pz(x),y=Math.min(Y(z),444),Tp=P.Tz(this.T,this.L,z),k=clamp((Tp+5)/35,0,1);
+    c.save();c.shadowColor='rgba(19,40,58,.25)';c.shadowBlur=10;
+    c.fillStyle=s>=3?'rgba(235,242,248,.55)':tempCol(k,.22);c.beginPath();c.ellipse(x,y,48,31,0,0,TAU);c.fill();c.restore();
+    c.strokeStyle=tempCol(k,.95);c.lineWidth=3;c.beginPath();c.ellipse(x,y,48,31,0,0,TAU);c.stroke();
+    const n=s===0?Math.round(this.N*p):this.N;
+    let fr=0;if(s===3)fr=0.35*p;else if(s===4)fr=0.35+0.65*p;else if(s>=5)fr=1;
+    const nd=Math.round(n*fr);
+    if(s<5){
+      for(let i=0;i<n;i++){const d=this.dots[i],dx=x+d.dx*36+Math.sin(t*1.6+d.j)*3,dy=y+d.dy*21+Math.cos(t*1.3+d.j)*3;i<nd?droplet(c,dx,dy):vapor(c,dx,dy,.9)}
+    } else {
+      const m=s===5?Math.round(lerp(n,4,p)):4,r=s===5?lerp(2.8,6,p):6;
+      for(let i=0;i<m;i++){const d=this.dots[i],dx=x+d.dx*30+Math.sin(t*1.2+d.j)*2,dy=y+d.dy*17+Math.cos(t+d.j)*2;
+        c.fillStyle='#ffffff';c.strokeStyle='rgba(30,90,160,.7)';c.lineWidth=1.3;c.beginPath();c.arc(dx,dy,r,0,TAU);c.fill();c.stroke()}
+    }
+    pill(c,fT(Tp),x,y-46,{bold:true,size:12.5,border:tempCol(k,.9)});
+    return {x,y};
+  }
+  draw(c,t,compact){
+    const sc=this.sc,s=compact?9:this.st;
+    sky(c,sc.pale);
+    c.strokeStyle=`rgba(255,215,100,${sc.pale?.1:.22})`;c.lineWidth=3;for(const x of [560,640,720]){c.beginPath();c.moveTo(110,sc.sunY+18);c.lineTo(x,476);c.stroke()}
+    sun(c,95,sc.sunY,24,t);altAxis(c,4000);
+    if(sc.sea)ocean(c,0,380,t,this.T);
+    plain(c,sc.sea?380:0,sc.deco,sc.g,!sc.sea);
+    if(this.type==='front'){
+      const gw=c.createLinearGradient(0,480,0,120);gw.addColorStop(0,'rgba(240,120,60,.22)');gw.addColorStop(1,'rgba(240,120,60,0)');
+      c.fillStyle=gw;c.beginPath();c.moveTo(0,120);c.lineTo(W,120);for(let x=W;x>=0;x-=8)c.lineTo(x,Y(this.zf(x)));c.closePath();c.fill();
+      c.beginPath();c.moveTo(XF,480);for(let x=XF;x<=W;x+=8)c.lineTo(x,Y(this.zf(x)));c.lineTo(W,480);c.closePath();
+      const gc=c.createLinearGradient(0,Y(this.Hf),0,480);gc.addColorStop(0,'rgba(70,140,215,.28)');gc.addColorStop(1,'rgba(40,100,180,.42)');c.fillStyle=gc;c.fill();
+      if(sc.snowGround&&this.snow&&(compact||this.rainA>0.5)){c.fillStyle='rgba(255,255,255,.95)';c.fillRect(XF,476,W-XF,6)}
+      c.lineCap='round';c.strokeStyle='rgba(255,255,255,.7)';c.lineWidth=7;c.beginPath();for(let x=XF;x<=W;x+=8){const y=Y(this.zf(x));x===XF?c.moveTo(x,y):c.lineTo(x,y)}c.stroke();
+      c.strokeStyle='#1b3a55';c.lineWidth=3;c.stroke();
+    } else if(s>=1){
+      const na=clamp(Math.round(this.zTop/600),2,7);c.strokeStyle='rgba(225,95,40,.5)';c.lineWidth=2.5;
+      for(let i=0;i<na;i++){const x=575+i*(110/Math.max(1,na-1));c.beginPath();for(let y=474;y>=415;y-=2){const xx=x+Math.sin(y*0.3+t*4+i)*3;y===474?c.moveTo(xx,y):c.lineTo(xx,y)}c.stroke()}
+    }
+    if(!compact)flow(c,x=>this.pz(x),40,this.xTop+60,'rgba(19,40,58,.35)');
+    // nuage : il apparaît là où la masse d'air a atteint le point de rosée
+    let puffs=[],ca=0;
+    if(s>=5){puffs=this.puffs;ca=1}
+    else if(s>=3){const lim=this.px+30;puffs=this.puffs.filter(p=>p.x<=lim);ca=s===3?0.4+0.6*this.prog:1}
+    drawCloud(c,puffs,ca,clamp(this.Pr/40,0,1)*(compact?1:this.rainA||0),x=>this.base(x));
+    if(this.snow){for(const d of this.drops)flake(c,d.x,d.y,.9)}
+    else{c.strokeStyle='rgba(22,78,150,.95)';c.lineWidth=2.4;c.lineCap='round';for(const d of this.drops){c.beginPath();c.moveTo(d.x,d.y);c.lineTo(d.x-2,d.y+11);c.stroke()}}
+    // altitude de condensation (affichée à partir de l'étape 3, ou en comparaison)
+    if(s>=2&&this.L<4300){
+      c.setLineDash([10,7]);c.strokeStyle='rgba(19,40,58,.65)';c.lineWidth=2;c.beginPath();c.moveTo(0,Y(this.L));c.lineTo(W,Y(this.L));c.stroke();c.setLineDash([]);
+      pill(c,'Altitude de condensation ≈ '+fM(this.L),compact?150:84,Y(this.L)-(compact?24:18),{size:compact?13:12.5,bold:true,align:'left'});
+    } else if(s>=2) pill(c,'Condensation au-dessus de 4 300 m : jamais atteinte',compact?150:84,compact?60:46,{size:12.5,bold:true,align:'left'});
+    const cxN=this.type==='conv'?640:Math.min(760,(Math.max(this.cx1,XF)+W)/2-40);
+    if(compact){
+      if(this.cloudy)pill(c,'Nuage',cxN,Y(Math.min(this.zTop,4000))-10,{bold:true,size:15});
+      if(this.Pr>0&&this.r1>=0)pill(c,this.snow?'Neige':'Pluie',(this.r1+this.r2)/2,455,{bold:true,size:15,color:'#1d5a8f'});
+      return;
+    }
+    pill(c,`${sc.clim} · ${sc.season}`,430,30,{bold:true,size:13.5});
+    // éléments propres à chaque étape
+    if(s===0&&sc.sea){
+      for(const e of this.evap)vapor(c,e.x,e.y,.9);
+      for(const x of [90,150,210]){arrow(c,x,476,x,452,'rgba(255,255,255,.95)',2.5)}
+    }
+    if(sc.sea)pill(c,'Évaporation ↑',150,505,{bold:true,bg:s===0?'#1d6aa8':undefined,color:s===0?'#ffffff':undefined});
+    else pill(c,'Pas de mer proche : très peu de vapeur d\'eau',190,505,{bold:true,size:13});
+    if(this.type==='front'){
+      pill(c,`Air chaud et humide · ${this.T} °C`,200,Y(2500),{bold:true,size:13,color:'#a83a14',border:'rgba(217,83,42,.55)'});
+      pill(c,`Air froid, plus lourd · ${this.Tc} °C`,W-12,Y(Math.max(220,this.Hf*0.3)),{bold:true,size:13,color:'#1d5a8f',border:'rgba(42,121,189,.55)',align:'right'});
+      pill(c,'Front : rencontre de l\'air chaud et de l\'air froid',XF+170,525,{size:12.5});
+    } else if(s>=1) pill(c,'Sol chauffé par le Soleil',630,505,{size:12.5,bold:true,color:'#a83a14'});
+    if(s>=4&&this.cloudy)pill(c,'Nuage',cxN,Y(Math.min(this.zTop+300,4100))-10,{bold:true,size:14});
+    if(s===6&&this.rainA>0.3&&this.r1>=0)pill(c,this.snow?'Neige':'Pluie',(this.r1+this.r2)/2,455,{bold:true,size:13,color:'#1d5a8f'});
+    const b=this.bubble(c,t);
+    loupe(c,t,this.phase(),this.snow,b.x,b.y);
+    legend(c);
+  }
+}
+
+function fG(v){return v.toFixed(1).replace('.',',')+' g'}
+const M2={
+  a:0,b:7,cmp:false,
+  sim:new Sim(5),A:new Sim(5),B:new Sim(9),
+  defaults(){this.a=0;this.b=7},
+  init(){this.changed()},
+  changed(){
+    if(this.b===this.a)this.b=this.a===7?5:7;
+    this.sim.set(SCEN[this.a]);this.A.set(SCEN[this.a]);this.B.set(SCEN[this.b]);
+    renderScen();renderStepper();
+  },
+  go(s){this.sim.goto(s);if(!playing)playBtn.click();this.live()},
+  update(dt){if(this.cmp){this.A.update(dt,true);this.B.update(dt,true)}else this.sim.update(dt)},
+  draw(c,t){
+    if(!this.cmp){this.sim.draw(c,t,false);return}
+    const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#dbe8f1');g.addColorStop(1,'#c8dbe8');c.fillStyle=g;c.fillRect(0,0,W,H);
+    [[this.A,0,'A'],[this.B,1,'B']].forEach(([s,i,l])=>{
+      c.save();c.translate(i*500+4,148);c.scale(0.492,0.492);c.beginPath();c.rect(0,0,W,H);c.clip();TS=1.85;s.draw(c,t,true);c.restore();TS=1;
+      const x=i*500+250;
+      pill(c,`${l} · ${s.sc.clim.replace('Climat ','')}`,x,92,{bold:true,size:14.5});
+      txt(c,s.sc.season,x,122,{size:13,bold:true,align:'center',color:'#13283a'});
+      const res=!s.cloudy?'Pas de nuage':s.Pr>0?(s.snow?'Nuage et neige':'Nuage et pluie'):'Nuage sans pluie';
+      pill(c,res,x,455,{bold:true,size:15,bg:s.cloudy?'#1d6aa8':'#ffffff',color:s.cloudy?'#ffffff':'#13283a'});
+      txt(c,`${s.T} °C · ${s.RH} % · condensation à ${s.L<4300?'≈ '+fM(s.L):'plus de 4 300 m'}`,x,492,{size:13,align:'center',color:'#13283a'});
+    });
+    c.fillStyle='rgba(19,40,58,.25)';c.fillRect(499,70,2,450);
+    txt(c,'Deux situations comparées',W/2,36,{size:16,bold:true,align:'center',color:'#13283a'});
+  },
+  lab(s){return s.sc.clim.replace('Climat ','')+', '+s.sc.season.toLowerCase()},
+  precip(s){return s.Pr>0?(s.snow?'Neige ≈ '+Math.round(s.Pr)+' cm':'Pluie ≈ '+fMM(s.Pr)):'Aucune'},
+  cause(s){return s.type==='conv'?'Le sol chauffé fait monter l\'air':'L\'air chaud glisse sur l\'air froid'},
+  ind(){
+    const s=this.sim;
+    if(this.cmp){
+      const rows=[['Pourquoi l\'air monte',x=>this.cause(x)],['Air au départ',x=>`${x.T} °C · ${x.RH} %`],['Point de rosée',x=>fT(x.Td)],['Altitude de condensation',x=>x.L<4300?'≈ '+fM(x.L):'> 4 300 m'],['L\'air monte jusqu\'à',x=>fM(x.zTop)],['Nuage',x=>x.cloudy?'Oui':'Non'],['Précipitations',x=>this.precip(x)]];
+      return `<div class="tablewrap"><table class="cmp"><thead><tr><th>Indicateur</th><th>A · ${this.lab(this.A)}</th><th>B · ${this.lab(this.B)}</th></tr></thead><tbody>
+        ${rows.map(([l,f])=>`<tr><td>${l}</td><td>${f(this.A)}</td><td>${f(this.B)}</td></tr>`).join('')}</tbody></table></div>`;
+    }
+    return '';
+  },
+  why(s,sim){
+    const sc=sim.sc;
+    const t=[
+      sc.sea?'Le Soleil chauffe la mer. L\'eau liquide s\'évapore : elle devient de la vapeur d\'eau, un gaz invisible qui se mélange à l\'air. La bulle représente une masse d\'air : les points bleus sont la vapeur qu\'elle contient. Plus l\'eau et l\'air sont chauds, plus l\'évaporation est forte.'
+            :'Pas de mer à proximité : presque pas d\'eau à évaporer. La masse d\'air (la bulle) contient donc très peu de vapeur d\'eau.',
+      sim.type==='conv'?'Le Soleil chauffe le sol, qui réchauffe l\'air juste au-dessus. Cet air chaud est plus léger que l\'air qui l\'entoure : il monte, comme une montgolfière, en emportant sa vapeur d\'eau.'
+            :'L\'air chaud et humide rencontre de l\'air froid, plus lourd, qui reste au ras du sol. L\'air chaud ne peut pas passer dessous : il glisse par-dessus et monte, avec sa vapeur d\'eau.',
+      'En altitude, la pression de l\'air est plus faible. L\'air qui monte se détend et se refroidit, d\'environ 1 °C tous les 100 m (regarde la température de la bulle). Or plus l\'air est froid, moins il peut contenir de vapeur d\'eau.',
+      `L'air a atteint son point de rosée (${fT(sim.Td)}) : il contient le maximum de vapeur possible. La vapeur en trop redevient liquide sur de minuscules poussières : des gouttelettes apparaissent (points blancs). C'est comme la buée sur une vitre froide.`,
+      'L\'air continue de monter et de se refroidir : de plus en plus de vapeur se condense. Des milliards de gouttelettes (et de cristaux de glace tout en haut) forment le nuage. Elles sont si petites, environ 0,01 mm, qu\'elles flottent dans l\'air.',
+      'Le nuage est épais : les gouttelettes se heurtent et se collent les unes aux autres. Elles sont moins nombreuses mais plus grosses. Il faut environ un million de gouttelettes pour faire une goutte de pluie.',
+      sim.snow?'Les gouttes sont devenues trop lourdes pour flotter : elles tombent. L\'air près du sol est sous 0 °C, elles arrivent en flocons de neige.'
+              :'Les gouttes sont devenues trop lourdes pour flotter : elles tombent. C\'est la pluie.'
+    ];
+    let out=t[s];
+    if(s===sim.maxS&&sim.prog>=1){
+      if(!sim.cloudy)out+=` Fin du trajet : l'air est monté jusqu'à ${fM(sim.zTop)} sans atteindre son point de rosée (${fT(sim.Td)}). Il est trop sec : pas de condensation, pas de nuage, pas de pluie.`;
+      else if(sim.Pr<=0)out+=' Fin du trajet : le nuage n\'est pas assez épais. Les gouttelettes restent trop petites et légères, elles ne tombent pas : pas de pluie.';
+    }
+    return out;
+  },
+  live(){
+    document.getElementById('expl').hidden=this.cmp;document.getElementById('expl-cmp').hidden=!this.cmp;
+    document.getElementById('sn-nav').hidden=this.cmp;document.getElementById('stepper').hidden=this.cmp;
+    if(this.cmp||cur!==M2)return;
+    const sim=this.sim,s=sim.st;
+    document.getElementById('sc-num').textContent=`Étape ${s+1} sur ${sim.maxS+1} possibles`;
+    document.getElementById('sc-title').textContent=STEPS[s];
+    document.getElementById('sc-text').textContent=this.why(s,sim);
+    document.querySelectorAll('#stepper button').forEach(b=>{const i=+b.dataset.s;b.classList.toggle('cur',i===s);b.classList.toggle('done',i<s)});
+    document.getElementById('sc-prev').disabled=s===0;
+    const nx=document.getElementById('sc-next');nx.disabled=s>=sim.maxS;nx.textContent=s>=sim.maxS?'Fin du trajet':'Étape suivante ▶';
+  },
+  aria(){return `Nuages et pluie : ${SCEN[this.a].clim}, ${SCEN[this.a].season}, étape ${this.sim.st+1}.`},
+  chain:[3,4,5,6,7]
+};
+function renderStepper(){
+  const el=document.getElementById('stepper');if(!el)return;const m=M2.sim.maxS;
+  el.innerHTML=STEPS.map((l,i)=>`<button type="button" data-s="${i}" ${i>m?'disabled title="N\'a pas lieu dans cette situation"':''}>${i+1}. ${l}</button>`).join('');
+}
+function scenHTML(i){const sc=SCEN[i];return `<button type="button" role="radio" data-i="${i}" aria-checked="false"><span class="sw" style="background:linear-gradient(${sc.g[0]},${sc.g[1]})"></span><b>${sc.season}</b><small>${sc.T} °C · ${sc.RH} % · ${sc.type==='conv'?'le sol chauffe l\'air':'air chaud contre air froid'}</small></button>`}
+function scenGroups(){const groups=[];SCEN.forEach((sc,i)=>{let g=groups.find(x=>x.c===sc.clim);if(!g)groups.push(g={c:sc.clim,ids:[]});g.ids.push(i)});
+  return groups.map(g=>`<div class="sgroup"><span class="sgt">${g.c}</span>${g.ids.map(scenHTML).join('')}</div>`).join('')}
+function renderScen(){
+  const A=document.getElementById('scen-a'),B=document.getElementById('scen-b');if(!A)return;
+  if(!A.children.length){
+    const groups=[];SCEN.forEach((sc,i)=>{let g=groups.find(x=>x.c===sc.clim);if(!g)groups.push(g={c:sc.clim,ids:[]});g.ids.push(i)});
+    const html=groups.map(g=>`<div class="cgroup"><span class="cg">${g.c.replace('Climat ','').replace(/^./,m=>m.toUpperCase())}</span>${g.ids.map(i=>`<button type="button" role="radio" data-i="${i}" aria-checked="false"><span class="sw" style="background:linear-gradient(${SCEN[i].g[0]},${SCEN[i].g[1]})"></span>${SCEN[i].short}</button>`).join('')}</div>`).join('');
+    A.innerHTML=html;B.innerHTML=html;
+  }
+  A.querySelectorAll('button').forEach(b=>b.setAttribute('aria-checked',String(+b.dataset.i===M2.a)));
+  B.querySelectorAll('button').forEach(b=>{b.setAttribute('aria-checked',String(+b.dataset.i===M2.b));b.disabled=+b.dataset.i===M2.a});
+}
+
+/* ---------- Interface ---------- */
+const mods={1:M1,2:M2};
+let cur=M1,playing=true,speed=1,scale=1;
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),wrap=document.getElementById('wrap');
+const ind=document.getElementById('ind'),chainEl=document.getElementById('chain');
+const CHAIN=['Réchauffement inégal de la surface','Différences de pression','Vents','Évaporation et transport de l\'air humide','Ascension et refroidissement','Condensation','Nuages','Précipitations'];
+function renderChain(){chainEl.innerHTML=CHAIN.map((s,i)=>`${i?'<span class="arr">→</span>':''}<span class="s ${cur.chain.includes(i)?'on':''}">${s}</span>`).join('')}
+function resize(){const w=wrap.clientWidth,dpr=window.devicePixelRatio||1;cv.width=Math.round(w*dpr);cv.height=Math.round(w*H/W*dpr);cv.style.height=(w*H/W)+'px';scale=w/W*dpr}
+let lastW=0;new ResizeObserver(()=>requestAnimationFrame(()=>{const w=wrap.clientWidth;if(w!==lastW){lastW=w;resize()}})).observe(wrap);resize();lastW=wrap.clientWidth;
+
+let lastInd='';
+function refreshInd(){const s=cur.ind();if(s!==lastInd){ind.innerHTML=s;lastInd=s}if(cur.live)cur.live();cv.setAttribute('aria-label',cur.aria())}
+function setSeg(seg,v){seg.querySelectorAll('button').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.v==String(v))))}
+function outFor(el){const o=document.getElementById('o-'+el.id);if(o)o.textContent=el.value+' °C'}
+function syncControls(){document.querySelectorAll('input[data-mod]').forEach(el=>{el.value=mods[el.dataset.mod][el.dataset.key];outFor(el)})}
+document.querySelectorAll('input[data-mod]').forEach(el=>el.addEventListener('input',()=>{
+  const m=mods[el.dataset.mod];m[el.dataset.key]=Number(el.value);outFor(el);m.changed();refreshInd();
+}));
+document.getElementById('speed').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;speed=Number(b.dataset.v);setSeg(e.currentTarget,b.dataset.v)});
+const playBtn=document.getElementById('play');
+playBtn.addEventListener('click',()=>{playing=!playing;playBtn.textContent=playing?'❚❚ Pause':'▶ Lecture'});
+const cmpBtn=document.getElementById('compare');
+function updCmp(){cmpBtn.setAttribute('aria-pressed',String(M2.cmp));cmpBtn.textContent=M2.cmp?'✕ Quitter la comparaison':'Comparer deux situations';document.getElementById('scen-b-wrap').hidden=!M2.cmp}
+document.getElementById('reset').addEventListener('click',()=>{cur.defaults();if(cur===M2){M2.cmp=false;updCmp()}cur.init();syncControls();refreshInd()});
+cmpBtn.addEventListener('click',()=>{M2.cmp=!M2.cmp;updCmp();M2.init();lastInd=null;refreshInd()});
+document.getElementById('scen-a').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;M2.a=+b.dataset.i;M2.changed();refreshInd()});
+document.getElementById('stepper').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;M2.go(+b.dataset.s)});
+document.getElementById('sc-prev').addEventListener('click',()=>M2.go(M2.sim.st-1));
+document.getElementById('sc-next').addEventListener('click',()=>M2.go(M2.sim.st+1));
+document.getElementById('sc-replay').addEventListener('click',()=>M2.go(M2.sim.st));
+document.getElementById('scen-b').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;M2.b=+b.dataset.i;M2.changed();refreshInd()});
+
+function select(n){
+  cur=mods[n];
+  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.m==n)));
+  document.querySelectorAll('.pgroup').forEach(g=>g.hidden=g.dataset.for!=n);
+  cmpBtn.hidden=n!==2;updCmp();document.getElementById('stepnav').hidden=n!==2;document.querySelector('.layout').classList.toggle('wide-panel',n===2);
+  lastInd=null;renderChain();refreshInd();
+}
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>select(Number(t.dataset.m))));
+
+M1.init();M2.init();syncControls();select(1);
+setInterval(refreshInd,200);
+
+let last=performance.now(),simT=0;
+function frame(now){
+  const real=Math.min(0.05,(now-last)/1000);last=now;
+  const dt=playing?real*speed:0;simT+=dt;
+  cur.update(dt);
+  ctx.setTransform(scale,0,0,scale,0,0);ctx.clearRect(0,0,W,H);TS=1;
+  cur.draw(ctx,simT);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+})();
+</script>
