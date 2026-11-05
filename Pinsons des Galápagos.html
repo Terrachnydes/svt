@@ -1,0 +1,606 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Pinsons des Galápagos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout : une grande carte illustrée (îles agrandies), l'histoire racontée en cycles migration → mutation → sélection */
+:root{
+  --bg:#eaf1ef; --surface:#f8fbfa; --ink:#1c2422; --muted:#56645f; --line:#c9d6d1;
+  --sea:#b9dbe4; --sea-deep:#93c4d2; --wave:#ffffff; --coast:#2b6d84;
+  --land:#a08a6e; --land-dry:#c4ab82; --peak:#6f5c48; --green:#5f8f4a; --cactus:#4f7a3c;
+  --g-forest:#7f9c5c; --g-wood:#9c8463; --g-rock:#aaa293; --g-sand:#dcc48e; --g-grass:#b3c278; --g-mix:#a08a6e;
+  --leaf:#2f5f2a; --seed:#5b4128; --blade:#4a7a2a; --wood:#6e4f31;
+  --accent:#2b6d84; --sun:#d9a521; --dead:#9aa39f; --good:#2f7d46; --bad:#b4372b;
+  --l0:#8a7a5c; --l1:#c48a1c; --l2:#b4472b; --l3:#2f8550; --l4:#2b6d84; --l5:#7a4fa0; --l6:#c25485;
+  --display:"Young Serif",Georgia,serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1716; --surface:#172220; --ink:#e4ece9; --muted:#9caaa5; --line:#2b3935;
+  --sea:#123540; --sea-deep:#0d2a33; --wave:#5d8f9e; --coast:#71b6cf;
+  --land:#7d6a54; --land-dry:#97805f; --peak:#5a4a3a; --green:#6f9e58; --cactus:#7fae66;
+  --g-forest:#3d5732; --g-wood:#5e5040; --g-rock:#615b52; --g-sand:#85744f; --g-grass:#56633a; --g-mix:#7d6a54;
+  --leaf:#7fbf63; --seed:#e0c08f; --blade:#a4cf6c; --wood:#b48a5c;
+  --accent:#71b6cf; --sun:#e6bd4d; --dead:#5f6b67; --good:#6cc48c; --bad:#ec7a62;
+  --l0:#b3a37f; --l1:#e2b44a; --l2:#e47d5b; --l3:#6cc48c; --l4:#71b6cf; --l5:#b08bd6; --l6:#e586b0;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1716; --surface:#172220; --ink:#e4ece9; --muted:#9caaa5; --line:#2b3935;
+  --sea:#123540; --sea-deep:#0d2a33; --wave:#5d8f9e; --coast:#71b6cf;
+  --land:#7d6a54; --land-dry:#97805f; --peak:#5a4a3a; --green:#6f9e58; --cactus:#7fae66;
+  --g-forest:#3d5732; --g-wood:#5e5040; --g-rock:#615b52; --g-sand:#85744f; --g-grass:#56633a; --g-mix:#7d6a54;
+  --leaf:#7fbf63; --seed:#e0c08f; --blade:#a4cf6c; --wood:#b48a5c;
+  --accent:#71b6cf; --sun:#e6bd4d; --dead:#5f6b67; --good:#6cc48c; --bad:#ec7a62;
+  --l0:#b3a37f; --l1:#e2b44a; --l2:#e47d5b; --l3:#6cc48c; --l4:#71b6cf; --l5:#b08bd6; --l6:#e586b0;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 40px;display:grid;gap:16px}
+header{display:grid;gap:4px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,5vw,46px);line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(21px,3vw,27px);margin:0;text-wrap:balance}
+p{margin:0}
+.lead{max-width:70ch;color:var(--muted)}
+.mapbox{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--sea)}
+.mapbox svg{display:block;width:100%;height:auto}
+.story{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+@media (max-width:720px){.story{grid-template-columns:1fr 1fr}.story .txt{grid-column:1/-1;order:-1}}
+.story .txt{display:grid;gap:8px;min-width:0}
+.when{font-family:var(--mono);font-size:13px;color:var(--accent)}
+.phases{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.phases span{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:14px;border:1px solid var(--line);color:var(--muted);transition:all .3s}
+.phases span.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.phases i{color:var(--muted);font-style:normal;font-size:12px}
+.nav{font:inherit;font-weight:700;font-size:15px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:12px 16px;cursor:pointer;white-space:nowrap}
+.nav.primary{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.nav[disabled]{opacity:.4;cursor:default}
+.dotsrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:32px;height:32px;border-radius:50%;border:2px solid var(--line);background:var(--surface);color:var(--muted);font-family:var(--mono);font-size:12px;cursor:pointer}
+.dots button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.replay{font:inherit;font-size:14px;font-weight:700;border:0;background:none;color:var(--accent);cursor:pointer;padding:6px 4px}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.beaks{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.beaks{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}}
+.beak{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px 12px;display:grid;gap:4px;align-content:start}
+.beak svg{display:block;width:100%;height:auto}
+.beak h3{font-size:15px;margin:0}
+.beak p{font-size:13.5px;color:var(--muted)}
+.beak .tool{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.foot{font-size:13px;color:var(--muted)}
+svg text{font-family:var(--body)}
+.lbl{font-size:17px;fill:var(--ink);font-weight:700;paint-order:stroke;stroke:var(--sea);stroke-width:4px;stroke-linejoin:round}
+.sm{font-size:12.5px;fill:var(--ink);paint-order:stroke;stroke:var(--sea);stroke-width:3.5px;stroke-linejoin:round}
+.food{font-size:12.5px;fill:var(--ink)}
+.call{font-size:13px;fill:var(--ink);font-weight:700}
+.mono{font-family:var(--mono)}
+.bird{cursor:pointer;outline:none}
+.bird:focus-visible{outline:none}
+.bird:hover{filter:brightness(1.12)}
+.tagt{font-size:11px;font-weight:700;fill:var(--ink)}
+.buzz{animation:buzz .5s ease-in-out infinite alternate}
+@keyframes buzz{from{transform:translate(-3px,2px)}to{transform:translate(3px,-3px)}}
+.arrow{fill:none;stroke:var(--ink);stroke-width:2.2;stroke-dasharray:7 6;stroke-linecap:round;stroke-opacity:.5}
+.arrow.anim{animation:dash 1.6s ease-in-out both}
+@keyframes dash{from{stroke-dashoffset:400;opacity:0}20%{opacity:1}to{stroke-dashoffset:0;opacity:1}}
+.pop{transform-box:fill-box;transform-origin:center;animation:pop .45s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes pop{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
+.spark{transform-box:fill-box;transform-origin:center;animation:spark 1s ease-out both}
+@keyframes spark{0%{opacity:0;transform:scale(.3)}25%{opacity:1}100%{opacity:0;transform:scale(1.6)}}
+.egg{transform-box:fill-box;transform-origin:50% 100%;animation:wob .75s ease-in-out both}
+@keyframes wob{0%{opacity:0;transform:scale(.4)}20%{opacity:1;transform:scale(1)}40%{transform:rotate(-14deg)}60%{transform:rotate(12deg)}80%{transform:rotate(-8deg)}100%{transform:rotate(0)}}
+.ring{animation:ring 1.4s ease-in-out infinite}
+@keyframes ring{50%{stroke-opacity:.35}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">SVT · Évolution · Archipel des Galápagos</div>
+  <h1>Les pinsons des Galápagos</h1>
+  <p class="lead">Un petit groupe d'oiseaux venu d'Amérique du Sud a donné naissance à plusieurs espèces. Suivez le cycle qui se répète d'île en île : migration, mutation, sélection naturelle. <b style="color:var(--ink)">Cliquez sur un oiseau pour voir comment il mange.</b></p>
+</header>
+
+<div class="mapbox"><svg id="map" viewBox="0 0 1000 680" role="img" aria-label="Carte illustrée des îles Galápagos et de la côte de l'Amérique du Sud"></svg></div>
+
+<div class="story">
+  <button class="nav" id="prev">◀ Avant</button>
+  <div class="txt" aria-live="polite">
+    <div class="phases" id="phases">
+      <span data-p="arrivee">Arrivée</span><i>→</i><span data-p="migration">Migration</span><i>→</i><span data-p="mutation">Mutation</span><i>→</i><span data-p="selection">Sélection naturelle</span><i>→</i><span data-p="resultat">Nouvelles espèces</span>
+    </div>
+    <div class="when" id="when"></div>
+    <h2 id="title"></h2>
+    <p id="text"></p>
+    <div class="dotsrow"><div class="dots" id="dots"></div><button class="replay" id="replay">↻ Rejouer l'animation</button></div>
+  </div>
+  <button class="nav primary" id="next">Suivant ▶</button>
+</div>
+
+<h2 style="margin-top:6px">Un bec pour chaque nourriture</h2>
+<div class="beaks" id="beaks"></div>
+
+<p class="foot">Carte simplifiée : la taille des îles et les distances ne sont pas à l'échelle. En réalité, de nombreuses petites mutations s'accumulent sur des milliers de générations ; une seule est montrée à chaque fois. Sources : travaux de Peter et Rosemary Grant ; Lamichhaney et al., <i>Nature</i>, 2015. Photos réelles : <a href="https://commons.wikimedia.org/w/index.php?search=Darwin%27s+finches&title=Special:MediaSearch&type=image" target="_blank" rel="noopener" style="color:var(--accent)">Wikimedia Commons ↗</a></p>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const NS="http://www.w3.org/2000/svg";
+const el=(t,a={},p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+const RM=matchMedia('(prefers-reduced-motion: reduce)');
+
+/* ================= décor ================= */
+const map=$('#map');
+const defs=el('defs',{},map);
+const pat=el('pattern',{id:'waves',width:60,height:26,patternUnits:'userSpaceOnUse'},defs);
+el('path',{d:'M4 14 q6 -6 12 0 t12 0',fill:'none',stroke:'var(--wave)','stroke-width':1.3,'stroke-opacity':.55,'stroke-linecap':'round'},pat);
+el('path',{d:'M34 2 q5 -4 10 0',fill:'none',stroke:'var(--wave)','stroke-width':1,'stroke-opacity':.4,'stroke-linecap':'round'},pat);
+const mk=el('marker',{id:'ah',viewBox:'0 0 10 10',refX:7,refY:5,markerWidth:6,markerHeight:6,orient:'auto'},defs);
+el('path',{d:'M0 0L10 5L0 10z',style:'fill:var(--ink)','fill-opacity':.6},mk);
+el('rect',{width:1000,height:680,style:'fill:var(--sea)'},map);
+el('rect',{width:1000,height:680,fill:'url(#waves)'},map);
+
+function tree(p,x,y,s=1){const g=el('g',{transform:`translate(${x} ${y}) scale(${s})`},p);
+  el('line',{x1:0,y1:0,x2:0,y2:9,style:'stroke:var(--peak)','stroke-width':2.2},g);
+  el('circle',{cx:0,cy:-4,r:7,style:'fill:var(--green)'},g);el('circle',{cx:-5,cy:1,r:5,style:'fill:var(--green)'},g);el('circle',{cx:5,cy:1,r:5,style:'fill:var(--green)'},g)}
+function cactus(p,x,y,s=1){const g=el('g',{transform:`translate(${x} ${y}) scale(${s})`,style:'stroke:var(--cactus);stroke-linecap:round;fill:none'},p);
+  el('path',{d:'M0 9 V-9 M0 0 H-6 V-6 M0 -2 H6 V-8','stroke-width':3.4},g);
+  el('circle',{cx:0,cy:-11,r:2.4,style:'fill:var(--sun);stroke:none'},g)}
+function peak(p,x,y,s=1){const g=el('g',{transform:`translate(${x} ${y}) scale(${s})`},p);
+  el('path',{d:'M-18 10 L0 -14 L18 10Z',style:'fill:var(--peak)','stroke-linejoin':'round'},g);
+  el('path',{d:'M-5 -7 L0 -14 L5 -7Z',style:'fill:var(--surface)','fill-opacity':.5},g)}
+function seeds(p,x,y,big){const g=el('g',{transform:`translate(${x} ${y})`},p);
+  [[0,0],[7,2],[3,-5]].forEach(([a,b])=>el('ellipse',{cx:a,cy:b,rx:big?3.6:2,ry:big?2.6:1.5,style:'fill:var(--peak)'},g))}
+
+// continent
+el('path',{d:'M935 0 C912 80 922 140 905 200 C892 250 910 290 897 340 C884 390 904 430 893 490 C884 540 902 610 890 680 L1000 680 L1000 0Z',style:'fill:var(--land);stroke:var(--coast);stroke-width:2'},map);
+for(let i=0;i<9;i++)tree(map,940+(i%3)*20,130+i*55,.9);
+el('text',{x:965,y:60,'text-anchor':'middle',class:'lbl',style:'font-family:var(--display);font-weight:400;font-size:17px'},map).textContent="Amérique";
+el('text',{x:965,y:80,'text-anchor':'middle',class:'lbl',style:'font-family:var(--display);font-weight:400;font-size:17px'},map).textContent="du Sud";
+const gx=868;
+let zz=`M${gx-7} 0`;for(let y=40;y<=680;y+=40)zz+=` L${gx+(y/40%2?7:-7)} ${y}`;
+el('path',{d:zz,fill:'none',style:'stroke:var(--coast)','stroke-width':1.5,'stroke-dasharray':'3 5'},map);
+el('rect',{x:gx-44,y:620,width:88,height:40,rx:8,style:'fill:var(--surface);stroke:var(--line)'},map);
+el('text',{x:gx,y:637,'text-anchor':'middle',class:'call mono'},map).textContent="≈ 1 000 km";
+el('text',{x:gx,y:653,'text-anchor':'middle',class:'call',style:'font-weight:400;font-size:11px;fill:var(--muted)'},map).textContent="d'océan";
+// équateur, rose des vents, océan
+el('line',{x1:0,x2:850,y1:38,y2:38,style:'stroke:var(--coast)','stroke-dasharray':'2 5','stroke-width':1.2},map);
+el('text',{x:12,y:30,class:'sm mono'},map).textContent="Équateur 0°";
+const cr=el('g',{transform:'translate(48 628)'},map);
+el('circle',{r:22,style:'fill:var(--surface);stroke:var(--line)','stroke-width':1.5},cr);
+el('path',{d:'M0 -18 L5 0 L0 18 L-5 0Z',style:'fill:var(--ink)'},cr);
+el('path',{d:'M-18 0 L0 -4 L18 0 L0 4Z',style:'fill:var(--muted)'},cr);
+el('text',{y:-26,'text-anchor':'middle',class:'sm',style:'font-weight:700'},cr).textContent="N";
+el('text',{x:560,y:668,class:'lbl',style:'font-family:var(--display);font-weight:400;font-size:20px;font-style:italic;fill:var(--coast)'},map).textContent="Océan Pacifique";
+
+/* îles agrandies (positions simplifiées, ordre géographique respecté) */
+const ISL={
+ "Isabela":      {cx:150,cy:335,rx:118,ry:180,rot:-6,seed:3, food:"Petits insectes",      ground:'forest',bub:[175,128]},
+ "Santiago":     {cx:400,cy:118,rx:118,ry:62,rot:-4,seed:7,  food:"Larves dans le bois",  ground:'wood',  bub:[650,92]},
+ "Santa Cruz":   {cx:470,cy:345,rx:122,ry:76,rot:0,seed:11,  food:"Grosses graines dures",ground:'rock',  bub:[470,247]},
+ "San Cristóbal":{cx:735,cy:282,rx:106,ry:68,rot:-12,seed:13,food:"Graines variées",      ground:'mix',   bub:[735,186]},
+ "Española":     {cx:730,cy:528,rx:102,ry:60,rot:-8,seed:17, food:"Fleurs de cactus",     ground:'sand',  bub:[730,440]},
+ "Floreana":     {cx:440,cy:560,rx:102,ry:60,rot:4,seed:19,  food:"Petites graines",      ground:'grass', bub:[205,598]}
+};
+/* décor = la nourriture de chaque île, bien visible */
+const ST=(c,w=1)=>`stroke:var(--ink);stroke-width:${w};fill:var(${c})`;
+function leafTree(p,x,y,s=1){const g=el('g',{transform:`translate(${x} ${y}) scale(${s})`},p);
+  el('path',{d:'M-1.5 10 L-1 -2 L1 -2 L1.5 10Z',style:'fill:var(--wood)'},g);
+  [[0,-8,7.5],[-6,-2,5.5],[6,-2,5.5],[0,-1,5]].forEach(([a,b,r])=>el('circle',{cx:a,cy:b,r,style:ST('--leaf',.5)},g))}
+function opuntia(p,x,y,s=1){const g=el('g',{transform:`translate(${x} ${y}) scale(${s})`},p);
+  el('ellipse',{cx:0,cy:3,rx:6,ry:9,style:ST('--cactus',.7)},g);
+  el('ellipse',{cx:-7,cy:-8,rx:5,ry:7,transform:'rotate(-28 -7 -8)',style:ST('--cactus',.7)},g);
+  el('ellipse',{cx:7,cy:-9,rx:5,ry:7,transform:'rotate(28 7 -9)',style:ST('--cactus',.7)},g);
+  [[-9,-15],[9,-16],[0,-7]].forEach(([a,b])=>{el('circle',{cx:a,cy:b,r:3.4,style:ST('--sun',.6)},g);el('circle',{cx:a,cy:b,r:1.2,style:'fill:var(--l1)'},g)});
+  [[-2,0],[3,6],[-3,8]].forEach(([a,b])=>el('circle',{cx:a,cy:b,r:.7,fill:'#fff'},g))}
+function bigSeeds(p,x,y,s=1){const g=el('g',{transform:`translate(${x} ${y}) scale(${s})`},p);
+  [[-5,1,-20],[4,2,15],[0,-4,0]].forEach(([a,b,r])=>{el('ellipse',{cx:a,cy:b,rx:5,ry:3.7,transform:`rotate(${r} ${a} ${b})`,style:ST('--seed',.8)},g);el('ellipse',{cx:a-1.5,cy:b-1.2,rx:1.6,ry:.9,fill:'#fff','fill-opacity':.45},g)})}
+function bush(p,x,y){const g=el('g',{transform:`translate(${x} ${y})`,style:'stroke:var(--wood);stroke-width:1.4;stroke-linecap:round;fill:none'},p);
+  el('path',{d:'M0 6 L0 -6 M0 0 L-6 -7 M0 2 L6 -5 M-3 -3 L-6 -2 M3 -2 L5 -9'},g);
+  [[-6,-7],[6,-5],[5,-9],[0,-6]].forEach(([a,b])=>el('circle',{cx:a,cy:b,r:2.4,style:ST('--seed',.5)},g))}
+function grass(p,x,y,s=1){const g=el('g',{transform:`translate(${x} ${y}) scale(${s})`},p);
+  el('path',{d:'M0 6 Q-2 -1 -6 -8 M0 6 Q0 -3 0 -11 M0 6 Q2 -1 6 -8',fill:'none',style:'stroke:var(--blade);stroke-width:1.6;stroke-linecap:round'},g);
+  [[-6,-8],[0,-11],[6,-8],[-4,-5],[3,-6]].forEach(([a,b])=>el('circle',{cx:a,cy:b,r:1.4,style:'fill:var(--seed)'},g))}
+function deadTree(p,x,y,s=1){const g=el('g',{transform:`translate(${x} ${y}) scale(${s})`},p);
+  el('path',{d:'M-2.5 12 L-2 -6 L-9 -14 M-2 -2 L-8 -6 M2 -6 L8 -13 M2.5 12 L2 -6 M2 0 L7 -4',fill:'none',style:'stroke:var(--wood);stroke-width:3;stroke-linecap:round;stroke-linejoin:round'},g);
+  [[0,4],[0,-2]].forEach(([a,b])=>el('circle',{cx:a,cy:b,r:1.3,style:'fill:var(--ink)'},g))}
+function logW(p,x,y,rot=0){const g=el('g',{transform:`translate(${x} ${y}) rotate(${rot})`},p);
+  el('rect',{x:-13,y:-4.5,width:26,height:9,rx:3,style:ST('--wood',.8)},g);
+  el('ellipse',{cx:13,cy:0,rx:2.6,ry:4.5,style:ST('--g-sand',.8)},g);
+  [[-7,-1],[-1,1.5],[5,-1.5]].forEach(([a,b])=>el('circle',{cx:a,cy:b,r:1.6,style:'fill:var(--ink)'},g));
+  el('ellipse',{cx:-1,cy:1.5,rx:2,ry:1.2,fill:'#f3eee0'},g)}
+function swarm(p,x,y){const g=el('g',{class:'buzz',style:`animation-delay:-${(Math.random()*.5).toFixed(2)}s`},p);
+  [[0,0],[10,-5],[-9,-8],[4,-14],[-3,7]].forEach(([a,b])=>{el('ellipse',{cx:x+a-1.2,cy:y+b-1.8,rx:2,ry:1.2,fill:'#fff','fill-opacity':.85},g);el('ellipse',{cx:x+a+1.2,cy:y+b-1.8,rx:2,ry:1.2,fill:'#fff','fill-opacity':.85},g);el('circle',{cx:x+a,cy:y+b,r:2,style:'fill:var(--ink)'},g)})}
+function pebble(p,x,y){el('ellipse',{cx:x,cy:y,rx:3,ry:2,style:'fill:var(--peak)','fill-opacity':.45},p)}
+const DECOR={
+  forest:[[leafTree,16,1.2],[swarm,6]],
+  wood:[[deadTree,5,1.1],[logW,6],[leafTree,2,.9]],
+  rock:[[pebble,14],[bigSeeds,9,1],[bush,5]],
+  sand:[[opuntia,9,1]],
+  grass:[[grass,18,1]],
+  mix:[[grass,6,.9],[bigSeeds,3,.7],[leafTree,3,1],[opuntia,2,.8]]
+};
+function iconFor(t,p,x,y){({forest:()=>swarm(el('g',{transform:`translate(${x} ${y+3}) scale(.6)`},p),0,0),wood:()=>logW(el('g',{transform:`translate(${x} ${y}) scale(.6)`},p),0,0,0),rock:()=>bigSeeds(p,x,y,.8),sand:()=>opuntia(p,x,y+2,.55),grass:()=>grass(p,x,y+2,.7),mix:()=>bigSeeds(p,x,y,.6)})[t]()}
+function smooth(pts){const n=pts.length;let d=`M${pts[0][0]},${pts[0][1]}`;
+  for(let i=0;i<n;i++){const p0=pts[(i-1+n)%n],p1=pts[i],p2=pts[(i+1)%n],p3=pts[(i+2)%n];
+    d+=`C${p1[0]+(p2[0]-p0[0])/6},${p1[1]+(p2[1]-p0[1])/6} ${p2[0]-(p3[0]-p1[0])/6},${p2[1]-(p3[1]-p1[1])/6} ${p2[0]},${p2[1]}`}return d+'Z'}
+function blobPts(cx,cy,rx,ry,rot,seed){let s=seed;const rnd=()=>{s=(s*9301+49297)%233280;return s/233280};
+  const pts=[],a0=rot*Math.PI/180;for(let i=0;i<14;i++){const a=i/14*2*Math.PI,j=.92+rnd()*.16;
+    const x=Math.cos(a)*rx*j,y=Math.sin(a)*ry*j;pts.push([cx+x*Math.cos(a0)-y*Math.sin(a0),cy+x*Math.sin(a0)+y*Math.cos(a0)])}return pts}
+const gIs=el('g',{},map),gVeg=el('g',{},map),gLab=el('g',{},map),gArr=el('g',{},map),gShadow=el('g',{},map),gPop=el('g',{},map),gFx=el('g',{},map),gCall=el('g',{},map),gTag=el('g',{},map),gDemo=el('g',{},map);
+[gShadow,gFx,gCall,gTag,gDemo,gArr,gLab].forEach(l=>l.style.pointerEvents='none');
+for(const [n,I] of Object.entries(ISL)){
+  const d=smooth(blobPts(I.cx,I.cy,I.rx,I.ry,I.rot,I.seed));
+  el('path',{d,style:'fill:var(--sea-deep)',transform:'translate(3 6)'},gIs);
+  el('path',{d,style:`fill:var(--g-${I.ground});stroke:var(--coast);stroke-width:2.2`},gIs);
+  let sd=I.seed*7+1;const rnd=()=>{sd=(sd*9301+49297)%233280;return sd/233280};
+  if(I.ground!=='sand'&&I.ground!=='grass')peak(gVeg,I.cx+I.rx*.62,I.cy-I.ry*.42,I.ry>100?1.3:1);
+  const items=[];DECOR[I.ground].forEach(([fn,nb,sc])=>{for(let k=0;k<nb;k++)items.push([fn,sc])});
+  for(let k=items.length-1;k>0;k--){const j=Math.floor(rnd()*(k+1));[items[k],items[j]]=[items[j],items[k]]}
+  items.forEach(([fn,sc],k)=>{const a=(k/items.length)*Math.PI*2+rnd()*.5,r=.45+rnd()*.42;
+    const x=I.cx+Math.cos(a)*I.rx*r,y=I.cy+Math.sin(a)*I.ry*r;fn(gVeg,x,y,fn===logW?(rnd()-.5)*50:sc)});
+  const ly=I.cy+I.ry+22;
+  el('text',{x:I.cx,y:ly,'text-anchor':'middle',class:'lbl'},gLab).textContent=n;
+  const w=I.food.length*6.6+44,px=I.cx-w/2;
+  el('rect',{x:px,y:ly+4,width:w,height:24,rx:12,style:'fill:var(--surface);stroke:var(--ink)','stroke-width':1.2},gLab);
+  iconFor(I.ground,gLab,px+15,ly+16);
+  el('text',{x:px+30,y:ly+20.5,class:'food'},gLab).textContent=I.food;
+}
+
+/* ================= oiseaux ================= */
+// clé de bec → [couleur, épaisseur, longueur, courbure]
+const BK={anc:['--l0',8,9,1],gros:['--l1',14,13,2],cactus:['--l4',7.5,15,3],petit:['--l3',5.5,7.5,1],pic:['--l6',6.5,17,1],fin:['--l5',3.2,10.5,.5]};
+const MUTNAME={gros:"bec plus épais",cactus:"bec plus long",petit:"bec plus petit",pic:"bec long et pointu",fin:"bec très fin"};
+const SLOTS=[[-50,-28],[2,-30],[54,-26],[-76,0],[-25,0],[26,2],[76,-2],[-40,28],[12,28]];
+const ORDER=[0,2,4,5,7,8,1,3,6], MORDER=[1,3,6,7,8,0,2,4,5];
+const slotPos=(isl,k)=>{const I=ISL[isl];return [I.cx+SLOTS[k][0],I.cy+SLOTS[k][1]-4]};
+const SC=.62;
+const beakD=(d,L,c)=>{const bx=26,hy=-9,dd=d*1.2,ll=L*1.25;return `M${bx} ${hy-dd/2} Q${bx+ll*.55} ${hy-dd/2+1} ${bx+ll} ${hy+c} L${bx} ${hy+dd/2}Z`};
+const live={};
+function makeBird(id,key,x,y,pale,isl){
+  const bk=BK[key],g=el('g',{},gPop), flip=el('g',{},g);
+  const col=`fill:var(${bk[0]});transition:fill 1s ease`;
+  const parts=[
+    el('path',{d:'M-14 10 L-34 22 L-30 14 L-36 14 L-16 4Z',style:col,stroke:'var(--ink)','stroke-width':1.3,'stroke-linejoin':'round'},flip),
+    el('ellipse',{cx:0,cy:4,rx:20,ry:13,transform:'rotate(-18)',style:col,stroke:'var(--ink)','stroke-width':1.3},flip)];
+  if(pale){el('circle',{cx:-6,cy:10,r:4,fill:'#fff'},flip);el('circle',{cx:4,cy:12,r:3,fill:'#fff'},flip)}
+  const legs=el('g',{},flip);
+  el('line',{x1:-2,y1:16,x2:-4,y2:26,stroke:'var(--ink)','stroke-width':1.7},legs);el('line',{x1:6,y1:15,x2:8,y2:26,stroke:'var(--ink)','stroke-width':1.7},legs);
+  const head=el('g',{},flip);
+  parts.push(el('circle',{cx:18,cy:-10,r:10,style:col,stroke:'var(--ink)','stroke-width':1.3},head));
+  if(pale)el('path',{d:'M10 -17 Q18 -23 26 -15',fill:'none',stroke:'#fff','stroke-width':3.5,'stroke-linecap':'round'},head);
+  el('path',{d:beakD(bk[1],bk[2],bk[3]),fill:'#3a3734',stroke:'var(--ink)','stroke-width':1,'stroke-linejoin':'round'},head);
+  el('circle',{cx:20,cy:-13,r:2.6,fill:'#fff'},head);el('circle',{cx:20.6,cy:-13,r:1.4,fill:'#111'},head);
+  const wing=el('path',{d:'M-12 0 Q0 -12 14 -2 Q4 10 -12 0Z',style:col,stroke:'var(--ink)','stroke-width':1.3,'stroke-linejoin':'round'},flip);
+  parts.push(wing);
+  const sh=el('ellipse',{rx:13,ry:3.5,style:'fill:var(--ink)','fill-opacity':.22},gShadow);
+  const b={id,g,flip,head,wing,legs,parts,sh,ring:null,tag:null,x,y,dir:Math.random()<.5?-1:1,
+    op:1,flight:null,hop:null,peck:null,born:null,dying:null,nextHop:performance.now()+1200+Math.random()*4000,phase:Math.random()*6};
+  b.key=key;b.pale=pale;b.isl=isl;
+  g.setAttribute('class','bird');g.setAttribute('tabindex','0');g.setAttribute('role','button');g.setAttribute('aria-label','Voir comment cet oiseau mange');
+  const go=ev=>{ev.stopPropagation();birdClick(b)};
+  g.addEventListener('click',go);g.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();go(ev)}});
+  live[id]=b;return b;
+}
+function removeBird(b){b.g.remove();b.sh.remove();b.ring&&b.ring.remove();b.tag&&b.tag.remove();delete live[b.id]}
+function addRing(b){b.ring=el('ellipse',{rx:26,ry:8,class:'ring',fill:'none',style:'stroke:var(--sun)','stroke-width':3},gShadow)}
+const TAGC={mut:'--sun',good:'--good',bad:'--bad',neutral:'--muted'};
+function setTag(b,tag){
+  b.tag&&b.tag.remove();b.tag=null;if(!tag)return;
+  const [txt,kind]=tag,w=txt.length*6.2+16,g=el('g',{},gTag),gi=el('g',{class:'pop'},g);
+  el('rect',{x:-w/2,y:-10,width:w,height:20,rx:10,style:`fill:var(--surface);stroke:var(${TAGC[kind]})`,'stroke-width':2},gi);
+  el('text',{x:0,y:4,'text-anchor':'middle',class:'tagt',style:kind==='good'||kind==='bad'?`fill:var(${TAGC[kind]})`:''},gi).textContent=txt;
+  b.tag=g;
+}
+function setColor(b,col){b.parts.forEach(p=>p.style.fill=`var(${col})`)}
+function sparkle(x,y){const g=el('g',{class:'spark'},gFx);
+  for(let k=0;k<10;k++){const a=k/10*Math.PI*2;el('line',{x1:x+Math.cos(a)*18,y1:y+Math.sin(a)*18,x2:x+Math.cos(a)*32,y2:y+Math.sin(a)*32,style:'stroke:var(--sun)','stroke-width':3,'stroke-linecap':'round'},g)}
+  el('circle',{cx:x,cy:y,r:26,fill:'none',style:'stroke:var(--sun)','stroke-width':2},g);
+  at(1.1,()=>g.remove(),true)}
+
+/* ================= scénario ================= */
+// Chaque étape = liste d'événements + état final (pour revenir en arrière sans animation)
+let uid=0;const POP={};Object.keys(ISL).forEach(k=>POP[k]=[]);
+const free=(isl,ord=ORDER)=>{const u=new Set(POP[isl].map(b=>b.slot));for(const k of ord)if(!u.has(k))return k;return 0};
+const ISLFOOD={"San Cristóbal":'variees',"Santa Cruz":'dure',"Española":'cactus',"Floreana":'petites',"Santiago":'larves',"Isabela":'insectes'};
+const DEMOPOS={"Santa Cruz":[8,52],"Española":[240,468],"Floreana":[4,300],"Santiago":[540,40],"Isabela":[540,40],"San Cristóbal":[540,40]};
+const BEST={"Santa Cruz":'gros',"Española":'cactus',"Floreana":'petit',"Santiago":'pic',"Isabela":'fin'};
+const BEAKNAME={anc:"Bec ancestral",gros:"Bec épais",cactus:"Bec long",petit:"Petit bec",pic:"Bec long et pointu",fin:"Bec très fin"};
+function migrate(ev,from,to,keys,t0){keys.forEach((k,i)=>{const [key,pale]=Array.isArray(k)?k:[k,0],id='b'+uid++,slot=free(to);
+  POP[to].push({id,slot,key,pale});ev.push({type:'fly',id,from,to,slot,key,pale,t:t0+i*.35})})}
+// trois mutations au hasard : une utile ici, une inutile ici, une neutre (plumage)
+function mutations(ev,isl,good,bad,t0){
+  const base=POP[isl][0].key;
+  ev.push({type:'bubble',isl,txt:"Des mutations apparaissent au hasard",t:t0,hl:1});
+  [[good,0,'good'],[base,1,'neutral'],[bad,0,'bad']].forEach(([key,pale,kind],i)=>{
+    const id='b'+uid++,slot=free(isl,MORDER),tag=[kind==='neutral'?"Plumage clair":MUTNAME[key][0].toUpperCase()+MUTNAME[key].slice(1),'mut'];
+    POP[isl].push({id,slot,key,pale,mut:kind,tag});
+    ev.push({type:'birth',id,isl,slot,key,pale,mut:1,tag,t:t0+.6+i*1.1});
+  });
+}
+// sélection sur deux générations : les mal adaptés ont moins de descendants, pas tous éliminés
+function selection(ev,isl,good,t0,win){
+  ev.push({type:'bubble',isl,txt:"Génération 1 : qui mange le mieux ?",t:t0});
+  const mutants=POP[isl].filter(b=>b.mut);
+  mutants.forEach(b=>{b.tag=b.mut==='good'?['✓ Avantagé','good']:b.mut==='bad'?['✗ Désavantagé','bad']:['= Sans effet','neutral'];ev.push({type:'tag',id:b.id,tag:b.tag,t:t0+.4})});
+  const old=POP[isl].filter(b=>!b.mut&&b.key!==good);
+  const dead=[...mutants.filter(b=>b.mut==='bad'),...old.slice(0,Math.ceil(old.length/2))];
+  let t=t0+1.5;
+  dead.forEach((b,k)=>ev.push({type:'die',id:b.id,t:t+k*.45}));
+  POP[isl]=POP[isl].filter(b=>!dead.includes(b));
+  t+=dead.length*.45+.5;
+  ev.push({type:'bubble',isl,txt:"Les becs adaptés ont plus de petits",t});
+  const parent=mutants.find(b=>b.mut==='good');
+  const births=n=>{for(let k=0;k<n;k++){const id='b'+uid++,slot=free(isl);POP[isl].push({id,slot,key:good});ev.push({type:'birth',id,isl,slot,key:good,t:t+.3+k*.55})}t+=.3+n*.55+.6};
+  births(2);
+  ev.push({type:'bubble',isl,txt:"Génération suivante",t});
+  const old2=POP[isl].filter(b=>!b.mut&&b.key!==good);
+  if(old2.length>1){ev.push({type:'die',id:old2[0].id,t:t+.4});POP[isl]=POP[isl].filter(b=>b!==old2[0]);t+=.9}
+  births(2);
+  ev.push({type:'bubble',isl,txt:win,t,hl:1});
+  POP[isl].forEach(b=>{if(b.mut){ev.push({type:'tag',id:b.id,tag:null,t:t+1.5});b.mut=null;b.tag=null}});
+  return t;
+}
+function demo(ev,isl,t){const oldKey=POP[isl].find(b=>!b.mut).key,newKey=POP[isl].find(b=>b.mut==='good').key;
+  ev.push({type:'demo',isl,food:ISLFOOD[isl],oldKey,newKey,pos:DEMOPOS[isl],t})}
+const STEPS=[];
+function S(meta,build){const ev=[];build&&build(ev);STEPS.push({...meta,ev,state:JSON.parse(JSON.stringify(POP))})}
+
+S({p:null,w:"Il y a environ 3 millions d'années",t:"Des îles volcaniques, sans pinsons",x:"Les volcans sortent de l'océan. Les îles ne sont reliées à aucun continent. Chaque île offre une nourriture différente : regardez l'étiquette sous son nom."});
+S({p:'arrivee',w:"Il y a environ 2 millions d'années",t:"Un petit groupe arrive du continent",x:"Quelques oiseaux mangeurs de graines, emportés par une tempête, traversent 1 000 km d'océan et se posent sur San Cristóbal. Ils ont tous le même bec : c'est la population ancestrale."},
+  ev=>migrate(ev,'main','San Cristóbal',['anc','anc','anc','anc','anc'],.3));
+S({p:'migration',w:"Quelques générations plus tard",t:"Migration vers des îles vides",x:"La population grandit. Quelques oiseaux traversent la mer et s'installent sur Santa Cruz et Española, deux îles encore inhabitées. La mer les isole ensuite : les groupes ne se mélangent plus."},
+  ev=>{migrate(ev,'San Cristóbal','Santa Cruz',['anc','anc','anc','anc'],.3);migrate(ev,'San Cristóbal','Española',['anc','anc','anc','anc'],.5)});
+S({p:'mutation',w:"Au fil des générations",t:"Des mutations apparaissent au hasard",x:"Des oisillons naissent avec une mutation, une modification de leur ADN. Sur chaque île apparaissent un bec plus épais, un bec plus long et un plumage plus clair. Ce sont les mêmes mutations sur les deux îles : elles apparaissent au hasard, sans tenir compte de la nourriture."},
+  ev=>{mutations(ev,'Santa Cruz','gros','cactus',.3);mutations(ev,'Española','cactus','gros',1.1)});
+S({p:'selection',w:"Sur plusieurs générations",t:"La sélection naturelle trie",x:"Le zoom compare le bec d'avant et le bec muté face à la nourriture de l'île. Les oiseaux qui mangent bien survivent mieux et ont plus de petits. Les autres ne meurent pas tous, mais laissent moins de descendants : le bec adapté devient majoritaire. Le bec long est avantagé sur Española mais désavantagé sur Santa Cruz. Le plumage clair ne change rien pour se nourrir : il n'est ni favorisé ni éliminé."},
+  ev=>{demo(ev,'Santa Cruz',.3);selection(ev,'Santa Cruz','gros',5.2,"Le bec épais devient majoritaire");demo(ev,'Española',5.4);selection(ev,'Española','cactus',10.3,"Le bec long devient majoritaire")});
+S({p:'migration',w:"Plus tard",t:"Nouvelle migration vers des îles vides",x:"Des oiseaux de Santa Cruz s'envolent vers Floreana et Santiago, deux îles encore inhabitées. La plupart ont un bec épais, mais ils emportent aussi un peu de la variété de leur île d'origine."},
+  ev=>{migrate(ev,'Santa Cruz','Floreana',['gros','gros','gros',['anc',1]],.3);migrate(ev,'Santa Cruz','Santiago',['gros','gros','gros','gros'],.5)});
+S({p:'mutation',w:"Au fil des générations",t:"De nouvelles mutations au hasard",x:"Sur Floreana comme sur Santiago apparaissent un bec plus petit, un bec long et pointu et un plumage clair. Encore une fois, le hasard ne « sait » pas quelle nourriture se trouve sur l'île."},
+  ev=>{mutations(ev,'Floreana','petit','pic',.3);mutations(ev,'Santiago','pic','petit',1.1)});
+S({p:'selection',w:"Sur plusieurs générations",t:"La sélection naturelle trie encore",x:"Sur Floreana, seul un petit bec fin pince les petites graines. Sur Santiago, seul un bec long et pointu atteint les larves cachées dans le bois. La même mutation (bec pointu) est avantagée sur une île et désavantagée sur l'autre."},
+  ev=>{demo(ev,'Floreana',.3);selection(ev,'Floreana','petit',5.2,"Le petit bec devient majoritaire");demo(ev,'Santiago',5.4);selection(ev,'Santiago','pic',10.3,"Le bec pointu devient majoritaire")});
+S({p:'migration',cycle:1,w:"Encore plus tard",t:"Le même cycle se répète sur Isabela",x:"Des oiseaux de Santiago colonisent Isabela, la plus grande île, couverte de forêt. Des mutations apparaissent au hasard. Seul le bec très fin permet d'attraper les petits insectes : il devient majoritaire."},
+  ev=>{migrate(ev,'Santiago','Isabela',['pic','pic','pic','pic'],.3);
+       ev.push({type:'phase',p:'mutation',t:3.4});mutations(ev,'Isabela','fin','gros',3.6);
+       ev.push({type:'phase',p:'selection',t:7.8});demo(ev,'Isabela',8);selection(ev,'Isabela','fin',12.8,"Le bec très fin devient majoritaire")});
+S({p:'resultat',w:"Aujourd'hui",t:"Des espèces différentes, un seul ancêtre",x:"Isolées par la mer, les populations sont devenues si différentes qu'elles ne pourraient plus se reproduire entre elles : ce sont des espèces différentes, toutes issues du même ancêtre. Il reste des différences entre individus d'une même île : la variation ne disparaît jamais complètement. En réalité, on compte 15 à 18 espèces de pinsons aux Galápagos."},
+  ev=>{[['San Cristóbal',"Population ancestrale",'--l0'],['Santa Cruz',"Géospize à gros bec",'--l1'],['Española',"Géospize des cactus",'--l4'],['Floreana',"Géospize à petit bec",'--l3'],['Santiago',"Pinson pic",'--l6'],['Isabela',"Pinson fauvette",'--l5']]
+       .forEach(([isl,txt,c],k)=>ev.push({type:'bubble',isl,txt,dot:c,t:.3+k*.35}));ev.push({type:'cheer',t:.2})});
+
+/* ================= zoom : comment le bec permet de manger ================= */
+const FOOD={
+ dure:{title:"casser une grosse graine dure",ok:"Graine cassée !",ko:"La graine ne casse pas"},
+ variees:{title:"manger des graines variées",ok:"Graine mangée !",ko:"Il n'y arrive pas"},
+ cactus:{title:"boire le nectar d'une fleur de cactus",ok:"Il atteint le nectar !",ko:"Trop court : pas de nectar",reach:1},
+ petites:{title:"ramasser de toutes petites graines",ok:"Il les pince !",ko:"Trop gros pour les pincer"},
+ larves:{title:"attraper une larve cachée dans le bois",ok:"Il attrape la larve !",ko:"Trop court : pas de larve",reach:1},
+ insectes:{title:"attraper un petit insecte",ok:"Insecte attrapé !",ko:"L'insecte s'échappe"}
+};
+let demoId=0;
+const anim=(n,k,o)=>{try{return n.animate(k,o)}catch(e){}};
+function drawFood(type,g,cx,cy){
+  const f={};
+  if(type==='dure'||type==='variees'){const s=el('g',{},g),x=cx+122,y=cy+56,R=type==='dure'?11:7,Q=type==='dure'?9:5.5;
+    const l=el('path',{d:`M${x} ${y-Q} A${R} ${Q} 0 0 0 ${x} ${y+Q}Z`,style:'fill:var(--peak);stroke:var(--ink)','stroke-width':1.3},s);
+    const r=el('path',{d:`M${x} ${y-Q} A${R} ${Q} 0 0 1 ${x} ${y+Q}Z`,style:'fill:var(--peak);stroke:var(--ink)','stroke-width':1.3},s);
+    f.left=x-R;f.ok=()=>{anim(l,[{transform:'translate(0,0) rotate(0)'},{transform:'translate(-5px,10px) rotate(-25deg)',opacity:.2}],{duration:700,fill:'forwards'});anim(r,[{transform:'translate(0,0)'},{transform:'translate(8px,12px) rotate(30deg)',opacity:.2}],{duration:700,fill:'forwards'})};
+    f.ko=()=>anim(s,[{transform:'translate(0,0)'},{transform:'translate(3px,0)'},{transform:'translate(-3px,0)'},{transform:'translate(3px,0)'},{transform:'translate(0,0)'}],{duration:500})}
+  if(type==='petites'){const s=el('g',{},g);[[118,58],[124,54],[129,59],[124,61]].forEach(([a,b])=>el('circle',{cx:cx+a,cy:cy+b,r:2.3,style:'fill:var(--peak)'},s));
+    f.left=cx+115;f.ok=()=>anim(s.firstChild,[{opacity:1},{opacity:0,transform:'translate(-8px,-2px)'}],{duration:500,fill:'forwards'});
+    f.ko=()=>[...s.children].forEach((c,i)=>anim(c,[{transform:'translate(0,0)'},{transform:`translate(${4+i*3}px,${i%2?3:-3}px)`}],{duration:400,fill:'forwards'}))}
+  if(type==='insectes'){const s=el('g',{class:'buzz'},g),x=cx+120,y=cy+52;
+    el('ellipse',{cx:x-2,cy:y-4,rx:4,ry:2.5,fill:'#fff','fill-opacity':.8,stroke:'var(--ink)','stroke-width':.8},s);el('ellipse',{cx:x+2,cy:y-4,rx:4,ry:2.5,fill:'#fff','fill-opacity':.8,stroke:'var(--ink)','stroke-width':.8},s);
+    el('ellipse',{cx:x,cy:y,rx:4.5,ry:2.8,style:'fill:var(--ink)'},s);
+    f.left=x-5;f.ok=()=>{s.classList.remove('buzz');anim(s,[{opacity:1},{opacity:0}],{duration:300,fill:'forwards'})};
+    f.ko=()=>{s.classList.remove('buzz');anim(s,[{transform:'translate(0,0)'},{transform:'translate(10px,-30px)',opacity:.6},{transform:'translate(18px,-60px)',opacity:0}],{duration:700,fill:'forwards'})}}
+  if(type==='cactus'){const x=cx+100,y=cy+56;
+    el('path',{d:`M${x} ${y-16} L${x+40} ${y-6} L${x+40} ${y+6} L${x} ${y+16}Z`,style:'fill:var(--sun);stroke:var(--ink)','stroke-width':1.2},g);
+    el('ellipse',{cx:x+2,cy:y-18,rx:7,ry:4,transform:`rotate(-30 ${x+2} ${y-18})`,style:'fill:var(--sun);stroke:var(--ink)','stroke-width':1.2},g);
+    el('ellipse',{cx:x+2,cy:y+18,rx:7,ry:4,transform:`rotate(30 ${x+2} ${y+18})`,style:'fill:var(--sun);stroke:var(--ink)','stroke-width':1.2},g);
+    const d=el('circle',{cx:x+33,cy:y,r:3.5,style:'fill:var(--l4);stroke:var(--surface)'},g);
+    f.rim=x;f.ok=()=>anim(d,[{opacity:1},{opacity:0,transform:'scale(.2)'}],{duration:500,fill:'forwards'});f.ko=()=>{}}
+  if(type==='larves'){const x=cx+100,y=cy+56;
+    el('rect',{x,y:y-20,width:44,height:40,rx:4,style:'fill:var(--peak);stroke:var(--ink)','stroke-width':1.2},g);
+    el('rect',{x,y:y-6,width:40,height:12,style:'fill:var(--ink)','fill-opacity':.75},g);
+    el('path',{d:`M${x+6} ${y-14} q10 -3 20 0 M${x+10} ${y+13} q12 3 24 0`,fill:'none',style:'stroke:var(--ink)','stroke-opacity':.4},g);
+    const lv=el('ellipse',{cx:x+36,cy:y,rx:4,ry:3,fill:'#f3eee0'},g);
+    f.rim=x;f.ok=()=>anim(lv,[{transform:'translate(0,0)'},{transform:'translate(-10px,0)',opacity:0}],{duration:600,fill:'forwards'});f.ko=()=>anim(lv,[{transform:'translate(0,0)'},{transform:'translate(1px,0)'},{transform:'translate(0,0)'}],{duration:300,iterations:3})}
+  return f;
+}
+function demoPanel(e){
+  const cells=e.cells||[[e.oldKey,"Bec d'avant",0],[e.newKey,"Bec muté",1]];
+  const [px,py]=e.pos,W=e.click?380:10+cells.length*170,Hh=160,F=FOOD[e.food],I=ISL[e.isl],id=++demoId;
+  const g=el('g',{class:'pop'},gDemo);if(e.click){gDemo.querySelectorAll('.clickdemo').forEach(n=>n.remove());g.classList.add('clickdemo')}
+  const mx=px+W/2,my=py+Hh/2,dx=I.cx-mx,dy=I.cy-my,dl=Math.hypot(dx,dy),rr=Math.min(I.rx,I.ry)*.75;
+  el('line',{x1:mx,y1:my,x2:I.cx-dx/dl*rr,y2:I.cy-dy/dl*rr,style:'stroke:var(--ink)','stroke-width':2,'stroke-dasharray':'5 4'},g);
+  el('circle',{cx:I.cx-dx/dl*rr,cy:I.cy-dy/dl*rr,r:5,style:'fill:var(--ink)'},g);
+  el('rect',{x:px+3,y:py+5,width:W,height:Hh,rx:12,style:'fill:var(--ink)','fill-opacity':.18},g);
+  el('rect',{x:px,y:py,width:W,height:Hh,rx:12,style:'fill:var(--surface);stroke:var(--ink)','stroke-width':1.5},g);
+  el('text',{x:px+12,y:py+20,class:'call'},g).textContent="🔍 "+(e.click?e.isl+" : ":"Zoom : ")+F.title;
+  cells.forEach(([key,lab,ok],i)=>{
+    const x0=px+10+i*170,cy=py+30,cx=x0+10,bk=BK[key],cid=`dc${id}_${i}`;
+    const cp=el('clipPath',{id:cid},defs);el('rect',{x:x0,y:cy,width:160,height:120,rx:8},cp);
+    const cell=el('g',{'clip-path':`url(#${cid})`},g);
+    el('rect',{x:x0,y:cy,width:160,height:120,rx:8,style:'fill:var(--sea)'},cell);
+    el('text',{x:x0+8,y:cy+15,class:'tagt',style:`fill:var(${ok?'--good':'--muted'})`},cell).textContent=lab;
+    const food=drawFood(e.food,cell,cx,cy);
+    const hg=el('g',{},cell),hi=el('g',{transform:`translate(${cx+14} ${cy+72}) scale(2)`},hg);
+    el('ellipse',{cx:0,cy:6,rx:20,ry:13,transform:'rotate(-18)',style:`fill:var(${bk[0]})`,stroke:'var(--ink)','stroke-width':.8},hi);
+    el('circle',{cx:18,cy:-10,r:10,style:`fill:var(${bk[0]})`,stroke:'var(--ink)','stroke-width':.8},hi);
+    el('path',{d:beakD(bk[1],bk[2],bk[3]),fill:'#3a3734',stroke:'var(--ink)','stroke-width':.6,'stroke-linejoin':'round'},hi);
+    el('circle',{cx:20,cy:-13,r:2.6,fill:'#fff'},hi);el('circle',{cx:20.6,cy:-13,r:1.4,fill:'#111'},hi);
+    const tip=cx+14+2*(26+bk[2]*1.25);
+    const mv=food.rim!=null?food.rim-(cx+14+56):food.left-tip+1;
+    anim(hg,[{transform:'translate(0px,0px)'},{transform:`translate(${mv}px,0px)`,offset:.4},{transform:`translate(${mv-5}px,0px)`,offset:.55},{transform:`translate(${mv}px,0px)`,offset:.7},{transform:`translate(${mv}px,0px)`}],{duration:1500,delay:700,fill:'forwards',easing:'ease-in-out'});
+    at(2.0,()=>{
+      ok?food.ok():food.ko();
+      const res=el('g',{class:'pop'},cell);
+      el('rect',{x:x0+5,y:cy+96,width:150,height:20,rx:10,style:`fill:var(--surface);stroke:var(${ok?'--good':'--bad'})`,'stroke-width':2},res);
+      el('text',{x:x0+80,y:cy+110,'text-anchor':'middle',class:'tagt',style:`fill:var(${ok?'--good':'--bad'})`},res).textContent=(ok?'✓ ':'✗ ')+(ok?F.ok:F.ko);
+    });
+  });
+  if(e.click){const ok=cells[0][2],L=ok?["Bec adapté à","la nourriture de l'île :","il mange bien, survit","et a plus de petits."]:["Bec mal adapté à","la nourriture de l'île :","il mange mal et a","moins de petits."];
+    const t=el('g',{class:'pop',style:'animation-delay:2.1s'},g);
+    el('text',{x:px+192,y:py+58,class:'call',style:`fill:var(${ok?'--good':'--bad'});font-size:15px`},t).textContent=ok?'✓ Avantagé':'✗ Désavantagé';
+    L.forEach((l,i)=>el('text',{x:px+192,y:py+82+i*17,class:'food'},t).textContent=l)}
+  at(e.click?5.5:4.7,()=>{anim(g,[{opacity:1},{opacity:0}],{duration:300,fill:'forwards'});at(.3,()=>g.remove(),true)},e.click);
+}
+
+/* clic sur un oiseau : il picore et le zoom montre s'il arrive à manger la nourriture de son île */
+function birdClick(b){
+  if(b.flight||b.dying||!b.isl||!ISLFOOD[b.isl])return;
+  b.peck={t0:performance.now(),dur:520};b.nextHop=performance.now()+3000;
+  const ok=b.isl==='San Cristóbal'||b.key===BEST[b.isl]?1:0;
+  demoPanel({isl:b.isl,food:ISLFOOD[b.isl],pos:DEMOPOS[b.isl],click:1,cells:[[b.key,BEAKNAME[b.key],ok]]});
+}
+
+/* ================= lecture ================= */
+let step=0,timers=[];
+function at(t,fn,keep){const h=setTimeout(fn,t*1000);if(!keep)timers.push(h)}
+const bubbles={};
+function bubble({isl,txt,hl,dot}){
+  bubbles[isl]&&bubbles[isl].remove();
+  const I=ISL[isl],[bx,by]=I.bub,w=txt.length*7+(dot?40:26),x=Math.max(8,Math.min(992-w,bx-w/2));
+  const g=el('g',{class:'pop'},gCall);
+  const side=bx<I.cx-I.rx||bx>I.cx+I.rx;
+  let x1,y1,x2,y2;
+  if(side){const left=bx<I.cx;x1=left?x+w:x;y1=by;x2=left?I.cx-I.rx*.6:I.cx+I.rx*.6;y2=by<I.cy?I.cy-I.ry*.4:I.cy+I.ry*.3}
+  else{x1=Math.max(x+14,Math.min(x+w-14,I.cx));y1=by<I.cy?by+14:by-14;x2=I.cx;y2=by<I.cy?I.cy-I.ry+16:I.cy+I.ry-16}
+  el('line',{x1,y1,x2,y2,style:'stroke:var(--ink)','stroke-width':1.3},g);
+  el('rect',{x,y:by-14,width:w,height:28,rx:14,style:`fill:var(--surface);stroke:var(${hl?'--sun':'--ink'})`,'stroke-width':hl?2.5:1.3},g);
+  if(dot)el('circle',{cx:x+16,cy:by,r:6,style:`fill:var(${dot})`},g);
+  el('text',{x:x+(dot?28:w/2),y:by+4.5,'text-anchor':dot?'start':'middle',class:'call'},g).textContent=txt;
+  bubbles[isl]=g;
+}
+function setPhase(p){document.querySelectorAll('#phases span').forEach(s=>s.classList.toggle('on',s.dataset.p===p))}
+function snap(state){
+  Object.values(live).forEach(removeBird);
+  for(const [isl,arr] of Object.entries(state))arr.forEach(b=>{const [x,y]=slotPos(isl,b.slot);const bd=makeBird(b.id,b.key,x,y,b.pale,isl);if(b.mut==='good'||(b.mut&&b.tag&&b.tag[1]==='mut'))addRing(bd);if(b.tag)setTag(bd,b.tag)});
+}
+function startFlight(b,x2,y2,dur){
+  const x1=b.x,y1=b.y,bend=.18*(x2<x1?1:-1);
+  b.flight={x1,y1,x2,y2,mx:(x1+x2)/2+(y2-y1)*bend,my:(y1+y2)/2-(x2-x1)*bend-40,t0:performance.now(),dur:dur*1000};
+}
+function egg(x,y,mut){const g=el('g',{class:'egg'},gFx);
+  el('ellipse',{cx:x,cy:y+8,rx:7,ry:9.5,style:`fill:#f3eee0;stroke:var(${mut?'--sun':'--ink'})`,'stroke-width':mut?2.5:1.3},g);
+  el('circle',{cx:x-2,cy:y+5,r:1.2,style:'fill:var(--peak)'},g);el('circle',{cx:x+3,cy:y+11,r:1,style:'fill:var(--peak)'},g);return g}
+const H={
+  fly(e){
+    const I=ISL[e.from],[x,y]=e.from==='main'?[915+Math.random()*45,250+Math.random()*90]:[I.cx+(Math.random()-.5)*110,I.cy+(Math.random()-.4)*50];
+    const go=()=>{const b=makeBird(e.id,e.key,x,y,e.pale,e.to);b.born=performance.now();
+      const [x2,y2]=slotPos(e.to,e.slot),dist=Math.hypot(x2-x,y2-y),dur=e.from==='main'?3.4:Math.max(1.5,dist/210);
+      b.dir=x2<x?-1:1;
+      at(.6,()=>{startFlight(b,x2,y2,dur);
+        const f=b.flight,tr=el('path',{d:`M${f.x1},${f.y1} Q${f.mx},${f.my} ${x2},${y2}`,class:'arrow anim','marker-end':'url(#ah)',style:`animation-duration:${dur}s`},gArr);
+        at(dur+2.5,()=>{anim(tr,[{opacity:1},{opacity:0}],{duration:800,fill:'forwards'});at(.8,()=>tr.remove(),true)})})};
+    if(e.from==='main')go();else{const eg=egg(x,y,0);at(.8,()=>{eg.remove();go()})}
+  },
+  birth(e){
+    const [x,y]=slotPos(e.isl,e.slot);
+    const egg_=egg(x,y,e.mut);
+    at(.8,()=>{egg_.remove();const b=makeBird(e.id,e.key,x,y,e.pale,e.isl);b.born=performance.now();if(e.mut){addRing(b);sparkle(x+6,y-4);setTag(b,e.tag)}});
+  },
+  die(e){const b=live[e.id];if(!b)return;b.dying=performance.now();setColor(b,'--dead');b.ring&&b.ring.remove();b.ring=null;b.tag&&b.tag.remove();b.tag=null},
+  tag(e){const b=live[e.id];if(!b)return;setTag(b,e.tag);if(!e.tag&&b.ring){b.ring.remove();b.ring=null}},
+  bubble(e){bubble(e)},
+  phase(e){setPhase(e.p)},
+  demo(e){demoPanel(e)},
+  cheer(){Object.values(live).forEach((b,k)=>at(k*.04,()=>{b.hop={t0:performance.now(),dur:450}}))}
+};
+const dots=$('#dots');
+STEPS.forEach((_,i)=>{const b=document.createElement('button');b.textContent=i+1;b.setAttribute('aria-label','Étape '+(i+1));b.onclick=()=>go(i,i===step+1);dots.appendChild(b)});
+function go(i,animate){
+  timers.forEach(clearTimeout);timers=[];
+  step=i;const s=STEPS[i];
+  [...dots.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i));
+  $('#when').textContent=`Étape ${i+1} sur ${STEPS.length} · ${s.w}`;$('#title').textContent=s.t;$('#text').textContent=s.x;
+  $('#prev').disabled=i===0;$('#next').disabled=i===STEPS.length-1;$('#replay').hidden=!s.ev.length;
+  gArr.innerHTML='';gCall.innerHTML='';gFx.innerHTML='';gDemo.innerHTML='';for(const k in bubbles)delete bubbles[k];
+  setPhase(s.p);
+  if(animate&&i>0&&!RM.matches){
+    snap(STEPS[i-1].state);
+    s.ev.forEach(e=>at(e.t,()=>H[e.type](e)));
+  }else{
+    snap(s.state);
+    const last={};s.ev.forEach(e=>{if(e.type==='bubble')last[e.isl]=e;if(e.type==='phase')setPhase(e.p)});
+    Object.values(last).forEach(bubble);
+  }
+}
+$('#prev').onclick=()=>step>0&&go(step-1,false);
+$('#next').onclick=()=>step<STEPS.length-1&&go(step+1,true);
+$('#replay').onclick=()=>go(step,true);
+addEventListener('keydown',e=>{if(e.key==='ArrowRight'&&step<STEPS.length-1)go(step+1,true);if(e.key==='ArrowLeft'&&step>0)go(step-1,false)});
+
+/* ================= animation image par image ================= */
+const ease=u=>u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+const qb=(a,m,b,u)=>(1-u)*(1-u)*a+2*(1-u)*u*m+u*u*b;
+const back=u=>{const c=1.70158;return 1+(c+1)*Math.pow(u-1,3)+c*Math.pow(u-1,2)};
+function frame(now){
+  for(const b of Object.values(live)){
+    let x=b.x,y=b.y,lift=0,sc=SC,wingA=0,tilt=0,legs=1,headA=0,op=b.op,shY=y;
+    if(b.born){const u=Math.min(1,(now-b.born)/380);sc*=Math.max(.05,back(u));if(u>=1)b.born=null}
+    if(b.dying){const u=Math.min(1,(now-b.dying)/1400);tilt=Math.min(1,u*2)*85*b.dir;y+=Math.min(1,u*2)*8;op=1-Math.max(0,(u-.45)/.55);
+      if(u>=1){removeBird(b);continue}}
+    if(b.flight){const f=b.flight,u=Math.min(1,(now-f.t0)/f.dur),e=ease(u);
+      x=qb(f.x1,f.mx,f.x2,e);y=qb(f.y1,f.my,f.y2,e);shY=f.y1+(f.y2-f.y1)*e;
+      const nx=qb(f.x1,f.mx,f.x2,Math.min(1,e+.01));if(Math.abs(nx-x)>.05)b.dir=nx<x?-1:1;
+      const air=Math.sin(Math.PI*u);lift=air*24;sc*=1+air*.22;
+      wingA=Math.sin(now/55)*50*(.35+air*.65);tilt=-air*10*b.dir;legs=0;
+      if(u>=1){b.flight=null;b.x=f.x2;b.y=f.y2;x=b.x;y=b.y;shY=y;b.hop={t0:now,dur:280,land:1}}
+    }else if(!b.dying&&!RM.matches){
+      if(!b.hop&&!b.peck&&now>b.nextHop){const r=Math.random();if(r<.45)b.hop={t0:now,dur:420};else b.peck={t0:now,dur:520};if(r>.8)b.dir*=-1;b.nextHop=now+2000+Math.random()*4500}
+      if(b.peck){const p=(now-b.peck.t0)/b.peck.dur;if(p>=1)b.peck=null;else headA=Math.sin(p*Math.PI*2)*22*(p<.5?1:.6)}
+      y+=Math.sin(now/700+b.phase)*.6;
+    }
+    if(b.hop){const p=(now-b.hop.t0)/b.hop.dur;if(p>=1)b.hop=null;else if(b.hop.land){sc*=1+Math.sin(p*Math.PI)*.08;wingA=(1-p)*30}else{lift+=Math.sin(p*Math.PI)*8;wingA=Math.sin(p*Math.PI)*25}}
+    b.g.setAttribute('transform',`translate(${x.toFixed(1)} ${(y-lift).toFixed(1)}) rotate(${tilt.toFixed(1)})`);
+    b.flip.setAttribute('transform',`scale(${(sc*b.dir).toFixed(3)} ${sc.toFixed(3)})`);
+    b.wing.setAttribute('transform',`rotate(${(-wingA).toFixed(1)} -2 -2)`);
+    b.head.setAttribute('transform',headA?`rotate(${headA.toFixed(1)} 10 -4)`:'');
+    b.legs.style.opacity=legs;b.g.style.opacity=op.toFixed(2);
+    const k=1-lift/60;
+    b.sh.setAttribute('cx',x.toFixed(1));b.sh.setAttribute('cy',(shY+16).toFixed(1));b.sh.setAttribute('rx',(11*k).toFixed(1));b.sh.style.opacity=(op*k).toFixed(2);
+    if(b.ring){b.ring.setAttribute('cx',x.toFixed(1));b.ring.setAttribute('cy',(y+16).toFixed(1))}
+    if(b.tag)b.tag.setAttribute('transform',`translate(${x.toFixed(1)} ${(y-lift-30).toFixed(1)})`);
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+go(0,false);
+
+/* ================= les becs (cartes) ================= */
+function staticBird(parent,x,y,s,b){
+  const g=el('g',{transform:`translate(${x} ${y}) scale(${s})`},parent),col=`fill:var(${b[0]})`;
+  el('path',{d:'M-14 10 L-34 22 L-30 14 L-36 14 L-16 4Z',style:col,stroke:'var(--ink)','stroke-width':1.2,'stroke-linejoin':'round'},g);
+  el('ellipse',{cx:0,cy:4,rx:20,ry:13,transform:'rotate(-18)',style:col,stroke:'var(--ink)','stroke-width':1.2},g);
+  el('line',{x1:-2,y1:16,x2:-4,y2:26,stroke:'var(--ink)','stroke-width':1.6},g);el('line',{x1:6,y1:15,x2:8,y2:26,stroke:'var(--ink)','stroke-width':1.6},g);
+  el('circle',{cx:18,cy:-10,r:10,style:col,stroke:'var(--ink)','stroke-width':1.2},g);
+  el('path',{d:beakD(b[1],b[2],b[3]),fill:'#3a3734',stroke:'var(--ink)','stroke-width':1,'stroke-linejoin':'round'},g);
+  el('circle',{cx:20,cy:-13,r:2.6,fill:'#fff'},g);el('circle',{cx:20.6,cy:-13,r:1.4,fill:'#111'},g);
+  el('path',{d:'M-12 0 Q0 -12 14 -2 Q4 10 -12 0Z',style:col,stroke:'var(--ink)','stroke-width':1.2,'stroke-linejoin':'round'},g);
+}
+const BEAKS=[
+ ['gros',"Géospize à gros bec","Casse-noix","Écrase les grosses graines très dures."],
+ ['petit',"Géospize à petit bec","Pince à épiler","Ramasse les petites graines."],
+ ['cactus',"Géospize des cactus","Pince longue","Fouille les fleurs du cactus pour le nectar."],
+ ['pic',"Pinson pic","Pince + outil","Sort les larves du bois, parfois avec une épine."],
+ ['fin',"Pinson fauvette","Aiguille","Attrape les tout petits insectes."]
+];
+const bx=$('#beaks');
+BEAKS.forEach(([k,n,tool,txt])=>{const c=document.createElement('div');c.className='beak';
+  const s=el('svg',{viewBox:'-50 -40 120 80','aria-hidden':'true'});
+  el('rect',{x:-50,y:-40,width:120,height:80,rx:8,style:'fill:var(--sea)'},s);
+  staticBird(s,-6,2,1.15,BK[k]);
+  if(k==='pic')el('line',{x1:46,y1:-9,x2:66,y2:4,style:'stroke:var(--land-dry)','stroke-width':2.5,'stroke-linecap':'round'},s);
+  c.appendChild(s);c.insertAdjacentHTML('beforeend',`<div class="tool">${tool}</div><h3>${n}</h3><p>${txt}</p>`);bx.appendChild(c)});
+})();
+</script>
+
+</body></html>
