@@ -1,0 +1,576 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Labo de la dérive génétique</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout : trois histoires au choix (cartes), chacune = contexte, commandes, grande scène animée, inventaire + tentatives */
+:root{
+  --bg:#eaf2f6; --panel:#ffffff; --ink:#17282d; --muted:#5a6d72; --line:#d3dfe2;
+  --accent:#0d6f8a; --hunt:#c0392b; --hunt-ink:#fff; --lost:#c0392b; --ok:#2e7d32; --allele:#7b3fc4; --norm:#2f7fd1;
+  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0c161a; --panel:#142228; --ink:#e6f0f1; --muted:#9bb0b4; --line:#2a3e44;
+  --accent:#5cc0dc; --hunt:#e0574a; --hunt-ink:#fff; --lost:#ff8a7d; --ok:#7fcf84; --allele:#b98af0; --norm:#7ab6f2; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c161a; --panel:#142228; --ink:#e6f0f1; --muted:#9bb0b4; --line:#2a3e44;
+  --accent:#5cc0dc; --hunt:#e0574a; --hunt-ink:#fff; --lost:#ff8a7d; --ok:#7fcf84; --allele:#b98af0; --norm:#7ab6f2; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 40px;display:grid;gap:16px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(26px,4vw,40px);line-height:1.05;margin:0;text-wrap:balance}
+.sub{margin:4px 0 0;color:var(--muted);max-width:72ch}
+
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:760px){.choices{grid-template-columns:1fr}}
+.choice{display:flex;gap:12px;align-items:center;text-align:left;background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:10px 14px;cursor:pointer;color:var(--ink);font:inherit}
+.choice svg{width:64px;height:44px;flex:none}
+.choice b{font:800 19px var(--display);display:block;line-height:1.1}
+.choice span{font-size:14px;color:var(--muted)}
+.choice[aria-selected="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.choice:disabled{opacity:.5;cursor:default}
+
+.story{display:grid;gap:14px}
+.intro{margin:0;max-width:80ch}
+.bar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}
+.hunt{font:800 21px var(--display);background:var(--hunt);color:var(--hunt-ink);border:0;border-radius:999px;padding:13px 28px;cursor:pointer;box-shadow:0 4px 0 color-mix(in srgb,var(--hunt) 60%,#000)}
+.hunt:active{transform:translateY(2px);box-shadow:0 2px 0 color-mix(in srgb,var(--hunt) 60%,#000)}
+.hunt:disabled{opacity:.5;cursor:default}
+.ctl{display:flex;align-items:center;gap:10px;font-weight:700}
+.ctl output{font:800 22px var(--display);color:var(--accent);min-width:2ch;text-align:right}
+input[type=range]{accent-color:var(--accent);width:150px}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--allele)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.ghost{font:700 15px var(--body);background:none;border:1.5px solid var(--line);color:var(--ink);border-radius:999px;padding:8px 14px;cursor:pointer}
+.ghost:disabled,input:disabled{opacity:.5}
+
+/* Scènes : mondes visuels fixes, identiques dans les deux thèmes */
+.scene{position:relative;width:100%;aspect-ratio:16/10;max-width:100%;border-radius:16px;overflow:hidden;border:1px solid var(--line)}
+.layer{position:absolute;inset:0;width:100%;height:100%}
+.sea{background:linear-gradient(#cfe8f5 0%,#e9f5fb 18%,#5aa3c4 19%,#2f7aa3 60%,#1f5d84 100%)}
+.waves{position:absolute;inset:19% 0 0;background:repeating-linear-gradient(170deg,transparent 0 22px,rgba(255,255,255,.08) 22px 24px);animation:drift 9s linear infinite}
+@keyframes drift{from{background-position:0 0}to{background-position:240px 0}}
+.ani{position:absolute;transform:translate(-50%,-70%) scale(var(--s,1));
+  transition:left 1.1s ease-in-out,top 1.1s ease-in-out,transform .8s ease,opacity .6s,filter .6s}
+.ani .b{width:100%;height:100%;animation:breathe 2.6s ease-in-out infinite alternate;transform-origin:50% 90%}
+@keyframes breathe{to{transform:scaleY(1.05)}}
+.ani svg{width:100%;height:100%;display:block;overflow:visible}
+.ani.l svg{transform:scaleX(-1)}
+.ani.young{--s:.68}.ani.baby{--s:.42}.ani.new{--s:0}
+.ani.surv svg{filter:drop-shadow(0 0 3px #ffd84a) drop-shadow(0 0 2px #ffd84a)}
+.ani.caught{transition:opacity .3s;filter:brightness(.75)}
+.ani.dead{opacity:0;filter:grayscale(1) brightness(.6);transform:translate(-50%,-55%) scale(.9) rotate(18deg);transition:opacity 1.2s,filter .6s,transform 1.2s}
+.seal{width:6.6%;aspect-ratio:3/2}
+.cheetah{width:7.2%;aspect-ratio:2/1}
+
+.boat{position:absolute;width:13%;top:89%;left:-20%;transform:translate(-50%,-55%);pointer-events:none;z-index:900}
+.boat svg{width:100%;display:block;animation:rock 1.8s ease-in-out infinite;transform-origin:50% 80%}
+@keyframes rock{50%{transform:rotate(-2.5deg) translateY(-3%)}}
+.net{position:absolute;aspect-ratio:1;transform:translate(-50%,-50%) scale(var(--k,1)) rotate(var(--r,0deg));pointer-events:none;z-index:850}
+.net svg{width:100%;height:100%;display:block}
+
+.badge{position:absolute;left:2%;top:3%;background:rgba(10,30,45,.82);color:#fff;border-radius:12px;padding:8px 14px;display:grid;z-index:950;max-width:60%}
+.badge .g{font:800 clamp(15px,2.4vw,24px) var(--display);line-height:1.1}
+.badge .p{font-size:clamp(12px,1.6vw,16px);opacity:.9}
+.timeline{position:absolute;right:2%;top:3%;display:flex;gap:4px;align-items:flex-end;z-index:950}
+.timeline i{width:clamp(8px,1.4vw,14px);background:rgba(255,255,255,.9);border-radius:3px 3px 0 0;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+.timeline i.h{background:#ff8b7d}
+.status{font-weight:700;min-height:1.5em;text-align:center}
+.status.bad{color:var(--lost)} .status.good{color:var(--ok)}
+
+/* Savane */
+.savanna{background:linear-gradient(#f6c97a 0%,#fbe3b0 34%,#d9b56a 35%,#c99d52 100%)}
+.cold{position:absolute;inset:0;background:linear-gradient(#7d8ea0,#c7d3dc 34%,#e9eef2 35%,#dfe6ea);opacity:0;transition:opacity 1.6s;pointer-events:none}
+.snow{position:absolute;inset:0;opacity:0;transition:opacity 1s;pointer-events:none;
+  background-image:radial-gradient(#fff 1.4px,transparent 1.6px),radial-gradient(#fff 1px,transparent 1.2px);background-size:46px 46px,29px 29px;animation:fall 3s linear infinite}
+@keyframes fall{to{background-position:20px 46px,-10px 58px}}
+.scene.winter .cold{opacity:.88}.scene.winter .snow{opacity:1}
+
+/* Pingelap */
+.isle{background:linear-gradient(#bfe3f2 0%,#e3f4fb 22%,#3fa3c8 23%,#2486ad 70%,#1b6f92 100%)}
+.storm{position:absolute;inset:0;background:linear-gradient(#262f3a,#3c4a58 40%,#26394a);opacity:0;transition:opacity 1.4s;pointer-events:none;z-index:800}
+.rain{position:absolute;inset:0;opacity:0;transition:opacity 1s;pointer-events:none;z-index:960;
+  background:repeating-linear-gradient(105deg,transparent 0 11px,rgba(220,235,255,.45) 11px 12px);background-size:200px 200px;animation:rain .45s linear infinite}
+@keyframes rain{to{background-position:-60px 200px}}
+.scene.typhoon .storm{opacity:.62}.scene.typhoon .rain{opacity:1}
+.palm{transform-box:fill-box;transform-origin:50% 100%;transition:transform .8s}
+.scene.typhoon .palm{animation:bend .7s ease-in-out infinite alternate}
+@keyframes bend{from{transform:rotate(14deg)}to{transform:rotate(28deg)}}
+.person{width:3.2%;aspect-ratio:2/3;transform:translate(-50%,-88%) scale(var(--s,1))}
+.person.aa svg{filter:grayscale(1)}
+.person.young{--s:.7}.person.baby{--s:.45}.person.star{--s:2.2}
+.kingtag{position:absolute;left:50%;bottom:calc(100% + clamp(10px,1.8vw,18px));transform:translateX(-50%);background:#fff;color:#111;border:2px solid #f2c230;border-radius:8px;padding:2px 6px;font:700 clamp(8px,1vw,12px)/1.15 var(--body);white-space:nowrap;box-shadow:0 2px 4px rgba(0,0,0,.25)}
+.kingtag::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#f2c230}
+.person.star .al i.ab{animation:blink .7s ease-in-out infinite alternate}
+@keyframes blink{to{transform:scale(1.5);box-shadow:0 0 0 3px #ffd84a}}
+.person.star svg{filter:drop-shadow(0 0 3px #ffd84a) drop-shadow(0 0 2px #ffd84a)}
+.person.swept{opacity:0;transform:translate(120%,-180%) rotate(80deg) scale(.6);transition:transform 1.4s ease-in,opacity 1.4s}
+.person.gone{opacity:0;transition:opacity .9s}
+.person .al{position:absolute;left:50%;top:-30%;transform:translateX(-50%);display:none;gap:2px}
+.person .al i{width:clamp(7px,1.1vw,12px);aspect-ratio:1;border-radius:50%;display:block}
+.al i.aw,.legend i.aw{background:#fff;border:1.5px solid #222}
+.al i.ab,.legend i.ab{background:#111;border:1.5px solid #fff;box-shadow:0 0 0 1px #111}
+.steps button{font:700 14px var(--body);border:1.5px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--muted);background:var(--panel);cursor:pointer}
+.steps button.on{border-color:var(--accent);color:var(--ink);background:color-mix(in srgb,var(--accent) 16%,var(--panel))}
+.steps button.done{color:var(--ink)}
+.steps button:disabled{cursor:default}
+.scene.showal .person .al{display:flex}
+.steps{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.steps span{font-size:14px;font-weight:700;border:1.5px solid var(--line);border-radius:999px;padding:4px 10px;color:var(--muted)}
+.steps span.on{border-color:var(--accent);color:var(--ink);background:color-mix(in srgb,var(--accent) 14%,var(--panel))}
+.steps span.done{color:var(--ink)}
+
+.cols{display:grid;grid-template-columns:2fr 1fr;gap:16px;align-items:start}
+@media (max-width:900px){.cols{grid-template-columns:1fr}}
+.inv,.hist,.facts{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:12px;min-width:0}
+.inv h2,.hist h2,.facts h2{font:800 20px var(--display);margin:0}
+.trait{display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:center}
+@media (max-width:600px){.trait{grid-template-columns:1fr}}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:12px;padding:4px 10px 4px 4px;background:var(--bg)}
+.chip svg{width:48px;height:32px;flex:none}
+.chip .nm{font-weight:700;line-height:1.1}
+.chip .ct{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.chip.lost{border-color:var(--lost);background:color-mix(in srgb,var(--lost) 10%,var(--panel))}
+.chip.lost svg{filter:grayscale(1);opacity:.4}
+.chip.lost .nm{text-decoration:line-through;color:var(--lost)}
+.chip.lost .ct{color:var(--lost);font-weight:700}
+.hist ol{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+.hist li{display:flex;gap:8px;flex-wrap:wrap;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:6px}
+.hist li b{min-width:7em}
+.tag{background:color-mix(in srgb,var(--lost) 14%,var(--panel));color:var(--lost);border-radius:6px;padding:1px 8px;font-weight:700;font-size:15px}
+.none{color:var(--ok);font-weight:700}
+.note{font-size:15px;color:var(--muted)}
+.facts ul{margin:0;padding-left:20px;display:grid;gap:6px}
+.big{display:flex;gap:10px;flex-wrap:wrap}
+.big div{border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-width:150px;flex:1}
+.big .v{font:800 28px var(--display);font-variant-numeric:tabular-nums}
+.big .k{font-size:14px;color:var(--muted)}
+.legend{display:grid;gap:6px;font-size:15px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:4px}
+@media (prefers-reduced-motion:reduce){.ani,.ani .b,.boat svg,.waves,.snow,.rain,.palm{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Le hasard fait-il évoluer les populations ?</h1>
+    <p class="sub">Trois histoires vraies où une population a été réduite à quelques individus. Choisis-en une, lance l'animation et observe ce que deviennent les caractères.</p>
+  </header>
+
+  <nav class="choices" role="tablist">
+    <button class="choice" role="tab" data-tab="phoques" aria-selected="true">
+      <svg viewBox="0 0 64 44"><ellipse cx="32" cy="34" rx="30" ry="8" fill="#e9f4fa"/><g stroke="#2b2b2b" stroke-width="1.3"><path d="M8 32 Q6 19 20 16 Q32 11 44 13 Q53 15 52 27 Q51 35 40 35 L13 35 Q8 35 8 32Z" fill="#8c949b"/><circle cx="48" cy="18" r="8.5" fill="#8c949b"/><ellipse cx="56" cy="23" rx="4" ry="5" fill="#8c949b"/></g><circle cx="50.5" cy="15.5" r="1.4" fill="#111"/></svg>
+      <div><b>Les phoques</b><span>La chasse au XIX<sup>e</sup> siècle</span></div></button>
+    <button class="choice" role="tab" data-tab="pingelap" aria-selected="false">
+      <svg viewBox="0 0 64 44"><rect width="64" height="44" rx="6" fill="#3fa3c8"/><ellipse cx="32" cy="32" rx="24" ry="8" fill="#f1dfb0"/><ellipse cx="32" cy="30" rx="18" ry="5.5" fill="#5aa64a"/><path d="M38 30 Q39 18 41 12" stroke="#7a5230" stroke-width="2" fill="none"/><path d="M41 12 q-8 -2 -12 4 M41 12 q8 -3 12 3 M41 12 q-3 -6 -9 -6 M41 12 q4 -6 10 -5" stroke="#2f8a3a" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+      <div><b>L'île de Pingelap</b><span>Le typhon de 1775</span></div></button>
+    <button class="choice" role="tab" data-tab="guepards" aria-selected="false">
+      <svg viewBox="0 0 80 44"><rect width="80" height="44" rx="6" fill="#fbe3b0"/><g transform="translate(0,3)"><path d="M14 18 Q4 20 4 30" stroke="#d9a441" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="34" cy="18" rx="18" ry="7" fill="#d9a441" stroke="#3a2a1a" stroke-width=".8"/><g stroke="#d9a441" stroke-width="3.2" stroke-linecap="round"><path d="M22 22 L20 36M28 23 L28 36M42 23 L41 36M47 22 L50 36"/></g><circle cx="58" cy="12" r="5.5" fill="#d9a441" stroke="#3a2a1a" stroke-width=".8"/><g fill="#2a1d10"><circle cx="26" cy="15" r="1.2"/><circle cx="32" cy="19" r="1.2"/><circle cx="38" cy="14" r="1.2"/><circle cx="44" cy="18" r="1.2"/><circle cx="30" cy="13" r="1"/></g></g></svg>
+      <div><b>Les guépards</b><span>Il y a environ 12 000 ans</span></div></button>
+  </nav>
+
+  <!-- PHOQUES -->
+  <section class="story" id="phoques"></section>
+
+  <!-- PINGELAP -->
+  <section class="story" id="pingelap" hidden>
+    <p class="intro">Pingelap est un petit atoll de l'océan Pacifique (Micronésie). Certains habitants portent un allèle rare, noté <b>a</b>, qui provoque l'<b>achromatopsie</b> : la personne voit en noir et blanc et elle est très éblouie par la lumière. Il faut recevoir l'allèle a <b>de ses deux parents</b> pour être atteint. Avec un seul allèle a, on est <b>porteur sain</b>.</p>
+    <div class="bar">
+      <button class="hunt" id="pg-go">Raconter toute l'histoire</button>
+      <button class="ghost" id="pg-next">Étape suivante →</button>
+      <label class="ctl" for="pg-al"><input type="checkbox" id="pg-al" checked>Montrer les allèles</label>
+    </div>
+    <div class="steps" id="pg-steps"></div>
+    <div class="scene isle showal" id="pg-scene">
+      <div class="waves"></div>
+      <svg class="layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <ellipse cx="50" cy="63" rx="49.5" ry="37" fill="#7fc9e0" opacity=".6"/>
+        <ellipse cx="50" cy="62" rx="48" ry="35" fill="#f1dfb0"/>
+        <ellipse cx="50" cy="61.5" rx="44.5" ry="31" fill="#6bb257"/>
+        <ellipse cx="36" cy="52" rx="16" ry="6" fill="#7cc067"/><ellipse cx="64" cy="74" rx="14" ry="5" fill="#5ea24b"/>
+      </svg>
+      <svg class="layer" viewBox="0 0 160 100" aria-hidden="true" id="pg-deco"></svg>
+      <div class="storm"></div>
+      <div id="pg-people" style="position:absolute;inset:0;z-index:850"></div>
+      <div class="rain"></div>
+      <div class="badge"><span class="g" id="pg-bg">Pingelap, avant 1775</span><span class="p" id="pg-bp">60 habitants</span></div>
+    </div>
+    <div class="status" id="pg-status">Appuie sur « Raconter toute l'histoire » ou choisis une étape.</div>
+    <div class="cols">
+      <section class="inv">
+        <h2>Dans la population</h2>
+        <div class="big">
+          <div><div class="v" id="pg-aff">0</div><div class="k">atteints (voient en noir et blanc)</div></div>
+          <div><div class="v" id="pg-car">1</div><div class="k">porteurs sains (un allèle a)</div></div>
+          <div><div class="v" id="pg-q">0,8 %</div><div class="k">des allèles sont des allèles a</div></div>
+        </div>
+        <div class="legend">
+          <span>Au-dessus de chaque habitant, ses 2 allèles : <i class="aw"></i> blanc = allèle normal, <i class="ab"></i> noir = allèle a (achromatopsie).</span>
+          <span><i class="aw"></i><i class="aw"></i> non porteur &nbsp;·&nbsp; <i class="aw"></i><i class="ab"></i> porteur sain &nbsp;·&nbsp; <i class="ab"></i><i class="ab"></i> atteint (dessiné en gris, lunettes noires)</span>
+          <span>La couronne indique le roi.</span>
+        </div>
+      </section>
+      <section class="facts">
+        <h2>Ce qui s'est passé</h2>
+        <ul>
+          <li>Vers 1775, un typhon puis une famine ne laissent qu'une vingtaine de survivants sur l'île.</li>
+          <li>Le roi, qui a survécu, portait l'allèle a sans être malade.</li>
+          <li>Quatre générations plus tard, les premiers enfants atteints naissent.</li>
+          <li>Aujourd'hui, environ 1 habitant sur 10 à 1 sur 20 est atteint. Ailleurs dans le monde : environ 1 personne sur 30 000.</li>
+        </ul>
+        <p class="note">Les effectifs de l'animation sont simplifiés (60 personnes représentent l'île).</p>
+      </section>
+    </div>
+  </section>
+
+  <!-- GUÉPARDS -->
+  <section class="story" id="guepards" hidden></section>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const AR=1.6, reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+let epoch=0;const CANCEL={cancel:true};
+addEventListener('unhandledrejection',e=>{if(e.reason===CANCEL)e.preventDefault();});
+const wait=ms=>{const e=epoch;return new Promise((r,j)=>setTimeout(()=>epoch===e?r():j(CANCEL),reduce?Math.min(ms,60):ms));};
+const ease=k=>k<.5?2*k*k:1-(-2*k+2)**2/2;
+const tween=(ms,fn)=>{const e=epoch;return new Promise((r,j)=>{if(reduce){fn(1);return r();}let t0;const f=ts=>{if(epoch!==e)return j(CANCEL);t0??=ts;const k=Math.min(1,(ts-t0)/ms);fn(k);k<1?requestAnimationFrame(f):r();};requestAnimationFrame(f);});};
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const lerp=(a,b,k)=>a+(b-a)*k;
+const dist=(a,b)=>Math.hypot(a.x-b.x,(a.y-b.y)/AR);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+let busy=false;
+const lock=v=>{busy=v;};
+const resetters=[];
+
+/* ---------- Onglets ---------- */
+const tabs=[...document.querySelectorAll('.choice')];
+function show(t){if(!$(t))t='phoques';tabs.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));document.querySelectorAll('.story').forEach(s=>s.hidden=s.id!==t);}
+tabs.forEach(b=>b.onclick=()=>{epoch++;busy=false;resetters.forEach(f=>f());show(b.dataset.tab);if(b.dataset.tab==='pingelap')window.pgIntro&&window.pgIntro();});
+
+/* ---------- Moteur commun : chasse/catastrophe puis reproduction ---------- */
+function DriftSim(cfg){
+  const P=cfg.id,root=$(P),N=60;
+  root.innerHTML=`<p class="intro">${cfg.intro}</p>
+  <div class="bar"><div class="ctl"><label for="${P}-surv">${cfg.sliderLabel}</label><input type="range" id="${P}-surv" min="${cfg.min}" max="${cfg.max}" value="${cfg.def}"><output id="${P}-so">${cfg.def}</output></div>
+  <button class="hunt" id="${P}-go">${cfg.goLabel}</button><button class="ghost" id="${P}-reset">Revenir au départ</button></div>
+  <div class="scene ${cfg.sceneClass}" id="${P}-scene">${cfg.backdrop}<div id="${P}-ani" style="position:absolute;inset:0"></div>${cfg.fx||''}
+    <div class="badge"><span class="g" id="${P}-bg"></span><span class="p" id="${P}-bp"></span></div><div class="timeline" id="${P}-tl"></div></div>
+  <div class="status" id="${P}-status"></div>
+  <div class="cols"><section class="inv"><h2>Les caractères de la population</h2><div id="${P}-inv"></div>
+    <p class="note">Avant → maintenant. Une variante barrée en rouge a disparu : aucun survivant ne la portait, elle ne réapparaît pas chez les petits.</p></section>
+    <section class="hist"><h2>Mes tentatives</h2><ol id="${P}-hist"></ol></section></div>
+  <section class="facts"><h2>Ce qui s'est passé</h2><ul>${cfg.facts.map(f=>`<li>${f}</li>`).join('')}</ul>${cfg.extra||''}</section>`;
+  const q=s=>$(P+'-'+s),SL=cfg.slots,TR=cfg.traits;
+  const START=(()=>{const c={};TR.forEach(t=>c[t.key]=shuffle(t.vars.flatMap(v=>Array(v.n).fill(v.id))));
+    return shuffle(SL.map((_,i)=>i)).slice(0,N).map((s,i)=>{const o={slot:s};TR.forEach(t=>o[t.key]=c[t.key][i]);return o;});})();
+  let pop=[],tries=0;const els=new Map();
+  const api={els,scene:q('scene'),N,
+    place(ind,x,y){const el=els.get(ind);if(!el)return;if(Math.abs(x-ind.x)>.3){ind.left=x<ind.x;el.classList.toggle('l',ind.left);}
+      ind.x=x;ind.y=y;el.style.left=x+'%';el.style.top=y+'%';el.style.zIndex=Math.round(y*10);},
+    add(ind,x,y,cls){const d=document.createElement('div');d.className='ani '+cfg.cls+(ind.left?' l':'')+(cls?' '+cls:'');
+      d.innerHTML=`<div class="b" style="animation-delay:${-Math.random()*2.6}s">${cfg.svg(ind)}</div>`;q('ani').appendChild(d);els.set(ind,d);
+      ind.x=x;ind.y=y;d.style.left=x+'%';d.style.top=y+'%';d.style.zIndex=Math.round(y*10);return d;},
+    badge(g,p){q('bg').textContent=g;q('bp').textContent=p;},
+    say(t,c){const s=q('status');s.className='status'+(c?' '+c:'');s.textContent=t;}};
+  function counts(p){const r={};TR.forEach(t=>{r[t.key]={};t.vars.forEach(v=>r[t.key][v.id]=0);});p.forEach(i=>TR.forEach(t=>r[t.key][i[t.key]]++));return r;}
+  function inv(now){const cb=counts(START),ca=now?counts(now):null;
+    q('inv').innerHTML=TR.map(t=>`<div class="trait"><b>${t.name}</b><div class="chips">${t.vars.map(v=>{const lost=ca&&ca[t.key][v.id]===0,base={...cfg.iconBase,[t.key]:v.id};
+      return `<div class="chip${lost?' lost':''}">${cfg.svg(base)}<div><div class="nm">${v.nm}</div><div class="ct">${cb[t.key][v.id]}${ca?' → '+(lost?'disparu':ca[t.key][v.id]):''}</div></div></div>`;}).join('')}</div></div>`).join('');}
+  let tl=[];const timeline=()=>q('tl').innerHTML=tl.map(([n,h])=>`<i class="${h?'h':''}" style="height:${Math.max(4,n/N*60)}px"></i>`).join('');
+  const lostList=p=>{const c=counts(p),o=[];TR.forEach(t=>t.vars.forEach(v=>{if(!c[t.key][v.id])o.push(v.tag);}));return o;};
+  function reset(full){
+    q('ani').innerHTML='';els.clear();cfg.clear&&cfg.clear(api);
+    pop=START.map(i=>{const s=SL[i.slot];i.left=Math.random()<.4;api.add(i,s.x,s.y);return i;});
+    api.badge(cfg.startLabel,N+' '+cfg.plural);tl=[[N,false]];timeline();inv(null);
+    api.say(`Toutes les variantes des caractères sont présentes. ${cfg.goHint}`);
+    if(full){tries=0;q('hist').innerHTML='<li class="note">Aucune pour l\'instant. Recommence plusieurs fois et compare.</li>';q('go').textContent=cfg.goLabel;}
+  }
+  function nearestFree(x,y,taken){let best=-1,bd=1e9;SL.forEach((s,i)=>{if(taken.has(i))return;const d=dist(s,{x,y})+Math.random()*.8;if(d<bd){bd=d;best=i;}});return best;}
+  async function run(){try{await runInner();}catch(e){if(e!==CANCEL)throw e;}}
+  async function runInner(){
+    if(busy)return;lock(true);q('go').disabled=q('reset').disabled=q('surv').disabled=true;
+    reset(false);
+    const S=+q('surv').value,order=shuffle(START.slice()),surv=order.slice(0,S),victims=order.slice(S);
+    await cfg.event(api,victims,surv);
+    pop=surv;surv.forEach(i=>els.get(i).classList.add('surv'));
+    api.badge(cfg.afterLabel,S+' '+cfg.plural+' survivants');tl.push([S,true]);timeline();inv(pop);
+    api.say(`Il ne reste que ${S} ${cfg.plural}. Ils vont former des couples…`);
+    await wait(1800);surv.forEach(i=>els.get(i).classList.remove('surv'));
+    let g=0;
+    while(pop.length<N){
+      g++;pop.forEach(i=>els.get(i).classList.remove('young','baby'));
+      const mixed=shuffle(pop.slice()),pairs=[];for(let i=0;i+1<mixed.length;i+=2)pairs.push([mixed[i],mixed[i+1]]);
+      let need=Math.min(N-pop.length,pairs.length*2);const active=pairs.slice(0,Math.ceil(need/2));
+      api.say(cfg.genText?cfg.genText(g,S):`Génération ${g} : les ${cfg.plural} forment des couples.`);api.badge('Génération '+g,pop.length+' '+cfg.plural);
+      await wait(500);
+      const mids=active.map(([a,b])=>{const mx=(a.x+b.x)/2,my=(a.y+b.y)/2,[l,r]=a.x<=b.x?[a,b]:[b,a];
+        api.place(l,mx-cfg.gap,my);api.place(r,mx+cfg.gap,my);els.get(l).classList.remove('l');l.left=false;els.get(r).classList.add('l');r.left=true;return {x:mx,y:my};});
+      await wait(1500);
+      const taken=new Set(pop.map(i=>i.slot)),babies=[];
+      active.forEach(([a,b],ci)=>{const n=Math.min(2,need);need-=n;
+        for(let k=0;k<n;k++){const kid={left:Math.random()<.5};TR.forEach(t=>kid[t.key]=(Math.random()<.5?a:b)[t.key]);
+          kid.slot=nearestFree(mids[ci].x,mids[ci].y,taken);taken.add(kid.slot);
+          api.add(kid,mids[ci].x+(k?1.2:-1.2),mids[ci].y+2.5,'new');babies.push(kid);}});
+      requestAnimationFrame(()=>requestAnimationFrame(()=>babies.forEach(k=>{const el=els.get(k);el.classList.remove('new');el.classList.add('baby');})));
+      api.say(`Génération ${g} : ${babies.length} ${cfg.babies} sont nés !`+(cfg.bornNote?' '+cfg.bornNote(S):''));
+      pop=pop.concat(babies);api.badge('Génération '+g,pop.length+' '+cfg.plural);tl.push([pop.length,false]);timeline();inv(pop);
+      await wait(1100);
+      active.forEach(([a,b])=>[a,b].forEach(p=>{const s=SL[p.slot];api.place(p,s.x,s.y);}));
+      babies.forEach(k=>{const s=SL[k.slot];api.place(k,s.x,s.y);const el=els.get(k);el.classList.remove('baby');el.classList.add('young');});
+      await wait(1500);
+    }
+    pop.forEach(i=>els.get(i).classList.remove('young','baby'));
+    const lost=lostList(pop);tries++;
+    const endN=cfg.endNote?' '+cfg.endNote(S):'';
+    if(lost.length)api.say(`La population est revenue à ${N} ${cfg.plural}, mais ${lost.length} variante${lost.length>1?'s ont':' a'} disparu pour toujours : ${lost.join(', ')}.`+endN,'bad');
+    else api.say(`La population est revenue à ${N} ${cfg.plural}, et cette fois aucune variante n'a disparu.`+endN,'good');
+    if(tries===1)q('hist').innerHTML='';
+    const li=document.createElement('li');
+    li.innerHTML=`<b>Tentative ${tries}</b>`+(lost.length?lost.map(x=>`<span class="tag">${x}</span>`).join(''):'<span class="none">aucune perte</span>')+`<span class="note">(${S} survivants)</span>`;
+    q('hist').prepend(li);q('go').textContent=cfg.againLabel;
+    q('go').disabled=q('reset').disabled=q('surv').disabled=false;lock(false);
+  }
+  q('surv').oninput=()=>q('so').textContent=q('surv').value;
+  q('go').onclick=run;q('reset').onclick=()=>reset(true);
+  resetters.push(()=>{reset(true);q('go').disabled=q('reset').disabled=q('surv').disabled=false;});
+  reset(true);
+}
+
+/* ---------- PHOQUES ---------- */
+(function(){
+  const CX=50,CY=48,RX=40,RY=26.5;
+  let p=[],s=[];for(let i=0;i<44;i++){const a=i/44*Math.PI*2,j=1+.05*Math.sin(i*2.7)+.04*Math.cos(i*5.3);
+    const x=(CX+Math.cos(a)*(RX+5)*j).toFixed(1),y=CY+Math.sin(a)*(RY+4)*j;p.push(x+','+y.toFixed(1));s.push(x+','+(y+3).toFixed(1));}
+  const slots=[];for(let r=0,y=23;y<=73;y+=6.2,r++)for(let x=11+(r%2)*3.4;x<=89;x+=6.8)
+    if(((x-CX)/RX)**2+((y-CY)/RY)**2<=1)slots.push({x:x+(Math.random()-.5)*1.6,y:y+(Math.random()-.5)*1.2});
+  const COL={gris:'#8c949b',brun:'#6e4a30',beige:'#d9bf8e',noir:'#2f2f35',roux:'#cf6a2a'};
+  function svg(ind){const c=COL[ind.col];
+    const nose={court:'<ellipse cx="55" cy="21" rx="3.2" ry="2.6"/>',moyen:'<ellipse cx="56" cy="23" rx="4" ry="5"/>',long:'<ellipse cx="56.5" cy="26" rx="4.4" ry="8"/>'}[ind.nez];
+    let mot='';if(ind.mot==='taches')mot='<g fill="#fff" fill-opacity=".6"><circle cx="18" cy="24" r="2.6"/><circle cx="27" cy="19" r="2.2"/><circle cx="31" cy="28" r="2.8"/><circle cx="40" cy="22" r="2"/><circle cx="22" cy="30" r="1.8"/></g>';
+    if(ind.mot==='collier')mot='<path d="M40 12 Q37 22 40 33" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round"/>';
+    return `<svg viewBox="0 0 64 40"><ellipse cx="30" cy="37" rx="24" ry="3" fill="#9cc3d6" opacity=".55"/><g stroke="#2b2b2b" stroke-width="1.3" stroke-linejoin="round"><path d="M3 33 L9 27 L11 34 Z" fill="${c}"/>
+    <path d="M8 32 Q6 19 20 16 Q32 11 44 13 Q53 15 52 27 Q51 35 40 35 L13 35 Q8 35 8 32Z" fill="${c}"/><ellipse cx="34" cy="35" rx="6" ry="2.2" fill="${c}"/><circle cx="48" cy="18" r="8.5" fill="${c}"/><g fill="${c}">${nose}</g></g>
+    ${mot}<circle cx="50.5" cy="15.5" r="1.4" fill="#111"/></svg>`;}
+  const TRAWLER=`<svg viewBox="0 0 140 84"><path d="M14 20 L22 52 M30 20 L22 52 M14 20 L30 20" stroke="#e07a1f" stroke-width="3" fill="none"/>
+    <rect x="16" y="40" width="16" height="10" rx="5" fill="#3d5a6c" stroke="#1d2b33"/><path d="M18 45 h12" stroke="#7a9aad" stroke-width="2" stroke-dasharray="2 2"/>
+    <line x1="74" y1="6" x2="74" y2="34" stroke="#2c3e4a" stroke-width="2.5"/><line x1="74" y1="10" x2="44" y2="32" stroke="#2c3e4a" stroke-width="1.6"/><line x1="74" y1="10" x2="104" y2="32" stroke="#2c3e4a" stroke-width="1.6"/><circle cx="74" cy="7" r="2" fill="#ffd84a"/>
+    <path d="M62 34 L62 52 L98 52 L98 38 L92 30 L68 30 Z" fill="#f4f6f7" stroke="#2c3e4a" stroke-width="1.5"/>
+    <rect x="70" y="35" width="7" height="6" fill="#7cc4e4" stroke="#2c3e4a"/><rect x="80" y="35" width="7" height="6" fill="#7cc4e4" stroke="#2c3e4a"/><rect x="89" y="35" width="5" height="6" fill="#7cc4e4" stroke="#2c3e4a"/><rect x="64" y="24" width="6" height="8" fill="#c0392b"/>
+    <path d="M4 52 L118 52 L136 38 L132 58 Q124 70 104 72 L22 72 Q10 70 6 62 Z" fill="#1f4e79" stroke="#0f2a44" stroke-width="2"/><path d="M6 58 L130 58" stroke="#e8edf0" stroke-width="3"/><path d="M10 66 Q60 70 116 68" stroke="#c0392b" stroke-width="3" fill="none"/></svg>`;
+  const NET=`<svg viewBox="0 0 100 100"><defs><clipPath id="nc"><circle cx="50" cy="50" r="46"/></clipPath></defs><circle cx="50" cy="50" r="46" fill="rgba(60,80,70,.18)"/>
+    <g clip-path="url(#nc)" stroke="#33463c" stroke-width="1.4" opacity=".85">${Array.from({length:13},(_,i)=>`<line x1="${i*8-2}" y1="0" x2="${i*8+8}" y2="100"/><line x1="${i*8+10}" y1="0" x2="${i*8}" y2="100"/>`).join('')}</g>
+    <circle cx="50" cy="50" r="46" fill="none" stroke="#5b4630" stroke-width="3"/>${Array.from({length:10},(_,i)=>{const a=i/10*Math.PI*2;return `<circle cx="${50+46*Math.cos(a)}" cy="${50+46*Math.sin(a)}" r="3.6" fill="#ff7a1a" stroke="#7a3300"/>`;}).join('')}</svg>`;
+  const STATIONS=[18,50,82];
+  function clusters(v){const left=v.slice(),out=[];while(left.length){const seed=left.shift(),g=[seed];left.sort((a,b)=>dist(a,seed)-dist(b,seed));
+    while(g.length<4&&left.length&&dist(left[0],seed)<9)g.push(left.shift());out.push(g);}return out;}
+  DriftSim({id:'phoques',cls:'seal',sceneClass:'sea',plural:'phoques',babies:'bébés phoques',gap:2.6,
+    intro:'60 phoques vivent sur la banquise. Ils diffèrent par 3 caractères visibles. Des chalutiers arrivent et jettent leurs filets <b>au hasard</b>, sans viser une couleur ou un nez en particulier. Les survivants forment des couples et ont des petits, génération après génération.',
+    sliderLabel:'Phoques épargnés',min:4,max:30,def:8,goLabel:'Envoyer les chalutiers',againLabel:'Relancer la pêche',goHint:'Envoie les chalutiers !',
+    startLabel:'Population de départ',afterLabel:'Après la pêche',slots,svg,iconBase:{col:'beige',mot:'uni',nez:'moyen'},
+    traits:[
+      {key:'col',name:'Couleur du pelage',vars:[{id:'gris',nm:'Gris',n:20,tag:'pelage gris'},{id:'brun',nm:'Brun',n:16,tag:'pelage brun'},{id:'beige',nm:'Beige',n:12,tag:'pelage beige'},{id:'noir',nm:'Noir',n:7,tag:'pelage noir'},{id:'roux',nm:'Roux',n:5,tag:'pelage roux'}]},
+      {key:'mot',name:'Motif',vars:[{id:'uni',nm:'Uni',n:30,tag:'uni'},{id:'taches',nm:'Taches',n:20,tag:'taches'},{id:'collier',nm:'Collier blanc',n:10,tag:'collier blanc'}]},
+      {key:'nez',name:'Taille du nez',vars:[{id:'court',nm:'Court',n:26,tag:'nez court'},{id:'moyen',nm:'Moyen',n:24,tag:'nez moyen'},{id:'long',nm:'Long',n:10,tag:'nez long'}]}],
+    facts:['L\'éléphant de mer du Nord a été massivement chassé au XIX<sup>e</sup> siècle pour l\'huile tirée de sa graisse.','Vers 1890, il ne restait que quelques dizaines d\'individus (estimations : 20 à 100).','Protégé ensuite, il compte aujourd\'hui environ 200 000 individus.','Mais sa diversité génétique est très faible : une étude de 1974 n\'a trouvé aucune variation sur 24 protéines étudiées.'],
+    backdrop:`<div class="waves"></div>
+      <svg class="layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 19 L6 12 L11 15 L18 8.5 L26 16 L33 12 L40 19 Z M55 19 L63 11 L70 14 L78 8 L86 15 L93 12 L100 15 L100 19Z" fill="#b9d6e6"/>
+      <polygon points="${s}" fill="#8fbfd6"/><polygon points="${p}" fill="#f7fbfd" stroke="#cfe3ee" stroke-width=".4"/><ellipse cx="36" cy="40" rx="13" ry="4.5" fill="#e6f1f7"/><ellipse cx="64" cy="58" rx="11" ry="4" fill="#e6f1f7"/></svg>`,
+    fx:`<svg class="layer" id="ph-ropes" viewBox="0 0 100 100" preserveAspectRatio="none" style="z-index:840"></svg><div id="ph-nets"></div><div id="ph-boats"></div>`,
+    clear(){$('ph-nets').innerHTML='';$('ph-ropes').innerHTML='';$('ph-boats').innerHTML='';},
+    async event(api,victims){
+      let alive=api.N;api.say('Les chalutiers arrivent… leurs filets attrapent les phoques au hasard.');
+      const boats=STATIONS.map(()=>{const d=document.createElement('div');d.className='boat';d.innerHTML=TRAWLER;$('ph-boats').appendChild(d);return {el:d,x:-20};});
+      const pos=(b,x)=>{b.x=x;b.el.style.left=x+'%';};
+      const groups=clusters(shuffle(victims.slice())),work=boats.map(()=>[]);
+      groups.forEach(g=>{const gx=g.reduce((s,i)=>s+i.x,0)/g.length;let bi=0;STATIONS.forEach((s,i)=>{if(Math.abs(s-gx)<Math.abs(STATIONS[bi]-gx))bi=i;});work[bi].push(g);});
+      await Promise.all(boats.map((b,i)=>wait(i*350).then(()=>tween(2200,k=>pos(b,lerp(-20,STATIONS[i],ease(k)))))));
+      api.badge('La pêche',alive+' phoques');
+      async function cast(b,group){
+        const cx=group.reduce((s,i)=>s+i.x,0)/group.length,cy=group.reduce((s,i)=>s+i.y,0)/group.length,r=Math.max(5,...group.map(i=>dist(i,{x:cx,y:cy})+4));
+        const net=document.createElement('div');net.className='net';net.innerHTML=NET;net.style.width=2*r+'%';$('ph-nets').appendChild(net);
+        const rope=document.createElementNS('http://www.w3.org/2000/svg','path');[['fill','none'],['stroke','#4a3a28'],['stroke-width',1.6],['vector-effect','non-scaling-stroke']].forEach(([a,v])=>rope.setAttribute(a,v));$('ph-ropes').appendChild(rope);
+        const hx=b.x-3,hy=86,set=(x,y,k,rot)=>{net.style.left=x+'%';net.style.top=y+'%';net.style.setProperty('--k',k);net.style.setProperty('--r',rot+'deg');rope.setAttribute('d',`M${hx} ${hy} Q${(hx+x)/2} ${Math.min(hy,y)-6} ${x} ${y}`);};
+        await tween(650,k=>{const e=ease(k);set(lerp(hx,cx,e),lerp(hy,cy,e)-14*Math.sin(Math.PI*k),.15+.85*e,e*140);});
+        group.forEach(i=>{const el=api.els.get(i);el.classList.add('caught');el.style.transition='none';});
+        await wait(350);const st=group.map(i=>({x:i.x,y:i.y}));
+        await tween(900,k=>{const e=ease(k);set(lerp(cx,hx,e),lerp(cy,hy,e),1-.7*e,140+e*60);
+          group.forEach((i,j)=>{const el=api.els.get(i);el.style.left=lerp(st[j].x,hx+(st[j].x-cx)*(1-e),e)+'%';el.style.top=lerp(st[j].y,hy+(st[j].y-cy)*(1-e),e)+'%';el.style.zIndex=860;el.style.opacity=1-e*.85;});});
+        group.forEach(i=>{api.els.get(i).remove();api.els.delete(i);});net.remove();rope.remove();alive-=group.length;api.badge('La pêche',alive+' phoques');}
+      await Promise.all(boats.map(async(b,i)=>{await wait(i*200);for(const g of work[i])await cast(b,g);}));
+      await Promise.all(boats.map((b,i)=>wait((2-i)*250).then(()=>tween(1800,k=>pos(b,lerp(STATIONS[i],125,ease(k)))))));
+      boats.forEach(b=>b.el.remove());
+    }});
+})();
+
+/* ---------- GUÉPARDS ---------- */
+(function(){
+  const slots=[];for(let r=0,y=52;y<=92;y+=7.6,r++)for(let x=7+(r%2)*3.6;x<=93;x+=7.4)slots.push({x:x+(Math.random()-.5)*1.8,y:y+(Math.random()-.5)*1.4});
+  const COL={dore:'#d9a441',pale:'#ead2a0',roux:'#c47a34',sombre:'#8f6b3c'};
+  const SP={petites:[[24,15,.9],[28,19,.9],[31,14,.9],[35,18,.9],[39,14,.9],[42,19,.9],[45,15,.9],[27,22,.8],[36,22,.8],[22,19,.8],[33,11.8,.8],[40,22,.8],[47,19,.8],[30,16.6,.8]],
+    grosses:[[24,16,1.9],[30,20,1.9],[33,13.5,1.9],[39,18,1.9],[45,15,1.8],[27,12.6,1.5],[43,21,1.5]]};
+  function svg(ind){const c=COL[ind.col];let spots;
+    if(ind.tac==='bandes')spots='<g fill="#2a1d10"><path d="M20 13 Q30 9 46 12 L46 14 Q30 11.5 20 15.5Z"/><ellipse cx="27" cy="19" rx="3" ry="1.4"/><ellipse cx="37" cy="19.5" rx="3.4" ry="1.5"/><ellipse cx="44" cy="18" rx="2" ry="1.2"/></g>';
+    else spots='<g fill="#2a1d10">'+SP[ind.tac].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}"/>`).join('')+'</g>';
+    return `<svg viewBox="0 0 80 40"><ellipse cx="36" cy="38" rx="24" ry="2.2" fill="#8a6a30" opacity=".35"/>
+      <path d="M17 17 Q6 18 5 28 Q5 33 9 32" stroke="${c}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M5.6 27 l2.2 .4 M5.4 30 l2.4 .2" stroke="#2a1d10" stroke-width="1.6"/>
+      <g stroke="${c}" stroke-width="3.4" stroke-linecap="round"><path d="M23 22 L20 37M28 23 L29 37M43 23 L41 37M48 21 L51 37"/></g>
+      <ellipse cx="34" cy="17" rx="17" ry="6.6" fill="${c}" stroke="#3a2a1a" stroke-width=".8"/><ellipse cx="35" cy="21" rx="12" ry="2.3" fill="#f6ecd2" opacity=".75"/>
+      <path d="M46 14 Q52 9 56 10 L57 16 Q52 17 48 20Z" fill="${c}"/>
+      <circle cx="58" cy="11.5" r="5.5" fill="${c}" stroke="#3a2a1a" stroke-width=".8"/><path d="M54.5 7 L55.5 4.4 L57.6 6.4Z M59 6.2 L61 4 L61.6 6.8Z" fill="${c}" stroke="#3a2a1a" stroke-width=".6"/>
+      ${spots}<circle cx="60" cy="10.6" r=".9" fill="#111"/><path d="M60.4 11.4 Q61 14 60.6 16.2" stroke="#111" stroke-width=".9" fill="none"/><circle cx="63.3" cy="12.8" r=".9" fill="#111"/></svg>`;}
+  const trees=[[10,40,1],[30,37,.7],[74,38,.9],[92,41,1.1]].map(([x,y,s])=>`<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 0 L-.6 -9 M-.3 -6 L-3 -9 M.2 -7 L3 -10" stroke="#6b4a2a" stroke-width=".9" fill="none"/><ellipse cx="0" cy="-10.5" rx="7" ry="1.8" fill="#6f8a3a"/><ellipse cx="-2" cy="-11.6" rx="4" ry="1.3" fill="#7f9c44"/></g>`).join('');
+  DriftSim({id:'guepards',cls:'cheetah',sceneClass:'savanna',plural:'guépards',babies:'bébés guépards',gap:3.4,
+    intro:'Il y a plus de 12 000 ans, les guépards étaient nombreux et variés. À la fin de la dernière glaciation, le climat change brutalement et beaucoup de grands mammifères disparaissent. Les guépards ne sont pas éliminés selon leur pelage : les survivants sont <b>ceux qui ont eu de la chance</b>. Comme il ne reste que quelques survivants, leurs descendants sont tous de la même famille et doivent se reproduire <b>entre apparentés</b> : c\'est la <b>consanguinité</b>.',
+    genText:(g,S)=>g===1?`Génération 1 : il n'y a que ${S} survivants, les couples se forment forcément parmi eux.`:`Génération ${g} : tous les guépards descendent des ${S} survivants. Les couples se forment entre frères, sœurs ou cousins : c'est la consanguinité.`,
+    bornNote:S=>'Ils ont reçu leurs allèles des mêmes ancêtres.',
+    endNote:S=>`Tous ces guépards descendent des ${S} mêmes ancêtres : ils sont tous apparentés et presque identiques génétiquement.`,
+    sliderLabel:'Guépards survivants',min:2,max:12,def:4,goLabel:'Changement de climat',againLabel:'Rejouer le changement de climat',goHint:'Déclenche le changement de climat !',
+    startLabel:'Il y a plus de 12 000 ans',afterLabel:'Après la crise',slots,svg,iconBase:{col:'dore',tac:'petites'},
+    traits:[
+      {key:'col',name:'Couleur du pelage',vars:[{id:'dore',nm:'Doré',n:20,tag:'pelage doré'},{id:'pale',nm:'Pâle',n:16,tag:'pelage pâle'},{id:'roux',nm:'Roux',n:14,tag:'pelage roux'},{id:'sombre',nm:'Sombre',n:10,tag:'pelage sombre'}]},
+      {key:'tac',name:'Taches',vars:[{id:'petites',nm:'Petites taches',n:26,tag:'petites taches'},{id:'grosses',nm:'Grosses taches',n:22,tag:'grosses taches'},{id:'bandes',nm:'Taches en bandes',n:12,tag:'taches en bandes'}]}],
+    facts:['Il y a environ 12 000 ans, à la fin de la dernière glaciation, de nombreux grands mammifères disparaissent. Les guépards survivent, mais en très petit nombre.','Aujourd\'hui, il reste environ 7 000 guépards adultes en liberté, presque identiques génétiquement.','Expérience célèbre : une greffe de peau entre deux guépards non apparentés n\'est pas rejetée, comme entre de vrais jumeaux.','Conséquences : les guépards sont très sensibles aux maladies et ont beaucoup de spermatozoïdes anormaux, ce qui fragilise l\'espèce.'],
+    extra:`<h2>La consanguinité, c'est quoi ?</h2>
+      <p>La <b>consanguinité</b>, c'est la reproduction entre individus <b>apparentés</b> (frères et sœurs, cousins…). Après la crise, tous les guépards descendent d'une poignée d'ancêtres : ils sont tous de la même famille, et chaque couple est forcément un couple d'apparentés.</p>
+      <ul>
+        <li><b>Les mêmes allèles partout.</b> Deux parents apparentés ont souvent hérité des mêmes allèles de leurs ancêtres communs. Leurs petits reçoivent donc souvent <b>deux fois le même allèle</b>, un de chaque parent. Génération après génération, la diversité diminue encore.</li>
+        <li><b>Des allèles défavorables qui s'expriment.</b> Un allèle rare et défavorable reste caché tant qu'il est associé à un allèle normal. Entre apparentés, un petit a plus de chances de le recevoir de ses deux parents : il apparaît alors des malformations, des spermatozoïdes anormaux ou une forte mortalité des petits.</li>
+        <li><b>Tous fragiles face aux mêmes maladies.</b> Comme les guépards se ressemblent génétiquement, une maladie qui touche l'un peut toucher tous les autres. Dans un parc zoologique de l'Oregon (États-Unis), une épidémie virale a tué une grande partie des guépards au début des années 1980, alors que les lions du même parc ont résisté.</li>
+        <li><b>Un cercle vicieux.</b> Petite population → reproduction entre apparentés → perte de diversité → population fragile qui a du mal à grandir.</li>
+      </ul>
+      <p class="note">Pour limiter la consanguinité, les zoos échangent aujourd'hui des guépards entre eux et évitent de faire reproduire des animaux apparentés.</p>`,
+    backdrop:`<svg class="layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 35 Q15 26 30 31 Q48 24 62 30 Q80 25 100 32 L100 36 L0 36Z" fill="#c9a865"/><circle cx="82" cy="14" r="6" fill="#fff3c4"/></svg>
+      <svg class="layer" viewBox="0 0 100 62.5" aria-hidden="true">${trees}</svg>`,
+    fx:`<div class="cold" style="z-index:1"></div><div class="snow" style="z-index:900"></div>`,
+    clear(api){api.scene.classList.remove('winter');},
+    async event(api,victims){
+      api.say('Le climat change brutalement : le froid s\'installe, les proies se font rares…');api.badge('Il y a environ 12 000 ans','Changement de climat');
+      api.scene.classList.add('winter');await wait(1600);
+      let alive=api.N;const order=shuffle(victims.slice()),step=reduce?0:4200/order.length;
+      for(const v of order){api.els.get(v).classList.add('dead');alive--;api.badge('La crise',alive+' guépards');await wait(step);}
+      await wait(1000);order.forEach(v=>{api.els.get(v).remove();api.els.delete(v);});
+      api.scene.classList.remove('winter');await wait(1200);
+    }});
+})();
+
+/* ---------- PINGELAP (histoire racontée, transmission réelle des allèles) ---------- */
+(function(){
+  const scene=$('pg-scene'),box=$('pg-people');
+  $('pg-deco').innerHTML=[[12,64,1.1],[148,62,1.1],[26,42,.9],[134,42,.9],[36,92,.8],[124,93,.8]].map(([x,y,s])=>`<g transform="translate(${x} ${y}) scale(${s})"><g class="palm"><path d="M0 0 Q1 -8 3 -15" stroke="#7a5230" stroke-width="1.6" fill="none"/><g stroke="#2f8a3a" stroke-width="2" fill="none" stroke-linecap="round" transform="translate(3 -15)"><path d="M0 0 q-6 -1 -9 3"/><path d="M0 0 q6 -2 9 2"/><path d="M0 0 q-2 -5 -7 -5"/><path d="M0 0 q3 -5 8 -4"/></g></g></g>`).join('')
+   +[[16,80],[144,80]].map(([x,y])=>`<g transform="translate(${x} ${y})"><path d="M-5 0 L-5 -5 L5 -5 L5 0Z" fill="#b48a55"/><path d="M-7 -5 L0 -11 L7 -5Z" fill="#8f6a3a"/><rect x="-1.4" y="-3.6" width="2.8" height="3.6" fill="#5a3d20"/></g>`).join('');
+  const SL=[];for(let r=0,y=36;y<=88;y+=8.2,r++)for(let x=10+(r%2)*3.1;x<=90;x+=6.2)if(((x-50)/41)**2+((y-62)/27)**2<=1)SL.push({x:x+(Math.random()-.5)*1.4,y:y+(Math.random()-.5)*1.2});
+  const SKIN=['#8d5a3b','#a8704a','#6f4428','#b9825a'],SHIRT=['#e4572e','#f2c14e','#2e86ab','#58a55c','#d16ba5','#f78e3d','#5c6bc0','#3aa6a0'];
+  function personSVG(p){const sk=p.skin,sh=p.g==='aa'?'#333':p.shirt;
+    return `<svg viewBox="0 0 20 30"><ellipse cx="10" cy="29.4" rx="5" ry=".9" fill="#000" opacity=".2"/>
+      <path d="M7 21 L7 29 M13 21 L13 29" stroke="${sk}" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M5 21 Q5 19 6 18 L14 18 Q15 19 15 21 L15 23 L5 23Z" fill="#3b4a6b"/>
+      <path d="M5.5 12 Q10 9.5 14.5 12 L15 19 L5 19Z" fill="${sh}" stroke="#2b2b2b" stroke-width=".4"/>
+      <path d="M5.6 12.4 L3.6 18.5 M14.4 12.4 L16.4 18.5" stroke="${sk}" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="10" cy="6.8" r="4" fill="${sk}"/><path d="M6 6 Q6.5 2 10 2.2 Q13.6 2 14 6 Q12 4.2 10 4.4 Q8 4.2 6 6Z" fill="#1d1410"/>
+      ${p.g==='aa'?'<rect x="6.2" y="5.7" width="7.6" height="2.2" rx=".8" fill="#111"/>':'<circle cx="8.6" cy="6.9" r=".55" fill="#111"/><circle cx="11.4" cy="6.9" r=".55" fill="#111"/>'}
+      ${p.king?'<path d="M6.4 3 L7 0.4 L8.6 2 L10 0 L11.4 2 L13 0.4 L13.6 3Z" fill="#f2c230" stroke="#9a7410" stroke-width=".4"/>':''}</svg>`;}
+  const dots=g=>`<span class="al">${g.split('').map(c=>`<i class="${c==='a'?'ab':'aw'}"></i>`).join('')}</span>`;
+  const count=pop=>({n:pop.length,car:pop.filter(p=>p.g==='Na').length,aff:pop.filter(p=>p.g==='aa').length});
+  const gt=(a,b)=>{const x=pick(a.g.split('')),y=pick(b.g.split(''));return x===y?x+y:'Na';};
+  let uid=0;const mk=(g,slot,gen,skin)=>({id:uid++,g,slot,gen,skin:skin||pick(SKIN),shirt:pick(SHIRT),king:false});
+
+  const PLAN=[
+    {lab:'Génération 1',births:14,die:null,car:4,aff:0,txt:'Les survivants forment des couples et ont des enfants. Par hasard, plusieurs enfants du roi reçoivent son allèle a.'},
+    {lab:'Génération 2',births:16,die:null,car:9,aff:0,txt:'Les enfants grandissent et ont à leur tour des enfants. Les porteurs deviennent plus nombreux, par hasard. Personne n\'est encore atteint.'},
+    {lab:'Génération 3',births:30,die:0,car:14,aff:0,txt:'Les survivants du typhon, dont le roi, meurent de vieillesse. L\'allèle a, lui, continue de se transmettre.'},
+    {lab:'Génération 4',births:14,die:1,car:18,aff:2,txt:'Deux porteurs ont des enfants ensemble : les premiers enfants atteints naissent. Ils voient en noir et blanc et sont éblouis par la lumière.'},
+    {lab:'Aujourd\'hui',births:16,die:2,car:22,aff:5,txt:'Aujourd\'hui, environ 1 habitant sur 10 est atteint. Ailleurs dans le monde, c\'est environ 1 personne sur 30 000.'}];
+
+  /* Construit toute l'histoire : chaque enfant reçoit au hasard un allèle de chaque parent (on garde le tirage le plus proche de l'histoire réelle) */
+  function build(){
+    uid=0;const st=[];
+    const p0=shuffle(SL.map((_,i)=>i)).slice(0,60).map((s,i)=>mk(i===0?'Na':'NN',s,-1));p0[0].king=true;
+    st.push({lab:'Avant 1775',pop:p0,txt:'Pingelap est peuplée. L\'allèle a est très rare : le roi le porte, sans être malade, car il a aussi un allèle normal.'});
+    const surv=[p0[0],...shuffle(p0.slice(1)).slice(0,19)].map(p=>({...p,gen:0}));
+    st.push({lab:'Le typhon',pop:surv,typhoon:true,txt:'Vers 1775, un typhon dévaste l\'île, puis la famine s\'installe. Il ne reste qu\'une vingtaine de survivants, dont le roi.'});
+    let pop=surv;
+    PLAN.forEach((pl,gi)=>{
+      const alive=pop.filter(p=>p.gen!==pl.die),dead=pop.filter(p=>p.gen===pl.die);
+      let best=null;
+      for(let t=0;t<6000;t++){
+        const m=shuffle(alive.slice()),pairs=[];for(let i=0;i+1<m.length;i+=2)pairs.push({a:m[i],b:m[i+1],kids:[]});
+        for(let k=0;k<pl.births;k++){let c;do c=pick(pairs);while(c.kids.length>=4);c.kids.push(gt(c.a,c.b));}
+        const all=alive.map(p=>p.g).concat(pairs.flatMap(c=>c.kids));
+        const car=all.filter(g=>g==='Na').length,aff=all.filter(g=>g==='aa').length,sc=Math.abs(car-pl.car)+3*Math.abs(aff-pl.aff);
+        if(!best||sc<best.sc)best={sc,pairs};if(sc===0)break;}
+      const taken=new Set(alive.map(p=>p.slot)),couples=[],kids=[];
+      best.pairs.filter(c=>c.kids.length).forEach(c=>{
+        const mx=(SL[c.a.slot].x+SL[c.b.slot].x)/2,my=(SL[c.a.slot].y+SL[c.b.slot].y)/2,ids=[];
+        c.kids.forEach(g=>{let bi=-1,bd=1e9;SL.forEach((s,i)=>{if(taken.has(i))return;const d=dist(s,{x:mx,y:my})+Math.random()*.6;if(d<bd){bd=d;bi=i;}});
+          taken.add(bi);const kid=mk(g,bi,gi+1,pick([c.a.skin,c.b.skin]));kids.push(kid);ids.push(kid);});
+        couples.push({a:c.a,b:c.b,kids:ids,mx,my});});
+      pop=alive.concat(kids);
+      st.push({lab:pl.lab,pop,txt:pl.txt,dead,couples,newGen:gi+1});
+    });
+    return st;
+  }
+
+  let ST=build(),cur=0;const els=new Map();
+  $('pg-steps').innerHTML=ST.map((s,i)=>`<button data-i="${i}">${s.lab}</button>`).join('');
+  const stepBtns=[...$('pg-steps').children];
+  const stepUI=()=>stepBtns.forEach((b,j)=>{b.className=j===cur?'on':j<cur?'done':'';});
+  const pct=x=>(Math.round(x*1000)/10).toString().replace('.',',')+' %';
+  function stats(s){const c=count(s.pop);$('pg-aff').textContent=c.aff;$('pg-car').textContent=c.car;$('pg-q').textContent=pct((c.car+2*c.aff)/(2*c.n));
+    $('pg-bg').textContent='Pingelap · '+s.lab;$('pg-bp').textContent=c.n+' habitants';}
+  const say=(t,c)=>{const s=$('pg-status');s.className='status'+(c?' '+c:'');s.textContent=t;};
+  function add(p,x,y,cls){const d=document.createElement('div');d.className='ani person'+(p.g==='aa'?' aa':'')+(cls?' '+cls:'');
+    d.innerHTML=`<div class="b" style="animation-delay:${-Math.random()*2.6}s">${personSVG(p)}</div>${dots(p.g)}${p.king?'<span class="kingtag">Le roi · porteur de l\'allèle a</span>':''}`;box.appendChild(d);els.set(p.id,d);pos(p.id,x,y);return d;}
+  function pos(id,x,y){const d=els.get(id);d.style.left=x+'%';d.style.top=y+'%';d.style.zIndex=Math.round(y*10);}
+  function render(i){box.innerHTML='';els.clear();scene.classList.remove('typhoon');const s=ST[i];
+    s.pop.forEach(p=>add(p,SL[p.slot].x,SL[p.slot].y,s.newGen&&p.gen===s.newGen?'young':''));cur=i;stepUI();stats(s);say(s.txt);}
+
+  async function animateTo(i){
+    const s=ST[i];cur=i;stepUI();say(s.txt);
+    if(s.typhoon){
+      scene.classList.add('typhoon');await wait(1400);
+      const keep=new Set(s.pop.map(p=>p.id)),victims=ST[i-1].pop.filter(p=>!keep.has(p.id));
+      for(const v of shuffle(victims)){els.get(v.id).classList.add('swept');await wait(reduce?0:70);}
+      stats(s);await wait(1800);scene.classList.remove('typhoon');victims.forEach(v=>{els.get(v.id).remove();els.delete(v.id);});
+      const k=s.pop.find(p=>p.king);if(k)els.get(k.id).querySelector('svg').style.filter='drop-shadow(0 0 3px #ffd84a) drop-shadow(0 0 2px #ffd84a)';
+      return;
+    }
+    els.forEach(d=>d.classList.remove('young','baby'));
+    if(s.dead.length){s.dead.forEach(p=>els.get(p.id).classList.add('gone'));await wait(1100);s.dead.forEach(p=>{els.get(p.id).remove();els.delete(p.id);});}
+    for(const c of s.couples){const [l,r]=SL[c.a.slot].x<=SL[c.b.slot].x?[c.a,c.b]:[c.b,c.a];pos(l.id,c.mx-1.6,c.my);pos(r.id,c.mx+1.6,c.my);}
+    await wait(1400);
+    const born=[];
+    s.couples.forEach(c=>c.kids.forEach((k,j)=>{born.push(add(k,c.mx+(j-(c.kids.length-1)/2)*1.6,c.my+3,'new'));}));
+    requestAnimationFrame(()=>requestAnimationFrame(()=>born.forEach(d=>{d.classList.remove('new');d.classList.add('baby');})));
+    stats(s);await wait(1200);
+    s.couples.forEach(c=>{[c.a,c.b].forEach(p=>pos(p.id,SL[p.slot].x,SL[p.slot].y));c.kids.forEach(k=>{pos(k.id,SL[k.slot].x,SL[k.slot].y);const d=els.get(k.id);d.classList.remove('baby');d.classList.add('young');});});
+    await wait(1400);
+  }
+  async function introKing(){
+    const k=ST[0].pop.find(p=>p.king),d=els.get(k.id);if(!d)return;
+    say('Voici le roi. Regarde ses pastilles : une blanche (allèle normal) et une noire (allèle a). Il porte l\'allèle a, mais il n\'est pas malade.');
+    d.classList.add('star');pos(k.id,50,58);d.style.zIndex=990;await wait(4200);
+    pos(k.id,SL[k.slot].x,SL[k.slot].y);d.classList.remove('star');await wait(1100);say(ST[0].txt);}
+  window.pgIntro=async()=>{if(busy||cur!==0)return;setBusy(true);try{await introKing();}catch(e){if(e!==CANCEL)throw e;return;}setBusy(false);};
+  function setBusy(v){lock(v);$('pg-go').disabled=$('pg-next').disabled=v;stepBtns.forEach(b=>b.disabled=v);}
+  async function step(i){if(busy)return;setBusy(true);try{await animateTo(i);}catch(e){if(e!==CANCEL)throw e;return;}setBusy(false);$('pg-next').disabled=cur>=ST.length-1;
+    if(cur===ST.length-1)say('Le hasard du typhon a gardé le roi porteur de l\'allèle a. Dans cette petite population, l\'allèle est devenu fréquent : c\'est la dérive génétique.','bad');}
+  stepBtns.forEach((b,i)=>b.onclick=async()=>{if(busy)return;if(i===cur+1)step(i);else{render(i);$('pg-next').disabled=cur>=ST.length-1;if(i===0)window.pgIntro();}});
+  $('pg-next').onclick=()=>{if(cur<ST.length-1)step(cur+1);};
+  $('pg-go').onclick=async()=>{if(busy)return;ST=build();render(0);setBusy(true);
+    try{await introKing();await wait(1500);for(let i=1;i<ST.length;i++){await animateTo(i);await wait(2200);}}catch(e){if(e!==CANCEL)throw e;return;}
+    setBusy(false);$('pg-next').disabled=true;
+    say('Le hasard du typhon a gardé le roi porteur de l\'allèle a. Dans cette petite population, l\'allèle est devenu fréquent : c\'est la dérive génétique.','bad');
+    $('pg-go').textContent='Revoir toute l\'histoire';};
+  $('pg-al').onchange=()=>scene.classList.toggle('showal',$('pg-al').checked);
+  resetters.push(()=>{render(0);setBusy(false);$('pg-next').disabled=false;$('pg-go').textContent='Raconter toute l\'histoire';});
+  render(0);say('Appuie sur « Raconter toute l\'histoire » ou choisis une étape.');
+})();
+
+show(location.hash.slice(1)||'phoques');
+})();
+</script>
+
+</body></html>
