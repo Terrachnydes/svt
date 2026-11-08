@@ -24,7 +24,9 @@ Le bouton « Mettre à jour maintenant » de la page récap la lance aussi. Elle
 2. ne publie JAMAIS un nouveau site seule : elle l'ajoute à `en_attente` ;
 3. régénère les aperçus et la page récap, puis republie celle-ci.
 
-## Ajouter un nouveau site (quand Erwan le demande)
+## Ajouter un nouveau site (quand Erwan dit « mets ce site en ligne »)
+
+Cette phrase veut dire : GitHub + page « Mes sites SVT » + colonne F du Google Sheet, les trois à la fois.
 
 1. Copier la page HTML de l'artifact à la racine du dépôt, avec un nom sans espaces ni accents (ex. `phalene-bouleau.html`).
 2. Ajouter l'entrée dans `sites.json` → `sites` (avec la `version` lue), et le retirer de `en_attente`.
