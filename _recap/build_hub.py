@@ -83,7 +83,7 @@ def main():
                 continue
             ap = os.path.join(APERCUS, slug(s["fichier"]) + ".webp")
             img = ("data:image/webp;base64," + base64.b64encode(open(ap, "rb").read()).decode()) if os.path.exists(ap) else None
-            items.append({"t": s["titre"], "f": s["fichier"], "c": s["artifact"], "img": img})
+            items.append({"t": s["titre"], "f": s["fichier"], "c": s["artifact"], "v": s.get("conversation"), "img": img})
         if items:
             data.append([th, items])
     d = cfg["derniere_maj"].split("-")

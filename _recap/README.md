@@ -8,7 +8,7 @@ Il commence par `_`, donc GitHub Pages ne le publie pas.
 ## Fichiers
 
 - `sites.json` : la liste des sites.
-  - `sites` : un site par entrée : `titre`, `theme` (une valeur de `themes`), `fichier` (nom du fichier à la racine du dépôt), `artifact` (lien Claude, ou `null` si le site n'existe que sur GitHub), `version` (dernière version de l'artifact copiée sur GitHub), `verifie` (date de la dernière vérification).
+  - `sites` : un site par entrée : `titre`, `theme` (une valeur de `themes`), `fichier` (nom du fichier à la racine du dépôt), `artifact` (lien Claude, ou `null` si le site n'existe que sur GitHub), `version` (dernière version de l'artifact copiée sur GitHub), `verifie` (date de la dernière vérification), `conversation` (facultatif : lien de la conversation Claude où le site se modifie ; sinon le bouton « Modifier avec Claude » ouvre l'artifact).
   - `ignores` : artifacts à ne jamais publier (documents Claude, outils privés, la page récap elle-même).
   - `en_attente` : nouveaux sites repérés, pas encore validés par Erwan.
 - `build_hub.py` : refait les aperçus des fichiers donnés en argument et régénère `mes-sites.html`.
