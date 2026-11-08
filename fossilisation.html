@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratoire de fossilisation</title>
+<style>
+:root{--navy:#14213d;--navy2:#1f3260;--turq:#1fb5ac;--turq2:#138a83;--sand:#efe5d0;--sand2:#dccaa6;--ink:#14213d;--muted:#4f5b78;--white:#fff;}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:"Segoe UI","Noto Sans","DejaVu Sans",system-ui,Arial,sans-serif;font-size:18px;color:var(--ink);background:var(--navy);overflow:hidden}
+button{font:inherit;font-size:17px;cursor:pointer}
+#app{display:grid;grid-template-rows:56px 1fr 66px;height:100vh;min-height:620px}
+header{background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:3px solid var(--turq)}
+.brand{display:flex;align-items:center;gap:10px}
+.brand h1{font-size:23px;margin:0;font-weight:700;letter-spacing:.3px}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.chip{font-size:17px;background:rgba(255,255,255,.1);padding:5px 12px;border-radius:20px;color:#cfeeed}
+.btn{border:none;border-radius:8px;padding:8px 13px;background:#fff;color:var(--navy);font-weight:600;box-shadow:0 1px 0 rgba(0,0,0,.15);transition:background .15s,transform .05s}
+.btn:hover:not(:disabled){background:#e3f6f5}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.primary{background:var(--turq);color:#fff}
+.btn.primary:hover:not(:disabled){background:var(--turq2)}
+.btn.dark{background:var(--navy2);color:#fff}
+.btn.dark:hover:not(:disabled){background:#2b437c}
+.btn.warn{background:#f4e1dc;color:#7a2a17}
+.tab{border:none;background:var(--sand);color:var(--navy);font-weight:700;padding:8px 14px;border-radius:8px 8px 0 0;margin-top:10px;align-self:flex-end}
+.tab.on{background:var(--turq);color:#fff}
+.badge{display:inline-block;min-width:24px;padding:0 6px;border-radius:12px;background:var(--navy);color:#fff;font-size:17px;text-align:center}
+main{display:grid;grid-template-columns:70% 30%;min-height:0;position:relative}
+#stage{position:relative;background:#0b1730;overflow:hidden;min-height:0}
+#scene{width:100%;height:100%;display:block}
+.hud{position:absolute;pointer-events:none;font-size:17px}
+#stepLbl{top:10px;left:10px;background:rgba(20,33,61,.62);color:#fff;padding:5px 12px;border-radius:16px;opacity:0;transition:opacity .4s}
+#timeBox{top:10px;right:10px;width:290px;background:rgba(20,33,61,.62);color:#fff;padding:6px 10px;border-radius:10px;opacity:0;transition:opacity .4s}
+#timeBox .tl{font-size:17px;font-weight:600}
+#timeBox .bar{height:8px;background:rgba(255,255,255,.2);border-radius:4px;margin:4px 0;overflow:hidden}
+#timeBox .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--turq),#e9d6a8)}
+#timeTxt{font-size:17px;color:#d6f2f0}
+#infoLbl{left:10px;bottom:10px;max-width:60%;background:rgba(255,255,255,.88);color:var(--navy);padding:6px 12px;border-radius:10px;line-height:1.3}
+#hint{left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(20,33,61,.8);color:#fff;padding:14px 20px;border-radius:12px;text-align:center;max-width:70%;transition:opacity .3s}
+#resultCard{position:absolute;right:12px;bottom:12px;width:360px;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.35);padding:12px 16px;border-top:6px solid var(--turq);transition:opacity .5s,transform .5s}
+#resultCard.hidden{opacity:0;transform:translateY(20px);pointer-events:none}
+#resultCard .rt{font-size:17px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+#resultCard .rv{font-size:22px;font-weight:800;color:var(--navy);margin:4px 0}
+#resultCard .tag{display:inline-block;background:var(--sand);padding:2px 10px;border-radius:12px;font-size:17px;font-weight:600;margin-bottom:6px}
+#resultCard .tag.trace{background:#d7f1ef}
+#resultCard .tag.nofos{background:#eee}
+#resultCard p{margin:4px 0 0;font-size:17px;line-height:1.35}
+aside{background:var(--sand);overflow-y:auto;padding:8px 14px 10px;border-left:3px solid var(--sand2)}
+aside.locked .grp{opacity:.55;pointer-events:none}
+.grp{margin-bottom:9px}
+.grp h3{font-size:17px;margin:2px 0 5px;color:var(--navy);display:flex;align-items:center;gap:6px}
+.grp h3 .lt{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;font-size:17px}
+.opts{display:grid;gap:6px}
+.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:1fr 1fr 1fr}
+.opt{border:2px solid var(--sand2);background:#fff;color:var(--navy);border-radius:8px;padding:6px 6px;font-weight:600;min-height:40px;line-height:1.15;display:flex;align-items:center;justify-content:center;gap:6px;text-align:center}
+.opt:hover:not(:disabled){border-color:var(--turq)}
+.opt.sel{background:var(--turq);border-color:var(--turq2);color:#fff}
+.opt:disabled{opacity:.38;cursor:not-allowed;background:#eee;text-decoration:line-through}
+.opt svg{width:38px;height:30px;flex:none}
+.note{font-size:17px;color:var(--muted);margin:5px 2px 0;line-height:1.25}
+.lockmsg{display:none;background:var(--navy);color:#fff;border-radius:8px;padding:6px 10px;font-size:17px;margin-bottom:8px}
+aside.locked .lockmsg{display:block}
+footer{background:var(--navy);display:flex;align-items:center;gap:7px;padding:0 12px;flex-wrap:nowrap;border-top:3px solid var(--turq)}
+footer .sep{width:1px;height:34px;background:rgba(255,255,255,.25);margin:0 3px}
+footer .lbl{color:#cfe;font-size:17px}
+.speed{display:flex;border-radius:8px;overflow:hidden}
+.speed button{border:none;background:#fff;color:var(--navy);padding:8px 11px;font-weight:700}
+.speed button.on{background:var(--turq);color:#fff}
+footer .grow{flex:1}
+#journal{position:absolute;inset:10px;background:#fff;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.45);z-index:30;display:flex;flex-direction:column;overflow:hidden}
+#journal.hidden{display:none}
+.jhead{display:flex;align-items:center;justify-content:space-between;background:var(--navy);color:#fff;padding:8px 14px}
+.jhead h2{margin:0;font-size:21px}
+.jbody{flex:1;overflow:auto;padding:10px 14px}
+.jtools{display:flex;gap:10px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+table{border-collapse:collapse;width:100%;font-size:17px}
+th{background:var(--sand);text-align:left;padding:6px 8px;position:sticky;top:0}
+td{padding:6px 8px;border-bottom:1px solid #e4dccb}
+tr.selrow td{background:#e3f6f5}
+td input{width:20px;height:20px}
+.empty{color:var(--muted);padding:20px;text-align:center}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.cmpcard{border:2px solid var(--sand2);border-radius:10px;padding:10px}
+.cmpcard h4{margin:0 0 6px;font-size:19px}
+.cmpcard svg{width:100%;height:auto;border-radius:8px;display:block;margin-bottom:6px}
+.cmpcard dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:17px}
+.cmpcard dt{color:var(--muted)}
+.cmpcard dd{margin:0;font-weight:600}
+.cmpcard dd.diff{color:#0e7e77;background:#dff5f3;border-radius:4px;padding:0 4px}
+.cmpnote{font-size:17px;color:var(--muted);margin:4px 0}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+  <div class="brand">
+    <svg width="34" height="34" viewBox="-20 -20 40 40" aria-hidden="true"><circle r="19" fill="#1fb5ac"/><path d="M0,0 m-1,1 a3,3 0 1,1 4,-2 a6,6 0 1,1 -9,5 a10,10 0 1,1 16,-9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>
+    <h1>Laboratoire de fossilisation</h1>
+  </div>
+  <div class="hdr-right">
+    <span id="modeChip" class="chip">Fossiles de restes</span>
+    <button id="btnTrace" class="btn">Étudier une trace</button>
+    <button id="btnJournalTab" class="tab">Journal d'expériences <span id="jCount" class="badge">0</span></button>
+  </div>
+</header>
+<main>
+  <section id="stage">
+    <svg id="scene" viewBox="0 0 1000 650" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grain" patternUnits="userSpaceOnUse" width="14" height="14">
+          <circle cx="3" cy="4" r=".9" fill="rgba(60,40,20,.35)"/><circle cx="10" cy="9" r=".8" fill="rgba(60,40,20,.3)"/>
+          <circle cx="7" cy="12.5" r=".6" fill="rgba(60,40,20,.3)"/><circle cx="12" cy="2" r=".7" fill="rgba(255,255,255,.35)"/>
+          <circle cx="1.5" cy="10" r=".5" fill="rgba(255,255,255,.3)"/>
+        </pattern>
+        <pattern id="cement" patternUnits="userSpaceOnUse" width="24" height="22">
+          <path d="M2,5 l4,3 l3,-2 M13,15 l5,-2 l2,4 M18,3 l2,3" stroke="rgba(255,255,255,.55)" stroke-width=".7" fill="none"/>
+          <path d="M8,15 l1.5,-2 l1.5,2 l-1.5,2z M20,10 l1,-1.5 l1,1.5 l-1,1.5z" fill="rgba(255,255,255,.5)"/>
+        </pattern>
+        <pattern id="overbP" patternUnits="userSpaceOnUse" width="1000" height="56">
+          <rect width="1000" height="28" fill="#9b8869"/><rect y="28" width="1000" height="28" fill="#b09c7c"/>
+          <rect width="1000" height="56" fill="url(#grain)"/>
+        </pattern>
+        <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"></linearGradient>
+        <linearGradient id="gWater" x1="0" y1="0" x2="0" y2="1"></linearGradient>
+        <linearGradient id="gAnox" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#2a1640" stop-opacity="0"/><stop offset="1" stop-color="#2a1640" stop-opacity=".5"/>
+        </linearGradient>
+        <clipPath id="clipA" clipPathUnits="userSpaceOnUse"><rect id="clipARect" x="-500" y="-500" width="2000" height="900"/></clipPath>
+        <clipPath id="clipB" clipPathUnits="userSpaceOnUse"><rect id="clipBRect" x="-500" y="400" width="2000" height="1200"/></clipPath>
+        <g id="orgDef"></g>
+      </defs>
+      <g id="gBg"></g>
+      <path id="water"/>
+      <g id="gOld"></g>
+      <g id="gDeco"></g>
+      <rect id="anox" x="0" width="1000" fill="url(#gAnox)"/>
+      <g id="gTraceGround"></g>
+      <g id="gCurrents"></g>
+      <g id="gRain"></g>
+      <g id="gParticles"></g>
+      <g id="gScav"></g>
+      <g id="gBact"></g>
+      <g id="gFrags"></g>
+      <g id="gCritters"></g>
+      <g id="gDino"></g>
+      <g id="gLayers"></g>
+      <path id="layerTex" fill="url(#grain)" opacity=".6"/>
+      <path id="layerCem" fill="url(#cement)" opacity="0"/>
+      <path id="layerDark" fill="#3a2a18" opacity="0"/>
+      <path id="overb" fill="url(#overbP)" opacity="0"/>
+      <g id="orgB" clip-path="url(#clipB)" opacity=".5"><use id="useB" href="#orgDef"/></g>
+      <g id="orgA" clip-path="url(#clipA)"><use id="useA" href="#orgDef"/></g>
+      <g id="gFossil" opacity="0"></g>
+    </svg>
+    <div id="stepLbl" class="hud"></div>
+    <div id="timeBox" class="hud"><div class="tl">Le temps passe…</div><div class="bar"><i id="timeFill"></i></div><div id="timeTxt"></div></div>
+    <div id="infoLbl" class="hud"></div>
+    <div id="hint" class="hud">Choisis les paramètres à droite,<br>puis clique sur « Lancer l'expérience ».</div>
+    <div id="resultCard" class="hidden">
+      <div class="rt">Résultat observé</div>
+      <div class="rv" id="resTitle"></div>
+      <span class="tag" id="resTag"></span>
+      <p id="resDesc"></p>
+    </div>
+  </section>
+  <aside id="panel"></aside>
+  <div id="journal" class="hidden">
+    <div class="jhead"><h2>Journal d'expériences</h2><button class="btn" id="btnJClose">Fermer ✕</button></div>
+    <div class="jbody">
+      <div class="jtools">
+        <button class="btn primary" id="btnCompare" disabled>Comparer les 2 expériences cochées</button>
+        <span class="cmpnote" id="cmpHint">Coche deux expériences pour les comparer côte à côte.</span>
+      </div>
+      <div id="jTable"></div>
+      <div id="cmpZone"></div>
+    </div>
+  </div>
+</main>
+<footer>
+  <button class="btn primary" id="btnStart">▶ Lancer l'expérience</button>
+  <button class="btn" id="btnPause">❚❚ Pause</button>
+  <button class="btn" id="btnResume">▶ Reprendre</button>
+  <span class="sep"></span>
+  <span class="lbl">Vitesse</span>
+  <div class="speed" id="speed"><button data-s="1" class="on">×1</button><button data-s="2">×2</button><button data-s="5">×5</button></div>
+  <span class="sep"></span>
+  <button class="btn" id="btnRestart" title="Recommencer avec les mêmes paramètres">↻ Recommencer</button>
+  <button class="btn" id="btnNew">+ Nouvelle expérience</button>
+  <span class="grow"></span>
+  <button class="btn dark" id="btnJournal">Journal</button>
+  <button class="btn warn" id="btnReset">Réinitialiser tout</button>
+</footer>
+</div>
+
+<script>
+"use strict";
+/* =========================================================
+   OUTILS
+   ========================================================= */
+const $=s=>document.querySelector(s);
+const NS='http://www.w3.org/2000/svg';
+const W=1000,H=650;
+let FLOOR=400;
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,k)=>a+(b-a)*k;
+const ease=k=>k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+const seg=(t,a,b)=>clamp((t-a)/(b-a));
+const f1=n=>(Math.round(n*10)/10);
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+function hex2rgb(h){h=h.replace('#','');return[parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)];}
+function lerpColor(a,b,k){const A=hex2rgb(a),B=hex2rgb(b);return 'rgb('+A.map((v,i)=>Math.round(lerp(v,B[i],k))).join(',')+')';}
+const wy=(x,Y)=>Y+2*Math.sin(x*0.012);   // bord ondulé commun à toutes les couches
+function bandPath(y0,y1){let d='M0,'+f1(wy(0,y0));for(let x=100;x<=1000;x+=100)d+=' L'+x+','+f1(wy(x,y0));for(let x=1000;x>=0;x-=100)d+=' L'+x+','+f1(wy(x,y1));return d+'Z';}
+
+/* =========================================================
+   LIBELLÉS ET COMPATIBILITÉS
+   ========================================================= */
+const L={
+ org:{ammonite:'Ammonite',poisson:'Poisson',meduse:'Méduse',feuille:"Feuille d'arbre"},
+ env:{calme:'Fond marin calme',agite:'Fond marin agité',lac:"Fond d'un lac",sol:'Sol continental'},
+ burial:{rapide:'Rapide',lent:'Lent',aucun:'Aucun'},
+ decomp:{faible:'Faible',moyenne:'Moyenne',forte:'Forte'},
+ oxy:{pauvre:'Pauvre en dioxygène',oxygene:'Bien oxygéné'},
+ soil:{humide:'Sol humide',sec:'Sol sec'},
+ cover:{rapide:'Recouvrement rapide',aucun:'Aucun recouvrement'},
+ disturb:{forte:'Perturbation forte',faible:'Perturbation faible'}
+};
+// milieux où l'organisme vit ou peut se déposer
+const COMPAT={ammonite:['calme','agite'],poisson:['calme','agite','lac'],meduse:['calme','agite'],feuille:['calme','lac','sol']};
+const COMPAT_TXT={ammonite:"L'ammonite vivait uniquement en mer.",poisson:"Le poisson vit en mer ou en lac, pas sur la terre ferme.",meduse:"La méduse vit uniquement en mer.",feuille:"Une feuille tombe sur le sol, dans un lac ou peut être emportée jusqu'à la mer près des côtes."};
+
+const P={org:'ammonite',env:'calme',burial:'lent',decomp:'moyenne',oxy:'oxygene'};
+const TP={soil:'humide',cover:'rapide',disturb:'faible'};
+let mode='reste';
+
+/* =========================================================
+   MOTEUR : valeurs pédagogiques qualitatives (non mesurées)
+   ========================================================= */
+function remainWeights(p){
+  const B={rapide:1,lent:.45,aucun:.04}[p.burial];
+  const Bio={faible:1,moyenne:.6,forte:.25}[p.decomp];
+  const Ox={pauvre:1,oxygene:.55}[p.oxy];
+  const E={calme:1,agite:.55,lac:.9,sol:.4}[p.env];
+  const struct=B*E*(.45+.55*Bio)*(.8+.2*Ox);   // protection des parties résistantes
+  const soft=B*E*Bio*Ox;                        // protection des parties molles
+  const ns=1-struct, ag=p.env==='agite'?1.4:1;
+  switch(p.org){
+    case 'ammonite': return {hard:struct,imprint:.28*struct,exc:.12*soft**3,frag:ns*.7*ag,none:ns*.8+.04};
+    case 'poisson':  return {hard:.9*struct,imprint:.15*struct,exc:.15*soft**3,frag:ns*.8*ag,none:ns*.9+.05};
+    case 'meduse':   return {imprint:.55*soft**1.5,exc:.12*soft**3,none:(1-soft)*1.2+.35};
+    case 'feuille':  return {comp:struct,imprint:.4*struct,frag:ns*.6*ag,none:ns+.06};
+  }
+}
+function traceWeights(p){
+  const form=p.soil==='humide'?1:.25, cov=p.cover==='rapide'?1:.1, dis=p.disturb==='faible'?1:.3;
+  const q=form*cov*dis;
+  return {twell:.85*q+.02,tpart:.3*Math.sqrt(q)*(1-.5*q)+.03,tnone:(1-q)*.9+.05};
+}
+function pick(w,r){let s=0;for(const k in w)s+=w[k];let x=r()*s;for(const k in w){x-=w[k];if(x<=0)return k;}return Object.keys(w).pop();}
+
+function outcomeInfo(o,org){
+  const T={
+    none:{title:'Aucun reste identifiable',tag:'Pas de fossile',cls:'nofos',desc:"La roche ne contient aucune trace reconnaissable de l'organisme."},
+    twell:{title:'Empreintes de pas bien conservées',tag:'Fossile de trace',cls:'trace',desc:"Une piste de plusieurs empreintes à trois doigts est visible à la surface de la couche."},
+    tpart:{title:'Empreintes partielles et déformées',tag:'Fossile de trace (incomplet)',cls:'trace',desc:"Quelques empreintes floues sont visibles ; d'autres ont disparu."},
+    tnone:{title:'Aucune trace conservée',tag:'Pas de fossile',cls:'nofos',desc:"La surface de la couche ne montre aucune empreinte reconnaissable."},
+    comp:{title:'Compression végétale',tag:'Fossile de reste',cls:'',desc:"Un mince film sombre reproduit la forme de la feuille et ses nervures."}
+  };
+  if(T[o])return T[o];
+  if(o==='frag')return {title:org==='feuille'?'Fragments végétaux dispersés':'Fragments dispersés',tag:'Fossile de reste (fragmentaire)',cls:'',
+    desc:{poisson:"Quelques os isolés sont dispersés dans la roche.",ammonite:"Des morceaux de coquille sont éparpillés dans la roche.",feuille:"De petits morceaux de feuille sont éparpillés dans la roche.",meduse:"Quelques fragments sont éparpillés."}[org]};
+  if(o==='imprint')return {title:{ammonite:'Empreinte (moulage) de la coquille',meduse:'Empreinte de la méduse',poisson:'Empreinte du poisson',feuille:'Empreinte de la feuille'}[org],tag:'Fossile de reste (empreinte)',cls:'',
+    desc:{ammonite:"La coquille a disparu ; sa forme est restée moulée dans la roche.",meduse:"La forme de l'ombrelle est imprimée dans la roche fine.",poisson:"Le contour du corps est imprimé dans la roche, sans os visibles.",feuille:"Le contour et les nervures sont imprimés dans la roche."}[org]};
+  if(o==='hard')return org==='ammonite'?{title:'Coquille conservée',tag:'Fossile de reste',cls:'',desc:"La coquille est présente dans la roche ; les parties molles ne sont pas visibles."}
+                                       :{title:'Squelette conservé',tag:'Fossile de reste',cls:'',desc:"Les os (crâne, colonne, arêtes) sont visibles ; la chair n'est pas conservée."};
+  if(o==='exc')return {title:'Conservation exceptionnelle de tissus mous',tag:'Fossile de reste (exceptionnel)',cls:'',
+    desc:{ammonite:"La coquille et la forme du corps mou avec ses bras sont visibles.",poisson:"Le squelette, le contour de la chair et les nageoires sont visibles.",meduse:"L'ombrelle et les tentacules sont visibles sous forme de film.",feuille:"La feuille est conservée en détail."}[org]};
+}
+
+/* =========================================================
+   DESSINS SVG DES ORGANISMES
+   style : live | hard | imprint | exc | comp
+   ========================================================= */
+function ammoniteSVG(style){
+  const a=5.2,b=.175,tm=4.2*Math.PI,R=t=>a*Math.exp(b*t);
+  const pt=(t,r)=>f1(r*Math.cos(t))+','+f1(r*Math.sin(t));
+  const C={live:{f:'#ecd3a4',s:'#6b4423',r:'#a8733f',sp:'#7a4f2a'},hard:{f:'#cbbfa6',s:'#5e5343',r:'#857761',sp:'#5e5343'},
+           exc:{f:'#cbbfa6',s:'#5e5343',r:'#857761',sp:'#5e5343'},imprint:{f:'rgba(60,45,30,.2)',s:'rgba(40,30,20,.6)',r:'rgba(255,250,235,.55)',sp:'rgba(40,30,20,.5)'}}[style];
+  let o=[];for(let t=tm-2*Math.PI;t<=tm+1e-6;t+=.1)o.push(pt(t,R(t)));
+  let sp=[];for(let t=0;t<=tm-2*Math.PI+1e-6;t+=.1)sp.push(pt(t,R(t)));
+  let ribs='';
+  for(let t=.7*Math.PI;t<=tm-.05;t+=.21){const r1=R(t)-1,r0=t>=2*Math.PI?R(t-2*Math.PI)+1:R(t)*.45;
+    ribs+='M'+pt(t,r0)+' Q'+pt(t+.12,(r0+r1)/2)+' '+pt(t,r1)+' ';}
+  let shell=`<g class="hard"><path d="M${o.join(' L')}Z" fill="${C.f}" stroke="${C.s}" stroke-width="2"/>`+
+    
+    `<path d="M${sp.join(' L')}" fill="none" stroke="${C.sp}" stroke-width="1.6"/>`+
+    `<path d="${ribs}" fill="none" stroke="${C.r}" stroke-width="1.3" stroke-linecap="round"/>`+
+    `<circle r="2.2" fill="${C.sp}"/></g>`;
+  if(style==='hard'||style==='imprint')return shell;
+  // corps mou sortant de l'ouverture
+  const rM=(R(tm)+R(tm-2*Math.PI))/2, mx=rM*Math.cos(tm), my=rM*Math.sin(tm);
+  const dx=b*Math.cos(tm)-Math.sin(tm), dy=b*Math.sin(tm)+Math.cos(tm), ang=Math.atan2(dy,dx)*180/Math.PI;
+  const bc=style==='live'?'#cf8f7c':'#6d4a37', tc=style==='live'?'#b8705e':'#6d4a37', op=style==='live'?1:.7;
+  let tent='';for(let k=-3.5;k<=3.5;k++)tent+=`M20,${f1(k*2.2)} Q${36},${f1(k*4+Math.sin(k)*3)} ${f1(50+Math.abs(k)*-1.5)},${f1(k*6.5)} `;
+  const soft=`<g class="soft" opacity="${op}"><g transform="translate(${f1(mx)},${f1(my)}) rotate(${f1(ang)})">
+    <path d="${tent}" fill="none" stroke="${tc}" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M-8,-13 C8,-15 22,-9 24,0 C22,9 8,15 -8,13 Z" fill="${bc}" stroke="${style==='live'?'#8a4f40':'#4a3022'}" stroke-width="1.2"/>
+    ${style==='live'?'<circle cx="10" cy="-6" r="3" fill="#222"/><circle cx="10.8" cy="-6.8" r="1" fill="#fff"/>':''}</g></g>`;
+  return shell+soft;
+}
+function fishSVG(style){
+  const bone={live:'#f3eee0',hard:'#5a3f27',exc:'#5a3f27',imprint:'none'}[style];
+  let ribs='';for(let x=-36;x<=24;x+=6){ribs+=`M${x},-2 Q${x+3},-11 ${x+5},-19 M${x},2 Q${x+4},${11} ${x+7},${x<10?20:15} `;}
+  let verts='';for(let x=-40;x<=56;x+=4.5)verts+=`<rect x="${f1(x)}" y="-2" width="3.4" height="4" rx="1"/>`;
+  let fins='';for(let x=-10;x<=26;x+=4)fins+=`M${x},-22 L${x+2},${-33+Math.abs(x-8)*.3} `;
+  for(let k=-20;k<=20;k+=5)fins+=`M58,0 L74,${k} `;
+  for(let x=20;x<=38;x+=4)fins+=`M${x},20 L${x+3},28 `;
+  const skel=bone==='none'?'':`<g class="hard" fill="${bone}" stroke="${bone}">
+    <path d="M-68,0 C-63,-15 -50,-19 -40,-15 L-38,0 L-40,15 C-50,19 -63,15 -68,0Z" fill="none" stroke-width="2"/>
+    <circle cx="-54" cy="-6" r="5" fill="none" stroke-width="1.6"/><path d="M-68,2 L-50,8 M-46,-14 L-44,14" fill="none" stroke-width="1.4"/>
+    <path d="M-38,0 L60,0" stroke-width="1.6"/>${verts}
+    <path d="${ribs}" fill="none" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="${fins}" fill="none" stroke-width=".9"/></g>`;
+  const body='M-70,0 C-62,-18 -30,-27 5,-25 C30,-23 46,-12 56,-5 L76,-24 C71,-10 71,10 76,24 L56,5 C46,12 30,23 5,25 C-30,27 -62,18 -70,0Z';
+  const finsP='M-12,-23 C-5,-40 18,-38 30,-19Z M18,21 C24,33 37,31 41,14Z M-20,22 C-16,33 -5,33 -1,24Z';
+  if(style==='hard')return skel;
+  if(style==='imprint')return `<path d="${body}" fill="rgba(60,45,30,.2)" stroke="rgba(40,30,20,.6)" stroke-width="2"/><path d="${finsP}" fill="rgba(60,45,30,.15)" stroke="rgba(40,30,20,.5)" stroke-width="1.5"/>
+    <path d="M-40,0 L55,0 M-42,-14 Q-36,0 -42,14" fill="none" stroke="rgba(255,250,235,.5)" stroke-width="1.2"/>`;
+  if(style==='exc')return `<path d="${finsP}" fill="rgba(90,60,40,.3)" stroke="rgba(70,45,30,.5)" stroke-width="1"/><path d="${body}" fill="rgba(90,60,40,.3)" stroke="rgba(70,45,30,.65)" stroke-width="1.5"/>`+skel;
+  let scales='';for(let x=-30;x<=40;x+=9)for(let y=-14;y<=14;y+=9)scales+=`M${x},${y} q4,4 0,8 `;
+  return skel+`<g class="soft"><path d="${finsP}" fill="#5f8fb0" stroke="#2d4a63" stroke-width="1.3"/>
+    <path d="${body}" fill="url(#fishGrad)" stroke="#2d4a63" stroke-width="2"/>
+    <path d="${scales}" fill="none" stroke="rgba(45,74,99,.35)" stroke-width="1"/>
+    <path d="M-42,-16 Q-35,0 -42,16" fill="none" stroke="#2d4a63" stroke-width="1.6"/>
+    <path d="M-38,-2 C-10,-4 30,-3 56,0" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.2" stroke-dasharray="3 3"/>
+    <path d="M-40,6 C-30,15 -18,17 -13,11 C-22,7 -32,5 -40,6Z" fill="#4f7fa0" stroke="#2d4a63" stroke-width="1"/>
+    <circle cx="-54" cy="-6" r="4.5" fill="#fff" stroke="#2d4a63"/><circle cx="-55" cy="-6" r="2.4" fill="#111"/>
+    <path d="M-70,0 Q-64,3 -58,2" stroke="#2d4a63" fill="none" stroke-width="1.3"/></g>`;
+}
+function jellySVG(style){
+  const bell='M-45,0 C-45,-58 45,-58 45,0 Q37,7 30,2 Q22,8 15,2 Q7,8 0,2 Q-7,8 -15,2 Q-22,8 -30,2 Q-37,7 -45,0Z';
+  let tent='';for(let i=0;i<9;i++){const x=-40+i*10;tent+=`M${x},3 Q${x+6},22 ${x-2},40 T${x+2},74 `;}
+  const arms='M-8,4 C-14,22 -2,34 -10,52 C-4,40 4,30 -2,4Z M8,4 C14,22 2,34 10,52 C4,40 -4,30 2,4Z M0,4 C-4,26 6,40 0,60 C-3,40 4,24 0,4Z';
+  if(style==='imprint'){let rad='';for(let a=-80;a<=80;a+=20){const r=a*Math.PI/180;rad+=`M0,-2 L${f1(Math.sin(r)*40)},${f1(-Math.cos(r)*38+4)} `;}
+    return `<path d="${bell}" fill="rgba(60,45,30,.2)" stroke="rgba(40,30,20,.55)" stroke-width="2"/><path d="${rad}" stroke="rgba(255,250,235,.5)" stroke-width="1.1" fill="none"/>
+    <path d="${tent}" fill="none" stroke="rgba(40,30,20,.25)" stroke-width="1"/>`;}
+  if(style==='exc')return `<path d="${tent}" fill="none" stroke="rgba(90,60,40,.55)" stroke-width="1.4"/><path d="${arms}" fill="rgba(90,60,40,.35)"/>
+    <path d="${bell}" fill="rgba(100,70,50,.4)" stroke="rgba(70,45,30,.7)" stroke-width="1.5"/>
+    <g fill="none" stroke="rgba(70,45,30,.6)" stroke-width="2"><circle cx="-18" cy="-18" r="6"/><circle cx="-6" cy="-21" r="6"/><circle cx="6" cy="-21" r="6"/><circle cx="18" cy="-18" r="6"/></g>`;
+  return `<g class="soft"><path class="tent" d="${tent}" fill="none" stroke="rgba(170,140,220,.85)" stroke-width="1.6"/>
+    <path d="${arms}" fill="rgba(205,150,225,.6)" stroke="rgba(150,100,190,.7)" stroke-width="1"/>
+    <path d="${bell}" fill="rgba(196,176,236,.62)" stroke="#8a6fc4" stroke-width="2"/>
+    <path d="M-36,-14 C-30,-38 30,-38 36,-14" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="3" stroke-linecap="round"/>
+    <g fill="none" stroke="#a56cc7" stroke-width="2.4"><circle cx="-18" cy="-16" r="6"/><circle cx="-6" cy="-19" r="6"/><circle cx="6" cy="-19" r="6"/><circle cx="18" cy="-16" r="6"/></g></g>`;
+}
+function leafSVG(style){
+  const blade='M0,-60 C14,-55 20,-46 24,-38 L28,-36 C30,-26 33,-16 31,-6 L34,-4 C32,10 28,24 20,36 L22,39 C14,48 8,53 0,58 C-8,53 -14,48 -22,39 L-20,36 C-28,24 -32,10 -34,-4 L-31,-6 C-33,-16 -30,-26 -28,-36 L-24,-38 C-20,-46 -14,-55 0,-60Z';
+  let veins='M0,-56 L0,74 ';for(let y=-42;y<=38;y+=13){veins+=`M0,${y} Q12,${y-5} ${24-Math.abs(y)*.12},${y-14} M0,${y} Q-12,${y-5} ${-24+Math.abs(y)*.12},${y-14} `;}
+  const S={live:{f:'#5aa04a',s:'#2f6b2a',v:'#cfe5a7',p:'#4a7a2a'},comp:{f:'#2e2116',s:'#1d140c',v:'#5b4532',p:'#2e2116'},
+           exc:{f:'#3a2c1c',s:'#1d140c',v:'#6b553e',p:'#3a2c1c'},imprint:{f:'rgba(60,45,30,.18)',s:'rgba(40,30,20,.6)',v:'rgba(255,250,235,.55)',p:'rgba(40,30,20,.5)'}}[style]||{f:'#5aa04a',s:'#2f6b2a',v:'#cfe5a7',p:'#4a7a2a'};
+  return `<path d="M0,56 L0,80" stroke="${S.p}" stroke-width="3" stroke-linecap="round"/>
+    <path class="soft blade" d="${blade}" fill="${S.f}" stroke="${S.s}" stroke-width="1.8"/>
+    <path class="vein" d="${veins}" fill="none" stroke="${S.v}" stroke-width="1.4" stroke-linecap="round"/>`;
+}
+function orgSVG(org,style){
+  return {ammonite:ammoniteSVG,poisson:fishSVG,meduse:jellySVG,feuille:leafSVG}[org](style);
+}
+const ORG_GEOM={
+  ammonite:{s:.62,restRot:15,restDy:-30,sy:1},
+  poisson:{s:.82,restRot:5,restDy:-20,sy:1},
+  meduse:{s:.78,restRot:0,restDy:-22,sy:.5},
+  feuille:{s:.62,restRot:-80,restDy:-17,sy:1}
+};
+function alivePos(org,env){
+  if(org==='ammonite')return{x:520,y:205,rot:-15};
+  if(org==='poisson')return{x:470,y:200,rot:0};
+  if(org==='meduse')return{x:500,y:180,rot:0};
+  if(env==='calme')return{x:300,y:62,rot:-80};
+  return{x:274,y:76,rot:165};
+}
+function fragShards(org,style,seed,spread){
+  const r=rng(seed),out=[];if(org==='meduse')return out;
+  const n=org==='feuille'?9:8;
+  for(let i=0;i<n;i++){
+    const dx=(r()-.5)*spread*2,dy=(r()-.5)*spread*.35,rot=r()*360,sz=.7+r()*.6;let s='';
+    if(org==='ammonite'){const c=style==='live'?'#ecd3a4':'#c3b69c',st=style==='live'?'#6b4423':'#5e5343';
+      s=`<path d="M-7,-5 L6,-7 L9,3 L-3,7 Z" fill="${c}" stroke="${st}" stroke-width="1.3"/><path d="M-3,-6 Q0,0 -1,6 M3,-6 Q5,0 3,5" stroke="${st}" stroke-width="1" fill="none"/>`;}
+    else if(org==='poisson'){const c=style==='live'?'#f3eee0':'#5a3f27';
+      s=i%3===0?`<g fill="${c}"><rect x="-6" y="-2" width="3.4" height="4" rx="1"/><rect x="-1.5" y="-2" width="3.4" height="4" rx="1"/><rect x="3" y="-2" width="3.4" height="4" rx="1"/></g>`
+               :`<path d="M-8,0 Q0,-6 9,-4" stroke="${c}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;}
+    else{const c=style==='live'?'#6a9d47':'#3d2c1b';s=`<path d="M-6,-4 L5,-6 L7,2 L1,6 L-5,3Z" fill="${c}"/><path d="M-4,0 L5,-2" stroke="${style==='live'?'#cfe5a7':'#6b553e'}" stroke-width=".8"/>`;}
+    out.push({dx,dy,rot,sz,svg:s});
+  }
+  return out;
+}
+function fossilMarkup(org,outcome,seed){
+  const g=ORG_GEOM[org];const tr=`rotate(${g.restRot}) scale(1,${g.sy*.88})`;
+  switch(outcome){
+    case 'hard':case 'imprint':case 'exc':return `<g transform="${tr}">${orgSVG(org,outcome)}</g>`;
+    case 'comp':return `<g transform="${tr}">${leafSVG('comp')}</g>`;
+    case 'frag':return fragShards(org,'fossil',seed,90).map(s=>`<g transform="translate(${f1(s.dx)},${f1(s.dy)}) rotate(${f1(s.rot)}) scale(${f1(s.sz*1.4)})">${s.svg}</g>`).join('');
+    default:{const r=rng(seed);let s='';for(let i=0;i<6;i++)s+=`<circle cx="${f1((r()-.5)*90)}" cy="${f1((r()-.5)*30)}" r="${f1(.8+r()*1.2)}" fill="rgba(50,35,20,.35)"/>`;return s;}
+  }
+}
+function footPrint(x,y,ang,op,sc){
+  return `<g transform="translate(${f1(x)},${f1(y)}) rotate(${f1(ang)}) scale(${f1(sc)})" opacity="${f1(op)}"><path d="M0,5 C-5,5 -7,-1 -4,-5 L-12,-17 C-13,-20 -9,-21 -8,-18 L-1,-8 L-1,-23 C-1,-26 3,-26 3,-23 L3,-8 L10,-18 C11,-21 15,-19 14,-17 L6,-4 C9,1 5,5 0,5Z" fill="rgba(55,40,25,.55)" stroke="rgba(30,20,10,.55)" stroke-width="1"/><path d="M-3,-6 L-9,-15 M1,-9 L1,-20 M5,-6 L11,-15" stroke="rgba(255,250,235,.35)" stroke-width=".8"/></g>`;
+}
+function printsMarkup(outcome,seed){
+  const r=rng(seed);let s='';
+  if(outcome==='tnone'){for(let i=0;i<8;i++)s+=`<circle cx="${f1((r()-.5)*240)}" cy="${f1((r()-.5)*60)}" r="${f1(1+r()*1.5)}" fill="rgba(50,35,20,.3)"/>`;return s;}
+  for(let i=0;i<6;i++){
+    const x=-115+i*46,y=i%2?13:-13;
+    if(outcome==='twell')s+=footPrint(x,y,90+(r()-.5)*8,.95,1);
+    else{const keep=r();if(keep<.5)s+=footPrint(x+(r()-.5)*6,y,90+(r()-.5)*30,.3+r()*.25,.8+r()*.4);}
+  }
+  return s;
+}
+function dinoSVG(){
+  return `<g id="dinoBody"><path d="M-62,-40 C-44,-46 -14,-55 8,-52 C22,-51 30,-60 38,-67 C46,-74 60,-72 66,-65 C69,-60 63,-56 54,-56 C46,-55 40,-49 32,-43 C22,-33 2,-29 -14,-32 C-32,-36 -50,-37 -62,-40Z" fill="#6e8b4e" stroke="#3d5229" stroke-width="2"/>
+    <path d="M-40,-44 C-20,-50 0,-52 14,-50" stroke="#8fa86a" stroke-width="3" fill="none" opacity=".7"/>
+    <circle cx="56" cy="-66" r="2.6" fill="#1b1b1b"/><path d="M60,-58 L66,-60" stroke="#3d5229" stroke-width="1.5"/>
+    <path d="M30,-44 Q36,-36 40,-34 M40,-34 L44,-33" stroke="#3d5229" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+    <g id="legA" transform="translate(4,-36)"><path d="M-6,-6 C8,0 6,14 2,22 L4,34 L14,36 L-4,37 L-6,22 C-10,12 -12,0 -6,-6Z" fill="#5f7a42" stroke="#3d5229" stroke-width="1.6"/></g>
+    <g id="legB" transform="translate(4,-36)"><path d="M-6,-6 C8,0 6,14 2,22 L4,34 L14,36 L-4,37 L-6,22 C-10,12 -12,0 -6,-6Z" fill="#6e8b4e" stroke="#3d5229" stroke-width="1.6"/></g>`;
+}
+function crabSVG(land){
+  if(land)return `<g><ellipse rx="9" ry="5.5" fill="#2f2a24"/><circle cx="9" cy="-1" r="3.5" fill="#2f2a24"/><path d="M-6,3 L-9,8 M0,4 L0,9 M5,3 L8,8 M-6,-3 L-9,-7 M5,-4 L8,-8" stroke="#2f2a24" stroke-width="1.4"/><path d="M-8,0 L8,0" stroke="#5a5048" stroke-width="1"/></g>`;
+  return `<g><path d="M-9,4 L-15,10 M-5,5 L-9,11 M5,5 L9,11 M9,4 L15,10" stroke="#a6402a" stroke-width="2" stroke-linecap="round"/>
+    <ellipse rx="12" ry="7" fill="#d0573a" stroke="#8c3220" stroke-width="1.3"/>
+    <path d="M-11,-3 Q-17,-10 -20,-6 M11,-3 Q17,-10 20,-6" stroke="#a6402a" stroke-width="2.2" fill="none"/>
+    <circle cx="-20" cy="-7" r="3.5" fill="#d0573a" stroke="#8c3220"/><circle cx="20" cy="-7" r="3.5" fill="#d0573a" stroke="#8c3220"/>
+    <circle cx="-4" cy="-8" r="1.8" fill="#111"/><circle cx="4" cy="-8" r="1.8" fill="#111"/></g>`;
+}
+
+/* =========================================================
+   ENVIRONNEMENTS
+   ========================================================= */
+const OLDPAL={calme:['#d9c49a','#b7a07a','#c9b38c','#a28d6c','#8f7b5e'],agite:['#cdb48a','#a99070','#bda27b','#957d60','#86705a'],
+  lac:['#7d7462','#6d6656','#857c68','#5f584b','#6a6253'],sol:['#8a6a45','#75593a','#9a7a52','#664d33','#5b452f'],trace:['#8a6a45','#75593a','#9a7a52','#664d33','#5b452f']};
+const NEWPAL={calme:['#e3d3ae','#c6b08a','#dccaa3','#b9a27e','#e8d9b6','#c2ab86','#d6c39c'],agite:['#d2b88c','#b49a72','#cbb085','#a88f69','#d8c095','#b39a73','#c6ad84'],
+  lac:['#a29a85','#857e6b','#ada591','#8e8774','#9b947f','#7c7563','#aaa28d'],sol:['#b08b5c','#93734c','#bb9868','#9b7a50','#c3a274','#8d6e48','#ad8a5e'],
+  trace:['#c3ad86','#a68f6a','#bfa983','#9e8865','#cbb68f','#a48d68','#b8a27d']};
+let ENV={water:true,surf:56,env:'calme'};
+const DECO_SVG={
+  calme:()=>{let s='';[[110,0],[150,1],[870,2],[905,0]].forEach(([x,k])=>{s+=`<path d="M${x},${FLOOR} C${x-10},${FLOOR-25} ${x+12},${FLOOR-45} ${x},${FLOOR-70-k*10} C${x+8},${FLOOR-48} ${x-2},${FLOOR-26} ${x+4},${FLOOR}Z" fill="#3f8f5a" opacity=".85"/>`;});
+    s+=`<g fill="#bfa47a"><ellipse cx="240" cy="${FLOOR+2}" rx="9" ry="4"/><ellipse cx="760" cy="${FLOOR+1}" rx="12" ry="5"/><ellipse cx="660" cy="${FLOOR+2}" rx="6" ry="3"/></g>`;
+    s+=`<path d="M330,${FLOOR} q4,-7 8,0 M800,${FLOOR} q5,-8 10,0" stroke="#e8dcc0" stroke-width="2" fill="none"/>`;return s;},
+  agite:()=>{let s='';for(let x=20;x<1000;x+=40)s+=`<path d="M${x},${FLOOR} q10,-7 20,0 q10,-3 20,0" stroke="#a88f68" stroke-width="2" fill="none"/>`;
+    s+=`<g fill="#8b7a66"><ellipse cx="200" cy="${FLOOR}" rx="14" ry="8"/><ellipse cx="820" cy="${FLOOR}" rx="18" ry="9"/><ellipse cx="700" cy="${FLOOR+1}" rx="9" ry="5"/></g>`;return s;},
+  lac:()=>{let s='';[30,55,75,925,950,972].forEach((x,i)=>{const top=ENV.surf-30-(i%3)*12;s+=`<path d="M${x},${FLOOR} L${x+(i%2?4:-4)},${top}" stroke="#4d7a3a" stroke-width="3"/><rect x="${x+(i%2?4:-4)-3.5}" y="${top}" width="7" height="22" rx="3.5" fill="#6b4a2c"/>`;});
+    s+=`<g fill="#5a5446"><ellipse cx="300" cy="${FLOOR}" rx="10" ry="4"/><ellipse cx="740" cy="${FLOOR}" rx="8" ry="3"/></g>`;return s;},
+  sol:()=>{let s='';for(let x=15;x<1000;x+=34)s+=`<path d="M${x},${FLOOR} l3,-12 l2,12 l4,-15 l3,15 l4,-10 l2,10" stroke="#4f8a3a" stroke-width="2" fill="none"/>`;
+    s+=`<g fill="#7d7468"><ellipse cx="640" cy="${FLOOR}" rx="13" ry="7"/><ellipse cx="380" cy="${FLOOR}" rx="8" ry="4"/></g>`;return s;}
+};
+function setGrad(id,stops){$(id).innerHTML=stops.map((c,i)=>`<stop offset="${i/(stops.length-1)}" stop-color="${c}"/>`).join('');}
+function branchSVG(y){return `<path d="M-10,${y-6} C80,${y-10} 180,${y-4} 285,${y}" stroke="#5b3c22" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <path d="M120,${y-6} q20,-18 50,-20" stroke="#5b3c22" stroke-width="4" fill="none"/>
+  <g transform="translate(168,${y-28}) rotate(-60) scale(.35)">${leafSVG('live')}</g><g transform="translate(60,${y+12}) rotate(170) scale(.35)">${leafSVG('live')}</g>`;}
+function treeSVG(){return `<rect x="22" y="40" width="38" height="${FLOOR-40}" fill="#6a4628"/><path d="M30,60 v200 M48,90 v160" stroke="#523519" stroke-width="2"/>
+  <circle cx="40" cy="20" r="60" fill="#3d7d38"/><circle cx="-10" cy="40" r="40" fill="#468a40"/>`;}
+function sunSVG(){return `<circle cx="900" cy="60" r="30" fill="#ffe28a"/><g fill="#fff" opacity=".85"><ellipse cx="620" cy="70" rx="55" ry="16"/><ellipse cx="660" cy="58" rx="35" ry="14"/></g>`;}
+
+function buildEnvRemains(){
+  const env=P.env;FLOOR=400;
+  ENV={env,water:env!=='sol',surf:env==='lac'?105:56};
+  setGrad('#gSky',env==='sol'?['#8cc8ea','#d8eef7']:['#bfe2f1','#e9f6fa']);
+  if(env==='calme')setGrad('#gWater',['#2a86bd','#145687','#0c3a62']);
+  if(env==='agite')setGrad('#gWater',['#2a6d97','#18496f','#0a2742']);
+  if(env==='lac')setGrad('#gWater',['#4f948a','#2f6862','#1d4744']);
+  let bg=`<rect width="1000" height="${FLOOR+4}" fill="url(#gSky)"/>`;
+  if(env==='sol'){bg+=sunSVG();if(P.org==='feuille')bg+=treeSVG();}
+  if(P.org==='feuille'&&(env==='sol'||env==='lac'))bg+=branchSVG(30);
+  $('#gBg').innerHTML=bg;
+  $('#water').style.display=ENV.water?'':'none';$('#water').setAttribute('fill','url(#gWater)');
+  const pal=OLDPAL[env];let y=FLOOR,s='';[40,52,46,60,80].forEach((h,i)=>{s+=`<path d="${bandPath(y,y+h)}" fill="${pal[i]}"/>`;y+=h;});
+  s+=`<path d="${bandPath(FLOOR,H+5)}" fill="url(#grain)" opacity=".7"/>`;
+  $('#gOld').innerHTML=s;
+  $('#gDeco').innerHTML=DECO_SVG[env]();
+  const ax=$('#anox');
+  if(P.oxy==='pauvre'&&ENV.water){ax.setAttribute('y',FLOOR-120);ax.setAttribute('height',120);ax.style.display='';}else ax.style.display='none';
+  $('#gTraceGround').innerHTML='';
+}
+const PRINT_X=[180,280,380,480,580,680,780];
+function buildEnvTrace(){
+  FLOOR=400;ENV={env:'trace',water:false,surf:0};
+  setGrad('#gSky',['#8cc8ea','#d8eef7']);
+  $('#gBg').innerHTML=`<rect width="1000" height="${FLOOR+4}" fill="url(#gSky)"/>${sunSVG()}<path d="M0,${FLOOR} C150,330 300,350 420,${FLOOR-20} C560,330 720,340 1000,${FLOOR-10} L1000,${FLOOR} Z" fill="#a9c79a" opacity=".6"/>`;
+  $('#water').style.display='none';$('#anox').style.display='none';
+  const hum=TP.soil==='humide', soilC=hum?'#6f5b40':'#c8a877';
+  const pal=OLDPAL.trace;let y=FLOOR+18,s='';[40,52,60,90].forEach((h,i)=>{s+=`<path d="${bandPath(y,y+h)}" fill="${pal[i]}"/>`;y+=h;});
+  s+=`<path d="${bandPath(FLOOR+18,H+5)}" fill="url(#grain)" opacity=".7"/>`;
+  $('#gOld').innerHTML=s;
+  let deco='';
+  if(hum)deco=`<g fill="rgba(170,205,230,.55)"><ellipse cx="120" cy="${FLOOR+1}" rx="40" ry="2.5"/><ellipse cx="880" cy="${FLOOR+1}" rx="50" ry="2.5"/></g>`;
+  else{for(let x=40;x<1000;x+=70)deco+=`<path d="M${x},${FLOOR+3} l6,6 l-3,5 M${x+30},${FLOOR+2} l-4,7" stroke="#8d7148" stroke-width="1.3" fill="none"/>`;}
+  $('#gDeco').innerHTML=deco;
+  $('#gTraceGround').innerHTML=`<rect x="0" y="${FLOOR-1}" width="1000" height="16" fill="#d8eef7"/>
+    <rect id="dipFill" x="0" y="${FLOOR}" width="1000" height="15" fill="#c3ad86" opacity="0"/>
+    <path id="groundTop" fill="${soilC}" stroke="${hum?'#4b3b27':'#a8895c'}" stroke-width="1.5"/>`;
+  setGround(PRINT_X.map(()=>0));
+}
+function setGround(depths){
+  let d=`M0,${FLOOR}`;
+  PRINT_X.forEach((x,i)=>{const dd=depths[i];if(dd>.15)d+=` L${x-18},${FLOOR} Q${x},${f1(FLOOR+dd*2)} ${x+18},${FLOOR}`;});
+  d+=` L1000,${FLOOR} L1000,${FLOOR+20} L0,${FLOOR+20}Z`;
+  const g=$('#groundTop');if(g)g.setAttribute('d',d);
+}
+
+/* =========================================================
+   ÉTAT DE LA SIMULATION
+   ========================================================= */
+const S={phase:'idle',t:0,speed:1,paused:false,clock:0};
+let run=null;
+const T_END=32.5;
+const PARTS=[];
+(function makeParticles(){const g=$('#gParticles');for(let i=0;i<120;i++){const c=el('circle',{r:2,cx:-50,cy:-50},g);c.style.display='none';PARTS.push({e:c,on:false,x:0,y:0,vx:0,vy:0});}})();
+let curLines=[];
+(function makeCurrents(){const g=$('#gCurrents');for(let i=0;i<10;i++){const l=el('path',{stroke:'rgba(255,255,255,.35)','stroke-width':2,fill:'none','stroke-linecap':'round'},g);curLines.push({e:l,x0:i*113,y:110+i*27});}})();
+
+function setOrgDef(org,style){
+  $('#orgDef').innerHTML=orgSVG(org,style);
+}
+function setOrgTransform(x,y,rot,s,sy){
+  const tr=`translate(${f1(x)},${f1(y)}) rotate(${f1(rot)}) scale(${s},${(s*sy).toFixed(3)})`;
+  $('#useA').setAttribute('transform',tr);$('#useB').setAttribute('transform',tr);
+}
+function setClip(top){$('#clipARect').setAttribute('height',f1(top+500));$('#clipBRect').setAttribute('y',f1(top));}
+
+/* ---------- Préparation d'une expérience ---------- */
+function layerPlan(kind,burial,palKey){
+  const pal=NEWPAL[palKey],L=[];let i=0;
+  const push=(t0,t1,h)=>L.push({t0,t1,h,c:pal[(i++)%pal.length]});
+  if(kind==='reste'){
+    if(burial==='rapide')push(5.3,9.5,64);
+    else if(burial==='lent'){push(6,13,15);push(13,15.2,30);}
+    else push(13.2,15.3,32);
+  }else{
+    if(burial==='rapide')push(8,11,16);
+    push(13.2,15.2,30);
+  }
+  let sum=L.reduce((a,b)=>a+b.h,0),t=L[L.length-1].t1;
+  const hs=[28,34,24,32,26,30];let k=0;
+  while(sum<185&&t<20){const h=hs[k++%hs.length];const t1=Math.min(20,t+1.25);push(t,t1,h);sum+=h;t=t1;}
+  return L;
+}
+function buildRun(){
+  const seed=(Math.random()*2147483647)|0, r=rng(seed);
+  run={mode,seed,r,acc:0,done:false};
+  $('#gLayers').innerHTML='';$('#gScav').innerHTML='';$('#gBact').innerHTML='';$('#gFrags').innerHTML='';$('#gFossil').innerHTML='';$('#gRain').innerHTML='';$('#gCritters').innerHTML='';
+  if(mode==='reste'){
+    const p={...P};run.p=p;run.outcome=pick(remainWeights(p),r);
+    buildEnvRemains();
+    const g=ORG_GEOM[p.org];
+    run.alive=alivePos(p.org,p.env);
+    run.rest={x:500+(p.env==='agite'?45:0),y:FLOOR+g.restDy,rot:g.restRot};
+    run.layers=layerPlan('reste',p.burial,p.env);
+    setOrgDef(p.org,'live');
+    run.softEls=[...$('#orgDef').querySelectorAll('.soft')];
+    run.hardEls=[...$('#orgDef').querySelectorAll('.hard')];
+    run.bladeEls=[...$('#orgDef').querySelectorAll('.blade')];
+    const o=run.outcome;
+    run.softEnd={exc:.85,comp:1,imprint:p.org==='meduse'?.4:(p.org==='feuille'?1:0)}[o]??0;
+    if(p.org==='feuille'&&(o==='none'||o==='frag'))run.softEnd=.15;
+    const fast=(p.decomp==='forte'?1:0)+(p.oxy==='oxygene'?1:0)+(p.burial==='aucun'?1:0);
+    run.softT1=fast>=2?8.5:(fast===1?11:13);
+    if(o==='exc')run.softT1=6;
+    // charognards
+    const land=p.env==='sol';let n={faible:1,moyenne:2,forte:4}[p.decomp];
+    run.scav=[];
+    for(let i=0;i<n;i++){const side=i%2?1:-1;let near=p.burial==='rapide'?75:24+i*7;
+      if(p.oxy==='pauvre'&&ENV.water)near=Math.max(near,140+i*15);
+      const e=el('g',{},$('#gScav'));e.innerHTML=crabSVG(land);
+      run.scav.push({e,side,x0:500+side*(560+i*30),near,ph:r()*6,access:p.burial!=='rapide'&&!(p.oxy==='pauvre'&&ENV.water)});}
+    // décomposeurs (bactéries / champignons)
+    const nb=Math.round({faible:7,moyenne:16,forte:30}[p.decomp]*(p.oxy==='pauvre'?.5:1));
+    run.bact=[];for(let i=0;i<nb;i++){const a=r()*Math.PI*2,d=Math.sqrt(r());
+      const c=el('circle',{r:f1(1.4+r()*1.4),fill:land?'#f2f0e0':'#9be37a',cx:f1(run.rest.x+Math.cos(a)*d*60),cy:f1(run.rest.y+Math.sin(a)*d*18)},$('#gBact'));
+      run.bact.push({e:c,ph:r()*6});}
+    run.bactEnd=p.burial==='rapide'?11:15;
+    // fragments
+    run.frags=[];
+    if(o==='frag'){fragShards(p.org,'live',seed,p.env==='agite'?120:75).forEach(s=>{const e=el('g',{},$('#gFrags'));e.innerHTML=s.svg;run.frags.push({...s,e});});}
+    // fossile final
+    const fx=run.rest.x,fy=run.rest.y+1.5;
+    $('#gFossil').innerHTML=`<g transform="translate(${fx},${fy}) scale(${g.s})">${fossilMarkup(p.org,o,seed)}</g>`;
+    run.zoom=[fx-170,fy-125,340,210];
+  }else{
+    const p={...TP};run.p=p;run.outcome=pick(traceWeights(p),r);
+    buildEnvTrace();
+    run.layers=layerPlan('trace',p.cover,'trace');
+    const d0=p.soil==='humide'?9:3;
+    run.depth0=d0;
+    run.fin=PRINT_X.map(()=>{if(run.outcome==='twell')return .85+r()*.15;if(run.outcome==='tpart')return r()<.5?.45:.1;return 0;});
+    $('#gDino').innerHTML=dinoSVG();
+    if(p.cover==='aucun'){run.rain=[];for(let i=0;i<34;i++){const l=el('path',{stroke:'rgba(80,120,170,.6)','stroke-width':1.5},$('#gRain'));run.rain.push({e:l,x:r()*1000,ph:r()});}}
+    run.crit=[];
+    if(p.disturb==='forte'){for(let i=0;i<3;i++){const e=el('g',{},$('#gCritters'));e.innerHTML=`<ellipse rx="11" ry="5" fill="#7a5a3a"/><circle cx="11" cy="-2" r="4" fill="#7a5a3a"/><path d="M-6,4 l-3,5 M6,4 l3,5 M-14,0 l-8,-2" stroke="#5a3f27" stroke-width="2"/>`;
+      run.crit.push({e,dir:i%2?-1:1,t0:8+i*1.4,sp:180+r()*80});}}
+    const fy=318;
+    $('#gFossil').innerHTML=`<g transform="translate(500,${fy})"><rect x="-150" y="-52" width="300" height="104" rx="6" fill="#bfa983" stroke="#6b5a40" stroke-width="2"/>
+      <rect x="-150" y="-52" width="300" height="104" rx="6" fill="url(#grain)"/><rect x="-150" y="-52" width="300" height="104" rx="6" fill="url(#cement)" opacity=".5"/>
+      ${printsMarkup(run.outcome,seed)}
+      <text x="0" y="-58" text-anchor="middle" font-size="9" fill="#fff" font-weight="700" stroke="#14213d" stroke-width=".4">Surface de la couche, vue de dessus</text>
+      <path d="M0,52 L0,74" stroke="#fff" stroke-width="1.2" stroke-dasharray="3 2"/></g>`;
+    run.zoom=[290,212,420,260];
+  }
+  run.layerEls=run.layers.map(l=>el('path',{fill:l.c,stroke:'rgba(70,50,30,.5)','stroke-width':1.2},$('#gLayers')));
+}
+
+/* ---------- Couches de sédiments ---------- */
+function updLayers(t){
+  const comp=1-.06*seg(t,14,20)-.22*seg(t,20,24.5);
+  let y=FLOOR;
+  run.layers.forEach((l,i)=>{const h=l.h*seg(t,l.t0,l.t1)*comp;const e=run.layerEls[i];
+    if(h<.3){e.setAttribute('d','');return;}e.setAttribute('d',bandPath(y-h,y));y-=h;});
+  const top=y;
+  $('#layerTex').setAttribute('d',top<FLOOR-.5?bandPath(top,FLOOR):'');
+  const cem=seg(t,20.5,25);
+  $('#layerCem').setAttribute('d',top<FLOOR-.5?bandPath(top,FLOOR+14):'');$('#layerCem').setAttribute('opacity',f1(cem*.9));
+  $('#layerDark').setAttribute('d',top<FLOOR-.5?bandPath(top,FLOOR):'');$('#layerDark').setAttribute('opacity',(cem*.2).toFixed(2));
+  const ob=seg(t,20.5,25);
+  $('#overb').setAttribute('d',ob>0?bandPath(-10,top):'');$('#overb').setAttribute('opacity',ob.toFixed(2));
+  return top;
+}
+
+/* ---------- Particules sédimentaires ---------- */
+function partRate(t){
+  const R=run;let k=R.mode==='reste'?R.p.burial:R.p.cover;
+  if(R.mode==='reste'){
+    if(k==='rapide'){if(t>=5&&t<9.5)return 75;if(t>=13&&t<20)return 22;}
+    if(k==='lent'){if(t>=5&&t<13)return 14;if(t>=13&&t<20)return 24;}
+    if(k==='aucun'){if(t>=13&&t<20)return 26;}
+  }else{
+    if(k==='rapide'&&t>=8&&t<11)return 65;
+    if(t>=13&&t<20)return 24;
+  }
+  return 0;
+}
+function updParticles(t,dt,top){
+  const R=run;R.acc+=partRate(t)*dt;
+  const pal=NEWPAL[R.mode==='reste'?R.p.env:'trace'];
+  while(R.acc>=1){R.acc-=1;const p=PARTS.find(q=>!q.on);if(!p)break;
+    p.on=true;p.x=150+Math.random()*700;p.y=ENV.water?ENV.surf+4:-5;p.vy=110+Math.random()*80;
+    p.vx=(ENV.env==='agite')?40+Math.random()*50:(Math.random()-.5)*16;
+    p.e.setAttribute('r',f1(1.3+Math.random()*1.4));p.e.setAttribute('fill',pal[(Math.random()*pal.length)|0]);
+    p.e.setAttribute('stroke','rgba(60,40,20,.35)');p.e.style.display='';}
+  PARTS.forEach(p=>{if(!p.on)return;p.x+=p.vx*dt;p.y+=p.vy*dt;
+    if(ENV.env==='agite')p.x+=Math.sin(p.y*.03)*1.2;
+    if(p.y>=top-1||p.x>1010){p.on=false;p.e.style.display='none';return;}
+    p.e.setAttribute('cx',f1(p.x));p.e.setAttribute('cy',f1(p.y));});
+}
+function clearParticles(){PARTS.forEach(p=>{p.on=false;p.e.style.display='none';});}
+
+/* ---------- Surface de l'eau & courants ---------- */
+function updWater(){
+  if(!ENV.water)return;
+  const amp={calme:3,agite:9,lac:2}[ENV.env]||3, c=S.clock;
+  let d=`M0,${ENV.surf}`;
+  for(let x=0;x<=1000;x+=25)d+=` L${x},${f1(ENV.surf+Math.sin(x*.02+c*(ENV.env==='agite'?3:1.4))*amp+Math.sin(x*.047-c*1.9)*amp*.4)}`;
+  d+=` L1000,${FLOOR+3} L0,${FLOOR+3}Z`;
+  $('#water').setAttribute('d',d);
+}
+function updCurrents(show){
+  curLines.forEach((l,i)=>{if(!show){l.e.setAttribute('d','');return;}
+    const x=((l.x0+S.clock*170)%1150)-60,y=l.y+Math.sin(S.clock+i)*6;
+    l.e.setAttribute('d',`M${f1(x)},${f1(y)} q20,-6 40,0 t40,0`);});
+}
+
+/* ---------- HUD ---------- */
+const STEPS=['Étape 1 : dépôt des restes','Étape 2 : décomposition et enfouissement','Étape 3 : accumulation des sédiments','Étape 4 : transformation en roche','Étape 5 : observation de la roche'];
+const STEPS_T=['Étape 1 : passage de l\'animal','Étape 2 : recouvrement ou érosion','Étape 3 : accumulation des sédiments','Étape 4 : transformation en roche','Étape 5 : observation de la roche'];
+const TIMES=['de quelques heures à quelques jours','de quelques jours à quelques années','des milliers à des millions d\'années','des millions d\'années (durée très variable)','aujourd\'hui : la roche est observée'];
+function stepIdx(t){return t<5?0:t<13?1:t<20?2:t<27?3:4;}
+function updHud(t){
+  const i=stepIdx(t);
+  $('#stepLbl').textContent=(run.mode==='reste'?STEPS:STEPS_T)[i];
+  $('#timeTxt').textContent=TIMES[i];
+  $('#timeFill').style.width=(clamp(t/29)*100).toFixed(1)+'%';
+}
+function infoText(){
+  if(mode==='reste')return `<b>${L.org[P.org]}</b> · ${L.env[P.env]} · Enfouissement : ${L.burial[P.burial].toLowerCase()} · Décomposeurs : ${L.decomp[P.decomp].toLowerCase()} · ${L.oxy[P.oxy]}`;
+  return `<b>Animal terrestre (traces de pas)</b> · ${L.soil[TP.soil]} · ${L.cover[TP.cover]} · ${L.disturb[TP.disturb]}`;
+}
+function setViewBox(k){
+  const z=run?run.zoom:[0,0,W,H];
+  const v=[0,0,W,H].map((a,i)=>lerp(a,z[i],k));
+  $('#scene').setAttribute('viewBox',v.map(f1).join(' '));
+}
+
+/* =========================================================
+   MISE À JOUR : FOSSILES DE RESTES
+   ========================================================= */
+function updRemains(t,dt){
+  const R=run,p=R.p,g=ORG_GEOM[p.org],o=R.outcome;
+  const top=updLayers(t);
+  // trajectoire de l'organisme
+  const a=R.alive,re=R.rest;let x,y,rot;
+  if(t<.4){x=a.x;y=a.y;rot=a.rot;}
+  else if(t<4.6){const k=ease(seg(t,.4,4.6));x=lerp(a.x,re.x,k);y=lerp(a.y,re.y,k);rot=lerp(a.rot,re.rot,k);
+    const sw=p.org==='feuille'?1:.3;x+=Math.sin(t*2.6)*45*sw*(1-k);rot+=Math.sin(t*2.6)*32*sw*(1-k);
+    if(p.env==='agite')x+=Math.sin(t*3.1)*10*(1-k);}
+  else{x=re.x;y=re.y;rot=re.rot;}
+  const exposed=top>re.y-6;
+  if(p.env==='agite'&&t>4.6&&t<13&&exposed){x+=Math.sin(t*4.5)*4;rot+=Math.sin(t*3.3)*4;}
+  const comp=1-.12*seg(t,20,24.5);
+  setOrgTransform(x,y+(1-comp)*10,rot,g.s,g.sy*comp);
+  setClip(top);
+  // opacité globale
+  let op=1;
+  if(o==='none')op=p.burial==='rapide'?1-seg(t,15,22):1-seg(t,7.5,12.5);
+  else if(o==='frag')op=1-seg(t,8.5,10.5);
+  op*=1-seg(t,24,26.5);
+  $('#orgA').setAttribute('opacity',op.toFixed(3));$('#orgB').setAttribute('opacity',(op*.5).toFixed(3));
+  // parties molles / dures
+  const sOp=t<2.5?1:lerp(1,R.softEnd,ease(seg(t,2.5,R.softT1)));
+  R.softEls.forEach(e=>e.setAttribute('opacity',sOp.toFixed(3)));
+  let hOp=1;if(o==='imprint'&&p.org!=='feuille')hOp=1-.85*seg(t,21,24);
+  R.hardEls.forEach(e=>e.setAttribute('opacity',hOp.toFixed(3)));
+  if(p.org==='feuille'){
+    let c='#5aa04a';
+    if(o==='comp')c=t<17?lerpColor('#5aa04a','#7a5a2a',seg(t,9,17)):lerpColor('#7a5a2a','#2e2116',seg(t,17,24));
+    else c=lerpColor('#5aa04a','#7a5a2a',seg(t,4,12));
+    R.bladeEls.forEach(e=>e.setAttribute('fill',c));
+  }
+  if(p.org==='meduse'&&t<4.6){const tent=$('#orgDef .tent');if(tent)tent.setAttribute('transform',`translate(${f1(Math.sin(t*3)*3)},0)`);}
+  // charognards
+  R.scav.forEach(s=>{
+    const xn=re.x+s.side*s.near;let sx,vis=t>4.8&&t<14.6,moving=true;
+    if(t<5)sx=s.x0;
+    else if(t<9.5)sx=lerp(s.x0,xn,ease(seg(t,5,9.5)));
+    else if(t<12){const k=seg(t,9.5,12);sx=s.access?xn+Math.sin(t*9+s.ph)*3:xn+s.side*90*k;moving=!s.access;}
+    else sx=lerp(s.access?xn:xn+s.side*90,s.x0,ease(seg(t,12,14.5)));
+    const dir=(t<9.5)?-s.side:s.side;
+    const sy=Math.min(top,FLOOR)-7-(moving?Math.abs(Math.sin(t*12+s.ph))*1.5:0);
+    s.e.style.display=vis?'':'none';
+    s.e.setAttribute('transform',`translate(${f1(sx)},${f1(sy)}) scale(${dir<0?-1:1},1)`);
+  });
+  // décomposeurs
+  R.bact.forEach(b=>{const v=seg(t,2.5,4)*(1-seg(t,R.bactEnd-1.5,R.bactEnd));b.e.setAttribute('opacity',(v*(.45+.55*Math.abs(Math.sin(t*4+b.ph)))).toFixed(2));});
+  // fragments dispersés
+  if(R.frags.length){const k=ease(seg(t,8.5,12));R.frags.forEach(f=>{f.e.style.display=t>8.4?'':'none';
+    f.e.setAttribute('transform',`translate(${f1(re.x+f.dx*k)},${f1(FLOOR-4+f.dy*k*.3)}) rotate(${f1(f.rot*k)}) scale(${f1(g.s*f.sz*1.3)})`);});}
+  updParticles(t,dt,top);
+  updCurrents(p.env==='agite'&&t<20);
+  // fossile & zoom
+  $('#gFossil').setAttribute('opacity',seg(t,23.5,26.5).toFixed(3));
+  setViewBox(ease(seg(t,27,29.5)));
+}
+
+/* =========================================================
+   MISE À JOUR : FOSSILES DE TRACES
+   ========================================================= */
+function updTrace(t,dt){
+  const R=run,p=R.p;
+  const top=updLayers(t);
+  // dinosaure qui marche
+  const dx=t<.5?-120:t<7.5?lerp(-120,1130,(t-.5)/7):1300;
+  const bob=Math.abs(Math.sin(t*7))*3;
+  $('#gDino').setAttribute('transform',`translate(${f1(dx)},${f1(FLOOR-bob+3)})`);
+  const la=$('#legA'),lb=$('#legB');
+  if(la){const sw=t<7.5&&t>.5?Math.sin(t*7)*28:0;la.setAttribute('transform',`translate(4,-36) rotate(${f1(sw)})`);lb.setAttribute('transform',`translate(4,-36) rotate(${f1(-sw)})`);}
+  // empreintes en coupe
+  const kE=seg(t,8,12.5);
+  const depths=PRINT_X.map((x,i)=>{const form=clamp((dx-(x-10))/25);const d=R.depth0*form;return d*lerp(1,R.fin[i],kE);});
+  setGround(depths);
+  const L0=R.layers[0];const df=$('#dipFill');
+  if(df){df.setAttribute('fill',L0.c);df.setAttribute('opacity',seg(t,L0.t0,L0.t0+1.2).toFixed(2));}
+  // pluie (pas de recouvrement)
+  if(R.rain){const on=t>8&&t<13;R.rain.forEach(r=>{if(!on){r.e.setAttribute('d','');return;}
+    const yy=((r.ph+t*1.6)%1)*FLOOR;r.e.setAttribute('d',`M${f1(r.x)},${f1(yy)} l-4,14`);});}
+  // petits animaux qui piétinent
+  R.crit.forEach(c=>{const k=t-c.t0;const vis=k>0&&k<5;c.e.style.display=vis?'':'none';
+    if(vis){const xx=c.dir>0?-40+k*c.sp:1040-k*c.sp;c.e.setAttribute('transform',`translate(${f1(xx)},${f1(FLOOR-5-Math.abs(Math.sin(k*14))*2)}) scale(${c.dir},1)`);}});
+  updParticles(t,dt,top);
+  updCurrents(false);
+  $('#gFossil').setAttribute('opacity',seg(t,23.5,26.5).toFixed(3));
+  setViewBox(ease(seg(t,27,29.5)));
+}
+
+/* =========================================================
+   ANIMATION AU REPOS (aperçu des paramètres)
+   ========================================================= */
+function idleFrame(){
+  if(mode==='reste'){
+    const a=alivePos(P.org,P.env),g=ORG_GEOM[P.org],c=S.clock;
+    let x=a.x,y=a.y,rot=a.rot,sy=1;
+    if(P.org==='poisson'){x+=Math.sin(c*.6)*40;y+=Math.sin(c*1.3)*6;rot=Math.cos(c*.6)>0?0:0;}
+    if(P.org==='ammonite'){y+=Math.sin(c*1.1)*8;x+=Math.sin(c*.4)*20;}
+    if(P.org==='meduse'){y+=Math.sin(c*1.2)*14;sy=1+Math.sin(c*3)*.06;}
+    if(P.org==='feuille'){rot+=Math.sin(c*1.5)*(P.env==='calme'?3:6);if(P.env==='calme')y+=Math.sin(c*1.6)*2;}
+    setOrgTransform(x,y,rot,g.s,sy);
+  }else{
+    const dino=$('#gDino');dino.setAttribute('transform',`translate(120,${FLOOR+3})`);
+  }
+  updCurrents(mode==='reste'&&P.env==='agite');
+}
+
+/* =========================================================
+   BOUCLE PRINCIPALE
+   ========================================================= */
+let last=performance.now();
+function frame(now){
+  let dt=Math.min(.05,(now-last)/1000);last=now;
+  if(!S.paused)S.clock+=dt;
+  if(S.phase==='run'&&!S.paused)advance(dt*S.speed);
+  else if(S.phase==='idle')idleFrame();
+  if(!(S.phase==='run'&&S.paused))updWater();
+  requestAnimationFrame(frame);
+}
+function advance(sim){
+  // sous-pas pour garder une animation stable à ×5
+  let n=Math.ceil(sim/.034);const d=sim/n;
+  for(let i=0;i<n;i++){S.t+=d;(run.mode==='reste'?updRemains:updTrace)(S.t,d);}
+  updHud(S.t);
+  if(S.t>=29.5)showResult();
+  if(S.t>=T_END&&!run.done)finishRun();
+}
+
+/* =========================================================
+   COMMANDES
+   ========================================================= */
+function startRun(){
+  closeJournalIfCompare();
+  clearParticles();setViewBox(0);
+  buildRun();
+  S.phase='run';S.t=0;S.paused=false;
+  $('#orgA').style.display=mode==='reste'?'':'none';$('#orgB').style.display=mode==='reste'?'':'none';
+  $('#hint').style.opacity=0;$('#resultCard').classList.add('hidden');
+  $('#stepLbl').style.opacity=1;$('#timeBox').style.opacity=1;
+  $('#infoLbl').innerHTML=infoText();
+  (run.mode==='reste'?updRemains:updTrace)(0,0);updHud(0);
+  $('#panel').classList.add('locked');
+  updButtons();
+}
+function finishRun(){
+  run.done=true;S.phase='done';
+  const p=run.p;
+  const e={n:nextN(),mode:run.mode,seed:run.seed,outcome:run.outcome,...p};
+  JOURNAL.push(e);saveJournal();renderJournal();
+  updButtons();
+}
+function showResult(){
+  const rc=$('#resultCard');if(!rc.classList.contains('hidden'))return;
+  const info=outcomeInfo(run.outcome,run.p.org);
+  $('#resTitle').textContent=info.title;$('#resTag').textContent=info.tag;$('#resTag').className='tag '+info.cls;$('#resDesc').textContent=info.desc;
+  rc.classList.remove('hidden');
+}
+function newExperiment(){
+  S.phase='idle';S.paused=false;S.t=0;run=null;
+  clearParticles();setViewBox(0);
+  $('#gLayers').innerHTML='';['#layerTex','#layerCem','#layerDark','#overb'].forEach(s=>$(s).setAttribute('d',''));
+  $('#gScav').innerHTML='';$('#gBact').innerHTML='';$('#gFrags').innerHTML='';$('#gFossil').innerHTML='';$('#gFossil').setAttribute('opacity',0);
+  $('#gRain').innerHTML='';$('#gCritters').innerHTML='';
+  $('#resultCard').classList.add('hidden');$('#stepLbl').style.opacity=0;$('#timeBox').style.opacity=0;$('#hint').style.opacity=1;
+  $('#panel').classList.remove('locked');
+  renderPanel();refreshIdle();updButtons();
+}
+function refreshIdle(){
+  setClip(FLOOR+200);
+  if(mode==='reste'){
+    buildEnvRemains();$('#gDino').innerHTML='';
+    setOrgDef(P.org,'live');
+    $('#orgA').style.display='';$('#orgB').style.display='';$('#orgA').setAttribute('opacity',1);$('#orgB').setAttribute('opacity',.5);
+  }else{
+    buildEnvTrace();$('#gDino').innerHTML=dinoSVG();
+    $('#orgA').style.display='none';$('#orgB').style.display='none';
+  }
+  setClip(FLOOR);
+  $('#infoLbl').innerHTML=infoText();
+  $('#modeChip').textContent=mode==='reste'?'Fossiles de restes':'Fossiles de traces';
+  $('#btnTrace').textContent=mode==='reste'?'Étudier une trace':'Revenir aux fossiles de restes';
+  idleFrame();updWater();
+}
+function updButtons(){
+  const ph=S.phase;
+  $('#btnStart').disabled=ph!=='idle';
+  $('#btnPause').disabled=!(ph==='run'&&!S.paused);
+  $('#btnResume').disabled=!(ph==='run'&&S.paused);
+  $('#btnRestart').disabled=ph==='idle';
+  $('#btnNew').disabled=ph==='idle';
+  $('#btnTrace').disabled=ph==='run';
+}
+$('#btnStart').onclick=startRun;
+$('#btnPause').onclick=()=>{S.paused=true;updButtons();};
+$('#btnResume').onclick=()=>{S.paused=false;last=performance.now();updButtons();};
+$('#btnRestart').onclick=()=>{S.phase='idle';startRun();};
+$('#btnNew').onclick=newExperiment;
+$('#btnTrace').onclick=()=>{mode=mode==='reste'?'trace':'reste';renderPanel();newExperiment();};
+$('#speed').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.speed=+b.dataset.s;[...$('#speed').children].forEach(c=>c.classList.toggle('on',c===b));};
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&S.phase==='run'&&e.target.tagName!=='INPUT'){e.preventDefault();S.paused=!S.paused;last=performance.now();updButtons();}});
+
+/* =========================================================
+   PANNEAU DES PARAMÈTRES
+   ========================================================= */
+function icon(org){
+  const vb={ammonite:'-62 -62 132 124',poisson:'-80 -42 160 84',meduse:'-50 -50 100 130',feuille:'-60 -60 120 120'}[org];
+  const inner=org==='feuille'?`<g transform="rotate(-50) scale(.75)">${leafSVG('live')}</g>`:orgSVG(org,'live');
+  return `<svg viewBox="${vb}" aria-hidden="true">${inner}</svg>`;
+}
+function grp(letter,title,key,vals,cur,cols,opts={}){
+  let h=`<div class="grp"><h3><span class="lt">${letter}</span>${title}</h3><div class="opts c${cols}">`;
+  vals.forEach(v=>{const dis=opts.disabled&&opts.disabled(v);
+    h+=`<button class="opt${v===cur?' sel':''}" data-k="${key}" data-v="${v}"${dis?' disabled title="Combinaison impossible avec cet organisme"':''}>${opts.icons?icon(v):''}<span>${opts.labels?opts.labels[v]:L[key][v]}</span></button>`;});
+  return h+`</div>${opts.note?`<div class="note">${opts.note}</div>`:''}</div>`;
+}
+function renderPanel(){
+  let h='<div class="lockmsg">Paramètres verrouillés pendant l\'expérience.</div>';
+  if(mode==='reste'){
+    h+=grp('A','Organisme','org',['ammonite','poisson','meduse','feuille'],P.org,2,{icons:true});
+    h+=grp('B','Environnement','env',['calme','agite','lac','sol'],P.env,2,{disabled:v=>!COMPAT[P.org].includes(v),note:COMPAT_TXT[P.org]});
+    h+=grp('C',"Vitesse d'enfouissement",'burial',['rapide','lent','aucun'],P.burial,3);
+    h+=grp('D','Décomposeurs et charognards','decomp',['faible','moyenne','forte'],P.decomp,3);
+    h+=grp('E','Oxygénation du milieu','oxy',['pauvre','oxygene'],P.oxy,2);
+  }else{
+    h+=`<div class="note" style="margin:0 0 10px">Un animal terrestre marche sur un sol meuble. Observe ce que deviennent ses empreintes.</div>`;
+    h+=grp('A','Nature du sol','soil',['humide','sec'],TP.soil,2);
+    h+=grp('B','Recouvrement par des sédiments','cover',['rapide','aucun'],TP.cover,2,{labels:{rapide:'Rapide',aucun:'Aucun'}});
+    h+=grp('C','Perturbation du sol (pluie, piétinement…)','disturb',['forte','faible'],TP.disturb,2,{labels:{forte:'Forte',faible:'Faible'}});
+  }
+  $('#panel').innerHTML=h;
+}
+$('#panel').onclick=e=>{
+  const b=e.target.closest('.opt');if(!b||b.disabled||S.phase!=='idle')return;
+  const k=b.dataset.k,v=b.dataset.v;
+  if(mode==='reste'){P[k]=v;if(k==='org'&&!COMPAT[v].includes(P.env))P.env=COMPAT[v][0];}
+  else TP[k]=v;
+  renderPanel();refreshIdle();
+};
+
+/* =========================================================
+   JOURNAL D'EXPÉRIENCES
+   ========================================================= */
+const STORE='fossilLab.journal.v1';
+let JOURNAL=[];let SEL=[];
+try{JOURNAL=JSON.parse(localStorage.getItem(STORE)||'[]')||[];}catch(e){JOURNAL=[];}
+function saveJournal(){try{localStorage.setItem(STORE,JSON.stringify(JOURNAL.slice(-60)));}catch(e){}}
+function nextN(){return JOURNAL.reduce((m,e)=>Math.max(m,e.n),0)+1;}
+function rowVals(e){
+  const res=outcomeInfo(e.outcome,e.org).title;
+  if(e.mode==='reste')return[L.org[e.org],L.env[e.env],L.burial[e.burial],L.decomp[e.decomp],L.oxy[e.oxy],res];
+  return['Animal terrestre (traces de pas)',L.soil[e.soil],e.cover==='rapide'?'Rapide':'Aucun','Perturbation '+e.disturb,'—',res];
+}
+function renderJournal(){
+  $('#jCount').textContent=JOURNAL.length;
+  SEL=SEL.filter(n=>JOURNAL.some(e=>e.n===n));
+  if(!JOURNAL.length){$('#jTable').innerHTML='<div class="empty">Aucune expérience terminée pour l\'instant.</div>';updCmpBtn();return;}
+  let h='<table><thead><tr><th></th><th>N°</th><th>Organisme</th><th>Environnement</th><th>Enfouissement</th><th>Décomposeurs</th><th>Oxygénation</th><th>Résultat</th></tr></thead><tbody>';
+  [...JOURNAL].reverse().forEach(e=>{const v=rowVals(e),s=SEL.includes(e.n);
+    h+=`<tr class="${s?'selrow':''}"><td><input type="checkbox" data-n="${e.n}" ${s?'checked':''} aria-label="Sélectionner l'expérience ${e.n}"></td><td>${e.n}</td>${v.map((x,i)=>i===5?`<td><b>${x}</b></td>`:`<td>${x}</td>`).join('')}</tr>`;});
+  $('#jTable').innerHTML=h+'</tbody></table>';
+  updCmpBtn();
+}
+function updCmpBtn(){$('#btnCompare').disabled=SEL.length!==2;$('#cmpHint').textContent=SEL.length===2?'Deux expériences sélectionnées.':`Coche deux expériences pour les comparer côte à côte (${SEL.length}/2).`;}
+$('#jTable').onchange=e=>{const c=e.target;if(!c.dataset.n)return;const n=+c.dataset.n;
+  if(c.checked){SEL.push(n);if(SEL.length>2)SEL.shift();}else SEL=SEL.filter(x=>x!==n);renderJournal();};
+function slabSVG(e){
+  const pal=e.mode==='reste'?NEWPAL[e.env]:NEWPAL.trace;
+  let bands='';const hs=[34,40,30,44,42];let y=-100;hs.forEach((h,i)=>{bands+=`<rect x="-160" y="${y}" width="320" height="${h}" fill="${pal[i]}"/>`;y+=h;});
+  const id='p'+e.n;
+  const fos=e.mode==='reste'?`<g transform="translate(0,4) scale(${ORG_GEOM[e.org].s*1.45})">${fossilMarkup(e.org,e.outcome,e.seed)}</g>`:`<g transform="scale(1.05)">${printsMarkup(e.outcome,e.seed)}</g>`;
+  return `<svg viewBox="-160 -100 320 190" xmlns="http://www.w3.org/2000/svg">${bands}<rect x="-160" y="-100" width="320" height="190" fill="#3a2a18" opacity=".12"/>
+    <rect x="-160" y="-100" width="320" height="190" fill="url(#grain)"/><rect x="-160" y="-100" width="320" height="190" fill="url(#cement)" opacity=".6"/>${fos}</svg>`;
+}
+$('#btnCompare').onclick=()=>{
+  const es=SEL.map(n=>JOURNAL.find(e=>e.n===n)).sort((a,b)=>a.n-b.n);
+  const rows=es.map(rowVals);const labels=['Organisme','Environnement','Enfouissement','Décomposeurs','Oxygénation','Résultat'];
+  const tlabels=['Étude','Sol','Recouvrement','Perturbation','Oxygénation','Résultat'];
+  let h='<div class="cmp">';
+  es.forEach((e,k)=>{const o=outcomeInfo(e.outcome,e.org);
+    h+=`<div class="cmpcard"><h4>Expérience n° ${e.n} — ${o.tag}</h4>${slabSVG(e)}<dl>`;
+    rows[k].forEach((v,i)=>{const lab=(e.mode==='reste'?labels:tlabels)[i];h+=`<dt>${lab}</dt><dd class="${v!==rows[1-k][i]?'diff':''}">${v}</dd>`;});
+    h+='</dl></div>';});
+  h+='</div><p class="cmpnote">Les cases surlignées indiquent ce qui diffère entre les deux expériences.</p>';
+  $('#cmpZone').innerHTML=h;$('#cmpZone').scrollIntoView({behavior:'smooth'});
+};
+function openJournal(){$('#journal').classList.remove('hidden');$('#btnJournalTab').classList.add('on');renderJournal();}
+function closeJournal(){$('#journal').classList.add('hidden');$('#btnJournalTab').classList.remove('on');}
+function closeJournalIfCompare(){}
+const toggleJ=()=>$('#journal').classList.contains('hidden')?openJournal():closeJournal();
+$('#btnJournal').onclick=toggleJ;$('#btnJournalTab').onclick=toggleJ;$('#btnJClose').onclick=closeJournal;
+$('#btnReset').onclick=()=>{
+  if(!confirm('Effacer toutes les expériences du journal et revenir au début ?'))return;
+  JOURNAL=[];SEL=[];saveJournal();$('#cmpZone').innerHTML='';renderJournal();
+  Object.assign(P,{org:'ammonite',env:'calme',burial:'lent',decomp:'moyenne',oxy:'oxygene'});Object.assign(TP,{soil:'humide',cover:'rapide',disturb:'faible'});
+  mode='reste';S.speed=1;[...$('#speed').children].forEach(c=>c.classList.toggle('on',c.dataset.s==='1'));
+  renderPanel();newExperiment();
+};
+
+/* =========================================================
+   DÉMARRAGE
+   ========================================================= */
+// dégradés partagés
+(function(){const d=$('#scene defs');
+  d.insertAdjacentHTML('beforeend','<linearGradient id="fishGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5d8db0"/><stop offset=".55" stop-color="#8fb7d1"/><stop offset="1" stop-color="#e3eef4"/></linearGradient>');})();
+renderPanel();renderJournal();refreshIdle();updButtons();
+requestAnimationFrame(frame);
+// interface de test (non visible)
+window.SIM={P,TP,S,get run(){return run;},setMode:m=>{mode=m;renderPanel();newExperiment();},start:startRun,
+  step:sec=>{if(S.phase!=='run')return;advance(sec);},remainWeights,traceWeights,newExperiment};
+</script>
+</body>
+</html>
