@@ -1,0 +1,142 @@
+{
+ "themes": [
+  "5e — L'eau et le climat",
+  "Fossiles",
+  "Génétique et évolution",
+  "Géologie",
+  "Orientation 3e"
+ ],
+ "derniere_maj": "2026-11-08",
+ "sites": [
+  {
+   "titre": "Inondations et canicules",
+   "theme": "5e — L'eau et le climat",
+   "fichier": "inondations-canicules.html",
+   "artifact": "https://claude.ai/artifact/QrjS4Y1YJB8aTFeV9kdpQy",
+   "version": "1794177174-5329",
+   "verifie": "2026-11-08"
+  },
+  {
+   "titre": "La Terre et ses réserves d'eau",
+   "theme": "5e — L'eau et le climat",
+   "fichier": "terre-eau (2).html",
+   "artifact": "https://claude.ai/artifact/EyatjykGdW4zoznd4Ugjnf",
+   "version": null,
+   "verifie": "2026-11-08"
+  },
+  {
+   "titre": "L'atmosphère : vents, nuages et précipitations",
+   "theme": "5e — L'eau et le climat",
+   "fichier": "atmosphere-5e.html",
+   "artifact": "https://claude.ai/artifact/83ARYjuTwR6X25adXjfBqa",
+   "version": null,
+   "verifie": "2026-11-08"
+  },
+  {
+   "titre": "Économiser et protéger l'eau",
+   "theme": "5e — L'eau et le climat",
+   "fichier": "economiser-proteger-eau.html",
+   "artifact": "https://claude.ai/artifact/SoN6ANdG6HTMSZFNHg6NjB",
+   "version": "1793866992-9395",
+   "verifie": "2026-11-08"
+  },
+  {
+   "titre": "Air, océans et climats",
+   "theme": "5e — L'eau et le climat",
+   "fichier": "Air, océans et climats.html",
+   "artifact": "https://claude.ai/artifact/FJu9wTPRLZUmKNN7BxF2o6",
+   "version": null,
+   "verifie": "2026-11-08"
+  },
+  {
+   "titre": "L'eau et les activités humaines",
+   "theme": "5e — L'eau et le climat",
+   "fichier": "eau-activites-humaines.html",
+   "artifact": "https://claude.ai/artifact/HZUA6F88GiCAKLpoeXYJSu",
+   "version": "1793784111-1e30",
+   "verifie": "2026-11-08"
+  },
+  {
+   "titre": "Décomposition et fossilisation",
+   "theme": "Fossiles",
+   "fichier": "Décomposition et fossilisation.html",
+   "artifact": "https://claude.ai/artifact/AzDL6iK2aiU3YQXK4nDKEm",
+   "version": null,
+   "verifie": "2026-11-08"
+  },
+  {
+   "titre": "Laboratoire de fossilisation",
+   "theme": "Fossiles",
+   "fichier": "fossilisation.html",
+   "artifact": null,
+   "version": null,
+   "verifie": "2026-11-08"
+  },
+  {
+   "titre": "Les mutations de l'humanité",
+   "theme": "Génétique et évolution",
+   "fichier": "Les mutations de l'humanité.html",
+   "artifact": "https://claude.ai/artifact/HvbAk7FEAunDHxxe6hL1Ks",
+   "version": null,
+   "verifie": "2026-11-08"
+  },
+  {
+   "titre": "Simulateur de mutations",
+   "theme": "Génétique et évolution",
+   "fichier": "simulateur-mutations.html",
+   "artifact": "https://claude.ai/artifact/D9UPt9h2ZewUphJkkpeMPG",
+   "version": "1792532078-b93d",
+   "verifie": "2026-11-08"
+  },
+  {
+   "titre": "Pinsons des Galápagos",
+   "theme": "Génétique et évolution",
+   "fichier": "Pinsons des Galápagos.html",
+   "artifact": "https://claude.ai/artifact/QcnrfmDBnsvzSULRJcuGyb",
+   "version": null,
+   "verifie": "2026-11-08"
+  },
+  {
+   "titre": "Labo de la dérive génétique",
+   "theme": "Génétique et évolution",
+   "fichier": "Labo de la dérive génétique.html",
+   "artifact": "https://claude.ai/artifact/C2DrTbSF5MCUtQVMzZUQwV",
+   "version": null,
+   "verifie": "2026-11-08"
+  },
+  {
+   "titre": "La Phalène du bouleau",
+   "theme": "Génétique et évolution",
+   "fichier": "La Phalène du bouleau.html",
+   "artifact": "https://claude.ai/artifact/38j3YFumCozZ5Gxnf9DRcq",
+   "version": null,
+   "verifie": "2026-11-08"
+  },
+  {
+   "titre": "Globe tectonique",
+   "theme": "Géologie",
+   "fichier": "globe-tectonique.html",
+   "artifact": "https://claude.ai/artifact/44W3zqDrvhCRHnP3JbwpjJ",
+   "version": "1792963366-e2fc",
+   "verifie": "2026-11-08"
+  },
+  {
+   "titre": "Lycées du 93 après la 3e",
+   "theme": "Orientation 3e",
+   "fichier": "Lycées du 93 après la 3e.html",
+   "artifact": "https://claude.ai/artifact/4mUvjYnrcfDb97N4oTDtEq",
+   "version": null,
+   "verifie": "2026-11-08"
+  }
+ ],
+ "ignores": [
+  "https://claude.ai/artifact/BqXoxoAUJpBPUkC8mgAK3q",
+  "https://claude.ai/artifact/4qnJdq48zdKfJ6qMbfepxY",
+  "https://claude.ai/artifact/LMWXfVtAYkTAXt5qu1qkLH",
+  "https://claude.ai/artifact/VSVrz25AYwdh17UgHa1rRs",
+  "https://claude.ai/artifact/81aDbrCBFntRyw5unvCKcc",
+  "https://claude.ai/artifact/Q819rD8JpgV5C3CkhFa7fc",
+  "https://claude.ai/artifact/BKgJeE9qovNYfSuwcRjjFF"
+ ],
+ "en_attente": []
+}
