@@ -1,0 +1,1229 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Économiser et protéger l'eau</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Mise en page : bandeau + onglets « une pratique = un onglet » ; dans chaque onglet, deux potagers A / B côte à côte, puis résultat et limites. */
+:root{
+  --bg:#EDF3F0; --surface:#FFFFFF; --surface-2:#F3F7F5; --ink:#15302B; --muted:#56706A; --line:#CFDDD8;
+  --deep:#17463E; --deep-ink:#F2FBF8; --accent:#1F7AB8; --accent-soft:#DCEBF6;
+  --a:#B4602E; --a-soft:#F8E6DA; --b:#2B7F57; --b-soft:#DDF0E5;
+  --good:#2C8A55; --warn:#B07A0C; --bad:#BE4430; --good-bg:#DDF1E5; --warn-bg:#F9EED4; --bad-bg:#F8E0DA;
+  --c-transp:#3C9A4B; --c-air:#E9B23A; --c-sol:#D9743A; --c-allees:#97A2A6; --c-prof:#2D5F9E;
+  --font-display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --font-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0E1A18; --surface:#162623; --surface-2:#1D302C; --ink:#E3EFEB; --muted:#9BB3AD; --line:#2C4540;
+  --deep:#0C2C26; --deep-ink:#E8F7F2; --accent:#5DB1E8; --accent-soft:#183A4F;
+  --a:#E59765; --a-soft:#3A2518; --b:#63C48E; --b-soft:#17362A;
+  --good:#5CC48A; --warn:#E7B44D; --bad:#F07C66; --good-bg:#173628; --warn-bg:#3A2F12; --bad-bg:#3E1F1A;
+  color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0E1A18; --surface:#162623; --surface-2:#1D302C; --ink:#E3EFEB; --muted:#9BB3AD; --line:#2C4540;
+  --deep:#0C2C26; --deep-ink:#E8F7F2; --accent:#5DB1E8; --accent-soft:#183A4F;
+  --a:#E59765; --a-soft:#3A2518; --b:#63C48E; --b-soft:#17362A;
+  --good:#5CC48A; --warn:#E7B44D; --bad:#F07C66; --good-bg:#173628; --warn-bg:#3A2F12; --bad-bg:#3E1F1A;
+  color-scheme:dark; }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.5}
+h1,h2,h3,h4{font-family:var(--font-display);line-height:1.15;margin:0;text-wrap:balance}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--c-air);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.label{font-size:.76rem;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+
+/* bandeau */
+.app-head{background:var(--deep);color:var(--deep-ink)}
+.app-head .in{max-width:1320px;margin:0 auto;padding-block:14px 0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand{display:flex;align-items:center;gap:12px}
+.brand h1{font-size:1.55rem;font-weight:800}
+.brand p{margin:0;font-size:.85rem;opacity:.8}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-top:12px}
+.tab{border:0;background:transparent;color:var(--deep-ink);opacity:.8;padding:9px 14px 11px;border-radius:12px 12px 0 0;font-family:var(--font-display);font-weight:700;font-size:1.02rem;display:flex;align-items:center;gap:8px}
+.tab:hover{opacity:1;background:rgba(255,255,255,.08)}
+.tab[aria-selected="true"]{background:var(--bg);color:var(--ink);opacity:1}
+.tab svg{flex:none}
+main{max-width:1320px;margin:0 auto;padding-block:18px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+.intro{margin-bottom:12px}
+.intro h2{font-size:1.8rem;font-weight:800;display:inline;margin-right:12px}
+.intro .tag-fict{vertical-align:6px}
+.intro p{margin:6px 0 0;max-width:80ch;color:var(--muted)}
+.tag-fict{display:inline-flex;font-size:.75rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:2px 10px;border-radius:999px;border:1.5px dashed var(--warn);color:var(--warn);background:var(--warn-bg)}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;margin-bottom:14px}
+.settings{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;flex:1 1 380px;min-width:0}
+.ctl{display:grid;gap:3px;min-width:0;flex:1 1 260px}
+.ctl input[type=range]{width:100%;accent-color:var(--accent)}
+.ctl .v{font-family:var(--font-display);font-weight:800;font-size:1.1rem;white-space:nowrap;min-width:3.6em;text-align:right}
+.runbox{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:2px solid var(--accent);background:var(--surface);color:var(--accent);padding:7px 14px;border-radius:10px;font-weight:700;min-height:42px}
+.btn:hover{background:var(--accent-soft)}
+.btn.primary{background:var(--accent);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{border-color:var(--line);color:var(--ink)}
+.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;padding:5px 10px;border-radius:8px;font-weight:700;color:var(--muted);font-size:.9rem}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.seg button:disabled{cursor:not-allowed;opacity:.6}
+.clock{display:flex;align-items:center;gap:10px;min-width:220px;flex:1 1 220px}
+.clock b{font-family:var(--font-display);font-size:1.25rem;white-space:nowrap}
+.prog{flex:1;height:10px;border-radius:5px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line)}
+.prog i{display:block;height:100%;background:var(--accent);width:0}
+
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.side{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;border-top:6px solid var(--a)}
+.side.B{border-top-color:var(--b)}
+.side-h{display:flex;align-items:center;gap:10px;padding:10px 14px;flex-wrap:wrap}
+.letter{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-display);font-weight:800;font-size:1.2rem;background:var(--a);color:#fff}
+.side.B .letter{background:var(--b)}
+.side-h h3{font-size:1.25rem;font-weight:800}
+.side-h .sub{flex-basis:100%;min-height:2.7em;font-size:.85rem;color:var(--muted);margin-top:-4px;padding-left:42px}
+.side-h .seg{margin-left:auto}
+.cv{position:relative;background:#BFE0F2}
+.cv canvas{display:block;width:100%;height:auto;aspect-ratio:640/420;cursor:pointer}
+.cv .hint{position:absolute;right:8px;bottom:8px;background:rgba(255,255,255,.88);color:#15302B;border-radius:999px;padding:2px 10px;font-size:.78rem;font-weight:700;pointer-events:none}
+.metrics{padding:12px 14px 14px;display:grid;gap:10px}
+.mrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:center}
+.mrow .k{font-size:.9rem;font-weight:700}
+.mrow .val{font-family:var(--font-display);font-weight:800;font-size:1.25rem;text-align:right;white-space:nowrap}
+.mrow .bar{grid-column:1/-1;position:relative;height:12px;border-radius:6px;background:var(--surface-2);border:1px solid var(--line);overflow:visible}
+.mrow .bar > i{display:block;height:100%;border-radius:6px;background:var(--accent);transition:width .25s}
+.mrow .bar .mark{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink);opacity:.7}
+.mrow .note{grid-column:1/-1;font-size:.78rem;color:var(--muted)}
+.big{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.big .n{font-family:var(--font-display);font-size:2.1rem;font-weight:800;line-height:1}
+.pill{display:inline-block;font-size:.75rem;font-weight:700;padding:1px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px}
+.pill.good{background:var(--good-bg);color:var(--good)} .pill.warn{background:var(--warn-bg);color:var(--warn)} .pill.bad{background:var(--bad-bg);color:var(--bad)} .pill.none{background:var(--surface-2);color:var(--muted)}
+.fate{display:flex;height:22px;border-radius:6px;overflow:hidden;background:var(--surface-2);border:1px solid var(--line)}
+.fate i{display:block;height:100%;transition:width .25s}
+.fate-l{display:flex;flex-wrap:wrap;gap:2px 12px;font-size:.8rem}
+.fate-l span{display:inline-flex;align-items:center;gap:5px}
+.fate-l i{width:12px;height:12px;border-radius:3px;display:inline-block;flex:none}
+[data-m=fateTxt]{display:grid;gap:3px;font-size:.84rem}
+[data-m=fateTxt] span.zero{opacity:.45}
+
+.below{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:14px;margin-top:14px;align-items:start}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.card h3{font-size:1.2rem;font-weight:800;margin-bottom:6px}
+.explain{border-left:5px solid var(--accent);min-height:70px}
+.explain.empty{color:var(--muted);font-style:italic;border-left-color:var(--line)}
+.explain h4{font-size:1.05rem;margin-bottom:2px}
+.explain p{margin:0}
+.result.wait{color:var(--muted)}
+.result .cmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:8px 0}
+.result .cmp > div{border-radius:10px;padding:8px 10px;background:var(--a-soft)}
+.result .cmp > div.B{background:var(--b-soft)}
+.result .cmp b.n{font-family:var(--font-display);font-size:1.5rem;display:block;line-height:1.1}
+.retenir{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--accent-soft);font-weight:700}
+.limits ul{margin:4px 0 0;padding-left:1.15em}
+.limits li{margin:4px 0}
+.limits li.plus::marker{content:"＋ ";color:var(--good);font-weight:700}
+.limits li.moins::marker{content:"− ";color:var(--bad);font-weight:700}
+.sources{font-size:.78rem;color:var(--muted);margin-top:8px}
+
+
+/* ---- potager expérimental ---- */
+.mission{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:2px solid var(--accent);border-radius:var(--r);padding:12px 16px;margin:10px 0 14px}
+.mission b{font-family:var(--font-display);font-size:1.15rem;color:var(--accent)}
+.mission p{margin:2px 0 0}
+.params{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 10px;padding:4px 14px 12px;align-items:center;border-bottom:1px solid var(--line)}
+.params .pl{border:0;background:none;padding:0;text-align:left;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);text-decoration:underline dotted;text-underline-offset:3px}
+.params .pl:hover{color:var(--accent)}
+.params .seg{flex-wrap:wrap}
+.params .seg button{padding:4px 9px;font-size:.86rem}
+.params .qty{display:flex;gap:10px;align-items:center}
+.params .qty input{flex:1;min-width:0;accent-color:var(--accent)}
+.params .qty b{font-family:var(--font-display);font-size:1.05rem;min-width:4.4em;text-align:right;white-space:nowrap}
+.side-h .copy{margin-left:auto;font-size:.82rem;padding:4px 10px;min-height:32px}
+.plants{display:flex;gap:4px;flex-wrap:wrap}
+.plants i{width:20px;height:20px;border-radius:50%;display:inline-block;border:2px solid transparent}
+.plants i.good{background:var(--good)} .plants i.warn{background:var(--warn)} .plants i.bad{background:var(--bad)} .plants i.dead{background:var(--surface-2);border-color:var(--bad)}
+.alert{display:none;font-size:.85rem;font-weight:700;color:var(--bad);background:var(--bad-bg);border-radius:8px;padding:4px 10px}
+.alert.on{display:block}
+.duo-res{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:8px 0}
+.duo-res > div{border-radius:10px;padding:8px 12px;background:var(--a-soft)}
+.duo-res > div.B{background:var(--b-soft)}
+.duo-res .n{font-family:var(--font-display);font-size:1.6rem;font-weight:800;line-height:1.1}
+.diffbox{margin-top:8px;padding:8px 12px;border-radius:10px;font-size:.92rem}
+.diffbox.ok{background:var(--good-bg)} .diffbox.no{background:var(--warn-bg)}
+.journal-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-top:14px}
+.tablewrap{overflow-x:auto}
+table.jr{width:100%;border-collapse:collapse;font-size:.86rem;min-width:820px}
+table.jr th,table.jr td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+table.jr th{font-size:.74rem;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+table.jr td.n{font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+table.jr tr.best td{background:var(--good-bg)}
+.chip-ab{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;color:#fff;font-weight:800;font-size:.8rem;background:var(--a)}
+.chip-ab.B{background:var(--b)}
+.scatter svg{display:block;width:100%;height:auto;max-width:720px;margin:0 auto}
+.scatter .ax{fill:var(--muted);font-size:11px}
+.scatter .axt{fill:var(--ink);font-size:12px;font-weight:700}
+.scatter .gridl{stroke:var(--line)}
+.method ol{margin:4px 0 0;padding-left:1.2em} .method li{margin:4px 0}
+/* lab : 3 colonnes */
+.lab-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(300px,.78fr);gap:14px;align-items:start}
+.lab-aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 10px);display:grid;gap:12px;max-height:calc(100vh - 20px);overflow:auto}
+.params .pl{text-decoration:none;cursor:default}
+.help{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--accent);background:var(--surface);color:var(--accent);font-weight:800;font-size:.85rem;line-height:1;padding:0;display:inline-grid;place-items:center}
+.help[aria-expanded="true"]{background:var(--accent);color:#fff}
+.aide{grid-column:1/-1;background:var(--accent-soft);border-radius:10px;padding:8px 12px;font-size:.88rem}
+.aide ul{margin:4px 0;padding-left:1.1em} .aide li{margin:2px 0} .aide p{margin:4px 0 0}
+.aide .q{font-weight:700;color:var(--accent)}
+.toolbar .aide{margin-top:6px;max-width:420px}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.kpis > div{background:var(--surface-2);border-radius:10px;padding:6px 8px;display:grid;gap:1px;min-width:0}
+.kpis .n{font-family:var(--font-display);font-size:1.35rem;font-weight:800;line-height:1.1}
+.kpis .label{font-size:.68rem}
+.kpis .small{font-size:.72rem;line-height:1.2}
+table.live{width:100%;border-collapse:collapse;font-size:.92rem}
+table.live th,table.live td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:left}
+table.live td.n{font-weight:700;font-variant-numeric:tabular-nums}
+.why-h{display:flex;align-items:center;gap:6px;font-size:1rem;margin:12px 0 2px}
+.why{margin:0;padding-left:1.1em;font-size:.92rem} .why li{margin:3px 0}
+.steps{margin:0;padding-left:1.2em} .steps li{margin:3px 0}
+@media (max-width:1180px){ .lab-grid{grid-template-columns:repeat(2,minmax(0,1fr))} .lab-aside{grid-column:1/-1;position:static;max-height:none} }
+@media (max-width:900px){ .lab-grid{grid-template-columns:minmax(0,1fr)} }
+@media (max-width:900px){ .duo-res{grid-template-columns:minmax(0,1fr)} }
+@media (max-width:900px){ .duo,.below{grid-template-columns:minmax(0,1fr)} }
+@media (max-width:520px){ .tab{padding:7px 9px 9px;font-size:.92rem} .tab svg{display:none} .intro h2{font-size:1.45rem} .result .cmp{grid-template-columns:minmax(0,1fr)} }
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+<header class="app-head"><div class="in">
+  <div class="brand"><svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3 C 13 13, 7 19, 7 26 a13 13 0 0 0 26 0 C 33 19, 27 13, 20 3z" fill="#5DB1E8"/><path d="M14 30c2-6 6-8 12-9-1 6-5 9-12 9z" fill="#63C48E"/></svg>
+    <div><h1>Économiser et protéger l'eau</h1><p>SVT · 5<sup>e</sup> · Expérimente pour économiser et protéger l'eau</p></div></div>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Pratiques"></nav>
+</div></header>
+<main></main>
+<script>
+/* ================== MODÈLE 1 : LE POTAGER EXPÉRIMENTAL ==================
+   Potager de 10 m² (10 plantes) suivi pendant 14 jours d'été jusqu'à la récolte.
+   1 mm d'eau sur le potager = 10 litres. Pas de temps : 1 heure. Valeurs fictives et simplifiées.
+   Réservoirs : S = surface du sol (s'évapore vite), W = zone des racines, X = eau en excès (sol saturé).
+   Flux : arrosage → évaporé dans l'air / tombé dans les allées / surface / racines ;
+          surface → évaporation ou descente ; racines → transpiration des plantes ;
+          excès → part trop profond (lentement en sol argileux : les racines manquent d'air). */
+const AIRE = 10, NB_PLANTES = 10, NB_JOURS = 14;
+const METEO = {
+  normal: { nom: 'Été normal', et0: [5, 5.5, 6, 5.5, 5, 5.5, 6, 6.5, 6, 5.5, 5, 5, 5.5, 6] },
+  canicule: { nom: 'Canicule', et0: [5.5, 6.5, 7.5, 8, 8.5, 8.5, 8, 8, 7.5, 7, 6.5, 6, 6, 6] }
+};
+const PLANTES = {
+  courgette: { nom: 'Courgettes', kg: 1.6, Kc: 1.05, Wmax: 34, p: 0.5, info: 'Grandes feuilles qui transpirent beaucoup : très gourmandes en eau.' },
+  tomate: { nom: 'Tomates', kg: 1.2, Kc: 0.9, Wmax: 38, p: 0.45, info: "Besoins en eau moyens à forts, racines assez profondes." },
+  haricot: { nom: 'Haricots', kg: 0.45, Kc: 0.8, Wmax: 26, p: 0.45, info: 'Racines peu profondes : ils supportent mal que le sol sèche.' },
+  pasteque: { nom: 'Pastèques', kg: 1.35, Kc: 0.68, Wmax: 56, p: 0.3, info: "Plante originaire des régions chaudes et sèches d'Afrique : feuilles très découpées, très longues racines. Gros fruits." }
+};
+const SOLS = {
+  sable: { nom: 'Sableux', perco: 0.25, ruiss: 0, fW: 0.6, cap: 1.5, drain: 0.4, excesDrain: 0.85, evap: 0.85, info: "Gros grains, beaucoup d'espace entre eux : l'eau s'infiltre très vite mais le sol en garde peu. L'eau en trop part vite en profondeur." },
+  limon: { nom: 'Terre de jardin', perco: 0.04, ruiss: 0, fW: 1, cap: 4, drain: 0.16, excesDrain: 0.4, evap: 1, info: "Mélange équilibré de sable, de limon et d'argile, riche en humus : il retient bien l'eau et la laisse s'infiltrer." },
+  argile: { nom: 'Argileux', perco: 0, ruiss: 0.12, fW: 1.25, cap: 6.5, drain: 0.06, excesDrain: 0.05, evap: 1.25, info: "Grains très fins et serrés : il retient beaucoup d'eau, mais l'eau s'infiltre lentement et reste longtemps en surface. Trop arrosé, il se gorge d'eau et les racines manquent d'air. Sec, il se fissure." }
+};
+const METHODES = {
+  jet: { nom: 'Jet (tuyau)', info: "Le jet arrose toute la surface, y compris les allées. Des gouttelettes s'évaporent dans l'air ou sont emportées par le vent." },
+  arrosoir: { nom: 'Arrosoir au pied', info: "L'eau est versée au pied de chaque plante : presque rien ne tombe dans les allées. Mais la terre autour du pied est mouillée en surface." },
+  goutte: { nom: 'Goutte-à-goutte', info: "Un tuyau percé de goutteurs dépose l'eau goutte à goutte au pied de chaque plante. L'eau s'infiltre lentement et forme une zone humide (un « bulbe ») autour des racines ; la surface reste presque sèche." }
+};
+/* Quantité d'eau par arrosage : niveaux adaptés à chaque plante.
+   « Moyennement » = ce qu'un jardinier donne habituellement à cette plante (10 plantes). */
+const DOSES = { tres_peu: ['Très peu', 0.35], peu: ['Peu', 0.65], moyen: ['Moyennement', 1], beaucoup: ['Beaucoup', 1.4], enorme: ['Énormément', 2] };
+const DOSE_REF = { courgette: 80, tomate: 70, haricot: 60, pasteque: 45 };
+const litresOf = cfg => Math.round(DOSE_REF[cfg.plante] * DOSES[cfg.dose][1] / 5) * 5;
+const REGLES = { quotidien: 'Tous les jours', '2jours': 'Un jour sur deux', si_sec: 'Quand le sol est sec' };
+const HEURES = { 7: 'Matin (7 h)', 13: 'Midi (13 h)', 20: 'Soir (20 h)' };
+// sensibilité de chaque plante au manque d'eau (identique d'un essai à l'autre, pour comparer équitablement)
+const SENSIB = [1.0, 0.8, 1.2, 0.9, 1.3, 0.75, 1.1, 0.95, 1.25, 0.85];
+
+const wmaxOf = cfg => PLANTES[cfg.plante].Wmax * SOLS[cfg.sol].fW;
+function et0Heure(cfg, jour, h) {
+  const D = METEO[cfg.meteo].et0[jour % NB_JOURS];
+  if (h < 6 || h >= 20) return 0;
+  return D * (Math.PI / 28) * Math.sin(Math.PI * (h - 6 + 0.5) / 14);
+}
+function doitArroser(s, cfg) {
+  if (s.h !== +cfg.heure || cfg.litres <= 0) return false;
+  if (cfg.regle === '2jours') return s.jour % 2 === 0;
+  if (cfg.regle === 'si_sec') return s.W < 0.5 * wmaxOf(cfg);
+  return true;
+}
+function initPotager(cfg) {
+  const Wm = wmaxOf(cfg);
+  let GpotTot = 0; for (let j = 0; j < NB_JOURS; j++) for (let h = 0; h < 24; h++) GpotTot += PLANTES[cfg.plante].Kc * et0Heure(cfg, j, h);
+  return { GpotTot, jour: 0, h: 0, W: 0.42 * Wm, S: 0, X: 0, H: Array(NB_PLANTES).fill(100), Hmin: Array(NB_PLANTES).fill(100),
+    G: 0, Gpot: 0, used: 0, nbArros: 0, transp: 0, evapAir: 0, evapSol: 0, allees: 0, profond: 0, heuresAsphyxie: 0, heuresSoif: 0,
+    flux: null, fini: false };
+}
+function heurePotager(s, cfg) {
+  const pl = PLANTES[cfg.plante], so = SOLS[cfg.sol], Wm = wmaxOf(cfg);
+  const e0 = et0Heure(cfg, s.jour, s.h), rel = e0 / (METEO[cfg.meteo].et0[s.jour % NB_JOURS] * Math.PI / 28);
+  const f = { arros: 0, air: 0, allees: 0, evap: 0, transp: 0, profond: 0, e0, rel, mm: 0 };
+  // 1. arrosage
+  if (doitArroser(s, cfg)) {
+    const mm = cfg.litres / AIRE; f.mm = mm;
+    s.used += cfg.litres; s.nbArros++; f.arros = cfg.litres;
+    let air, allees, versSurface, versRacines;
+    if (cfg.methode === 'goutte') { air = 0.01 * mm; allees = 0; versSurface = 0.06 * (mm - air); versRacines = mm - air - versSurface; }
+    else if (cfg.methode === 'arrosoir') { air = (0.02 + 0.06 * rel) * mm; allees = 0.05 * (mm - air); versSurface = mm - air - allees; versRacines = 0; }
+    else { air = (0.04 + 0.2 * rel) * mm; allees = 0.2 * (mm - air); versSurface = mm - air - allees; versRacines = 0; }
+    // sol argileux : l'eau s'infiltre mal et ruisselle vers les allées (sauf au goutte-à-goutte, très lent)
+    const ruiss = cfg.methode === 'goutte' ? 0 : so.ruiss * versSurface; versSurface -= ruiss; allees += ruiss;
+    // sol sableux : une partie de l'eau file directement sous les racines
+    const perco = so.perco * (versSurface + versRacines); const k = (versSurface + versRacines) ? 1 - perco / (versSurface + versRacines) : 1;
+    versSurface *= k; versRacines *= k; s.profond += perco; f.profond += perco * AIRE;
+    s.evapAir += air; s.allees += allees; f.air = air * AIRE; f.allees = allees * AIRE;
+    s.S += versSurface; s.W += versRacines;
+    if (s.S > so.cap) { s.W += s.S - so.cap; s.S = so.cap; }
+  }
+  // 2. évaporation depuis le sol (le paillage la réduit fortement)
+  const mulch = cfg.paillage ? 0.22 : 1;
+  let ev = Math.min(s.S, 0.95 * e0 * mulch * so.evap);
+  s.S -= ev;
+  const evW = 0.3 * e0 * mulch * so.evap * Math.min(1, s.W / Wm);
+  s.W -= evW; ev += evW;
+  s.evapSol += ev; f.evap = ev * AIRE;
+  // 3. l'eau de surface s'infiltre vers les racines
+  const d = s.S * so.drain; s.S -= d; s.W += d;
+  // 4. au-delà de ce que le sol peut retenir, l'eau est en excès et descend (vite en sable, lentement en argile)
+  if (s.W > Wm) { s.X += s.W - Wm; s.W = Wm; }
+  const dx = s.X * so.excesDrain; s.X -= dx; s.profond += dx; f.profond += dx * AIRE;
+  // 5. transpiration
+  const Wwilt = 0.08 * Wm, Wthr = pl.p * Wm;
+  const fac = Math.max(0, Math.min(1, (s.W - Wwilt) / (Wthr - Wwilt)));
+  const T = Math.min(Math.max(0, s.W - Wwilt), pl.Kc * e0 * fac);
+  s.W -= T; s.transp += T; s.G += T; s.Gpot += pl.Kc * e0; f.transp = T * AIRE;
+  if (s.X > 0 && s.W < Wm) { const back = Math.min(s.X, Wm - s.W); s.X -= back; s.W += back; }
+  // 6. santé de chaque plante
+  const asphyxie = s.X > 2.5;
+  if (asphyxie) s.heuresAsphyxie++;
+  if (e0 > 0 && fac < 0.7) s.heuresSoif++;
+  for (let i = 0; i < NB_PLANTES; i++) {
+    let h = s.H[i];
+    if (h <= 0) continue;
+    if (e0 > 0) h -= (1 - fac) * (e0 / 0.6) * 1.5 * SENSIB[i];
+    else if (fac > 0.9 && !asphyxie) h += 0.4;
+    if (asphyxie) h -= 0.9 * SENSIB[i];
+    s.H[i] = Math.max(0, Math.min(100, h)); s.Hmin[i] = Math.min(s.Hmin[i], s.H[i]);
+  }
+  f.fac = fac; f.asphyxie = asphyxie;
+  s.flux = f;
+  s.h++; if (s.h === 24) { s.h = 0; s.jour++; }
+  if (s.jour >= NB_JOURS) s.fini = true;
+  return f;
+}
+const croissance = s => s.Gpot ? s.G / s.Gpot : 1;
+/* Récolte en kg : chaque plante vivante produit selon la croissance du potager et sa propre santé. */
+function kgPlante(s, cfg, i) { const h = s.H[i]; if (h <= 0) return 0; const g = Math.min(1, s.G / s.GpotTot); return PLANTES[cfg.plante].kg * Math.pow(g, 1.3) * (0.35 + 0.65 * Math.min(1, h / 90)); }
+function recolteKg(s, cfg) { let t = 0; for (let i = 0; i < NB_PLANTES; i++) t += kgPlante(s, cfg, i); return t; }
+const gParLitre = (kg, L) => L > 0 ? kg * 1000 / L : null;
+function simulerPotager(cfg) { const s = initPotager(cfg); while (!s.fini) heurePotager(s, cfg); return s; }
+const etatPlante = h => h >= 80 ? ['En bonne santé', 'good'] : h >= 50 ? ['Assoiffée', 'warn'] : h > 0 ? ['Flétrie', 'bad'] : ['Morte', 'bad'];
+/* ================== MODÈLE 2 : BIO OU INTENSIF ==================
+   Un champ de céréale suivi pendant un an (mars → février). Pas de temps : 1 mois.
+   Les deux champs sont cultivés de cette façon depuis plus de 10 ans (sols déjà différents). */
+const MOIS_BIO = ['Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre', 'Janvier', 'Février'];
+const PLUIE_M = [50, 50, 95, 55, 55, 50, 55, 70, 65, 65, 60, 50];  // mai : un gros orage
+const ORAGE = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+const ETP_M = [35, 60, 90, 110, 125, 110, 70, 35, 15, 10, 10, 20];
+const KC_M = [0.7, 0.9, 1.1, 1.1, 0.6, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.5];
+const BESOIN_N = [20, 45, 60, 45, 10, 0, 0, 0, 0, 0, 0, 0]; // kg d'azote par ha absorbés par la céréale
+const SYSTEMES = {
+  intensif: { nom: 'Agriculture intensive', ru: 95, ruiss: 0.12, ruissOrage: 0.38, vers: 60, mo: 1.6,
+    nSynth: [60, 80, 60, 0, 0, 0, 0, 0, 0, 0, 0, 0], nOrga: 0, nSol: 4, couvertHiver: false,
+    pest: [0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0], pertesRavageurs: 0.03 },
+  bio: { nom: 'Agriculture biologique', ru: 115, ruiss: 0.06, ruissOrage: 0.2, vers: 160, mo: 2.4,
+    nSynth: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], nOrga: 190, nSol: 12, couvertHiver: true,
+    pest: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], pertesRavageurs: 0.1 }
+};
+function initChamp(id) {
+  const sy = SYSTEMES[id];
+  return { id, mois: 0, R: sy.ru * 0.85, Nmin: 15, Norg: sy.nOrga, Nabs: 0, Nlessive: 0, drainage: 0,
+    ruissel: 0, erosion: 0, pestEau: 0, pestApplique: 0, flux: null, fini: false, hist: [] };
+}
+function moisChamp(c) {
+  const sy = SYSTEMES[c.id], m = c.mois, P = PLUIE_M[m];
+  const f = { pluie: P, ruiss: 0, drain: 0, lessive: 0, pest: 0, orage: !!ORAGE[m], traitement: !!sy.pest[m], engrais: sy.nSynth[m] };
+  // eau
+  const rf = ORAGE[m] ? sy.ruiss + (sy.ruissOrage - sy.ruiss) * 0.45 : sy.ruiss;
+  const ruiss = P * rf * (sy.couvertHiver || m < 5 ? 1 : 1.25);
+  c.R += P - ruiss;
+  const etr = Math.min(c.R * 0.9, ETP_M[m] * KC_M[m]);
+  c.R -= etr;
+  let drain = 0; if (c.R > sy.ru) { drain = c.R - sy.ru; c.R = sy.ru; }
+  // azote
+  c.Nmin += sy.nSynth[m];
+  const temp = [0.4, 0.7, 1, 1.2, 1.3, 1.3, 1, 0.7, 0.3, 0.15, 0.1, 0.2][m];
+  const minOrg = c.Norg * 0.1 * temp; c.Norg -= minOrg; c.Nmin += minOrg;
+  c.Nmin += sy.nSol * temp;                          // azote libéré par la matière organique du sol (plus riche en bio)
+  const abs = Math.min(BESOIN_N[m], c.Nmin * 0.85); c.Nmin -= abs; c.Nabs += abs;
+  if (m >= 6 && sy.couvertHiver) { const capt = c.Nmin * 0.55; c.Nmin -= capt; } // engrais vert après la récolte
+  const fr = drain / (drain + 70) + ruiss / (ruiss + 300);
+  const less = c.Nmin * fr; c.Nmin -= less; c.Nlessive += less;
+  // pesticides de synthèse (indice de quantité appliquée)
+  if (sy.pest[m]) c.pestApplique += 1;
+  const pe = c.pestApplique * 0.07 * (ruiss + drain * 0.6);
+  c.pestEau += pe;
+  // érosion : terre emportée par le ruissellement (t/ha)
+  const ero = ruiss * ruiss * 0.0016 * (sy.couvertHiver ? 0.8 : 1);
+  c.erosion += ero;
+  c.drainage += drain; c.ruissel += ruiss;
+  Object.assign(f, { ruiss, drain, lessive: less, pest: pe, ero, etr });
+  c.flux = f;
+  c.hist.push({ mois: m, ...f, nitrates: nitrates(c) });
+  c.mois++; if (c.mois >= 12) c.fini = true;
+  return f;
+}
+function nitrates(c) { return c.drainage > 5 ? c.Nlessive * 443 / Math.max(c.drainage, 60) * 0.42 + 6 : 6 + c.Nlessive * 0.4; }
+function rendement(c) { const sy = SYSTEMES[c.id]; return 100 * Math.min(1, c.Nabs / 180) ** 0.6 * (1 - sy.pertesRavageurs) / (1 - SYSTEMES.intensif.pertesRavageurs); }
+function pesticidesUgL(c) { return c.pestEau > 0 ? Math.min(2, c.pestEau / Math.max(1, c.drainage + c.ruissel) * 1.6) : 0; }
+
+/* ======================= OUTILS ======================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const fmt = (n, d = 0) => Number(n).toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d });
+const rnd = (a, b) => a + Math.random() * (b - a);
+const lerp = (a, b, t) => a + (b - a) * t;
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const mix = (c1, c2, t) => { t = clamp(t, 0, 1); return `rgb(${Math.round(lerp(c1[0], c2[0], t))},${Math.round(lerp(c1[1], c2[1], t))},${Math.round(lerp(c1[2], c2[2], t))})`; };
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const CW = 640, CH = 420, GROUND = 228;
+const PX = [...Array(NB_PLANTES)].map((_, i) => 90 + (i + 0.5) * 46);
+const FATE = [
+  { k: 'transp', t: 'Bue par les plantes', c: 'var(--c-transp)' },
+  { k: 'evapAir', t: "Évaporée pendant l'arrosage", c: 'var(--c-air)' },
+  { k: 'evapSol', t: 'Évaporée par le sol', c: 'var(--c-sol)' },
+  { k: 'allees', t: 'Tombée ou ruisselée dans les allées', c: 'var(--c-allees)' },
+  { k: 'profond', t: 'Partie trop profond pour les racines', c: 'var(--c-prof)' }
+];
+
+/* ======================= EXPLICATIONS ======================= */
+const INFO = {
+  soleil: ['Le soleil', "Le soleil chauffe l'air, le sol et les plantes. Sa hauteur dans le ciel change au cours de la journée. Observe les petites particules blanches : c'est de l'eau qui s'évapore."],
+  _soleil: ['Le soleil et la chaleur', "Plus il fait chaud et ensoleillé, plus l'eau s'évapore vite. L'évaporation est la plus forte en début d'après-midi ; la nuit, elle est presque nulle. Pendant une canicule, les plantes transpirent davantage et ont besoin de plus d'eau."],
+  ciel: ["L'air", "L'eau qui s'évapore devient de la vapeur d'eau, invisible, qui part dans l'air. Elle est perdue pour le potager."],
+  plantes: ['Les plantes', "Les racines absorbent l'eau du sol. Elle monte jusqu'aux feuilles, puis la plus grande partie ressort sous forme de vapeur : c'est la transpiration. C'est la seule eau vraiment utile. Si le sol est trop sec, la plante pousse moins, flétrit, puis peut mourir."],
+  surface: ['La surface du sol', "La couche de terre en contact avec l'air et le soleil. Les particules blanches qui s'en échappent représentent l'eau qui s'évapore."],
+  _surface: ['La surface du sol', "Chauffée par le soleil, la surface du sol perd son eau par évaporation. Un sol mouillé en surface en plein soleil perd beaucoup d'eau."],
+  racines: ['Les racines et la zone des racines', "Les racines se ramifient en racines de plus en plus fines, terminées par des poils absorbants : c'est par là que l'eau entre dans la plante (petits points bleus qui remontent vers la tige). Les petites boules roses sur les racines des haricots sont des nodosités. C'est la partie du sol où les racines peuvent puiser l'eau. Couleur foncée : sol humide ; couleur claire : sol sec. Sous le trait pointillé, les plantes manquent d'eau. La colonne à droite montre la quantité d'eau dans cette zone."],
+  bulbe: ['La zone humide sous le goutteur', "Au goutte-à-goutte, l'eau s'infiltre lentement et mouille une zone en forme de bulbe autour des racines. En sol sableux, ce bulbe est étroit et profond ; en sol argileux, il est large et peu profond."],
+  profond: ['Le sous-sol', "L'eau qui descend plus bas que les racines n'est plus utilisable par les plantes du potager. Elle s'infiltre lentement et peut rejoindre la nappe phréatique."],
+  allees: ['Les allées', "On y marche, rien n'y pousse : l'eau qui tombe ou ruisselle ici n'arrose aucune plante."],
+  robinet: ['Le robinet et le tuyau', "Toute l'eau qui sort du robinet est comptée dans « Eau utilisée », même celle qui est perdue."],
+  paillage: ['Le paillage', "Une couche de paille posée sur la terre. Compare les particules blanches (eau qui s'évapore) au-dessus d'un sol paillé et d'un sol nu."],
+  _paillage: ['Le paillage', "Une couche de paille couvre le sol. Elle lui fait de l'ombre, le protège du vent et garde la fraîcheur : l'eau s'évapore beaucoup moins. Elle laisse passer l'eau d'arrosage."],
+  asphyxie: ['Sol gorgé d\'eau', "Les racines respirent : elles ont besoin de l'air contenu dans le sol. Quand on arrose trop un sol qui s'égoutte mal (argileux), l'eau remplit tous les espaces et les racines s'asphyxient. Trop d'eau peut tuer une plante !"],
+  meteo: ['La météo', "Été normal : temps chaud et ensoleillé. Canicule : il fait beaucoup plus chaud pendant plusieurs jours ; l'évaporation et la transpiration augmentent fortement."],
+  heure: ["L'heure d'arrosage", "À midi, il fait chaud : une partie de l'eau s'évapore avant d'atteindre les racines. Le soir ou tôt le matin, il fait frais : l'eau a le temps de s'infiltrer."],
+  regle: ["La fréquence d'arrosage", "Arroser tous les jours, un jour sur deux, ou seulement quand le sol est sec (on vérifie avec le doigt). Arroser quand ce n'est pas nécessaire gaspille de l'eau ; attendre trop longtemps fait souffrir les plantes."],
+  litres: ["La quantité d'eau", "Quantité d'eau versée à chaque arrosage pour tout le potager (10 plantes, 10 m²). Pas assez : les plantes ont soif. Trop : l'eau part trop profond, ou le sol se gorge d'eau."],
+  ble: ['La céréale', "Pour pousser, la céréale absorbe de l'eau et des sels minéraux, dont l'azote (les nitrates). Elle est récoltée en juillet."],
+  solbio: ['Le sol et les vers de terre', "Les vers de terre creusent des galeries où l'eau de pluie s'infiltre et mélangent la matière organique au sol. Un sol riche en matière organique retient mieux l'eau, comme une éponge, et résiste mieux à l'érosion. Les pesticides et le travail intensif du sol réduisent le nombre de vers."],
+  nappebio: ['La nappe phréatique', "L'eau de pluie qui s'infiltre traverse le sol et rejoint la nappe. En chemin, elle peut entraîner les nitrates en trop et des pesticides : la nappe est polluée. Il faut alors la traiter pour la rendre potable, ce qui coûte cher. Au-delà de 50 mg/L de nitrates, l'eau n'est pas potable."],
+  riviere: ['La rivière', "Quand la pluie ne s'infiltre pas, elle ruisselle à la surface du champ jusqu'à la rivière. Elle emporte de la terre (érosion), des engrais et des pesticides qui polluent la rivière et nuisent aux êtres vivants aquatiques."],
+  pluiebio: ['La pluie', "Une partie de la pluie s'infiltre dans le sol, une partie ruisselle à la surface. Lors d'un orage, il tombe beaucoup d'eau d'un coup : le ruissellement est plus fort."]
+};
+const PARAMS = [
+  { k: 'plante', t: 'Plante', opts: Object.entries(PLANTES).map(([v, o]) => [v, o.nom]), info: v => [PLANTES[v].nom, PLANTES[v].info] },
+  { k: 'sol', t: 'Sol', opts: Object.entries(SOLS).map(([v, o]) => [v, o.nom]), info: v => ['Sol ' + SOLS[v].nom.toLowerCase(), SOLS[v].info] },
+  { k: 'methode', t: 'Arrosage', opts: Object.entries(METHODES).map(([v, o]) => [v, o.nom]), info: v => [METHODES[v].nom, METHODES[v].info] },
+  { k: 'heure', t: 'Heure', opts: Object.entries(HEURES).map(([v, o]) => [v, o]), info: () => INFO.heure },
+  { k: 'regle', t: 'Fréquence', opts: Object.entries(REGLES), info: () => INFO.regle },
+  { k: 'dose', t: 'Quantité', opts: Object.entries(DOSES).map(([v, o]) => [v, o[0]]), info: () => INFO.litres },
+  { k: 'paillage', t: 'Paillage', opts: [['non', 'Non'], ['oui', 'Oui']], info: () => INFO.paillage }
+];
+const NOMS_PARAMS = { plante: 'la plante', sol: 'le sol', methode: "la façon d'arroser", heure: "l'heure", regle: 'la fréquence', dose: "la quantité d'eau", paillage: 'le paillage' };
+const valTxt = (k, v) => k === 'plante' ? PLANTES[v].nom : k === 'sol' ? SOLS[v].nom : k === 'methode' ? METHODES[v].nom : k === 'heure' ? v + ' h' : k === 'regle' ? REGLES[v] : k === 'dose' ? DOSES[v][0].toLowerCase() : v ? 'Oui' : 'Non';
+
+/* ======================= DESSIN DU POTAGER ======================= */
+const SOIL_COL = { sable: [[228, 204, 150], [168, 136, 88]], limon: [[204, 172, 124], [92, 62, 38]], argile: [[200, 158, 128], [112, 74, 58]] };
+const BULB_SHAPE = { sable: [0.65, 1.45], limon: [1, 1], argile: [1.45, 0.7] };
+function rootBottom(cfg) { return GROUND + 18 + 24 + wmaxOf(cfg) * 1.55; }
+function newDeco() {
+  const straw = []; for (let i = 0; i < 300; i++) { const x = rnd(92, 548), y = rnd(GROUND - 7, GROUND + 1), l = rnd(8, 18), an = rnd(-0.5, 0.5); straw.push([x, y, x + l * Math.cos(an), y + l * Math.sin(an) * 0.3]); }
+  return { straw, stars: [...Array(40)].map(() => [rnd(0, 640), rnd(0, 150)]), grains: [...Array(140)].map(() => [rnd(0, 640), Math.random(), rnd(1, 2.4)]),
+    cracks: [...Array(12)].map(() => { const x = rnd(100, 540); return [[x, GROUND], [x + rnd(-6, 6), GROUND + 6], [x + rnd(-8, 8), GROUND + rnd(10, 16)]]; }),
+    clouds: [[120, 50, 28], [330, 36, 34], [480, 62, 24]], worms: [...Array(10)].map(() => [rnd(20, 520), rnd(0, 1), rnd(0, 6)]),
+    bulb: { from: 0, to: 0 }, droop: 0, grow: null, time: 0, canX: 200 };
+}
+function drawLab(ctx, v) {
+  const { cfg, s, deco } = v, pl = PLANTES[cfg.plante], so = SOLS[cfg.sol], Wm = wmaxOf(cfg);
+  const irrig = v.f && v.f.arros > 0;
+  const hr = v.hour + v.t;
+  const sunUp = clamp(Math.sin(Math.PI * (hr - 6) / 14), -1, 1), day = clamp(sunUp * 1.6 + 0.2, 0, 1);
+  const hot = cfg.meteo === 'canicule';
+  // ciel
+  const g = ctx.createLinearGradient(0, 0, 0, GROUND);
+  g.addColorStop(0, mix([20, 32, 66], hot ? [120, 170, 214] : [110, 182, 230], day)); g.addColorStop(1, mix([46, 62, 98], hot ? [246, 222, 180] : [206, 234, 248], day));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, CW, GROUND);
+  if (day < 0.5) { ctx.fillStyle = `rgba(255,255,255,${0.7 * (1 - day * 2)})`; deco.stars.forEach(([x, y]) => ctx.fillRect(x, y, 1.6, 1.6)); }
+  if (hr >= 5.5 && hr <= 20.5) {
+    const sx = 40 + 560 * (hr - 6) / 14, sy = 190 - 160 * Math.sin(clamp(Math.PI * (hr - 6) / 14, 0, Math.PI)), heat = clamp(sunUp, 0, 1);
+    ctx.fillStyle = `rgba(255,${hot ? 170 : 220},90,${(hot ? 0.35 : 0.22) * heat})`; ctx.beginPath(); ctx.arc(sx, sy, 36 + (hot ? 18 : 10) * heat, 0, 7); ctx.fill();
+    ctx.fillStyle = mix([250, 170, 90], hot ? [255, 160, 40] : [255, 214, 60], heat); ctx.beginPath(); ctx.arc(sx, sy, 20 + 6 * heat, 0, 7); ctx.fill();
+    deco.sunPos = [sx, sy];
+  } else { ctx.fillStyle = '#F2EFD8'; ctx.beginPath(); ctx.arc(560, 50, 15, 0, 7); ctx.fill(); ctx.fillStyle = mix([20, 32, 66], [110, 182, 230], day); ctx.beginPath(); ctx.arc(567, 45, 13, 0, 7); ctx.fill(); deco.sunPos = [560, 50]; }
+  // nuages qui dérivent
+  ctx.fillStyle = `rgba(255,255,255,${0.08 + 0.82 * day * day})`;
+  deco.clouds.forEach(([x0, y, r], k) => { const x = ((x0 + deco.time * (4 + k * 2)) % 760) - 60; [[x, y, r * 1.6, r * 0.62], [x - r, y + 6, r, r * 0.5], [x + r, y + 6, r, r * 0.5]].forEach(([a, b, c, d]) => { ctx.beginPath(); ctx.ellipse(a, b, c, d, 0, 0, 7); ctx.fill(); }); });
+  // haie
+  ctx.fillStyle = mix([28, 52, 40], [104, 152, 92], day);
+  ctx.beginPath(); ctx.moveTo(0, GROUND); for (let x = 0; x <= CW; x += 20) ctx.lineTo(x, GROUND - 26 - 8 * Math.sin(x * 0.07)); ctx.lineTo(CW, GROUND); ctx.fill();
+  // allées
+  ctx.fillStyle = '#CDB98F'; ctx.fillRect(0, GROUND - 4, 90, 6); ctx.fillRect(550, GROUND - 4, 90, 6);
+  if (s.allees > 0.5) { ctx.fillStyle = `rgba(70,120,170,${clamp(s.allees / 12, 0, 0.5) * (v.f && v.f.allees ? 1 : 0.4)})`; ctx.fillRect(0, GROUND - 4, 90, 6); ctx.fillRect(550, GROUND - 4, 90, 6); }
+  // sol
+  const [dry, wetc] = SOIL_COL[cfg.sol], wet = s.W / Wm, rb = rootBottom(cfg);
+  ctx.fillStyle = mix(dry, wetc, s.S / so.cap); ctx.fillRect(90, GROUND, 460, 18);
+  ctx.fillStyle = mix(dry, wetc, 0.15); ctx.fillRect(0, GROUND, 90, 18); ctx.fillRect(550, GROUND, 90, 18);
+  ctx.fillStyle = mix(dry, wetc, wet); ctx.fillRect(0, GROUND + 18, CW, rb - GROUND - 18);
+  ctx.fillStyle = '#A28E78'; ctx.fillRect(0, rb, CW, CH - rb);
+  // texture selon le sol
+  deco.grains.forEach(([x, y, r]) => {
+    const yy = GROUND + 2 + y * (rb - GROUND - 4);
+    if (cfg.sol === 'sable') { ctx.fillStyle = 'rgba(255,248,220,.45)'; ctx.beginPath(); ctx.arc(x, yy, r, 0, 7); ctx.fill(); }
+    else if (cfg.sol === 'limon') { ctx.fillStyle = 'rgba(40,24,12,.18)'; ctx.fillRect(x, yy, r * 1.4, r); }
+    else { ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fillRect(x, yy, r * 2.4, 1); }
+  });
+  // eau en excès (sol saturé)
+  if (s.X > 0.3) { const k = clamp(s.X / 8, 0, 1); ctx.fillStyle = `rgba(40,110,190,${0.15 + 0.4 * k})`; ctx.fillRect(0, rb - (rb - GROUND - 18) * k * 0.6, CW, (rb - GROUND - 18) * k * 0.6); if (cfg.sol === 'argile' && s.X > 2.5) { ctx.fillStyle = 'rgba(60,130,200,.55)'; for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.ellipse(120 + i * 75, GROUND - 1, 18, 3, 0, 0, 7); ctx.fill(); } } }
+  // fissures (argile sèche)
+  if (cfg.sol === 'argile' && wet < 0.4 && !cfg.paillage) { ctx.strokeStyle = 'rgba(60,35,25,.7)'; ctx.lineWidth = 1.5; deco.cracks.forEach(c => { ctx.beginPath(); c.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); }); }
+  // bulbes humides sous chaque plante (goutte-à-goutte et arrosoir)
+  const b = lerp(deco.bulb.from, deco.bulb.to, irrig ? v.t : 1);
+  if (b > 0.03 && cfg.methode !== 'jet') {
+    const [fx, fy] = BULB_SHAPE[cfg.sol], surf = cfg.methode === 'arrosoir';
+    PX.forEach(x0 => {
+      const x = cfg.methode === 'goutte' ? x0 - 7 : x0;
+      const ry = (8 + 34 * b) * fy * (surf ? 0.7 : 1), rx = (8 + 16 * b) * fx, cy = GROUND + (surf ? 4 : 10) + ry * 0.75;
+      const gr = ctx.createRadialGradient(x, cy - ry * 0.3, 1, x, cy, Math.max(rx, ry));
+      gr.addColorStop(0, `rgba(30,70,130,${0.55 * clamp(b, 0, 1)})`); gr.addColorStop(1, 'rgba(30,70,130,0)');
+      ctx.fillStyle = gr; ctx.beginPath(); ctx.ellipse(x, cy, rx, ry, 0, 0, 7); ctx.fill();
+    });
+  }
+  // seuil de soif et colonne d'eau du sol
+  const yThr = rb - (rb - GROUND - 18) * pl.p;
+  ctx.setLineDash([6, 5]); ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0, yThr); ctx.lineTo(CW, yThr); ctx.stroke(); ctx.setLineDash([]);
+  const colH = rb - GROUND - 18, lvl = clamp(wet, 0, 1);
+  ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.fillRect(610, GROUND + 22, 20, colH - 8);
+  ctx.fillStyle = lvl < pl.p ? '#D9743A' : '#2F7CC0'; ctx.fillRect(613, GROUND + 22 + (colH - 14) * (1 - lvl) + 3, 14, (colH - 14) * lvl);
+  if (s.X > 0.3) { ctx.fillStyle = '#1B4F8C'; ctx.fillRect(613, GROUND + 22, 14, 5); }
+  // racines
+  drawRoots(ctx, v, rb);
+  // étiquettes
+  ctx.font = '700 11px Atkinson Hyperlegible, Segoe UI, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,.95)';
+  ctx.fillText('Zone des racines', 8, GROUND + 34); ctx.fillText('Sous-sol', 8, rb + 16);
+  ctx.fillText('Allée', 560, GROUND - 8);
+  ctx.save(); ctx.translate(604, GROUND + 22 + colH / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = 'center'; ctx.fillText('Eau du sol', 0, 0); ctx.restore();
+  // paillage
+  if (cfg.paillage) deco.straw.forEach(([a, b2, c, d], i) => { ctx.strokeStyle = i % 3 ? '#E3C46A' : '#C9A94C'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(a, b2); ctx.lineTo(c, d); ctx.stroke(); });
+  // robinet
+  ctx.fillStyle = '#6B7A80'; ctx.fillRect(30, GROUND - 46, 8, 46); ctx.fillRect(30, GROUND - 46, 26, 7);
+  ctx.save(); ctx.translate(46, GROUND - 50); ctx.rotate(irrig ? Math.PI / 2 : 0); ctx.fillStyle = '#C0392B'; ctx.fillRect(-9, -2, 18, 4); ctx.restore();
+  // système d'arrosage
+  if (cfg.methode === 'goutte') drawDrip(ctx, v, irrig);
+  else if (cfg.methode === 'jet') { ctx.strokeStyle = '#2E8B57'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(54, GROUND - 40); ctx.quadraticCurveTo(66, GROUND - 10, irrig ? 70 : 60, irrig ? GROUND - 70 : GROUND - 2); ctx.stroke(); if (irrig) { ctx.fillStyle = '#2E8B57'; ctx.fillRect(66, GROUND - 78, 9, 10); } }
+  // plantes : la taille suit l'eau réellement transpirée (croissance), lissée d'une heure à l'autre
+  const fac = s.flux ? s.flux.fac : 1; deco.droop = lerp(deco.droop, 1 - fac, 0.06);
+  const growTarget = clamp(s.G / s.GpotTot, 0, 1); deco.grow = deco.grow == null ? growTarget : lerp(deco.grow, growTarget, 0.08);
+  const size = 0.28 + 0.72 * deco.grow, ripe = clamp((s.jour * 24 + s.h) / (NB_JOURS * 24) * 1.6 - 0.55, 0, 1);
+  PX.forEach((x, i) => {
+    const H = s.H[i], droop = H <= 0 ? 1 : clamp(deco.droop * (0.6 + 0.5 * SENSIB[i]) + (100 - H) / 220, 0, 1);
+    const sz = size * (1 + ((i * 37) % 7 - 3) * 0.025) * (H <= 0 ? 0.75 : 1);
+    const py = GROUND - (cfg.paillage ? 3 : 0); ctx.save(); ctx.translate(x, py); ctx.scale(1.25, 1.25); ctx.translate(-x, -py);
+    DRAW_PLANT[cfg.plante](ctx, { x, y: py, s: sz, droop, H, ripe, seed: i }); ctx.restore();
+  });
+  // papillons au-dessus des plantes en bonne santé, le jour
+  if (day > 0.6) { const ok = s.H.filter(h => h > 70).length; for (let k = 0; k < Math.floor(ok / 4); k++) { const t = deco.time * 0.5 + k * 2.1, bx = 140 + ((t * 40 + k * 160) % 380), by = GROUND - 90 - 26 * Math.sin(t * 1.7 + k) - 10 * k, w = Math.abs(Math.sin(deco.time * 9 + k)) * 5 + 1.5; ctx.fillStyle = k % 2 ? '#F2C230' : '#F4F4F4'; ctx.beginPath(); ctx.ellipse(bx - w * 0.7, by, w, 3.5, -0.4, 0, 7); ctx.ellipse(bx + w * 0.7, by, w, 3.5, 0.4, 0, 7); ctx.fill(); ctx.fillStyle = '#333'; ctx.fillRect(bx - 0.6, by - 3, 1.2, 6); } }
+  // arrosoir
+  if (irrig && cfg.methode === 'arrosoir') {
+    const k = Math.min(PX.length - 1, Math.floor(v.t * PX.length)), x = PX[k] - 40; deco.canX = x + 36;
+    ctx.fillStyle = '#4C8DB8'; ctx.fillRect(x - 22, 116, 34, 26); ctx.beginPath(); ctx.moveTo(x + 12, 124); ctx.lineTo(x + 36, 136); ctx.lineTo(x + 36, 140); ctx.lineTo(x + 12, 134); ctx.fill();
+    ctx.strokeStyle = '#4C8DB8'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x - 5, 116, 12, Math.PI, 0); ctx.stroke();
+  }
+  if (v.f && v.f.asphyxie) { ctx.fillStyle = 'rgba(190,68,48,.9)'; ctx.font = '700 12px Atkinson Hyperlegible, sans-serif'; const t = 'Sol gorgé d\'eau : les racines manquent d\'air'; const w = ctx.measureText(t).width + 16; ctx.fillRect(320 - w / 2, GROUND + 22, w, 20); ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.fillText(t, 320, GROUND + 36); ctx.textAlign = 'left'; }
+}
+function drawDrip(ctx, v, irrig) {
+  const t = v.deco.time, y = GROUND - 5;
+  // tuyau
+  ctx.strokeStyle = '#6B7A80'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(56, GROUND - 40); ctx.lineTo(60, GROUND - 40); ctx.lineTo(60, y); ctx.lineTo(548, y); ctx.stroke();
+  ctx.strokeStyle = '#1F2326'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(60, y); ctx.lineTo(548, y); ctx.stroke();
+  if (irrig) { ctx.strokeStyle = '#7CC6F2'; ctx.lineWidth = 2.4; ctx.setLineDash([7, 9]); ctx.lineDashOffset = -t * 60; ctx.beginPath(); ctx.moveTo(60, GROUND - 38); ctx.lineTo(60, y); ctx.lineTo(548, y); ctx.stroke(); ctx.setLineDash([]); }
+  // goutteurs, gouttes et éclaboussures
+  PX.forEach((x0, i) => {
+    const x = x0 - 7;
+    ctx.fillStyle = '#4A5459'; ctx.fillRect(x - 3, y - 1, 6, 7);
+    if (!irrig) return;
+    const u = ((t + i * 0.137) / 0.6) % 1;
+    ctx.fillStyle = '#3E95D6';
+    if (u < 0.7) { const r = 1 + 2.4 * (u / 0.7); ctx.beginPath(); ctx.arc(x, y + 6 + r, r, 0, 7); ctx.moveTo(x - r * 0.6, y + 6 + r * 0.6); ctx.lineTo(x, y + 5); ctx.lineTo(x + r * 0.6, y + 6 + r * 0.6); ctx.fill(); }
+    else { const k = (u - 0.7) / 0.3; ctx.beginPath(); ctx.ellipse(x, y + 9 + k * 6, 2.4, 3.2, 0, 0, 7); ctx.fill(); }
+    if (u < 0.35) { const k = u / 0.35; ctx.strokeStyle = `rgba(62,149,214,${1 - k})`; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.ellipse(x, GROUND + 1, 3 + 9 * k, 1.5 + 2 * k, 0, 0, 7); ctx.stroke(); }
+  });
+}
+/* ======================= PARTICULES ======================= */
+function emitLab(P, v, dt) {
+  const { cfg, f, deco } = v; if (!f || dt <= 0) return;
+  const add = (n, mk) => { P.acc[mk.name] = (P.acc[mk.name] || 0) + n; while (P.acc[mk.name] >= 1 && P.list.length < 520) { P.acc[mk.name]--; P.list.push(mk()); } };
+  const k = dt / v.dur, bedX = () => rnd(96, 544), plantX = () => PX[Math.floor(Math.random() * PX.length)];
+  if (f.arros > 0) {
+    if (cfg.methode === 'jet') add(f.arros / 1.6 * k, function spray() { const tx = rnd(4, 636), lost = Math.random() < f.air / f.arros; return { k: 'spray', x0: 72, y0: GROUND - 74, tx, ty: GROUND - 2, t: 0, d: 0.8, lost, col: '#3E95D6' }; });
+    if (cfg.methode === 'arrosoir') add(f.arros / 1.6 * k, function can() { return { k: 'fall', x: deco.canX + rnd(-3, 3), y: 140, vy: 120, ymax: GROUND, col: '#3E95D6', r: 2.2 }; });
+    if (cfg.methode !== 'goutte') add(f.arros / 3 * k, function inf() { const x = cfg.methode === 'jet' ? bedX() : plantX() + rnd(-10, 10); return { k: 'fall', x, y: GROUND + 4, vy: SOLS[cfg.sol].drain * 140 + 6, ymax: GROUND + rnd(26, 70), col: '#2F6FB0', r: 2, fade: true }; });
+    else add(f.arros / 3.5 * k, function infd() { const x = plantX() - 7 + rnd(-6, 6); return { k: 'fall', x, y: GROUND + 6, vy: 14, ymax: GROUND + rnd(30, 70) * BULB_SHAPE[cfg.sol][1], col: '#2F6FB0', r: 2, fade: true }; });
+    if (f.allees > 1 && cfg.sol === 'argile') add(f.allees / 2 * k, function ru() { const x0 = rnd(100, 540), toR = x0 > 320; return { k: 'path', pts: [[x0, GROUND - 1], [toR ? 600 : 40, GROUND - 1]], t: 0, d: 1.4, col: '#5E8FBF', r: 2 }; });
+  }
+  add(f.evap * 1.3 * k, function ev() { return { k: 'rise', x: Math.random() < 0.85 ? bedX() : rnd(4, 636), y: GROUND - 2, vy: -rnd(22, 34), life: rnd(1.6, 2.4), age: 0, col: '#FFFFFF', r: 2.3, wob: rnd(0, 6) }; });
+  add(f.transp * 1.6 * k, function up() { return rootUptakeParticle(v) || { k: 'rise', x: 0, y: -10, vy: 0, life: 0, age: 1 }; });
+  add(f.transp * 1.1 * k, function tr() { return { k: 'rise', x: plantX() + rnd(-14, 14), y: GROUND - rnd(30, 75), vy: -rnd(16, 26), life: rnd(1.3, 2), age: 0, col: '#BFF0C4', r: 1.9, wob: rnd(0, 6) }; });
+  add(f.profond * 1.2 * k, function pr() { return { k: 'fall', x: rnd(100, 540), y: rootBottom(cfg) - 4, vy: 22, ymax: CH - 4, col: '#2D5F9E', r: 2.2, fade: true }; });
+}
+/* ======================= RACINES =======================
+   Chaque plante a son propre système de racines, généré une fois (coordonnées de référence :
+   profondeur 100). Il grandit avec la plante ; les petites racines apparaissent peu à peu.
+   Types : pivot (une racine principale qui plonge) ou fasciculé (beaucoup de racines fines). */
+const ROOT_TYPES = {
+  tomate: { tap: true, nMain: 9, reach: 42, depth: 1, sub: 3, nodules: false },
+  courgette: { tap: true, nMain: 10, reach: 52, depth: 0.9, sub: 3, nodules: false },
+  haricot: { tap: true, nMain: 8, reach: 34, depth: 0.85, sub: 3, nodules: true },
+  pasteque: { tap: true, nMain: 8, reach: 46, depth: 1, sub: 3, nodules: false }
+};
+function growBranch(out, x, y, ang, len, w, level, birth, T) {
+  const pts = [[x, y]], steps = 7, seg = len / steps;
+  for (let k = 0; k < steps; k++) {
+    ang += rnd(-0.28, 0.28); ang = lerp(ang, Math.PI / 2, level === 0 ? 0.35 : 0.12); // les racines poussent vers le bas
+    x += Math.cos(ang) * seg; y += Math.sin(ang) * seg; y = Math.min(y, 100 * T.depth);
+    pts.push([x, y]);
+  }
+  out.push({ pts, w, level, birth });
+  if (level < 2) {
+    const n = level === 0 ? T.nMain : T.sub;
+    for (let j = 0; j < n; j++) {
+      const t = 0.2 + 0.75 * (j + rnd(0, 0.6)) / n, idx = Math.min(steps - 1, Math.floor(t * steps)), [px, py] = pts[idx];
+      const side = (j % 2 ? 1 : -1) * (level === 0 ? 1 : (Math.random() < 0.5 ? 1 : -1));
+      const a = Math.PI / 2 - side * rnd(0.7, 1.25);
+      const l = level === 0 ? T.reach * rnd(0.75, 1.2) * (1 - t * 0.3) : len * rnd(0.3, 0.55);
+      growBranch(out, px, py, a, l, w * (level === 0 ? 0.55 : 0.6), level + 1, birth + (level === 0 ? 0.08 + t * 0.35 : 0.3 + rnd(0, 0.3)), T);
+    }
+  }
+}
+function makeRoots(type) {
+  const T = ROOT_TYPES[type], out = [];
+  if (T.tap) growBranch(out, 0, 0, Math.PI / 2, 95 * T.depth, 3.4, 0, 0, T);
+  else for (let k = 0; k < T.nMain; k++) { const a = Math.PI / 2 + (k - (T.nMain - 1) / 2) * 0.26; growBranch(out, 0, 0, a, rnd(60, 95) * T.depth, 2, 1, k * 0.04, T); }
+  out.sort((a, b) => a.level - b.level);
+  const nod = T.nodules ? out.filter(b => b.level >= 1).slice(0, 6).map(b => ({ b, u: rnd(0.3, 0.8) })) : [];
+  return { branches: out, nodules: nod };
+}
+function rootPoint(br, u) { const n = br.pts.length - 1, t = clamp(u, 0, 1) * n, i = Math.min(n - 1, Math.floor(t)), f = t - i; return [lerp(br.pts[i][0], br.pts[i + 1][0], f), lerp(br.pts[i][1], br.pts[i + 1][1], f)]; }
+/* transformation référence → dessin */
+function rootTf(deco, x0, i) { const g = deco.rootGrow; return { x0, sx: deco.rootDepth / 100 * (0.45 + 0.55 * g), sy: deco.rootDepth / 100 * (0.3 + 0.7 * g), g }; }
+function drawRoots(ctx, v, rb) {
+  const { cfg, s, deco } = v, wet = s.W / wmaxOf(cfg), asph = s.X > 2.5;
+  deco.rootsByType = deco.rootsByType || {};
+  const R = deco.rootsByType[cfg.plante] = deco.rootsByType[cfg.plante] || PX.map(() => makeRoots(cfg.plante));
+  deco.rootDepth = rb - GROUND - 6;
+  deco.rootGrow = deco.grow == null ? clamp(s.G / s.GpotTot, 0, 1) : deco.grow;
+  const base = asph ? [140, 126, 108] : mix([214, 196, 160], [250, 242, 222], clamp(wet / 0.6, 0, 1));
+  PX.forEach((x0, i) => {
+    const H = s.H[i], dead = H <= 0, tf = rootTf(deco, x0, i), y0 = GROUND + 3;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    R[i].branches.forEach(br => {
+      const a = clamp((tf.g - br.birth) * 4, 0, 1); if (a <= 0) return;
+      const vis = br.level === 0 ? 1 : a; // les petites racines s'allongent quand elles apparaissent
+      ctx.globalAlpha = (dead ? 0.35 : 0.9) * (0.4 + 0.6 * a);
+      ctx.strokeStyle = dead ? '#8A7560' : base;
+      ctx.lineWidth = Math.max(0.6, br.w * (0.55 + 0.45 * tf.g));
+      ctx.beginPath();
+      const n = Math.max(2, Math.round((br.pts.length - 1) * vis) + 1);
+      for (let k = 0; k < n; k++) { const [px, py] = br.pts[k]; const X = x0 + px * tf.sx, Y = y0 + py * tf.sy; k ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); }
+      ctx.stroke();
+      // poils absorbants au bout des petites racines
+      if (br.level === 2 && !dead && a > 0.8 && wet > 0.15) {
+        const [tx, ty] = br.pts[br.pts.length - 1], X = x0 + tx * tf.sx, Y = y0 + ty * tf.sy;
+        ctx.lineWidth = 0.5; ctx.globalAlpha = 0.6;
+        for (let k = 0; k < 5; k++) { const an = k * 1.26; ctx.beginPath(); ctx.moveTo(X, Y); ctx.lineTo(X + Math.cos(an) * 3, Y + Math.sin(an) * 3); ctx.stroke(); }
+      }
+    });
+    // nodosités des haricots
+    if (!dead) R[i].nodules.forEach(({ b, u }) => { if (tf.g < b.birth + 0.2) return; const [px, py] = rootPoint(b, u); ctx.globalAlpha = 0.95; ctx.fillStyle = '#E6A2A0'; ctx.beginPath(); ctx.arc(x0 + px * tf.sx, y0 + py * tf.sy, 2, 0, 7); ctx.fill(); });
+  });
+  ctx.globalAlpha = 1; ctx.lineCap = 'butt'; ctx.lineJoin = 'miter';
+}
+/* particule d'eau absorbée : du bout d'une racine jusqu'au pied de la plante */
+function rootUptakeParticle(v) {
+  const { cfg, s, deco } = v, R = deco.rootsByType && deco.rootsByType[cfg.plante]; if (!R) return null;
+  const alive = PX.map((_, i) => i).filter(i => s.H[i] > 0); if (!alive.length) return null;
+  const i = alive[Math.floor(Math.random() * alive.length)], tf = rootTf(deco, PX[i], i);
+  const brs = R[i].branches.filter(b => b.level > 0 && tf.g > b.birth + 0.25); if (!brs.length) return null;
+  let br = brs[Math.floor(Math.random() * brs.length)];
+  const chain = [];
+  // remonte vers la racine principale : on suit la branche puis on rejoint la base
+  for (let k = br.pts.length - 1; k >= 0; k--) chain.push([PX[i] + br.pts[k][0] * tf.sx, GROUND + 3 + br.pts[k][1] * tf.sy]);
+  chain.push([PX[i], GROUND + 3]); chain.push([PX[i], GROUND - 8]);
+  return { k: 'path', pts: chain, t: 0, d: rnd(1, 1.5), col: '#4FA3E0', r: 1.7 };
+}
+/* ======================= DESSIN DES PLANTES =======================
+   p : { x, y, s (taille 0,25 → 1), droop (0 → 1 : fanée), H (santé), ripe (0 → 1 : maturité), seed } */
+function leafCols(H) {
+  if (H <= 0) return ['#8C6B43', '#6F5233', '#A7865C'];
+  const t = clamp((H - 25) / 70, 0, 1);
+  return [mix([196, 170, 72], [70, 152, 66], t), mix([150, 124, 48], [38, 108, 48], t), mix([222, 204, 120], [140, 200, 120], t)];
+}
+function leafShape(ctx, len, wid) { ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(len * 0.45, -wid, len, 0); ctx.quadraticCurveTo(len * 0.45, wid, 0, 0); ctx.closePath(); }
+function drawLeaf(ctx, x, y, ang, len, wid, fill, vein) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(ang); leafShape(ctx, len, wid); ctx.fillStyle = fill; ctx.fill();
+  ctx.strokeStyle = vein; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(1, 0); ctx.lineTo(len * 0.85, 0); ctx.stroke(); ctx.restore();
+}
+function shadow(ctx, x, y, w) { ctx.fillStyle = 'rgba(40,25,10,.22)'; ctx.beginPath(); ctx.ellipse(x, y + 1, w, 3.5, 0, 0, 7); ctx.fill(); }
+
+function drawTomato(ctx, p) {
+  const { x, y, s, droop, H, ripe } = p, [c1, c2, vein] = leafCols(H), h = 112 * s, bend = droop * 14;
+  shadow(ctx, x, y, 10 + 12 * s);
+  if (s > 0.38) { ctx.strokeStyle = '#A0855C'; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(x - 7, y + 2); ctx.lineTo(x - 7, y - 118); ctx.stroke(); }
+  const top = [x + bend, y - h * (1 - droop * 0.22)];
+  ctx.strokeStyle = c2; ctx.lineWidth = 2 + 1.6 * s; ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + bend * 0.2, y - h * 0.55, top[0], top[1]); ctx.stroke();
+  if (s > 0.38) { ctx.strokeStyle = '#D8C9A0'; ctx.lineWidth = 1.2; for (const t of [0.35, 0.7]) { const yy = y - h * t * (1 - droop * 0.22); ctx.beginPath(); ctx.moveTo(x - 8, yy); ctx.lineTo(x + bend * t * t + 1, yy); ctx.stroke(); } }
+  const nodes = 2 + Math.round(5 * s);
+  for (let i = 0; i < nodes; i++) {
+    const t = 0.18 + 0.8 * (i + 1) / (nodes + 0.5), nx = x + bend * t * t, ny = y - h * t * (1 - droop * 0.22), side = i % 2 ? -1 : 1;
+    const ang = side > 0 ? -0.35 + droop * 1.25 : Math.PI + 0.35 - droop * 1.25, L = (10 + 10 * s) * (1 - t * 0.35);
+    ctx.strokeStyle = c2; ctx.lineWidth = 1.2; const ex = nx + Math.cos(ang) * L, ey = ny + Math.sin(ang) * L;
+    ctx.beginPath(); ctx.moveTo(nx, ny); ctx.lineTo(ex, ey); ctx.stroke();
+    for (const [u, da, k] of [[0.45, -0.9, 0.55], [0.45, 0.9, 0.55], [1, 0, 0.75]]) drawLeaf(ctx, nx + Math.cos(ang) * L * u, ny + Math.sin(ang) * L * u, ang + da * (1 - droop * 0.5), L * k, L * 0.28 * (1 - droop * 0.25), i % 2 ? c1 : c2, vein);
+  }
+  ctx.fillStyle = c1; ctx.beginPath(); ctx.arc(top[0], top[1], 2.5 + 2 * s, 0, 7); ctx.fill();
+  if (s > 0.55 && H > 0) {
+    const n = Math.round(clamp((s - 0.55) / 0.4, 0, 1) * 5 * clamp(H / 80, 0.3, 1));
+    for (let k = 0; k < n; k++) {
+      const t = 0.3 + 0.13 * k, fx = x + (k % 2 ? 7 : -3) + bend * t * t, fy = y - h * t * (1 - droop * 0.22) + 9, r = (3 + 2.6 * s) * (0.75 + 0.25 * ((k * 7) % 3) / 2);
+      const rp = clamp(ripe * 1.4 - k * 0.15, 0, 1);
+      ctx.fillStyle = mix([110, 170, 70], H > 50 ? [214, 54, 36] : [222, 130, 60], rp); ctx.beginPath(); ctx.arc(fx, fy, r, 0, 7); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.beginPath(); ctx.arc(fx - r * 0.35, fy - r * 0.35, r * 0.28, 0, 7); ctx.fill();
+      ctx.fillStyle = '#2E6B2A'; ctx.beginPath(); ctx.arc(fx, fy - r, 1.4, 0, 7); ctx.fill();
+    }
+  }
+}
+function drawCourgette(ctx, p) {
+  const { x, y, s, droop, H, ripe } = p, [c1, c2, vein] = leafCols(H), n = 3 + Math.round(3 * s);
+  shadow(ctx, x, y, 14 + 22 * s);
+  if (s > 0.6 && H > 0) { const L = (7 + 22 * clamp((s - 0.6) / 0.4, 0, 1)) * clamp(H / 80, 0.4, 1); ctx.fillStyle = H > 50 ? '#3E7A2C' : '#7A8A3C'; ctx.save(); ctx.translate(x - 4, y - 3); ctx.rotate(-0.25); ctx.beginPath(); ctx.ellipse(-L / 2, 0, L / 2, 3 + 2 * s, 0, 0, 7); ctx.fill(); ctx.fillStyle = 'rgba(255,255,255,.25)'; ctx.fillRect(-L + 3, -1, L - 6, 1.4); ctx.restore(); }
+  const order = [...Array(n).keys()].sort((a, b) => Math.abs(b - (n - 1) / 2) - Math.abs(a - (n - 1) / 2));
+  order.forEach(i => {
+    const a = -Math.PI / 2 + (i - (n - 1) / 2) * (0.5 + droop * 0.15), Lp = (16 + 30 * s) * (1 - droop * 0.35);
+    const lx = x + Math.cos(a) * Lp * 0.8, ly = y + Math.sin(a) * Lp * (1 - droop * 0.55) + droop * 8, r = (6 + 11 * s) * (1 - droop * 0.2);
+    ctx.strokeStyle = c2; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + Math.cos(a) * Lp * 0.25, y - Lp * 0.55 * (1 - droop * 0.6), lx, ly); ctx.stroke();
+    ctx.fillStyle = i % 2 ? c1 : c2; ctx.beginPath();
+    for (let k = 0; k < 5; k++) { const b = -Math.PI / 2 + (k - 2) * 0.62 + (droop * 0.6); ctx.moveTo(lx, ly); ctx.arc(lx + Math.cos(b) * r * 0.5, ly + Math.sin(b) * r * 0.5 * (1 - droop * 0.3), r * 0.55, 0, 7); }
+    ctx.fill(); ctx.strokeStyle = 'rgba(20,60,20,.35)'; ctx.lineWidth = 0.8; ctx.stroke();
+    ctx.strokeStyle = vein; ctx.lineWidth = 0.8; for (let k = 0; k < 5; k++) { const b = -Math.PI / 2 + (k - 2) * 0.62 + droop * 0.6; ctx.beginPath(); ctx.moveTo(lx, ly); ctx.lineTo(lx + Math.cos(b) * r * 0.85, ly + Math.sin(b) * r * 0.85 * (1 - droop * 0.3)); ctx.stroke(); }
+  });
+  if (s > 0.45 && H > 40) { const fx = x + 6, fy = y - 8 - 8 * s; ctx.fillStyle = '#F5C021'; for (let k = 0; k < 5; k++) { const b = k * 1.256 + ripe; ctx.beginPath(); ctx.ellipse(fx + Math.cos(b) * 3.2, fy + Math.sin(b) * 3.2, 3, 1.6, b, 0, 7); ctx.fill(); } ctx.fillStyle = '#E08A12'; ctx.beginPath(); ctx.arc(fx, fy, 1.6, 0, 7); ctx.fill(); }
+}
+function drawHaricot(ctx, p) {
+  const { x, y, s, droop, H } = p, [c1, c2, vein] = leafCols(H), h = 118 * s * (1 - droop * 0.25);
+  shadow(ctx, x, y, 8 + 8 * s);
+  ctx.strokeStyle = '#9A7B52'; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(x + 1, y + 2); ctx.lineTo(x + 3, y - 124); ctx.stroke();
+  ctx.strokeStyle = c2; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(x, y);
+  for (let k = 1; k <= 24; k++) { const t = k / 24; ctx.lineTo(x + 2 + Math.sin(t * 14) * 4 + droop * t * 8, y - h * t); } ctx.stroke();
+  const n = 2 + Math.round(6 * s);
+  for (let k = 0; k < n; k++) {
+    const t = (k + 0.7) / (n + 0.5), px = x + 2 + Math.sin(t * 14) * 4 + droop * t * 8, py = y - h * t, side = k % 2 ? -1 : 1, L = 8 + 6 * s;
+    const ang = side > 0 ? -0.3 + droop * 1.3 : Math.PI + 0.3 - droop * 1.3;
+    for (const da of [-0.7, 0, 0.7]) drawLeaf(ctx, px, py, ang + da * (1 - droop * 0.4), L * (da ? 0.8 : 1), L * 0.42, k % 2 ? c1 : c2, vein);
+  }
+  if (s > 0.5 && H > 30) { ctx.fillStyle = '#F4F0FA'; [0.45, 0.62, 0.8].forEach((t, k) => { if (s > 0.5 + k * 0.08) { ctx.beginPath(); ctx.arc(x - 3 + (k % 2) * 10, y - h * t, 2, 0, 7); ctx.fill(); } }); }
+  if (s > 0.62 && H > 0) {
+    const n2 = Math.round(clamp((s - 0.62) / 0.35, 0, 1) * 6 * clamp(H / 80, 0.3, 1));
+    ctx.strokeStyle = H > 50 ? '#4E9A2E' : '#9A9A40'; ctx.lineWidth = 2.6; ctx.lineCap = 'round';
+    for (let k = 0; k < n2; k++) { const t = 0.3 + 0.1 * k, px = x + (k % 2 ? 8 : -5), py = y - h * t; ctx.beginPath(); ctx.moveTo(px, py); ctx.quadraticCurveTo(px + (k % 2 ? 2 : -2), py + 8, px + (k % 2 ? -1 : 1), py + 16 * (0.6 + 0.4 * s)); ctx.stroke(); }
+    ctx.lineCap = 'butt';
+  }
+}
+function drawPasteque(ctx, p) {
+  const { x, y, s, droop, H, ripe, seed } = p, [c1, c2, vein] = leafCols(H);
+  shadow(ctx, x, y, 14 + 18 * s);
+  // tiges rampantes avec feuilles très découpées
+  const n = 2 + Math.round(2 * s);
+  for (let k = 0; k < n; k++) {
+    const side = k % 2 ? -1 : 1, L = (12 + 26 * s) * (0.8 + 0.2 * k / n), ex = x + side * L, ey = y - 4 - k * 2;
+    ctx.strokeStyle = c2; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(x, y - 1); ctx.quadraticCurveTo(x + side * L * 0.5, y - 10 * s * (1 - droop * 0.6), ex, ey); ctx.stroke();
+    // vrille
+    ctx.lineWidth = 0.9; ctx.beginPath(); for (let j = 0; j <= 12; j++) { const a = j * 0.9; ctx.lineTo(ex + side * (3 + Math.cos(a) * 2), ey - 3 - j * 0.5 + Math.sin(a) * 2); } ctx.stroke();
+    for (let j = 1; j <= 3; j++) {
+      const t = j / 3.4, px = lerp(x, ex, t), py = lerp(y - 1, ey, t) - 6 * s * Math.sin(t * Math.PI) * (1 - droop * 0.6);
+      const sz = (5 + 7 * s) * (1 - droop * 0.25), up = -Math.PI / 2 + side * 0.3 + droop * side * 0.9;
+      ctx.fillStyle = (j + k) % 2 ? c1 : c2;
+      for (let l = -2; l <= 2; l++) { const a = up + l * 0.55; ctx.save(); ctx.translate(px, py); ctx.rotate(a); leafShape(ctx, sz * (1 - Math.abs(l) * 0.15), sz * 0.22); ctx.fill(); ctx.restore(); }
+      ctx.strokeStyle = vein; ctx.lineWidth = 0.6; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + Math.cos(up) * sz * 0.8, py + Math.sin(up) * sz * 0.8); ctx.stroke();
+    }
+    if (s > 0.4 && H > 40 && k === 0) { ctx.fillStyle = '#F5D02A'; ctx.beginPath(); ctx.arc(lerp(x, ex, 0.6), y - 9 * s, 2.6, 0, 7); ctx.fill(); }
+  }
+  // fruit posé au sol, qui grossit et se raye
+  if (s > 0.5 && H > 0) {
+    const r = (3 + 13 * clamp((s - 0.5) / 0.5, 0, 1)) * clamp(H / 80, 0.45, 1), fx = x + (seed % 2 ? 9 : -9), fy = y - r * 0.8;
+    ctx.fillStyle = mix([150, 196, 110], [44, 110, 48], ripe); ctx.beginPath(); ctx.ellipse(fx, fy, r * 1.15, r * 0.85, 0, 0, 7); ctx.fill();
+    ctx.strokeStyle = 'rgba(20,60,25,.55)'; ctx.lineWidth = 1.4;
+    for (let k = -2; k <= 2; k++) { ctx.beginPath(); ctx.ellipse(fx, fy, Math.abs(k) * r * 0.24 + 0.5, r * 0.84, 0, 0, 7); ctx.stroke(); }
+    ctx.fillStyle = 'rgba(255,255,255,.3)'; ctx.beginPath(); ctx.ellipse(fx - r * 0.4, fy - r * 0.35, r * 0.3, r * 0.18, -0.4, 0, 7); ctx.fill();
+  }
+}
+const DRAW_PLANT = { tomate: drawTomato, courgette: drawCourgette, haricot: drawHaricot, pasteque: drawPasteque };
+function stepParticles(P, ctx, dt, paused) {
+  const keep = [];
+  for (const p of P.list) {
+    if (!paused) {
+      if (p.k === 'spray') p.t += dt / p.d;
+      else if (p.k === 'fall') { p.y += p.vy * dt; if (p.vy > 60) p.vy += 200 * dt; }
+      else if (p.k === 'rise') { p.age += dt; p.y += p.vy * dt; }
+      else if (p.k === 'path') p.t += dt / p.d;
+    }
+    let x, y, a = 1;
+    if (p.k === 'spray') { if (p.t >= 1 || (p.lost && p.t > 0.55)) continue; x = lerp(p.x0, p.tx, p.t); y = lerp(p.y0, p.ty, p.t) - 90 * Math.sin(Math.PI * p.t) * (p.tx / 640); if (p.lost) a = clamp((0.55 - p.t) / 0.25, 0, 1); }
+    else if (p.k === 'fall') { if (p.y >= p.ymax) continue; x = p.x; y = p.y; if (p.fade) a = clamp((p.ymax - p.y) / 25, 0, 1); }
+    else if (p.k === 'rise') { if (p.age >= p.life) continue; x = p.x + Math.sin(p.age * 3 + p.wob) * 3; y = p.y; a = 0.85 * (1 - p.age / p.life); }
+    else if (p.k === 'path') { if (p.t >= 1) continue; const q = p.pts, n = q.length - 1, tt = p.t * n, i = Math.min(n - 1, Math.floor(tt)), u = tt - i; x = lerp(q[i][0], q[i + 1][0], u); y = lerp(q[i][1], q[i + 1][1], u); if (p.fade) a = 1 - p.t * 0.6; }
+    keep.push(p);
+    ctx.globalAlpha = a; ctx.fillStyle = p.col; ctx.beginPath(); ctx.arc(x, y, p.r || 2.2, 0, 7); ctx.fill();
+  }
+  ctx.globalAlpha = 1; P.list = keep;
+}
+
+/* ======================= DESSIN : CHAMPS BIO / INTENSIF ======================= */
+const FG = 196, NAPPE_Y = 352;
+function drawChamp(ctx, v) {
+  const { c, deco, id } = v, sy = SYSTEMES[id], m = Math.min(11, c.mois - 1 < 0 ? 0 : c.mois - 1), mm = c.mois === 0 ? 0 : m;
+  const f = c.flux;
+  const storm = f && f.orage, rainy = f && f.pluie > 0;
+  const g = ctx.createLinearGradient(0, 0, 0, FG);
+  g.addColorStop(0, storm ? '#5E6B7A' : mm >= 8 || mm <= 0 ? '#9DB8CC' : '#8CC7EC'); g.addColorStop(1, storm ? '#9AA6B2' : '#DDEFF8');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, CW, FG);
+  // nuages
+  ctx.fillStyle = storm ? '#4E5864' : 'rgba(255,255,255,.9)';
+  deco.clouds.forEach(([x, y, r]) => { ctx.beginPath(); ctx.ellipse(x, y, r * 1.6, r * 0.7, 0, 0, 7); ctx.ellipse(x - r, y + 6, r, r * 0.55, 0, 0, 7); ctx.ellipse(x + r, y + 6, r, r * 0.55, 0, 0, 7); ctx.fill(); });
+  // rivière (à droite)
+  const polRiv = clamp((c.ruissel / 120) * (id === 'intensif' ? 1 : 0.6) + c.erosion * 0.15, 0, 1);
+  ctx.fillStyle = '#7A5A3A'; ctx.beginPath(); ctx.moveTo(540, FG); ctx.quadraticCurveTo(590, FG + 50, 640, FG + 52); ctx.lineTo(640, FG); ctx.fill();
+  ctx.fillStyle = mix([70, 150, 210], [130, 116, 70], polRiv); ctx.beginPath(); ctx.moveTo(560, FG + 10); ctx.quadraticCurveTo(595, FG + 44, 640, FG + 46); ctx.lineTo(640, FG + 10); ctx.fill();
+  ctx.font = '700 11px Atkinson Hyperlegible, Segoe UI, sans-serif'; ctx.fillStyle = '#15302B'; ctx.fillText('Rivière ↓', 572, FG - 8);
+  // sol
+  const soilTop = sy.mo > 2 ? [92, 66, 44] : [140, 108, 72];
+  ctx.fillStyle = `rgb(${soilTop})`; ctx.fillRect(0, FG, 560, 40);
+  ctx.fillStyle = sy.mo > 2 ? '#7A5A3E' : '#9C8060'; ctx.fillRect(0, FG + 40, 560, 6); ctx.fillRect(0, FG + 46, 640, NAPPE_Y - FG - 46);
+  ctx.fillStyle = 'rgba(255,255,255,.1)'; deco.grains.forEach(([x, y]) => ctx.fillRect(x, FG + 46 + y * (NAPPE_Y - FG - 56), 2, 2));
+  // nappe
+  const no3 = c.mois ? nitrates(c) : 10;
+  ctx.fillStyle = mix([60, 140, 210], [120, 160, 70], no3 / 90); ctx.fillRect(0, NAPPE_Y, CW, CH - NAPPE_Y);
+  ctx.fillStyle = 'rgba(255,255,255,.25)'; for (let x = 6; x < CW; x += 14) for (let y = NAPPE_Y + 8; y < CH; y += 12) ctx.fillRect(x + (y % 24 ? 6 : 0), y, 3, 3);
+  ctx.fillStyle = '#fff'; ctx.fillText('Nappe phréatique', 10, NAPPE_Y + 20); ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.fillText('Sol', 8, FG + 16); ctx.fillText('Sous-sol', 8, FG + 66);
+  // vers de terre
+  const nv = Math.round(sy.vers / 22);
+  ctx.strokeStyle = '#D98A8A'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+  for (let i = 0; i < nv; i++) { const [x, y, ph] = deco.worms[i]; const t = deco.time * 2 + ph; ctx.beginPath(); for (let k = 0; k <= 10; k++) { const xx = x + k * 2.2, yy = FG + 8 + y * 28 + Math.sin(t + k * 0.7) * 2.5; k ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); } ctx.stroke(); if (sy.mo > 2) { ctx.strokeStyle = 'rgba(40,25,15,.35)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x + 10, FG + 10 + y * 28); ctx.lineTo(x + 12, FG + 46); ctx.stroke(); ctx.strokeStyle = '#D98A8A'; ctx.lineWidth = 3; } }
+  ctx.lineCap = 'butt';
+  // culture
+  const stage = [0.25, 0.45, 0.75, 1, 1, 0, 0, 0, 0, 0, 0, 0][mm], gold = [0, 0, 0, 0.5, 1, 0, 0, 0, 0, 0, 0, 0][mm];
+  const vig = c.mois ? clamp(c.Nabs / Math.max(1, [20, 65, 125, 170, 180, 180][Math.min(5, mm)]), 0.55, 1) : 1;
+  const stemC = mix([70, 150, 60], [214, 180, 90], gold);
+  for (let x = 14; x < 548; x += 9) {
+    if (stage > 0) {
+      const h = 70 * stage * (0.85 + 0.15 * vig) * (0.9 + ((x * 13) % 10) / 50);
+      ctx.strokeStyle = stemC; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(x, FG); ctx.quadraticCurveTo(x + 3, FG - h / 2, x + 4, FG - h); ctx.stroke();
+      if (stage >= 0.75) { ctx.fillStyle = mix([110, 170, 70], [200, 160, 70], gold); ctx.beginPath(); ctx.ellipse(x + 4, FG - h - 6, 2.6, 7, 0.1, 0, 7); ctx.fill(); }
+    } else if (mm >= 5) {
+      ctx.strokeStyle = '#C9AE6A'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, FG); ctx.lineTo(x + 1, FG - 7); ctx.stroke();
+      if (sy.couvertHiver && mm >= 6) { const k = clamp((mm - 5) / 3, 0, 1); ctx.fillStyle = '#4E9A4A'; ctx.beginPath(); ctx.ellipse(x + 4, FG - 4 * k, 5 * k, 3 * k, 0, 0, 7); ctx.fill(); }
+    }
+  }
+  // tracteur (épandage ou traitement)
+  if (f && (f.traitement || f.engrais) && v.t < 0.95) {
+    const x = 20 + v.t * 500;
+    ctx.fillStyle = '#C0392B'; ctx.fillRect(x, FG - 30, 34, 18); ctx.fillRect(x + 22, FG - 44, 14, 16);
+    ctx.fillStyle = '#222'; ctx.beginPath(); ctx.arc(x + 8, FG - 10, 10, 0, 7); ctx.arc(x + 32, FG - 8, 7, 0, 7); ctx.fill();
+    ctx.fillStyle = f.traitement ? 'rgba(150,80,200,.55)' : 'rgba(120,190,60,.55)'; ctx.beginPath(); ctx.moveTo(x - 2, FG - 26); ctx.lineTo(x - 40, FG); ctx.lineTo(x - 2, FG); ctx.fill();
+  }
+}
+function emitChamp(P, v, dt) {
+  const f = v.c.flux; if (!f) return;
+  const add = (n, mk) => { P.acc[mk.name] = (P.acc[mk.name] || 0) + n; while (P.acc[mk.name] >= 1 && P.list.length < 600) { P.acc[mk.name]--; P.list.push(mk()); } };
+  const k = dt / v.dur;
+  add(f.pluie * 1.2 * k * (f.orage ? 2 : 1), function rain() { return { k: 'fall', x: rnd(0, 560), y: rnd(30, 60), vy: f.orage ? 330 : 220, ymax: FG, col: '#2F7CC0', r: 1.6 }; });
+  add(f.ruiss * 1.1 * k, function run() { const x = rnd(40, 400); return { k: 'path', pts: [[x, FG - 2], [560, FG + 2], [600, FG + 30]], t: 0, d: rnd(1.4, 2), col: '#8A6A3E', r: 2.6 }; });
+  add(f.drain * 0.9 * k, function dr() { const x = rnd(20, 540); return { k: 'path', pts: [[x, FG + 40], [x + rnd(-6, 6), NAPPE_Y + 6]], t: 0, d: rnd(1.6, 2.4), col: '#2F7CC0', r: 2, fade: true }; });
+  add(f.lessive * 0.9 * k, function no3() { const x = rnd(20, 540); return { k: 'path', pts: [[x, FG + 10], [x + rnd(-6, 6), NAPPE_Y + 8]], t: 0, d: rnd(1.6, 2.4), col: '#9BE23C', r: 2.6 }; });
+  add(f.pest * 22 * k, function pe() { const toRiv = Math.random() < 0.55, x = rnd(30, 520); return { k: 'path', pts: toRiv ? [[x, FG - 2], [560, FG + 2], [610, FG + 32]] : [[x, FG + 6], [x + rnd(-6, 6), NAPPE_Y + 8]], t: 0, d: rnd(1.6, 2.4), col: '#B04BE0', r: 2.6 }; });
+}
+/* ======================= ONGLET 1 : LE POTAGER EXPÉRIMENTAL ======================= */
+const DEF = {
+  A: { plante: 'tomate', sol: 'limon', methode: 'jet', heure: 13, regle: 'quotidien', dose: 'moyen', paillage: false },
+  B: { plante: 'tomate', sol: 'limon', methode: 'jet', heure: 20, regle: 'quotidien', dose: 'moyen', paillage: false }
+};
+const LAB = { running: false, speed: 3, meteo: 'normal', tIn: 0, dur: 0.05, done: false, sides: {} };
+
+/* Aides : elles décrivent les possibilités et posent une question, sans donner la réponse. */
+const AIDE = {
+  plante: { t: 'Les plantes', items: [['Courgettes', 'Très grandes feuilles larges. Gros fruits.'], ['Tomates', 'Feuillage abondant, racines assez profondes. Fruits charnus.'], ['Haricots', 'Plante grimpante, racines peu profondes. On récolte les gousses.'], ['Pastèques', "Plante originaire des régions chaudes et sèches d'Afrique. Tiges rampantes, feuilles très découpées, racines très longues. Gros fruits ronds."]],
+    note: "Ces quatre légumes ont presque la même valeur nutritive : de 15 à 30 kilocalories pour 100 g. On peut donc comparer les kilos récoltés.",
+    q: 'À ton avis, de grandes feuilles perdent-elles plus ou moins de vapeur d\'eau que de petites feuilles ?' },
+  sol: { t: 'Les sols', items: [['Sableux', 'Gros grains, avec beaucoup d\'espace entre eux.'], ['Terre de jardin', 'Mélange de sable, de limon, d\'argile et d\'humus.'], ['Argileux', 'Grains très fins et très serrés. Collant quand il est mouillé, il se fissure quand il est sec.']],
+    q: "Verse de l'eau sur du sable, puis sur de la pâte à modeler : que se passe-t-il ? Où l'eau reste-t-elle ?" },
+  methode: { t: "Les façons d'arroser", items: [['Jet (tuyau)', "L'eau est projetée en pluie sur tout le potager, allées comprises, et traverse l'air sous forme de gouttelettes."], ['Arrosoir au pied', "On verse l'eau à la base de chaque plante."], ['Goutte-à-goutte', "Un tuyau posé au sol, percé de petits trous (goutteurs), laisse sortir l'eau goutte à goutte au pied de chaque plante, lentement."]],
+    q: "Où va l'eau qui tombe dans une allée ? Que devient une petite gouttelette d'eau dans l'air chaud ?" },
+  heure: { t: "L'heure d'arrosage", items: [['Matin (7 h)', 'Le soleil se lève, l\'air est encore frais.'], ['Midi (13 h)', 'Le soleil est au plus haut, c\'est le moment le plus chaud de la journée.'], ['Soir (20 h)', 'Le soleil se couche, la nuit arrive.']],
+    q: 'Une flaque d\'eau disparaît-elle plus vite à midi ou pendant la nuit ? Pourquoi ?' },
+  regle: { t: 'La fréquence', items: [['Tous les jours', 'On arrose chaque jour à la même heure.'], ['Un jour sur deux', 'On arrose un jour, on attend le lendemain.'], ['Quand le sol est sec', 'On enfonce un doigt dans la terre ; on arrose seulement si elle est sèche.']],
+    q: "Est-il utile d'arroser un sol qui est encore humide ? Et que se passe-t-il si on attend trop ?" },
+  dose: { t: 'La quantité', items: [['Très peu, peu, moyennement, beaucoup, énormément', "Quantité versée à chaque arrosage. Elle est adaptée à la plante : « moyennement » correspond à ce qu'un jardinier donne habituellement à cette plante. Le nombre de litres s'affiche sous les boutons (pour comparer : un seau contient environ 10 L)."]],
+    note: "Pendant l'expérience, observe la colonne « Eau du sol » à droite du dessin et le trait pointillé.",
+    q: "Le sol est comme une éponge. Que devient l'eau qu'on ajoute quand l'éponge est déjà pleine ?" },
+  paillage: { t: 'Le paillage', items: [['Non', 'La terre est nue, au soleil et au vent.'], ['Oui', 'Une couche de paille recouvre la terre, comme une couverture. L\'eau d\'arrosage passe à travers.']],
+    q: 'Le sable de la plage est-il plus chaud et plus sec au soleil ou sous une serviette ?' },
+  meteo: { t: 'La météo', items: [['Été normal', 'Temps chaud et ensoleillé.'], ['Canicule', 'Plusieurs jours de très forte chaleur.']],
+    q: 'Quand il fait très chaud, as-tu plus ou moins soif ? Et les plantes ?' }
+};
+function aideHTML(k) {
+  const a = AIDE[k];
+  return `<div class="aide" data-aide-box="${k}" hidden><b>${a.t}</b><ul>${a.items.map(([n, d]) => `<li><b>${n} :</b> ${d}</li>`).join('')}</ul>${a.note ? `<p>${a.note}</p>` : ''}<p class="q">Pour réfléchir : ${a.q}</p></div>`;
+}
+function paramsHTML(L) {
+  return `<div class="params">${PARAMS.map(p => `<span class="pl">${p.t}</span>` + (p.range
+    ? `<div class="qty"><input type="range" id="q-${L}" min="${p.range[0]}" max="${p.range[1]}" step="${p.range[2]}" aria-label="Quantité par arrosage, potager ${L}"><b class="num" data-q="${L}"></b></div>`
+    : `<div><div class="seg" role="group" aria-label="${p.t}, potager ${L}">${p.opts.map(([v, t]) => `<button data-p="${p.k}" data-v="${v}" data-side="${L}">${t}</button>`).join('')}</div>${p.k === 'dose' ? `<div class="small muted num" data-dl="${L}" style="margin-top:3px"></div>` : ''}</div>`)
+    + `<button class="help" data-aide="${p.k}" data-side="${L}" aria-label="Aide : ${p.t}" aria-expanded="false">?</button>` + aideHTML(p.k)).join('')}</div>`;
+}
+function labSideHTML(L) {
+  const other = L === 'A' ? 'B' : 'A';
+  return `<article class="side ${L}">
+    <div class="side-h"><span class="letter">${L}</span><h3>Potager ${L}</h3><button class="btn ghost copy" data-copy="${L}">Copier vers ${other}</button></div>
+    ${paramsHTML(L)}
+    <div class="cv"><canvas width="640" height="420" data-cv="${L}" aria-label="Potager ${L} animé"></canvas><span class="hint">Clique sur le dessin</span></div>
+    <div class="metrics">
+      <div class="kpis"><div><span class="label">Eau utilisée</span><span class="n num" data-m="used">0 L</span><span class="small muted" data-m="nb"></span></div>
+        <div><span class="label">Récolte</span><span class="n num" data-m="kg">—</span><span class="small muted">à la fin</span></div>
+        <div><span class="label">Grammes par litre</span><span class="n num" data-m="gpl">—</span><span class="small muted">de récolte par litre d'eau</span></div></div>
+      <div><div class="mrow" style="margin-bottom:4px"><span class="k">État des 10 plantes</span><span class="val num small" data-m="plN"></span></div><div class="plants" data-m="plants"></div></div>
+      <div class="alert" data-m="asph">Sol gorgé d'eau : les racines manquent d'air !</div>
+      <div class="mrow"><span class="k">Eau dans le sol, au niveau des racines</span><span class="val num" data-m="sol">—</span><span class="bar"><i data-b="sol"></i><span class="mark" data-m="thr"></span></span><span class="note">Sous le trait, les plantes manquent d'eau.</span></div>
+      <div class="mrow"><span class="k">Croissance</span><span class="val num" data-m="gr">—</span><span class="bar"><i data-b="gr" style="background:var(--c-transp)"></i></span></div>
+      <div><div class="label" style="margin-bottom:4px">Ce que l'eau est devenue</div><div class="fate" data-m="fate"></div><div class="fate-l num" data-m="fateTxt" style="margin-top:6px"></div></div>
+    </div></article>`;
+}
+function labHTML() {
+  return `<section id="p-labo" role="tabpanel" aria-labelledby="tab-labo" hidden>
+    <div class="intro"><h2>Le potager expérimental</h2><span class="tag-fict">Simulation · valeurs fictives</span>
+      <p>Deux semaines d'été jusqu'à la récolte. Chaque potager a 10 plantes. Règle les paramètres des potagers A et B, lance l'expérience et compare.</p></div>
+    <div class="mission"><svg width="34" height="34" viewBox="0 0 20 20" aria-hidden="true" style="flex:none;color:var(--accent)"><circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="10" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="10" r="1.4" fill="currentColor"/></svg>
+      <div><b>Mission : produire le plus de kilos de légumes possible avec le moins d'eau possible.</b><p>Le meilleur potager est celui qui obtient le plus de grammes de récolte pour chaque litre d'eau, sans sacrifier la récolte. Conseil de scientifique : entre A et B, ne change qu'un seul paramètre à la fois.</p></div></div>
+    <div class="toolbar">
+      <div class="settings"><div><span class="label">Météo (pour A et B)</span> <button class="help" data-aide="meteo" aria-label="Aide : météo" aria-expanded="false">?</button><br>
+        <span class="seg" role="group" aria-label="Météo"><button data-meteo="normal">Été normal</button><button data-meteo="canicule">Canicule</button></span>${aideHTML('meteo')}</div>
+        <div class="clock"><b class="num" data-clock></b><span class="prog"><i data-prog></i></span></div></div>
+      <div class="runbox"><button class="btn primary" data-act="run">Lancer</button><button class="btn ghost" data-act="pause" disabled>Pause</button><button class="btn" data-act="fast">Résultat immédiat</button><button class="btn ghost" data-act="reset">Réinitialiser</button>
+        <span class="seg" role="group" aria-label="Vitesse"><button data-speed="1">×1</button><button data-speed="3">×3</button><button data-speed="10">×10</button></span></div>
+    </div>
+    <div class="lab-grid">${labSideHTML('A')}${labSideHTML('B')}
+      <aside class="lab-aside"><div class="card result" data-result></div>
+        <div class="card explain empty" data-explain>Clique sur un élément du dessin (soleil, plantes, sol, goutteurs, allées…) pour lire ce qu'il représente.</div></aside>
+    </div>
+  </section>`;
+}
+function labInit() {
+  const root = $('#p-labo');
+  ['A', 'B'].forEach(L => {
+    const cv = $(`[data-cv="${L}"]`, root), ctx = cv.getContext('2d');
+    LAB.sides[L] = { cv, ctx, cfg: { ...DEF[L] }, deco: newDeco(), P: { list: [], acc: {} }, el: $(`.side.${L}`, root) };
+    new ResizeObserver(() => { const dpr = Math.min(2, devicePixelRatio || 1), w = cv.clientWidth || 640; cv.width = Math.round(w * dpr); cv.height = Math.round(w * 420 / 640 * dpr); ctx.setTransform(cv.width / CW, 0, 0, cv.height / CH, 0, 0); labDraw(0); }).observe(cv);
+    cv.addEventListener('click', e => { const r = cv.getBoundingClientRect(); labExplainAt(L, (e.clientX - r.left) * CW / r.width, (e.clientY - r.top) * CH / r.height); });
+  });
+  $$('[data-p]', root).forEach(b => b.onclick = () => {
+    const sd = LAB.sides[b.dataset.side], k = b.dataset.p; let v = b.dataset.v;
+    if (k === 'heure') v = +v; if (k === 'paillage') v = v === 'oui';
+    sd.cfg[k] = v; labReset();
+  });
+  $$('[data-aide]', root).forEach(b => b.onclick = () => {
+    const scope = b.dataset.side ? LAB.sides[b.dataset.side].el : $('.toolbar', root), box = $(`[data-aide-box="${b.dataset.aide}"]`, scope);
+    const open = box.hidden; box.hidden = !open; b.setAttribute('aria-expanded', open);
+  });
+  $$('[data-copy]', root).forEach(b => b.onclick = () => { const from = b.dataset.copy, to = from === 'A' ? 'B' : 'A'; LAB.sides[to].cfg = { ...LAB.sides[from].cfg }; labReset(); });
+  $$('[data-meteo]', root).forEach(b => b.onclick = () => { LAB.meteo = b.dataset.meteo; labReset(); });
+  $$('[data-speed]', root).forEach(b => b.onclick = () => { LAB.speed = +b.dataset.speed; labUI(); });
+  $('[data-act=run]', root).onclick = () => { if (LAB.done) labReset(); LAB.running = true; labUI(); };
+  $('[data-act=pause]', root).onclick = () => { LAB.running = false; labUI(); };
+  $('[data-act=reset]', root).onclick = () => labReset();
+  $('[data-act=fast]', root).onclick = () => { if (LAB.done) labReset(); while (!LAB.done) labAdvance(); LAB.tIn = LAB.dur; LAB.running = false; labMetrics(); labUI(); labFinish(); };
+  labReset();
+}
+function showExplain(root, [t, d]) { const box = $('[data-explain]', root); box.classList.remove('empty'); box.innerHTML = `<h4>${t}</h4><p>${d}</p>`; }
+const cfgFull = L => ({ ...LAB.sides[L].cfg, meteo: LAB.meteo, litres: litresOf(LAB.sides[L].cfg) });
+function labReset() {
+  LAB.running = false; LAB.done = false; LAB.tIn = 0; LAB.dur = 0.05;
+  ['A', 'B'].forEach(L => { const sd = LAB.sides[L]; sd.s = initPotager(cfgFull(L)); sd.f = null; sd.hour = 0; sd.deco.bulb = { from: 0, to: 0 }; sd.deco.droop = 0; sd.deco.grow = null; sd.P = { list: [], acc: {} }; });
+  labUI(); labMetrics(); labWaiting(); labDraw(0);
+}
+function labWaiting() {
+  const res = $('#p-labo [data-result]'); res.className = 'card result wait';
+  const A = LAB.sides.A.cfg, B = LAB.sides.B.cfg, diff = PARAMS.map(p => p.k).filter(k => A[k] !== B[k]);
+  res.innerHTML = `<h3>Résultats et explications</h3>
+    <p style="margin:0 0 6px">Prépare ton expérience :</p>
+    <ol class="steps"><li>Choisis le paramètre que tu veux tester.</li><li>Donne-lui une valeur différente dans A et dans B, et laisse les autres identiques.</li><li>Lance l'expérience et compare les grammes de récolte par litre d'eau.</li></ol>
+    ${diffHTML(diff, A, B, true)}`;
+}
+function diffHTML(diff, A, B, avant) {
+  if (diff.length === 0) return '<div class="diffbox no">Pour l\'instant, A et B ont exactement les mêmes réglages : ils donneront le même résultat.</div>';
+  if (diff.length === 1) return `<div class="diffbox ok">Un seul paramètre change : <b>${NOMS_PARAMS[diff[0]]}</b> (A : ${valTxt(diff[0], A[diff[0]])} ; B : ${valTxt(diff[0], B[diff[0]])}).${avant ? ' Tu pourras savoir si ce paramètre compte.' : ' La différence de résultat vient donc de ce paramètre.'}</div>`;
+  return `<div class="diffbox no">${diff.length} paramètres changent (${diff.map(k => NOMS_PARAMS[k]).join(', ')}). ${avant ? 'Tu ne pourras pas savoir lequel est responsable de la différence.' : 'On ne peut pas savoir lequel est responsable de la différence.'}</div>`;
+}
+function labUI() {
+  const root = $('#p-labo'), lock = LAB.running;
+  ['A', 'B'].forEach(L => {
+    const sd = LAB.sides[L], el = sd.el;
+    $$('[data-p]', el).forEach(b => { const k = b.dataset.p, cur = sd.cfg[k]; b.setAttribute('aria-pressed', String(k === 'paillage' ? (cur ? 'oui' : 'non') === b.dataset.v : String(cur) === b.dataset.v)); b.disabled = lock; });
+    $(`[data-dl="${L}"]`, el).textContent = `soit ${litresOf(sd.cfg)} L à chaque arrosage pour les 10 ${PLANTES[sd.cfg.plante].nom.toLowerCase()}`;
+    $('[data-copy]', el).disabled = lock;
+  });
+  $$('[data-meteo]', root).forEach(b => { b.setAttribute('aria-pressed', b.dataset.meteo === LAB.meteo); b.disabled = lock; });
+  $$('[data-speed]', root).forEach(b => b.setAttribute('aria-pressed', +b.dataset.speed === LAB.speed));
+  const started = LAB.sides.A.s.jour > 0 || LAB.sides.A.s.h > 0;
+  $('[data-act=run]', root).textContent = LAB.done ? 'Relancer' : started ? 'Reprendre' : 'Lancer';
+  $('[data-act=run]', root).disabled = lock; $('[data-act=pause]', root).disabled = !lock; $('[data-act=fast]', root).disabled = lock;
+}
+function labAdvance() {
+  let irr = false, drip = false;
+  ['A', 'B'].forEach(L => {
+    const sd = LAB.sides[L], cfg = cfgFull(L);
+    sd.hour = sd.s.h; sd.f = heurePotager(sd.s, cfg);
+    const bl = sd.deco.bulb, decay = { sable: 0.7, limon: 0.86, argile: 0.9 }[cfg.sol];
+    if (sd.f.arros > 0) { irr = true; if (cfg.methode === 'goutte') drip = true; bl.from = bl.to; bl.to = Math.max(bl.to, clamp(sd.f.mm / 6, 0.35, 1.2)); }
+    else { bl.from = bl.to * decay; bl.to = bl.from; }
+  });
+  const h = LAB.sides.A.hour;
+  LAB.dur = irr ? (drip ? 2.6 : 1.7) : (h >= 6 && h < 21 ? 0.13 : 0.04);
+  if (LAB.sides.A.s.fini) { LAB.done = true; LAB.running = false; }
+}
+function labTick(dt) {
+  if (LAB.running) {
+    LAB.tIn += dt * LAB.speed;
+    if (LAB.tIn >= LAB.dur) { LAB.tIn = 0; if (!LAB.done) { labAdvance(); labMetrics(); if (LAB.done) { labUI(); labFinish(); } } }
+  }
+  ['A', 'B'].forEach(L => { const sd = LAB.sides[L]; sd.deco.time += dt * (LAB.running ? LAB.speed : 1); if (LAB.running) emitLab(sd.P, { cfg: cfgFull(L), s: sd.s, f: sd.f, deco: sd.deco, dur: LAB.dur }, dt * LAB.speed); });
+  labDraw(LAB.running ? dt * LAB.speed : 0);
+}
+function labDraw(dt) {
+  const t = clamp(LAB.tIn / LAB.dur, 0, 1);
+  ['A', 'B'].forEach(L => {
+    const sd = LAB.sides[L]; if (!sd.s) return;
+    drawLab(sd.ctx, { cfg: cfgFull(L), s: sd.s, f: (LAB.running || LAB.tIn) && !LAB.done ? sd.f : null, t: LAB.done ? 0 : t, hour: LAB.done ? 10 : (sd.f ? sd.hour : 0), deco: sd.deco });
+    stepParticles(sd.P, sd.ctx, dt, !LAB.running);
+  });
+}
+const kgTxt = kg => fmt(kg, 1) + ' kg';
+const gplTxt = (kg, L) => { const g = gParLitre(kg, L); return g === null ? '—' : fmt(g, 1) + ' g/L'; };
+function labMetrics() {
+  const root = $('#p-labo'), s0 = LAB.sides.A.s;
+  $('[data-clock]', root).textContent = LAB.done ? 'Récolte !' : `Jour ${Math.min(NB_JOURS, s0.jour + 1)} / ${NB_JOURS} · ${LAB.sides.A.f ? LAB.sides.A.hour : 0} h`;
+  $('[data-prog]', root).style.width = ((s0.jour * 24 + s0.h) / (NB_JOURS * 24) * 100) + '%';
+  const maxTot = Math.max(1, ...['A', 'B'].map(K => FATE.reduce((a, x) => a + LAB.sides[K].s[x.k], 0)));
+  ['A', 'B'].forEach(L => {
+    const sd = LAB.sides[L], s = sd.s, el = sd.el, cfg = cfgFull(L), pl = PLANTES[cfg.plante], Wm = wmaxOf(cfg);
+    $('[data-m=used]', el).textContent = fmt(s.used) + ' L';
+    $('[data-m=nb]', el).textContent = s.nbArros ? `${s.nbArros} arrosage${s.nbArros > 1 ? 's' : ''}` : 'aucun arrosage';
+    const kg = recolteKg(s, cfg);
+    $('[data-m=kg]', el).textContent = LAB.done ? kgTxt(kg) : '—';
+    $('[data-m=gpl]', el).textContent = LAB.done ? gplTxt(kg, s.used) : '—';
+    const states = s.H.map(h => h <= 0 ? 'dead' : etatPlante(h)[1]);
+    $('[data-m=plants]', el).innerHTML = states.map((c, i) => `<i class="${c}" title="Plante ${i + 1} : ${etatPlante(s.H[i])[0]}"></i>`).join('');
+    const nb = c => states.filter(x => x === c).length;
+    $('[data-m=plN]', el).textContent = [[nb('good'), 'en bonne santé'], [nb('warn'), 'assoiffée'], [nb('bad'), 'flétrie'], [nb('dead'), 'morte']].filter(a => a[0]).map(([n, t]) => `${n} ${t}${n > 1 ? (t === 'en bonne santé' ? '' : 's') : ''}`).join(' · ');
+    $('[data-m=asph]', el).classList.toggle('on', !!(sd.f && sd.f.asphyxie));
+    const w = s.W / Wm;
+    $('[data-m=sol]', el).textContent = fmt(w * 100) + ' %';
+    const bs = $('[data-b=sol]', el); bs.style.width = clamp(w * 100, 0, 100) + '%'; bs.style.background = w < pl.p ? 'var(--c-sol)' : 'var(--accent)';
+    $('[data-m=thr]', el).style.left = pl.p * 100 + '%';
+    const g = croissance(s) * 100; $('[data-m=gr]', el).textContent = s.Gpot ? fmt(g) + ' %' : '—'; $('[data-b=gr]', el).style.width = (s.Gpot ? g : 0) + '%';
+    $('[data-m=fate]', el).innerHTML = FATE.map(x => `<i title="${x.t} : ${fmt(s[x.k] * AIRE)} L" style="width:${s[x.k] / maxTot * 100}%;background:${x.c}"></i>`).join('');
+    $('[data-m=fateTxt]', el).innerHTML = FATE.map(x => `<span${s[x.k] * AIRE < 0.5 ? ' class="zero"' : ''}><i style="background:${x.c}"></i>${x.t} : <b>${fmt(s[x.k] * AIRE)} L</b></span>`).join('');
+  });
+  if (!LAB.done && (s0.jour > 0 || s0.h > 0)) {
+    const res = $('#p-labo [data-result]'); res.className = 'card result';
+    const row = (t, f) => `<tr><th>${t}</th><td class="n">${f('A')}</td><td class="n">${f('B')}</td></tr>`;
+    res.innerHTML = `<h3>Expérience en cours…</h3><table class="live"><thead><tr><th></th><th><span class="chip-ab A">A</span></th><th><span class="chip-ab B">B</span></th></tr></thead><tbody>
+      ${row('Eau utilisée', L => fmt(LAB.sides[L].s.used) + ' L')}${row('Plantes en bonne santé', L => LAB.sides[L].s.H.filter(h => h >= 80).length + ' / 10')}${row('Croissance', L => fmt(croissance(LAB.sides[L].s) * 100) + ' %')}</tbody></table>
+      <p class="small muted" style="margin:8px 0 0">Observe les dessins : où part l'eau ? Les plantes ont-elles soif ? La récolte s'affichera à la fin.</p>`;
+  }
+}
+/* Explications construites à partir de ce qui s'est réellement passé dans chaque potager. */
+function pourquoi(L) {
+  const s = LAB.sides[L].s, cfg = cfgFull(L), out = [], tot = FATE.reduce((a, x) => a + s[x.k], 0) || 1;
+  const utile = s.transp / tot * 100;
+  out.push(`${fmt(utile)} % de l'eau a été bue par les plantes (eau utile).`);
+  const pertes = FATE.slice(1).map(x => [x, s[x.k]]).sort((a, b) => b[1] - a[1]);
+  if (pertes[0][1] * AIRE >= 5) out.push(`Plus grosse perte : ${pertes[0][0].t.toLowerCase()} (${fmt(pertes[0][1] * AIRE)} L, soit ${fmt(pertes[0][1] / tot * 100)} %).`);
+  if (s.heuresAsphyxie > 6) out.push(`Le sol est resté gorgé d'eau pendant ${s.heuresAsphyxie} heures : les racines ont manqué d'air.`);
+  if (s.heuresSoif > 10) out.push(`Pendant ${s.heuresSoif} heures de jour, le sol était trop sec : les plantes ont eu soif et ont moins poussé.`);
+  const mortes = s.H.filter(h => h <= 0).length; if (mortes) out.push(`${mortes} plante${mortes > 1 ? 's sont mortes' : ' est morte'} : elle${mortes > 1 ? 's ne produisent' : ' ne produit'} rien.`);
+  if (s.used === 0) out.push("Aucun arrosage : les plantes n'ont eu que l'eau déjà présente dans le sol.");
+  return out;
+}
+function labFinish() {
+  const A = LAB.sides.A, B = LAB.sides.B, ca = cfgFull('A'), cb = cfgFull('B');
+  const kA = recolteKg(A.s, ca), kB = recolteKg(B.s, cb), gA = gParLitre(kA, A.s.used), gB = gParLitre(kB, B.s.used);
+  const diff = PARAMS.map(p => p.k).filter(k => A.cfg[k] !== B.cfg[k]);
+  let verdict;
+  if (Math.abs(kA - kB) < 0.05 && A.s.used === B.s.used) verdict = 'Les deux potagers donnent le même résultat.';
+  else if (gA !== null && gB !== null) {
+    const best = gA > gB ? 'A' : 'B', o = best === 'A' ? 'B' : 'A', kb = best === 'A' ? kA : kB, ko = best === 'A' ? kB : kA, gb = Math.max(gA, gB), go = Math.min(gA, gB);
+    verdict = `Le potager <b>${best}</b> utilise mieux l'eau : ${fmt(gb, 1)} g de récolte par litre contre ${fmt(go, 1)} g pour ${o}${go > 0 && gb / go <= 10 ? `, soit ${fmt(gb / go, 1).replace(',0', '')} fois plus` : ''}.`;
+    if (ko > kb + 0.3) verdict += ` Mais ${o} a produit plus de kilos (${kgTxt(ko)} contre ${kgTxt(kb)}) : il faut aussi nourrir les gens !`;
+  } else verdict = "Un des potagers n'a pas été arrosé : compare surtout les kilos récoltés.";
+  const res = $('#p-labo [data-result]'); res.className = 'card result';
+  const col = L => { const s = LAB.sides[L].s, k = L === 'A' ? kA : kB; return `<div class="${L}"><span class="label">Potager ${L}</span><div class="n num">${kgTxt(k)}</div><span class="num">avec ${fmt(s.used)} L</span><br><b class="num">${gplTxt(k, s.used)}</b></div>`; };
+  res.innerHTML = `<h3>Résultats et explications</h3>
+    <div class="duo-res">${col('A')}${col('B')}</div>
+    <p style="margin:0">${verdict}</p>
+    ${['A', 'B'].map(L => `<h4 class="why-h"><span class="chip-ab ${L}">${L}</span> Que s'est-il passé ?</h4><ul class="why">${pourquoi(L).map(t => `<li>${t}</li>`).join('')}</ul>`).join('')}
+    ${diffHTML(diff, A.cfg, B.cfg, false)}
+    <p class="small muted" style="margin:8px 0 0">Change un paramètre et relance pour continuer ta recherche.</p>`;
+}
+function labExplainAt(L, x, y) {
+  const sd = LAB.sides[L], cfg = sd.cfg, rb = rootBottom({ ...cfg, meteo: LAB.meteo }), sp = sd.deco.sunPos || [0, 0]; let k;
+  if (Math.hypot(x - sp[0], y - sp[1]) < 40) k = 'soleil';
+  else if (x < 80 && y > GROUND - 60 && y < GROUND) k = 'robinet';
+  else if (y >= rb) k = 'profond';
+  else if (y >= GROUND + 18) k = sd.s.X > 2.5 ? 'asphyxie' : (cfg.methode !== 'jet' && sd.deco.bulb.to > 0.1 && y < GROUND + 80 ? 'bulbe' : 'racines');
+  else if (y >= GROUND - 8 && (x < 90 || x > 550)) k = 'allees';
+  else if (y >= GROUND - 10) k = cfg.paillage ? 'paillage' : cfg.methode === 'goutte' ? 'goutte' : 'surface';
+  else if (y > GROUND - 125 && x > 90 && x < 550) k = 'plantes';
+  else k = 'ciel';
+  const root = $('#p-labo');
+  if (k === 'goutte') return showExplain(root, ['Le goutte-à-goutte', "Un tuyau posé au sol, percé de goutteurs. Observe les gouttes et la zone humide qui se forme dans le sol sous chaque plante."]);
+  showExplain(root, INFO[k]);
+}
+/* ======================= ONGLET 2 : BIO OU INTENSIF ======================= */
+const BIO_TAB = {
+  consigne: "Deux champs de céréales voisins, cultivés chacun de la même façon depuis plus de 10 ans. On les suit pendant un an, de mars à février, sous la même pluie. Observe ce que l'eau de pluie emporte vers la nappe et la rivière.",
+  A: { nom: 'Agriculture intensive', sub: 'Engrais et pesticides de synthèse ; sol nu en hiver.' },
+  B: { nom: 'Agriculture biologique', sub: 'Fumier et compost, sans engrais ni pesticides de synthèse ; rotation des cultures, couvert végétal en hiver.' },
+  retenir: "Sans engrais ni pesticides de synthèse, avec un sol couvert et riche en vers de terre, l'agriculture biologique pollue beaucoup moins l'eau des nappes et des rivières. Mais elle produit moins par hectare.",
+  limites: [['plus', 'Beaucoup moins de nitrates et pas de pesticides de synthèse dans l\'eau.'], ['plus', 'Sol plus vivant, qui retient mieux l\'eau et s\'érode moins.'], ['moins', 'Rendement plus faible : en moyenne 20 à 25 % de moins, et davantage pour certaines cultures comme le blé.'], ['moins', 'Plus de travail (désherbage mécanique) et des produits plus chers.'], ['moins', "Le bio utilise quelques produits naturels, comme le cuivre contre les champignons, qui s'accumule dans les sols. Le fumier épandu en trop peut aussi polluer."]]
+};
+const BIO = { running: false, speed: 1, tIn: 0, dur: 1, done: false, sides: {} };
+function bioSideHTML(L) {
+  const d = BIO_TAB[L];
+  return `<article class="side ${L}"><div class="side-h"><span class="letter">${L}</span><h3>${d.nom}</h3><span class="sub">${d.sub}</span></div>
+    <div class="cv"><canvas width="640" height="420" data-cv="${L}" aria-label="Champ animé : ${d.nom}"></canvas><span class="hint">Clique sur le dessin</span></div>
+    <div class="metrics">
+    <div class="mrow"><span class="k">Rendement de la récolte</span><span class="val num" data-m="rdt">—</span><span class="bar"><i data-b="rdt" style="width:0"></i></span><span class="note">100 = champ intensif. Récolte en juillet.</span></div>
+    <div class="mrow"><span class="k">Nitrates dans l'eau qui rejoint la nappe</span><span class="val num" data-m="no3">—</span><span class="bar"><i data-b="no3" style="width:0"></i><span class="mark" style="left:50%"></span></span><span class="note">Trait : 50 mg/L, limite réelle pour l'eau potable.</span></div>
+    <div class="mrow"><span class="k">Pesticides de synthèse dans l'eau</span><span class="val num" data-m="pest">—</span><span class="bar"><i data-b="pest" style="width:0"></i><span class="mark" style="left:20%"></span></span><span class="note">Trait : 0,1 µg/L, limite réelle pour l'eau potable (par substance).</span></div>
+    <div class="mrow"><span class="k">Eau de pluie qui ruisselle vers la rivière</span><span class="val num" data-m="ruis">—</span><span class="bar"><i data-b="ruis" style="width:0"></i></span></div>
+    <div class="mrow"><span class="k">Terre emportée (érosion)</span><span class="val num" data-m="ero">—</span><span class="bar"><i data-b="ero" style="width:0"></i></span></div>
+    <div class="mrow"><span class="k">Vers de terre</span><span class="val num">${SYSTEMES[L === 'A' ? 'intensif' : 'bio'].vers} / m²</span></div></div></article>`;
+}
+function bioHTML() {
+  return `<section id="p-bio" role="tabpanel" aria-labelledby="tab-bio" hidden>
+    <div class="intro"><h2>Agriculture biologique ou agriculture intensive</h2><span class="tag-fict">Simulation · valeurs fictives</span><p>${BIO_TAB.consigne}</p></div>
+    <div class="toolbar"><div class="settings"><div class="small muted" style="max-width:52ch">Un an de culture, de mars à février, avec un orage en mai. Le tracteur indique un épandage d'engrais (vert) ou un traitement pesticide (violet).</div>
+      <div class="clock"><b class="num" data-clock></b><span class="prog"><i data-prog></i></span></div></div>
+      <div class="runbox"><button class="btn primary" data-act="run">Lancer</button><button class="btn ghost" data-act="pause" disabled>Pause</button><button class="btn ghost" data-act="reset">Réinitialiser</button>
+      <span class="seg" role="group" aria-label="Vitesse"><button data-speed="1" aria-pressed="true">×1</button><button data-speed="3" aria-pressed="false">×3</button></span></div></div>
+    <div class="duo">${bioSideHTML('A')}${bioSideHTML('B')}</div>
+    <div class="fate-l" style="margin-top:8px"><span><i style="background:#2F7CC0"></i>Eau de pluie</span><span><i style="background:#8A6A3E"></i>Ruissellement et terre emportée</span><span><i style="background:#9BE23C"></i>Nitrates entraînés</span><span><i style="background:#B04BE0"></i>Pesticides de synthèse</span><span><i style="background:#D98A8A"></i>Vers de terre</span></div>
+    <div class="card explain empty" data-explain style="margin-top:12px">Clique sur un élément d'un dessin (céréale, sol, nappe, rivière, pluie) pour lire une courte explication.</div>
+    <div class="below"><div class="card result wait" data-result><h3>Résultat</h3><p style="margin:0">Lance la simulation : le résultat s'affichera à la fin.</p></div>
+      <div class="card limits"><h3>Avantages et limites</h3><ul>${BIO_TAB.limites.map(([c, t]) => `<li class="${c}">${t}</li>`).join('')}</ul><p class="sources">Valeurs simplifiées pour la classe. Les seuils de potabilité (50 mg/L de nitrates, 0,1 µg/L par pesticide) sont des valeurs réelles.</p></div></div>
+  </section>`;
+}
+function bioInit() {
+  const root = $('#p-bio');
+  ['A', 'B'].forEach(L => {
+    const cv = $(`[data-cv="${L}"]`, root), ctx = cv.getContext('2d');
+    BIO.sides[L] = { cv, ctx, deco: newDeco(), P: { list: [], acc: {} }, el: $(`.side.${L}`, root) };
+    new ResizeObserver(() => { const dpr = Math.min(2, devicePixelRatio || 1), w = cv.clientWidth || 640; cv.width = Math.round(w * dpr); cv.height = Math.round(w * 420 / 640 * dpr); ctx.setTransform(cv.width / CW, 0, 0, cv.height / CH, 0, 0); bioDraw(0); }).observe(cv);
+    cv.addEventListener('click', e => { const r = cv.getBoundingClientRect(), x = (e.clientX - r.left) * CW / r.width, y = (e.clientY - r.top) * CH / r.height;
+      const k = x > 545 && y > FG - 20 && y < FG + 60 ? 'riviere' : y >= NAPPE_Y ? 'nappebio' : y >= FG ? 'solbio' : y > FG - 85 && x < 550 ? 'ble' : 'pluiebio'; showExplain(root, INFO[k]); });
+  });
+  $('[data-act=run]', root).onclick = () => { if (BIO.done) bioReset(); BIO.running = true; bioUI(); };
+  $('[data-act=pause]', root).onclick = () => { BIO.running = false; bioUI(); };
+  $('[data-act=reset]', root).onclick = () => bioReset();
+  $$('[data-speed]', root).forEach(b => b.onclick = () => { BIO.speed = +b.dataset.speed; $$('[data-speed]', root).forEach(x => x.setAttribute('aria-pressed', x === b)); });
+  bioReset();
+}
+function bioReset() {
+  BIO.running = false; BIO.done = false; BIO.tIn = 0; BIO.dur = 1;
+  BIO.sides.A.c = initChamp('intensif'); BIO.sides.B.c = initChamp('bio');
+  ['A', 'B'].forEach(L => BIO.sides[L].P = { list: [], acc: {} });
+  const res = $('#p-bio [data-result]'); res.className = 'card result wait'; res.innerHTML = '<h3>Résultat</h3><p style="margin:0">Lance la simulation : le résultat s\'affichera à la fin.</p>';
+  bioUI(); bioMetrics(); bioDraw(0);
+}
+function bioUI() { const r = $('#p-bio'); $('[data-act=run]', r).textContent = BIO.done ? 'Relancer' : BIO.sides.A.c.mois ? 'Reprendre' : 'Lancer'; $('[data-act=run]', r).disabled = BIO.running; $('[data-act=pause]', r).disabled = !BIO.running; }
+function bioTick(dt) {
+  if (BIO.running) {
+    BIO.tIn += dt * BIO.speed;
+    if (BIO.tIn >= BIO.dur || BIO.sides.A.c.mois === 0) {
+      BIO.tIn = 0;
+      ['A', 'B'].forEach(L => moisChamp(BIO.sides[L].c));
+      const f = BIO.sides.A.c.flux; BIO.dur = f.orage || f.traitement || f.engrais ? 3.2 : 2.4;
+      if (BIO.sides.A.c.fini) { BIO.done = true; BIO.running = false; bioUI(); bioResult(); }
+      bioMetrics();
+    }
+  }
+  ['A', 'B'].forEach(L => { const sd = BIO.sides[L]; sd.deco.time += dt; if (BIO.running) emitChamp(sd.P, { c: sd.c, dur: BIO.dur }, dt * BIO.speed); });
+  bioDraw(BIO.running ? dt * BIO.speed : 0);
+}
+function bioDraw(dt) {
+  const t = clamp(BIO.tIn / BIO.dur, 0, 1);
+  ['A', 'B'].forEach(L => { const sd = BIO.sides[L]; if (!sd.c) return; drawChamp(sd.ctx, { c: sd.c, deco: sd.deco, id: L === 'A' ? 'intensif' : 'bio', t }); stepParticles(sd.P, sd.ctx, dt, !BIO.running); });
+}
+function bioMetrics() {
+  const r = $('#p-bio'), c0 = BIO.sides.A.c;
+  $('[data-clock]', r).textContent = c0.mois === 0 ? 'Avant mars' : MOIS_BIO[c0.mois - 1] + (c0.flux.orage ? ' · orage' : '');
+  $('[data-prog]', r).style.width = (c0.mois / 12 * 100) + '%';
+  ['A', 'B'].forEach(L => {
+    const el = BIO.sides[L].el, c = BIO.sides[L].c, set = (k, t, w, col) => { $(`[data-m=${k}]`, el).textContent = t; const b = $(`[data-b=${k}]`, el); b.style.width = clamp(w, 0, 100) + '%'; b.style.background = col; };
+    const no3 = c.mois ? nitrates(c) : null, pe = c.mois ? pesticidesUgL(c) : null;
+    set('rdt', c.mois >= 5 ? fmt(rendement(c)) : '—', c.mois >= 5 ? rendement(c) : 0, 'var(--b)');
+    set('no3', no3 === null ? '—' : fmt(no3) + ' mg/L', no3 || 0, no3 > 50 ? 'var(--bad)' : no3 > 25 ? 'var(--warn)' : 'var(--good)');
+    set('pest', pe === null ? '—' : fmt(pe, 2) + ' µg/L', (pe || 0) / 0.5 * 100, pe > 0.1 ? 'var(--bad)' : 'var(--good)');
+    set('ruis', c.mois ? fmt(c.ruissel) + ' mm' : '—', c.ruissel / 140 * 100, 'var(--c-sol)');
+    set('ero', c.mois ? fmt(c.erosion, 1) + ' t/ha' : '—', c.erosion / 2.5 * 100, '#8A6A3E');
+  });
+}
+function bioResult() {
+  const a = BIO.sides.A.c, b = BIO.sides.B.c, res = $('#p-bio [data-result]'); res.className = 'card result';
+  res.innerHTML = `<h3>Résultat après un an</h3>
+    <div class="cmp"><div><span class="label">A · Intensif</span><b class="n num">${fmt(nitrates(a))} mg/L</b>de nitrates dans l'eau vers la nappe<br><b class="num">${fmt(pesticidesUgL(a), 2)} µg/L</b> de pesticides · rendement <b class="num">${fmt(rendement(a))}</b></div>
+    <div class="B"><span class="label">B · Biologique</span><b class="n num">${fmt(nitrates(b))} mg/L</b>de nitrates dans l'eau vers la nappe<br><b class="num">${fmt(pesticidesUgL(b), 2)} µg/L</b> de pesticides · rendement <b class="num">${fmt(rendement(b))}</b></div></div>
+    <p style="margin:0">L'eau qui s'infiltre sous le champ intensif ${nitrates(a) > 50 ? 'dépasse la limite de potabilité pour les nitrates' : 'contient beaucoup de nitrates'} et contient des pesticides. Sous le champ bio, elle reste en dessous des limites. Le champ bio a produit environ ${fmt(100 - rendement(b))} % de moins.</p>
+    <div class="retenir">À retenir : ${BIO_TAB.retenir}</div>`;
+}
+
+/* ======================= ONGLETS ET BOUCLE ======================= */
+const TABS = [
+  { id: 'labo', nav: 'Le potager expérimental', icon: '<path d="M7 2h6M8 2v5L3 16a1.5 1.5 0 0 0 1.3 2h11.4A1.5 1.5 0 0 0 17 16L12 7V2" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linejoin="round"/><path d="M5.5 13h9" stroke="currentColor" stroke-width="1.7"/>' },
+  { id: 'bio', nav: 'Bio ou intensif', icon: '<path d="M3 17h14M6 17V9M10 17V6M14 17V9M6 9l-2-2M6 9l2-2M10 6L8 4M10 6l2-2M14 9l-2-2M14 9l2-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" fill="none"/>' }
+];
+let active = 'labo';
+function showTab(id) {
+  if (!TABS.some(t => t.id === id)) id = 'labo';
+  TABS.forEach(t => { $('#p-' + t.id).hidden = t.id !== id; $('#tab-' + t.id).setAttribute('aria-selected', t.id === id); });
+  if (id !== 'labo' && LAB.running) { LAB.running = false; labUI(); }
+  if (id !== 'bio' && BIO.running) { BIO.running = false; bioUI(); }
+  active = id; id === 'labo' ? labDraw(0) : bioDraw(0);
+}
+function boot() {
+  $('#tabs').innerHTML = TABS.map(t => `<button class="tab" role="tab" id="tab-${t.id}" aria-selected="false" data-tab="${t.id}"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">${t.icon}</svg>${t.nav}</button>`).join('');
+  $('main').innerHTML = labHTML() + bioHTML();
+  labInit(); bioInit();
+  $$('.tab').forEach(b => b.onclick = () => { if (location.hash !== '#' + b.dataset.tab) location.hash = b.dataset.tab; else showTab(b.dataset.tab); });
+  addEventListener('hashchange', () => showTab(location.hash.slice(1)));
+  showTab(location.hash.slice(1));
+  let last = performance.now();
+  const loop = now => { const dt = Math.min(0.05, (now - last) / 1000); last = now; active === 'labo' ? labTick(dt) : bioTick(dt); requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+}
+boot();
+</script>
+
+</body></html>

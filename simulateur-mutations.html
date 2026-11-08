@@ -1,0 +1,360 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Simulateur de mutations</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap">
+<style>
+/* Une colonne claire : compteurs → population dessinée → courbe → réglages → explications */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --ink:#141b24; --muted:#4f5b68; --line:#d3dae2;
+  --accent:#2f45c4; --accent-ink:#ffffff;
+  --none:#c3ccd6; --silent:#2f7fd0; --sick:#d23b2a; --trait:#d99a00; --slot:#e6eaef;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141a; --surface:#18202a; --ink:#eef2f6; --muted:#a7b3c0; --line:#2c3846;
+  --accent:#93a3ff; --accent-ink:#0f141a;
+  --none:#556271; --silent:#5aa2ec; --sick:#f0705f; --trait:#f2be3a; --slot:#202a35; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f141a; --surface:#18202a; --ink:#eef2f6; --muted:#a7b3c0; --line:#2c3846;
+  --accent:#93a3ff; --accent-ink:#0f141a;
+  --none:#556271; --silent:#5aa2ec; --sick:#f0705f; --trait:#f2be3a; --slot:#202a35; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.5;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:20px 48px}
+.page{max-width:1100px;margin:0 auto;display:grid;gap:20px}
+h1,h2{font-family:var(--f-display);margin:0;text-wrap:balance}
+h1{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;line-height:1.05}
+h2{font-size:1.3rem;font-weight:700}
+p{margin:0}
+.intro{color:var(--muted);max-width:62ch;margin-top:8px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:12px;min-width:0}
+
+/* barre de commande */
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+button{font:inherit;font-weight:700;font-size:1.05rem;border-radius:10px;padding:12px 18px;cursor:pointer;
+  border:2px solid var(--line);background:var(--surface);color:var(--ink);min-height:48px}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);min-width:150px}
+button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.clock{margin-left:auto;text-align:right}
+.clock b{display:block;font-family:var(--f-display);font-size:1.9rem;line-height:1;font-variant-numeric:tabular-nums}
+.clock span{color:var(--muted);font-size:.9rem}
+.story{font-size:1.05rem;padding:12px 14px;border-radius:10px;background:var(--bg);border:1px solid var(--line)}
+
+/* compteurs */
+.counts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:820px){.counts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.count{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:4px;align-content:start;border-top:6px solid var(--c)}
+.count h3{margin:0;font-size:1rem;display:flex;align-items:center;gap:8px}
+.count .big{font-family:var(--f-display);font-weight:800;font-size:2.4rem;line-height:1;font-variant-numeric:tabular-nums}
+.count .pct{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
+.count .meter{height:8px;border-radius:4px;background:var(--slot);overflow:hidden}
+.count .meter i{display:block;height:100%;background:var(--c);transition:width .3s}
+.count small{color:var(--muted);font-size:.88rem}
+.c-pop{--c:var(--ink)} .c-silent{--c:var(--silent)} .c-sick{--c:var(--sick)} .c-trait{--c:var(--trait)}
+
+.dot{width:14px;height:14px;border-radius:50%;background:var(--c);flex:none;display:inline-block}
+
+canvas{display:block;width:100%;max-width:100%}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.95rem}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.note{color:var(--muted);font-size:.92rem}
+
+/* réglages */
+.settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 28px}
+@media (max-width:720px){.settings{grid-template-columns:minmax(0,1fr)}}
+.field{display:grid;gap:6px}
+.field label{display:flex;justify-content:space-between;gap:10px;font-weight:700}
+.field output{font-variant-numeric:tabular-nums;color:var(--accent);white-space:nowrap}
+.field .hint{font-size:.88rem;color:var(--muted)}
+input[type=range]{width:100%;height:28px;accent-color:var(--accent)}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:700}
+.check input{width:22px;height:22px;margin-top:2px;accent-color:var(--accent)}
+.check span small{display:block;font-weight:400;color:var(--muted);font-size:.88rem}
+.presets{display:flex;flex-wrap:wrap;gap:8px}
+.presets button{font-size:.95rem;padding:8px 14px;min-height:40px}
+
+/* explications */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:820px){.cards{grid-template-columns:minmax(0,1fr)}}
+.card{border-radius:10px;padding:14px;border:1px solid var(--line);border-left:6px solid var(--c);display:grid;gap:6px;align-content:start}
+.card h3{margin:0;font-size:1.05rem}
+.card p{font-size:.97rem}
+.card code{font-family:ui-monospace,Menlo,monospace;font-size:.92rem;background:var(--bg);padding:1px 5px;border-radius:4px}
+.facts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.facts{grid-template-columns:minmax(0,1fr)}}
+.fact{--c:var(--ink);display:grid;gap:4px;align-content:start;padding:12px;border-radius:10px;background:var(--bg);border-top:5px solid var(--c)}
+.fact b{font-family:var(--f-display);font-size:1.35rem;line-height:1.1}
+.fact span{font-size:.92rem}
+.keep{margin:0;padding-left:22px;display:grid;gap:8px;max-width:72ch}
+@media (prefers-reduced-motion:reduce){.count .meter i{transition:none}}
+</style>
+
+<div class="page">
+  <header>
+    <h1>Simulateur de mutations</h1>
+    <p class="intro">On part d'un petit groupe de 20 humains sans aucune mutation. À chaque génération, des couples ont des enfants. Chaque enfant hérite des mutations de ses parents, et certains bébés naissent avec une mutation nouvelle. Observez combien de personnes sont concernées.</p>
+  </header>
+
+  <section class="panel" aria-label="Commandes">
+    <div class="bar">
+      <button class="primary" id="bPlay">▶ Lancer</button>
+      <button id="bStep">Génération suivante</button>
+      <button id="bReset">↺ Recommencer</button>
+      <div class="clock"><b id="genNum">0</b><span id="yearTxt">génération · an 0</span></div>
+    </div>
+    <p class="story" id="story" aria-live="polite"></p>
+  </section>
+
+  <section class="counts" aria-live="polite">
+    <div class="count c-pop"><h3>Population</h3><span class="big" id="nPop">20</span><small id="nPopDelta">personnes vivantes</small></div>
+    <div class="count c-silent"><h3><i class="dot"></i>Mutation silencieuse</h3><span class="big" id="nSilent">0</span><span class="pct" id="pSilentTxt">0 %</span><div class="meter"><i id="mSilent"></i></div><small id="newSilent"></small></div>
+    <div class="count c-sick"><h3><i class="dot"></i>Maladie génétique</h3><span class="big" id="nSick">0</span><span class="pct" id="pSickTxt">0 %</span><div class="meter"><i id="mSick"></i></div><small id="newSick"></small></div>
+    <div class="count c-trait"><h3><i class="dot"></i>Nouveau caractère</h3><span class="big" id="nTrait">0</span><span class="pct" id="pTraitTxt">0 %</span><div class="meter"><i id="mTrait"></i></div><small id="newTrait"></small><small id="distinctTrait"></small></div>
+  </section>
+
+  <section class="panel">
+    <h2>La population</h2>
+    <p class="note">Chaque silhouette est une personne. Les cases vides montrent la place qui reste : le milieu ne peut pas nourrir plus de <b id="capTxt">1 500</b> personnes.</p>
+    <canvas id="people" role="img" aria-label="Dessin de la population"></canvas>
+    <div class="legend">
+      <span><i class="dot" style="--c:var(--sick)"></i>malade (mutation délétère)</span>
+      <span><i class="dot" style="--c:var(--trait)"></i>nouveau caractère</span>
+      <span><i class="dot" style="--c:var(--silent)"></i>mutation silencieuse seulement</span>
+      <span><i class="dot" style="--c:var(--none)"></i>aucune mutation dans un gène</span>
+    </div>
+    <p class="note">Une personne qui a plusieurs types de mutations est coloriée selon la plus importante (malade, puis nouveau caractère, puis silencieuse). Les compteurs, eux, comptent chaque type à part.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Évolution génération après génération</h2>
+    <canvas id="chart" role="img" aria-label="Graphique de la population au fil des générations"></canvas>
+    <div class="legend">
+      <span><i class="dot" style="--c:var(--ink)"></i>population totale</span>
+      <span><i class="dot" style="--c:var(--silent)"></i>avec mutation silencieuse</span>
+      <span><i class="dot" style="--c:var(--sick)"></i>malades</span>
+      <span><i class="dot" style="--c:var(--trait)"></i>avec un nouveau caractère</span>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Réglages</h2>
+    <div class="settings">
+      <div class="field">
+        <label for="kids">Enfants par couple <output id="oKids"></output></label>
+        <input type="range" id="kids" min="1.5" max="4" step="0.1" value="3">
+        <span class="hint">Au-dessus de 2, la population augmente.</span>
+      </div>
+      <div class="field">
+        <label for="speed">Vitesse <output id="oSpeed"></output></label>
+        <input type="range" id="speed" min="1" max="10" step="1" value="3">
+      </div>
+      <label class="check" for="sel"><input type="checkbox" id="sel" checked><span>Les malades ont moins d'enfants<small>C'est la sélection naturelle : une mutation délétère se transmet moins.</small></span></label>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Les chiffres utilisés : des valeurs réelles chez l'humain</h2>
+    <div class="facts">
+      <div class="fact"><b>≈ 70</b><span>mutations nouvelles dans l'ADN de chaque bébé, absentes chez ses deux parents.</span></div>
+      <div class="fact"><b>≈ 1</b><span>seule tombe en moyenne dans un gène. Les autres touchent l'ADN entre les gènes et n'ont aucun effet. Elles ne sont pas comptées ici.</span></div>
+      <div class="fact" style="--c:var(--silent)"><b>1 bébé sur 4</b><span>naît avec une mutation silencieuse nouvelle dans un gène (25 %).</span></div>
+      <div class="fact" style="--c:var(--sick)"><b>1 bébé sur 300</b><span>naît avec une maladie génétique grave due à une mutation nouvelle (0,33 %).</span></div>
+      <div class="fact" style="--c:var(--trait)"><b>1 bébé sur 3 000</b><span>naît avec une mutation qui crée un caractère nouveau (0,03 %), soit 10 fois moins que les maladies : une protéine modifiée fonctionne plus souvent moins bien que mieux. C'est une estimation : ce chiffre n'est pas mesuré précisément.</span></div>
+    </div>
+    <p class="note">La plupart des autres mutations dans un gène modifient un peu une protéine sans effet visible : elles ne sont pas affichées. Les maladies génétiques sont plus fréquentes que 1 sur 300 dans la population, car beaucoup sont héritées des parents : c'est ce que montre la simulation au fil des générations.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Les trois sortes de mutations suivies</h2>
+    <div class="cards">
+      <div class="card" style="--c:var(--silent)"><h3>Mutation silencieuse</h3><p>Une lettre de l'ADN change, mais la protéine fabriquée reste la même. Exemple : <code>GAA</code> → <code>GAG</code> donnent toutes les deux l'acide aminé glutamate. Aucun effet visible.</p></div>
+      <div class="card" style="--c:var(--sick)"><h3>Mutation délétère</h3><p>La protéine est modifiée et ne fonctionne plus bien. La personne a une maladie génétique, comme la mucoviscidose ou la drépanocytose.</p></div>
+      <div class="card" style="--c:var(--trait)"><h3>Mutation qui crée un caractère</h3><p>La protéine est modifiée sans gêner la santé. Un caractère nouveau apparaît, par exemple une nouvelle couleur des yeux ou la capacité à digérer le lait à l'âge adulte.</p></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Ce qu'il faut retenir</h2>
+    <ol class="keep">
+      <li>Les mutations apparaissent <b>au hasard</b>, à chaque génération, chez quelques bébés.</li>
+      <li>Une mutation présente dans les cellules reproductrices se <b>transmet aux enfants</b> : un parent la transmet à un enfant sur deux en moyenne.</li>
+      <li>Quand la population grandit, le <b>nombre</b> de personnes porteuses augmente, même si le <b>pourcentage</b> change peu.</li>
+      <li>Les mutations délétères restent <b>rares</b> quand les malades ont moins d'enfants. Sans cette sélection, elles s'accumulent.</li>
+      <li>Les caractères nouveaux apparaissent <b>moins souvent</b> que les maladies. Pourtant, on peut finir avec plus de personnes qui portent un caractère que de malades : un caractère qui ne gêne pas la survie se transmet sans être éliminé. Ce sont alors quelques caractères seulement, partagés par les descendants d'un même ancêtre, et non une diversité colossale.</li>
+    </ol>
+  </section>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const fr = n => n.toLocaleString('fr-FR');
+const pc = (a, b) => b ? (100 * a / b).toLocaleString('fr-FR', {maximumFractionDigits: 1}) + ' %' : '0 %';
+const START = 20, CAP = 1500, YEARS = 25;
+const SILENT = 1, SICK = 2, TRAIT = 3;
+let S, timer = null;
+
+/* ---------- réglages ---------- */
+const val = id => +$(id).value;
+function showSettings(){
+  $('oKids').textContent = val('kids').toLocaleString('fr-FR');
+  $('oSpeed').textContent = val('speed') + ' gén./s';
+}
+document.querySelectorAll('input[type=range]').forEach(el => el.addEventListener('input', () => {
+  showSettings(); if (el.id === 'speed' && timer) { pause(); play(); }
+}));
+// Probabilités réelles qu'un bébé naisse avec une mutation nouvelle de chaque sorte
+const RATE = [0, 0.25, 1 / 300, 1 / 3000];
+
+/* ---------- hasard ---------- */
+function poisson(l){ const L = Math.exp(-l); let k = 0, p = 1; do { k++; p *= Math.random(); } while (p > L); return k - 1; }
+function shuffle(a){ for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+/* ---------- modèle ---------- */
+// Une personne = liste des mutations qu'elle porte. type[id] = sorte de mutation.
+function reset(){
+  S = { gen:0, pop:Array.from({length:START}, () => []), type:[0], hist:[], newb:{1:0,2:0,3:0}, births:0, last:START };
+  measure();
+  S.story = 'Génération 0 : 20 ancêtres, aucun ne porte de mutation dans un gène. Appuyez sur « Lancer ».';
+  render();
+}
+const has = (p, t) => p.some(id => S.type[id] === t);
+
+function step(){
+  const pop = shuffle(S.pop), N = pop.length;
+  const target = val('kids'), sel = $('sel').checked;
+  const r = RATE;
+  const mean = 2 + (target - 2) * (1 - N / CAP);   // la croissance ralentit quand le milieu se remplit
+  const next = [], newb = {1:0, 2:0, 3:0};
+  for (let i = 0; i + 1 < N; i += 2) {
+    const a = pop[i], b = pop[i + 1];
+    let m = mean;
+    if (sel) { if (has(a, SICK)) m *= 0.4; if (has(b, SICK)) m *= 0.4; }
+    const k = poisson(Math.max(0, m));
+    for (let c = 0; c < k; c++) {
+      const child = new Set();
+      a.forEach(id => { if (Math.random() < 0.5) child.add(id); });
+      b.forEach(id => { if (Math.random() < 0.5) child.add(id); });
+      for (const t of [SILENT, SICK, TRAIT]) if (Math.random() < r[t]) { S.type.push(t); child.add(S.type.length - 1); newb[t]++; }
+      next.push([...child]);
+    }
+  }
+  shuffle(next);
+  if (next.length > CAP) next.length = CAP;
+  S.last = N; S.pop = next; S.gen++; S.newb = newb; S.births = next.length;
+  measure();
+  S.story = tell();
+}
+
+function measure(){
+  const c = {n:S.pop.length, 1:0, 2:0, 3:0};
+  S.status = S.pop.map(p => {
+    const s = has(p, SILENT), d = has(p, SICK), t = has(p, TRAIT);
+    if (s) c[1]++; if (d) c[2]++; if (t) c[3]++;
+    return d ? 3 : t ? 2 : s ? 1 : 0;
+  });
+  S.c = c; S.hist.push({gen:S.gen, n:c.n, s:c[1], d:c[2], t:c[3]});
+}
+
+function tell(){
+  const c = S.c, nb = S.newb, nNew = nb[1] + nb[2] + nb[3];
+  if (c.n === 0) return `Génération ${S.gen} : la population a disparu. Augmentez le nombre d'enfants par couple et recommencez.`;
+  const trend = c.n > S.last ? `la population passe de ${fr(S.last)} à ${fr(c.n)} personnes` : c.n < S.last ? `la population baisse de ${fr(S.last)} à ${fr(c.n)} personnes` : `la population reste à ${fr(c.n)} personnes`;
+  const nw = nNew === 0 ? 'Aucun bébé n’est né avec une mutation nouvelle.' :
+    `${fr(nNew)} mutation${nNew > 1 ? 's' : ''} nouvelle${nNew > 1 ? 's sont apparues' : ' est apparue'} chez les bébés (${nb[1]} silencieuse${nb[1] > 1 ? 's' : ''}, ${nb[2]} délétère${nb[2] > 1 ? 's' : ''}, ${nb[3]} créant un caractère). Les autres porteurs ont hérité la mutation d'un parent.`;
+  const full = c.n >= CAP * 0.97 ? ' Le milieu est plein : la population ne grandit plus.' : '';
+  return `Génération ${S.gen} (an ${fr(S.gen * YEARS)}) : ${trend}. ${nw}${full}`;
+}
+
+/* ---------- boucle ---------- */
+function play(){ if (!S.pop.length) return; timer = setInterval(() => { step(); render(); if (!S.pop.length) pause(); }, 1000 / val('speed')); $('bPlay').textContent = '❚❚ Pause'; }
+function pause(){ clearInterval(timer); timer = null; $('bPlay').textContent = '▶ Lancer'; }
+$('bPlay').onclick = () => timer ? pause() : play();
+$('bStep').onclick = () => { pause(); if (S.pop.length) { step(); render(); } };
+$('bReset').onclick = () => { pause(); reset(); };
+
+/* ---------- affichage ---------- */
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function render(){
+  const c = S.c, n = c.n;
+  $('genNum').textContent = fr(S.gen);
+  $('yearTxt').textContent = `génération · an ${fr(S.gen * YEARS)}`;
+  $('nPop').textContent = fr(n);
+  const d = n - S.last;
+  $('nPopDelta').textContent = S.gen === 0 ? 'personnes au départ' : d > 0 ? `+${fr(d)} par rapport à la génération d'avant` : d < 0 ? `${fr(d)} par rapport à la génération d'avant` : 'pas de changement';
+  [['Silent', 1], ['Sick', 2], ['Trait', 3]].forEach(([k, t]) => {
+    $('n' + k).textContent = fr(c[t]);
+    $('p' + k + 'Txt').textContent = pc(c[t], n) + ' de la population';
+    $('m' + k).style.width = (n ? 100 * c[t] / n : 0) + '%';
+    const nb = S.newb[t];
+    $('new' + k).textContent = S.gen === 0 ? '' : nb ? `dont ${fr(nb)} bébé${nb > 1 ? 's' : ''} avec une mutation nouvelle` : 'aucune mutation nouvelle cette génération';
+  });
+  const kinds = new Set(); S.pop.forEach(p => p.forEach(id => { if (S.type[id] === TRAIT) kinds.add(id); }));
+  $('distinctTrait').innerHTML = `<b>${fr(kinds.size)}</b> caractère${kinds.size > 1 ? 's' : ''} différent${kinds.size > 1 ? 's' : ''} dans toute la population`;
+  $('story').textContent = S.story;
+  drawPeople(); drawChart();
+}
+
+function sized(cv, h){
+  const dpr = window.devicePixelRatio || 1, w = cv.clientWidth || 320;
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px';
+  const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+  return [g, w];
+}
+
+function drawPeople(){
+  const cv = $('people'), w = cv.clientWidth || 320;
+  const targetH = w < 600 ? 360 : 420;
+  const cols = Math.ceil(Math.sqrt(CAP * w / targetH)), cell = w / cols, rows = Math.ceil(CAP / cols);
+  const [g] = sized(cv, Math.ceil(rows * cell));
+  const color = [css('--none'), css('--silent'), css('--trait'), css('--sick')], slot = css('--slot');
+  // trier par statut : les proportions se lisent comme des bandes
+  const st = [...S.status].sort((a, b) => b - a);
+  for (let i = 0; i < CAP; i++) {
+    const x = (i % cols) * cell, y = Math.floor(i / cols) * cell;
+    if (i >= st.length) { g.fillStyle = slot; g.beginPath(); g.arc(x + cell / 2, y + cell / 2, cell * 0.18, 0, 7); g.fill(); continue; }
+    g.fillStyle = color[st[i]];
+    // silhouette : tête + épaules
+    g.beginPath(); g.arc(x + cell / 2, y + cell * 0.32, cell * 0.2, 0, 7); g.fill();
+    g.beginPath(); g.ellipse(x + cell / 2, y + cell * 0.84, cell * 0.33, cell * 0.3, 0, Math.PI, 0); g.fill();
+  }
+}
+
+function drawChart(){
+  const cv = $('chart'), [g, w] = sized(cv, 280), h = 280, m = {l:58, r:14, t:12, b:30};
+  const pw = w - m.l - m.r, ph = h - m.t - m.b, H = S.hist;
+  const xmax = Math.max(10, S.gen), ymax = Math.max(50, ...H.map(p => p.n));
+  const nice = v => { const p = 10 ** Math.floor(Math.log10(v)), f = v / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p; };
+  const ys = nice(ymax / 4), yTop = Math.ceil(ymax / ys) * ys, xs = Math.max(1, nice(xmax / 6));
+  const X = v => m.l + pw * v / xmax, Y = v => m.t + ph - ph * v / yTop;
+  g.font = '13px "Atkinson Hyperlegible", sans-serif'; g.fillStyle = css('--muted'); g.strokeStyle = css('--line'); g.lineWidth = 1;
+  g.textAlign = 'right'; g.textBaseline = 'middle';
+  for (let v = 0; v <= yTop; v += ys) { const y = Y(v); g.beginPath(); g.moveTo(m.l, y + .5); g.lineTo(w - m.r, y + .5); g.stroke(); g.fillText(fr(v), m.l - 8, y); }
+  g.textAlign = 'center'; g.textBaseline = 'top';
+  for (let v = 0; v <= xmax; v += xs) g.fillText(v, X(v), h - m.b + 8);
+  g.textAlign = 'right'; g.fillText('générations', w - m.r, h - m.b + 8 - 0);
+  // population : aire légère + trait
+  const ink = css('--ink');
+  g.beginPath(); g.moveTo(X(H[0].gen), Y(0)); H.forEach(p => g.lineTo(X(p.gen), Y(p.n))); g.lineTo(X(H[H.length - 1].gen), Y(0)); g.closePath();
+  g.globalAlpha = 0.08; g.fillStyle = ink; g.fill(); g.globalAlpha = 1;
+  [['n', ink, 3], ['s', css('--silent'), 2.5], ['t', css('--trait'), 2.5], ['d', css('--sick'), 2.5]].forEach(([k, col, lw]) => {
+    g.beginPath(); H.forEach((p, i) => i ? g.lineTo(X(p.gen), Y(p[k])) : g.moveTo(X(p.gen), Y(p[k])));
+    g.strokeStyle = col; g.lineWidth = lw; g.lineJoin = 'round'; g.stroke();
+    const last = H[H.length - 1]; g.beginPath(); g.arc(X(last.gen), Y(last[k]), 4, 0, 7); g.fillStyle = col; g.fill();
+  });
+}
+
+const redraw = () => S && render();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', redraw);
+new MutationObserver(redraw).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(redraw, 120); });
+
+showSettings(); reset();
+</script>
+
+</body></html>

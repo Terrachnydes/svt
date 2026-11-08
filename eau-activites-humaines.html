@@ -1,0 +1,995 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>L'eau et les activités humaines</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Baloo+2:wght@600;800&display=swap">
+<style>
+/* Mise en page : bandeau titre + onglets, puis scène illustrée (gauche) et tableau de bord (droite).
+   Thème clair unique, choisi volontairement pour la projection en classe. */
+:root{
+  --bg:#edf4f3; --panel:#ffffff; --ink:#14303a; --muted:#52707a; --line:#cddfdd;
+  --head:#0c4553; --head-ink:#f2fbfb; --accent:#0a7287; --accent-ink:#ffffff; --soft:#dcefef;
+  --agri:#3f8f35; --indu:#5e6f91; --dom:#d65f3c;
+  --water:#2f7fd6; --fert:#ef8a1c; --pest:#8a46d0; --soil:#8a5a32;
+  --ok:#2e8a4a; --warn:#b67c00; --bad:#c2402e;
+  --f-display:'Baloo 2','Trebuchet MS',system-ui,sans-serif;
+  --f-body:'Atkinson Hyperlegible','Segoe UI',system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 var(--f-body)}
+.wrap{max-width:1340px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{background:var(--head);color:var(--head-ink)}
+header.top .wrap{padding-block:18px 0;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.brand{display:flex;gap:14px;align-items:center;padding-bottom:14px}
+.brand svg{flex:none}
+.eyebrow{margin:0;font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+h1{margin:0;font-family:var(--f-display);font-weight:800;font-size:clamp(26px,3.4vw,38px);line-height:1.05;text-wrap:balance}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tabs button{font:700 16px var(--f-body);border:0;cursor:pointer;padding:12px 18px;border-radius:12px 12px 0 0;background:rgba(255,255,255,.12);color:var(--head-ink)}
+.tabs button:hover{background:rgba(255,255,255,.22)}
+.tabs button[aria-selected="true"]{background:var(--bg);color:var(--ink)}
+.tabs button b{font-family:var(--f-display);font-size:18px;margin-right:6px}
+main{padding-block:18px 40px}
+.subtabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.subtabs button{font:700 15px var(--f-body);padding:8px 16px;border-radius:999px;border:2px solid var(--accent);background:var(--panel);color:var(--accent);cursor:pointer}
+.subtabs button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.intro{max-width:80ch;margin:0 0 12px;color:var(--muted)}
+.intro strong{color:var(--ink)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+@media (max-width:980px){.layout{grid-template-columns:minmax(0,1fr)}}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:10px;min-width:0}
+canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:manipulation}
+.explore{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:14px;color:var(--muted)}
+.explore button{font:700 13px var(--f-body);padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.explore button:hover{border-color:var(--accent)}
+.explore button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.info{background:var(--soft);border-radius:12px;padding:12px 14px}
+.info h3{margin:0 0 4px;font-family:var(--f-display);font-size:20px;line-height:1.15}
+.info p{margin:0;max-width:75ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card h2{margin:0;font-family:var(--f-display);font-size:21px;line-height:1.1}
+.ctl{display:flex;flex-direction:column;gap:6px}
+.ctl>label,.ctl>.lab{font-weight:700;font-size:15px;display:flex;justify-content:space-between;gap:8px}
+.ctl output{font-variant-numeric:tabular-nums;color:var(--accent)}
+.seg{display:flex;flex-wrap:wrap;gap:4px;background:var(--bg);padding:4px;border-radius:10px}
+.seg button{flex:1 1 auto;font:700 14px var(--f-body);padding:8px 10px;border:0;border-radius:7px;background:transparent;color:var(--ink);cursor:pointer}
+.seg button:hover{background:rgba(10,114,135,.1)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:700 15px var(--f-body);padding:10px 16px;border-radius:10px;border:2px solid var(--accent);background:var(--panel);color:var(--accent);cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn:hover{filter:brightness(1.08)}
+.btn.small{font-size:13px;padding:7px 11px}
+button:focus-visible,input:focus-visible{outline:3px solid #f2b705;outline-offset:2px}
+.kv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;font-size:15px;align-items:baseline}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.big{font-family:var(--f-display);font-weight:800;font-size:34px;line-height:1;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-weight:700;font-size:14px;color:#fff}
+.pill.ok{background:var(--ok)}.pill.warn{background:var(--warn)}.pill.bad{background:var(--bad)}.pill.info{background:var(--water)}
+.note{font-size:13px;color:var(--muted);margin:0}
+.badge{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:#fff3d6;color:#7a5200;border:1px solid #f0d9a0}
+.meter{position:relative;height:16px;background:var(--bg);border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+.meter i{position:absolute;inset:0 auto 0 0;width:0;border-radius:8px}
+.meter .ghost{position:absolute;top:-2px;bottom:-2px;width:3px;background:var(--ink);opacity:.55}
+.mrow{display:flex;flex-direction:column;gap:4px}
+.mrow .lab{display:flex;justify-content:space-between;font-weight:700;font-size:15px;gap:8px}
+.mrow .lab span:last-child{font-variant-numeric:tabular-nums}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block;flex:none}
+.chartbox{overflow-x:auto}
+.chartbox svg{display:block;width:100%;min-width:420px;height:auto}
+svg .grid{stroke:var(--line);stroke-width:1}
+svg .tick{font:12px var(--f-body);fill:var(--muted)}
+svg .axis{font:700 13px var(--f-body);fill:var(--ink)}
+.litres{display:grid;grid-template-columns:repeat(20,1fr);gap:2px}
+.litres i{aspect-ratio:1;border-radius:2px;transition:opacity .2s}
+.litres i.dim{opacity:.15}
+.pie path{cursor:pointer;stroke:#fff;stroke-width:2;transition:opacity .2s}
+.pie path.dim{opacity:.3}
+.pie text{font:800 15px var(--f-body);fill:#fff;pointer-events:none}
+table.mini{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+table.mini th,table.mini td{padding:4px 6px;border-bottom:1px solid var(--line);text-align:right}
+table.mini th:first-child,table.mini td:first-child{text-align:left}
+table.mini thead th{font-size:13px;color:var(--muted)}
+.status{font-weight:700;color:var(--accent);font-size:14px;margin:0}
+.tablewrap{max-height:360px;overflow:auto}
+.v-ok{color:var(--ok);font-weight:700}.v-warn{color:var(--warn);font-weight:700}.v-bad{color:var(--bad);font-weight:700}
+table.mini small{color:var(--muted)}
+#tab3s td:nth-child(4){text-align:left}
+.chk{display:flex;gap:8px;align-items:center;font-weight:700;font-size:14px;cursor:pointer}
+.chk input{width:18px;height:18px;accent-color:var(--accent)}
+.scen{display:grid;gap:8px}
+.scen button{display:grid;grid-template-columns:14px minmax(0,1fr);gap:2px 10px;text-align:left;padding:10px 12px;border:2px solid var(--line);border-radius:12px;background:var(--panel);cursor:pointer;font:inherit;color:var(--ink)}
+.scen button:hover{border-color:var(--accent)}
+.scen button[aria-pressed="true"]{border-color:var(--accent);background:var(--soft)}
+.scen i{width:14px;height:14px;border-radius:4px;margin-top:4px}
+.scen b{font-size:15px;line-height:1.3}
+.scen span{grid-column:2;font-size:13px;color:var(--muted);line-height:1.35}
+details.adv{border-top:1px solid var(--line);padding-top:10px}
+details.adv summary{cursor:pointer;font-weight:700;color:var(--accent);font-size:14px}
+details.adv .advbody{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+.lv{display:inline-block;padding:2px 9px;border-radius:999px;font-weight:700;font-size:13px;color:#fff;white-space:nowrap}
+.lv.ok{background:var(--ok)}.lv.warn{background:var(--warn)}.lv.bad{background:var(--bad)}.lv.none{background:#9fb2b6}
+#tab3st td{vertical-align:middle}
+.stn{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--accent);color:#fff;font-weight:700;font-size:12px}
+.epb{display:inline-flex;gap:3px;padding:2px 4px;border:1.5px solid var(--ink);border-radius:999px;background:#fff}
+.epb i{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;font:700 10px var(--f-body);font-style:normal;color:#fff}
+.toolbar{margin-bottom:16px}
+.scen-row{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:980px){.scen-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.scen-row{grid-template-columns:minmax(0,1fr)}}
+.toolrow{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center}
+.toolrow .status{flex:1 1 220px}
+.advgrid{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.ex{display:grid;grid-template-columns:14px minmax(0,1fr);gap:4px 10px;margin:0 0 10px}
+.ex i{width:14px;height:14px;border-radius:50%;margin-top:4px}
+.ex b{font-size:16px}.ex p{grid-column:2;margin:0}
+.tb2{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:12px 20px;align-items:center;padding-block:12px}
+.tb2 h2{font-size:18px;margin:0}
+.tb2 .seg button{padding:6px 10px}
+@media (max-width:980px){.tb2{grid-template-columns:minmax(0,1fr)}}
+.tbleft,.tbright{display:flex;flex-direction:column;gap:8px;min-width:0}
+.tbright .chartbox svg{min-width:360px}
+.sq{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (max-width:420px){.sq{grid-template-columns:minmax(0,1fr)}}
+.sq button{display:flex;flex-direction:row;align-items:center;gap:10px;padding:8px 10px;border:2px solid var(--line);border-radius:14px;background:var(--panel);cursor:pointer;font:700 13px/1.25 var(--f-body);color:var(--ink);text-align:left;min-width:0;border-radius:10px}
+.sq button i{width:12px;height:30px;border-radius:4px;flex:none}
+.sq button:hover{border-color:var(--accent)}
+.sq button[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);box-shadow:0 0 0 2px var(--accent) inset}
+.linkbtn{background:none;border:0;padding:2px 0;font:13px var(--f-body);color:var(--muted);text-decoration:underline;cursor:pointer}
+.linkbtn:hover{color:var(--accent)}
+.legend.small{font-size:12px;gap:4px 12px}
+.expl2{display:flex;flex-direction:column;gap:8px;font-size:15px}
+.expl2 p{margin:0}
+.expl2 .alert{background:#fde3df;border:1px solid #f0b3a8;border-radius:10px;padding:8px 10px;color:#7a1f12}
+.expl2 .harv{background:var(--soft);border-radius:10px;padding:8px 10px;font-size:16px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top"><div class="wrap">
+  <div class="brand">
+    <svg width="46" height="54" viewBox="0 0 46 54" aria-hidden="true"><path d="M23 2C23 2 4 24 4 35a19 19 0 0 0 38 0C42 24 23 2 23 2Z" fill="#5fb6e8"/><path d="M4 35a19 19 0 0 0 38 0c-6 4-12-3-19 1S10 39 4 35Z" fill="#7cc06a"/><path d="M14 33a9 9 0 0 0 7 9" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+    <div><p class="eyebrow">SVT · 5e · Simulateur</p><h1>L’eau et les activités humaines</h1></div>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Parties du logiciel">
+    <button role="tab" id="tab-usages" data-tab="usages"><b>1</b>Usages de l’eau</button>
+    <button role="tab" id="tab-irrigation" data-tab="irrigation"><b>2</b>Irrigation et nappes</button>
+    <button role="tab" id="tab-pollution" data-tab="pollution"><b>3</b>Pollution</button>
+  </nav>
+</div></header>
+
+<main class="wrap">
+
+<!-- ================= PARTIE 1 ================= -->
+<section id="p-usages" role="tabpanel" aria-labelledby="tab-usages" hidden>
+  <p class="intro"><strong>Où va l’eau que l’on prélève ?</strong> Clique sur l’agriculture, la ville ou les usines pour découvrir comment chaque secteur utilise l’eau de la rivière et de la nappe phréatique.</p>
+  <div class="layout">
+    <div class="col">
+      <div class="stage">
+        <canvas id="cv1" aria-label="Paysage avec exploitation agricole, rivière, ville, zone industrielle et nappe phréatique en coupe"></canvas>
+        <div class="explore" id="chips1"><span>Explorer :</span></div>
+        <div class="legend">
+          <span><i class="dot" style="background:#1f6fd1"></i>Eau prélevée</span>
+          <span><i class="dot" style="background:#9cc6ef"></i>Eau rejetée après usage</span>
+          <span><i class="dot" style="background:#fff;border:2px solid #9bb7c9"></i>Vapeur d’eau</span>
+        </div>
+      </div>
+      <div class="info" id="info1"><h3>Choisis un secteur</h3><p>Clique sur un élément du dessin. Les tuyaux colorés montrent d’où chaque secteur prélève son eau.</p></div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <h2>Prélèvements mondiaux d’eau douce</h2>
+        <svg class="pie" id="pie" viewBox="0 0 240 240" role="img" aria-label="Répartition : agriculture 70 %, industrie 20 %, usages domestiques 10 %"></svg>
+        <div class="legend">
+          <span><i class="dot" style="background:var(--agri)"></i>Agriculture 70 %</span>
+          <span><i class="dot" style="background:var(--indu)"></i>Industrie 20 %</span>
+          <span><i class="dot" style="background:var(--dom)"></i>Domestique et municipal 10 %</span>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Simulation : 1 000 litres prélevés</h2>
+        <div class="seg" id="s1-sect">
+          <button data-v="agri" aria-pressed="false">Agriculture</button>
+          <button data-v="indu" aria-pressed="false">Industrie</button>
+          <button data-v="dom" aria-pressed="false">Domestique</button>
+        </div>
+        <div><span class="big" id="l1-val">1 000 L</span> <span id="l1-txt">prélevés au total</span></div>
+        <div class="litres" id="litres" aria-hidden="true"></div>
+        <p class="note">Chaque carré représente 10 litres.</p>
+      </div>
+      <p class="note"><span class="badge">Ordres de grandeur</span> Ces pourcentages sont des moyennes mondiales des <strong>prélèvements</strong>, pas de la consommation définitive : une partie de l’eau prélevée est rendue aux rivières et aux nappes. Ils varient beaucoup d’un pays à l’autre.</p>
+      <div class="btns"><button class="btn small" id="b1-pause">Pause animation</button><button class="btn small" id="b1-reset">Réinitialiser</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PARTIE 2 ================= -->
+<section id="p-irrigation" role="tabpanel" aria-labelledby="tab-irrigation" hidden>
+  <p class="intro"><strong>Que se passe-t-il quand on irrigue grâce à la nappe ?</strong> Choisis le climat puis un scénario : la même exploitation est simulée pendant 10 ans. Compare les courbes de la nappe selon la culture, la façon d’arroser et des sécheresses de plus en plus fréquentes.</p>
+  <div class="card toolbar tb2">
+    <div class="tbleft">
+      <div class="toolrow">
+        <h2 style="margin:0">1. Le climat</h2>
+        <div class="seg" id="s2-clim" style="flex:1 1 260px"><button data-v="change" aria-pressed="true">De plus en plus sec</button><button data-v="stable" aria-pressed="false">Climat stable</button></div>
+      </div>
+      <p class="note" id="clim2note" style="margin:0"></p>
+      <h2>2. Le scénario</h2>
+      <div class="sq" id="scen2"></div>
+    </div>
+    <div class="tbright">
+      <div class="toolrow" style="justify-content:space-between"><h2>Mes courbes : niveau de la nappe</h2><button type="button" class="linkbtn" id="b2-reset">Réinitialiser les courbes</button></div>
+      <div class="chartbox"><svg id="chart2" viewBox="0 0 640 200" role="img" aria-label="Graphique du niveau de la nappe selon les années"></svg></div>
+      <div class="legend small" id="leg2"></div>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="col">
+      <div class="stage">
+        <canvas id="cv2" aria-label="Exploitation agricole en coupe avec puits, nappe phréatique et rivière"></canvas>
+        <div class="explore" id="chips2"><span>Explorer :</span></div>
+      </div>
+      <div class="info" id="info2"><h3>Le principe</h3><p>Le niveau de la nappe dépend du <strong>bilan</strong> entre les entrées d’eau (infiltration d’une partie de la pluie) et les sorties (pompage, écoulement vers la rivière).</p></div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <h2>Ce qui se passe</h2>
+        <p class="status" id="st2">Choisis un scénario pour commencer</p>
+        <div id="expl2" class="expl2"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PARTIE 3 ================= -->
+<section id="p-pollution" role="tabpanel" aria-labelledby="tab-pollution" hidden>
+  <p class="intro"><strong>Les engrais et les pesticides restent-ils là où on les répand ?</strong> Seul le champ conventionnel est traité. Choisis un scénario, observe les tracteurs puis la pluie, et clique sur les <strong>zones de mesure</strong> (badges E / P) pour comprendre.</p>
+  <div class="card toolbar">
+    <h2>Choisis ton scénario pour commencer</h2>
+    <div class="scen scen-row" id="scen3"></div>
+    <p class="status" id="st3a"></p>
+  </div>
+  <div class="layout">
+    <div class="col">
+      <div class="stage">
+        <canvas id="cv3a" aria-label="Paysage vu de dessus : champ conventionnel, champ bio, rivière et forêt, avec des zones de mesure colorées et une coupe du sous-sol"></canvas>
+        <div class="explore" id="chips3a"><span>En savoir plus :</span></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card" id="expl3">
+        <h2>Où vont les produits ?</h2>
+        <div id="expl3body"><p class="note">Choisis un scénario : l’explication de ce qui arrive aux engrais et aux pesticides s’affichera ici.</p></div>
+      </div>
+      <div class="info" id="info3a"><h3>Zones de mesure</h3><p>Clique sur un badge E / P du dessin pour savoir ce qu’on y a trouvé et pourquoi.</p></div>
+      <p class="note">Pour l’eau (rivière, puits), le rouge signifie que la norme de l’eau potable est dépassée : 50 mg/L de nitrates ou 0,1 µg/L de pesticide. <span class="badge">Données simulées</span></p>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+"use strict";
+/* ================= Outils communs ================= */
+const $=s=>document.querySelector(s);
+const DPR=Math.min(2,window.devicePixelRatio||1);
+const FONT='"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif';
+const rnd=(a,b)=>a+Math.random()*(b-a), clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), lerp=(a,b,t)=>a+(b-a)*t;
+function setupCanvas(cv,W,H){cv.width=W*DPR;cv.height=H*DPR;const c=cv.getContext('2d');c.setTransform(DPR,0,0,DPR,0,0);return c;}
+function hx(c){c=c.replace('#','');return[0,2,4].map(i=>parseInt(c.substr(i,2),16));}
+function mix(a,b,t){t=clamp(t,0,1);const A=hx(a),B=hx(b);return'rgb('+A.map((v,i)=>Math.round(lerp(v,B[i],t))).join(',')+')';}
+function fmt(n,d=0){return Number(n).toLocaleString('fr-FR',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function tag(c,txt,x,y,o={}){const sz=o.size||14;c.font=`700 ${sz}px ${FONT}`;const w=c.measureText(txt).width+16;rr(c,x,y,w,sz+10,8);c.fillStyle=o.bg||'rgba(255,255,255,.88)';c.fill();c.fillStyle=o.fg||'#14303a';c.textBaseline='middle';c.textAlign='left';c.fillText(txt,x+8,y+(sz+10)/2+1);return w;}
+function cloud(c,x,y,s,col){c.fillStyle=col;c.beginPath();[[0,0,22],[25,-12,26],[55,0,22],[28,6,22]].forEach(([dx,dy,r])=>{c.moveTo(x+dx*s+r*s,y+dy*s);c.arc(x+dx*s,y+dy*s,r*s,0,Math.PI*2);});c.fill();}
+function poly(pts){const L=[0];for(let i=1;i<pts.length;i++)L.push(L[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));return{pts,L,len:L[L.length-1]};}
+function along(p,d){d=clamp(d,0,p.len);let i=1;while(i<p.L.length-1&&p.L[i]<d)i++;const t=(d-p.L[i-1])/((p.L[i]-p.L[i-1])||1);return[lerp(p.pts[i-1][0],p.pts[i][0],t),lerp(p.pts[i-1][1],p.pts[i][1],t)];}
+function arrow(c,x1,y1,x2,y2,col,w=3){const a=Math.atan2(y2-y1,x2-x1);c.strokeStyle=col;c.fillStyle=col;c.lineWidth=w;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2-Math.cos(a)*8,y2-Math.sin(a)*8);c.stroke();c.beginPath();c.moveTo(x2,y2);c.lineTo(x2-Math.cos(a-0.5)*11,y2-Math.sin(a-0.5)*11);c.lineTo(x2-Math.cos(a+0.5)*11,y2-Math.sin(a+0.5)*11);c.closePath();c.fill();}
+
+function bindSeg(id,cb){const el=document.getElementById(id);
+  function set(v){el.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.v===v)));}
+  el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;set(b.dataset.v);cb&&cb(b.dataset.v);});
+  return{get:()=>{const b=el.querySelector('[aria-pressed="true"]');return b?b.dataset.v:null;},set};}
+
+/* Zones cliquables d’un dessin + pastilles « Explorer » */
+function explorer(cv,W,H,scene,infoEl,chipsEl){
+  const pt=e=>{const b=cv.getBoundingClientRect();return{x:(e.clientX-b.left)/b.width*W,y:(e.clientY-b.top)/b.height*H};};
+  const hit=p=>scene.regions().find(r=>p.x>=r.x&&p.x<=r.x+r.w&&p.y>=r.y&&p.y<=r.y+r.h);
+  cv.addEventListener('mousemove',e=>{const r=hit(pt(e));scene.hover=r?r.id:null;cv.style.cursor=r?'pointer':'default';});
+  cv.addEventListener('mouseleave',()=>{scene.hover=null;});
+  cv.addEventListener('click',e=>{const r=hit(pt(e));if(r)pick(r.id);});
+  function pick(id){const r=scene.regions().find(x=>x.id===id);if(!r)return;
+    infoEl.innerHTML='<h3>'+r.title+'</h3><p>'+r.text+'</p>';scene.picked=id;
+    chipsEl.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.id===id)));
+    scene.onPick&&scene.onPick(id);}
+  scene.regions().forEach(r=>{const b=document.createElement('button');b.type='button';b.textContent=r.chip||r.title;b.dataset.id=r.id;b.addEventListener('click',()=>pick(r.id));chipsEl.appendChild(b);});
+  return{pick};
+}
+function drawHover(c,scene){const rs=scene.regions();
+  const h=rs.find(r=>r.id===scene.hover), p=rs.find(r=>r.id===scene.picked);
+  [[p,'rgba(242,183,5,.95)'],[h,'rgba(255,255,255,.95)']].forEach(([q,col])=>{if(!q)return;c.save();c.setLineDash([8,5]);c.lineWidth=3;c.strokeStyle=col;rr(c,q.x+2,q.y+2,q.w-4,q.h-4,10);c.stroke();c.restore();});}
+
+/* ================= PARTIE 1 : usages de l’eau ================= */
+const P1=(()=>{
+  const W=960,H=540,G=300,NT=425,NB=500;
+  const cv=$('#cv1'),c=setupCanvas(cv,W,H);
+  const S={
+    agri:{name:'Agriculture',pct:70,color:'#3f8f35',chip:'Agriculture',
+      text:'L’agriculture utilise l’eau pour <strong>irriguer les cultures</strong> quand il ne pleut pas assez et pour <strong>faire boire les animaux</strong>. C’est le secteur qui prélève le plus d’eau douce dans le monde (environ 70 %). Une grande partie de cette eau est absorbée par les plantes puis repart dans l’air sous forme de vapeur : elle ne revient pas tout de suite à la rivière.'},
+    indu:{name:'Industrie',pct:20,color:'#5e6f91',chip:'Industrie',
+      text:'Les usines utilisent l’eau pour <strong>fabriquer des produits</strong>, <strong>nettoyer les installations</strong> et <strong>refroidir les machines</strong> (et les centrales électriques). Environ 20 % des prélèvements mondiaux. La plus grande partie de l’eau de refroidissement est rendue à la rivière, plus chaude ; une petite partie part en vapeur par la tour de refroidissement.'},
+    dom:{name:'Usages domestiques',pct:10,color:'#d65f3c',chip:'Ville',
+      text:'À la maison, l’eau sert à <strong>boire, cuisiner, se doucher, tirer la chasse d’eau, laver le linge et la vaisselle</strong>. Environ 10 % des prélèvements mondiaux. L’eau est pompée, rendue potable, stockée dans le château d’eau puis distribuée. Après usage, les eaux usées sont nettoyées dans une station d’épuration puis rejetées dans la rivière.'}
+  };
+  const paths={
+    agri:[[[215,480],[215,290],[170,252]],[[215,290],[300,252]],[[215,300],[150,300],[110,289]]],
+    dom:[[[505,480],[505,192]],[[505,318],[600,318],[600,296]],[[505,318],[672,318],[672,296]]],
+    indu:[[[440,326],[790,326],[790,298]],[[700,326],[905,326],[905,298]]]};
+  const rets={dom:poly([[640,300],[640,346],[458,346],[446,322]]),indu:poly([[850,300],[850,358],[458,358],[442,326]])};
+  const P={};for(const k in paths)P[k]=paths[k].map(poly);
+  const scene={hover:null,picked:null};
+  let parts=[],evap=[],acc={agri:0,indu:0,dom:0,rd:0,ri:0,ev:0,st:0},paused=false,t=0,sel=null;
+  const grains=[...Array(260)].map(()=>({x:rnd(0,W),y:rnd(G+18,NB),r:rnd(1,2.6)}));
+
+  function update(dt){if(paused)return;t+=dt;
+    for(const k in S){acc[k]+=dt*S[k].pct*0.8;while(acc[k]>=1){acc[k]--;const ps=P[k];parts.push({k,p:ps[Math.floor(Math.random()*ps.length)],d:0,v:rnd(70,95)});}}
+    acc.rd+=dt*6;while(acc.rd>=1){acc.rd--;parts.push({k:'dom',ret:1,p:rets.dom,d:0,v:65});}
+    acc.ri+=dt*13;while(acc.ri>=1){acc.ri--;parts.push({k:'indu',ret:1,p:rets.indu,d:0,v:65});}
+    acc.ev+=dt*26;while(acc.ev>=1){acc.ev--;evap.push({k:'agri',x:rnd(140,355),y:G-22,a:1,ph:rnd(0,6)});}
+    acc.st+=dt*4;while(acc.st>=1){acc.st--;evap.push({k:'indu',x:rnd(895,915),y:212,a:1,ph:rnd(0,6),big:1});}
+    parts.forEach(p=>p.d+=p.v*dt);parts=parts.filter(p=>p.d<p.p.len);
+    evap.forEach(e=>{e.y-=(e.big?22:28)*dt;e.a-=dt*(e.big?0.3:0.45);e.x+=Math.sin(t*3+e.ph)*0.3;});evap=evap.filter(e=>e.a>0);}
+  const al=k=>(!sel||sel===k)?1:0.16;
+
+  function draw(){
+    let g=c.createLinearGradient(0,0,0,G);g.addColorStop(0,'#b7def0');g.addColorStop(1,'#e9f6f5');c.fillStyle=g;c.fillRect(0,0,W,G);
+    c.fillStyle='#ffd66b';c.beginPath();c.arc(70,62,26,0,7);c.fill();
+    cloud(c,(260+t*9)%(W+220)-110,70,1,'#fff');cloud(c,(640+t*6)%(W+220)-110,48,.8,'#fff');
+    c.fillStyle='#cfe5b8';c.beginPath();c.moveTo(0,G);c.lineTo(0,215);c.quadraticCurveTo(170,150,340,214);c.quadraticCurveTo(520,168,700,210);c.quadraticCurveTo(850,160,960,204);c.lineTo(960,G);c.fill();
+    // sous-sol
+    c.fillStyle='#d9b483';c.fillRect(0,G,W,NT-G);
+    c.fillStyle='#6aaee6';c.fillRect(0,NT,W,NB-NT);
+    c.fillStyle='#8f8676';c.fillRect(0,NB,W,H-NB);
+    grains.forEach(q=>{c.fillStyle=q.y>NT?'rgba(30,80,140,.35)':'rgba(120,80,40,.3)';c.beginPath();c.arc(q.x,q.y,q.r,0,7);c.fill();});
+    c.strokeStyle='rgba(60,55,45,.35)';c.lineWidth=1;for(let y=NB+10;y<H;y+=10){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke();}
+    c.strokeStyle='#2f7fd6';c.lineWidth=2;c.beginPath();for(let x=0;x<=W;x+=8)c.lineTo(x,NT+Math.sin(x/30+t)*1.5);c.stroke();
+    c.fillStyle='#7a5233';c.fillRect(0,G,W,16);
+    c.fillStyle='#86c060';c.fillRect(0,G-5,W,7);
+    // rivière
+    c.fillStyle='#3d8fe0';c.beginPath();c.moveTo(374,G-3);c.lineTo(392,340);c.lineTo(440,340);c.lineTo(458,G-3);c.fill();
+    c.strokeStyle='#7a5233';c.lineWidth=3;c.beginPath();c.moveTo(374,G-3);c.lineTo(392,340);c.lineTo(440,340);c.lineTo(458,G-3);c.stroke();
+    c.strokeStyle='rgba(255,255,255,.6)';c.lineWidth=2;for(let i=0;i<3;i++){c.beginPath();c.moveTo(390+((t*20+i*20)%50),G+6+i*9);c.lineTo(402+((t*20+i*20)%50),G+6+i*9);c.stroke();}
+    c.setLineDash([3,6]);c.strokeStyle='rgba(47,127,214,.8)';c.lineWidth=2;c.beginPath();c.moveTo(416,342);c.lineTo(416,NT);c.stroke();c.setLineDash([]);
+    // ferme
+    c.globalAlpha=Math.max(al('agri'),.55);
+    c.fillStyle='#8a5d37';c.fillRect(132,G-8,232,8);
+    for(let x=140;x<=356;x+=12){c.fillStyle='#4a9a3c';c.beginPath();c.ellipse(x,G-14,5,8,0,0,7);c.fill();c.fillStyle='#62b14f';c.beginPath();c.ellipse(x+3,G-18,3,6,.5,0,7);c.fill();}
+    c.fillStyle='#b5473a';c.fillRect(32,248,68,G-248);c.fillStyle='#7e2f27';c.beginPath();c.moveTo(26,250);c.lineTo(66,222);c.lineTo(106,250);c.fill();
+    c.strokeStyle='#fff';c.lineWidth=2;c.strokeRect(54,268,24,G-268);c.beginPath();c.moveTo(54,268);c.lineTo(78,G);c.moveTo(78,268);c.lineTo(54,G);c.stroke();
+    c.fillStyle='#7d6a55';c.fillRect(100,287,30,11);c.fillStyle='#5aa6e0';c.fillRect(102,287,26,3);
+    [170,300].forEach(x=>{c.strokeStyle='#666';c.lineWidth=3;c.beginPath();c.moveTo(x,G-6);c.lineTo(x,252);c.stroke();
+      if(!paused||1){c.strokeStyle='rgba(47,127,214,.55)';c.lineWidth=2;for(let a=-1;a<=1;a+=1){c.beginPath();c.moveTo(x,252);c.quadraticCurveTo(x+a*30,232,x+a*55,G-14);c.stroke();}}});
+    c.fillStyle='#e7e0d3';c.fillRect(201,276,30,G-276);c.fillStyle='#9b8e7a';c.fillRect(197,271,38,6);
+    c.globalAlpha=1;
+    // ville
+    c.globalAlpha=Math.max(al('dom'),.55);
+    c.strokeStyle='#8c8577';c.lineWidth=4;c.beginPath();c.moveTo(493,G);c.lineTo(499,225);c.moveTo(517,G);c.lineTo(511,225);c.stroke();
+    rr(c,478,184,54,42,10);c.fillStyle='#dcd6cc';c.fill();c.strokeStyle='#a39b8c';c.lineWidth=2;c.stroke();
+    [[540,176,44,'#9fb3c8'],[590,214,42,'#c6b8a5'],[686,232,20,'#b9c7b0']].forEach(([x,y,w,col])=>{c.fillStyle=col;c.fillRect(x,y,w,G-y);c.fillStyle='#ffe9a3';
+      for(let yy=y+10;yy<G-14;yy+=18)for(let xx=x+7;xx<x+w-8;xx+=13)c.fillRect(xx,yy,7,9);});
+    [[636,262],[662,268]].forEach(([x,y])=>{c.fillStyle='#efe2cf';c.fillRect(x,y,24,G-y);c.fillStyle='#c0583c';c.beginPath();c.moveTo(x-4,y+1);c.lineTo(x+12,y-14);c.lineTo(x+28,y+1);c.fill();c.fillStyle='#7aa7c7';c.fillRect(x+8,y+10,8,8);});
+    c.globalAlpha=1;
+    // industrie
+    c.globalAlpha=Math.max(al('indu'),.55);
+    c.fillStyle='#7f8794';c.fillRect(842,188,14,60);c.fillStyle='#c2402e';c.fillRect(842,196,14,5);
+    c.fillStyle='#a3aab6';c.fillRect(728,246,134,G-246);
+    for(let i=0;i<5;i++){c.fillStyle='#8d95a3';c.beginPath();c.moveTo(728+i*26.8,246);c.lineTo(728+i*26.8,228);c.lineTo(754.8+i*26.8,246);c.fill();}
+    c.fillStyle='#5d6573';for(let x=740;x<850;x+=22)c.fillRect(x,262,12,14);
+    c.fillStyle='#d4d7dc';c.beginPath();c.moveTo(868,G);c.quadraticCurveTo(892,256,881,214);c.lineTo(937,214);c.quadraticCurveTo(926,256,950,G);c.fill();
+    c.strokeStyle='#aab0b8';c.lineWidth=2;c.stroke();
+    for(let i=0;i<3;i++){const ph=(t*.5+i/3)%1;c.fillStyle=`rgba(150,150,150,${.5*(1-ph)})`;c.beginPath();c.arc(849+ph*30,184-ph*60,8+ph*10,0,7);c.fill();}
+    c.globalAlpha=1;
+    // tuyaux
+    for(const k in paths){c.globalAlpha=al(k);paths[k].forEach(pt=>{c.lineCap='round';c.lineJoin='round';
+      c.strokeStyle=mix(S[k].color,'#ffffff',.45);c.lineWidth=8;c.beginPath();pt.forEach((q,i)=>i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1]));c.stroke();
+      c.strokeStyle=S[k].color;c.lineWidth=3;c.stroke();});}
+    c.globalAlpha=1;
+    for(const k in rets){c.globalAlpha=al(k)*.9;c.setLineDash([6,5]);c.strokeStyle='#9cc6ef';c.lineWidth=3;c.beginPath();rets[k].pts.forEach((q,i)=>i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1]));c.stroke();c.setLineDash([]);}
+    c.globalAlpha=1;
+    parts.forEach(p=>{const[x,y]=along(p.p,p.d);c.globalAlpha=al(p.k);c.fillStyle=p.ret?'#9cc6ef':'#1f6fd1';c.beginPath();c.arc(x,y,p.ret?2.6:3.2,0,7);c.fill();});
+    evap.forEach(e=>{c.globalAlpha=al(e.k)*Math.max(0,e.a);c.fillStyle='#fff';c.strokeStyle='#9bb7c9';c.lineWidth=1;c.beginPath();c.arc(e.x,e.y,e.big?7:3,0,7);c.fill();c.stroke();});
+    c.globalAlpha=1;
+    // étiquettes
+    tag(c,'Exploitation agricole',30,190);tag(c,'Rivière',383,262,{size:13});tag(c,'Ville',560,140);tag(c,'Zone industrielle',760,150);
+    tag(c,'Sol et roches perméables',12,G+30,{size:13});tag(c,'Nappe phréatique',12,NT+22,{bg:'rgba(255,255,255,.9)'});tag(c,'Roche imperméable',12,NB+8,{size:13});
+    tag(c,'Eau rejetée après usage',470,364,{size:12});
+    if(sel){const pos={agri:[150,148],dom:[520,108],indu:[760,118]}[sel];tag(c,S[sel].pct+' % des prélèvements',pos[0],pos[1],{bg:S[sel].color,fg:'#fff',size:15});
+      if(sel==='agri')tag(c,'Vapeur d’eau (transpiration des plantes)',192,180,{size:12});}
+    drawHover(c,scene);}
+
+  scene.regions=()=>[
+    {id:'agri',x:24,y:205,w:342,h:100,title:'Agriculture',chip:'Agriculture',text:S.agri.text},
+    {id:'river',x:372,y:256,w:90,h:90,title:'La rivière',text:'La rivière est une réserve d’eau de surface. On y prélève de l’eau pour l’industrie ou pour fabriquer de l’eau potable. Elle reçoit aussi l’eau rejetée après usage. Elle est en partie alimentée par la nappe phréatique, même quand il ne pleut pas.'},
+    {id:'dom',x:470,y:165,w:240,h:140,title:'La ville : usages domestiques',chip:'Ville',text:S.dom.text},
+    {id:'indu',x:714,y:170,w:242,h:135,title:'La zone industrielle',chip:'Industrie',text:S.indu.text},
+    {id:'nappe',x:0,y:NT,w:W,h:NB-NT,title:'La nappe phréatique',text:'Une nappe phréatique, c’est de l’eau stockée dans les petits espaces entre les grains d’une roche perméable (sable, craie…). Ce n’est pas un lac souterrain ! On y accède en creusant un puits ou un forage.'},
+    {id:'sol',x:0,y:G+18,w:W,h:NT-G-20,title:'Le sol et les roches perméables',chip:'Sol',text:'Le sol et les roches au-dessus de la nappe laissent passer l’eau de pluie. Elle s’y infiltre lentement et recharge la nappe.'},
+    {id:'roche',x:0,y:NB,w:W,h:H-NB,title:'La roche imperméable',text:'Cette roche (comme l’argile) ne laisse pas passer l’eau. Elle retient la nappe au-dessus d’elle.'}];
+  const ex=explorer(cv,W,H,scene,$('#info1'),$('#chips1'));
+  const seg=bindSeg('s1-sect',k=>ex.pick(k));
+  scene.onPick=id=>{if(S[id])select(id);};
+
+  // camembert
+  const pie=$('#pie');
+  (function(){let a0=-Math.PI/2,s='';const cx=120,cy=120,r=108;
+    ['agri','indu','dom'].forEach(k=>{const a1=a0+S[k].pct/100*Math.PI*2,big=a1-a0>Math.PI?1:0;
+      s+=`<path data-k="${k}" fill="${S[k].color}" d="M${cx} ${cy}L${cx+r*Math.cos(a0)} ${cy+r*Math.sin(a0)}A${r} ${r} 0 ${big} 1 ${cx+r*Math.cos(a1)} ${cy+r*Math.sin(a1)}Z"><title>${S[k].name} : ${S[k].pct} %</title></path>`;
+      const am=(a0+a1)/2,lr=k==='agri'?58:76;s+=`<text x="${cx+lr*Math.cos(am)}" y="${cy+lr*Math.sin(am)+5}" text-anchor="middle">${S[k].pct} %</text>`;a0=a1;});
+    pie.innerHTML=s;})();
+  pie.addEventListener('click',e=>{const p=e.target.closest('path');if(p)ex.pick(p.dataset.k);});
+  // grille des 1000 L
+  const lit=$('#litres');const cells=[];['agri','indu','dom'].forEach(k=>{for(let i=0;i<S[k].pct;i++){const d=document.createElement('i');d.style.background=S[k].color;d.dataset.k=k;lit.appendChild(d);cells.push(d);}});
+  function select(k){sel=k;seg.set(k);
+    pie.querySelectorAll('path').forEach(p=>p.classList.toggle('dim',!!k&&p.dataset.k!==k));
+    cells.forEach(d=>d.classList.toggle('dim',!!k&&d.dataset.k!==k));
+    if(k){$('#l1-val').textContent=fmt(S[k].pct*10)+' L';$('#l1-txt').textContent='sur 1 000 L pour : '+S[k].name.toLowerCase();}
+    else{$('#l1-val').textContent='1 000 L';$('#l1-txt').textContent='prélevés au total';}}
+  $('#b1-pause').addEventListener('click',e=>{paused=!paused;e.target.textContent=paused?'Reprendre l’animation':'Pause animation';});
+  $('#b1-reset').addEventListener('click',()=>{select(null);scene.picked=null;$('#chips1').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed','false'));
+    $('#info1').innerHTML='<h3>Choisis un secteur</h3><p>Clique sur un élément du dessin. Les tuyaux colorés montrent d’où chaque secteur prélève son eau.</p>';});
+  return{update,draw};
+})();
+
+/* ================= PARTIE 2 : irrigation et nappe ================= */
+const P2=(()=>{
+  const W=960,H=560,G=230,PXM=15.5,BED=5,FLOOR=17,MAXD=FLOOR,SY=80,K=70,D0=3,WELLX=600,MD=0.12,WELLBOT=FLOOR;
+  const cv=$('#cv2'),c=setupCanvas(cv,W,H);
+  const CROPS={ble:{name:'Blé',need:500,eff:.65},mais:{name:'Maïs',need:650,eff:.40},tournesol:{name:'Tournesol',need:450,eff:.45}};
+  const RAIN={seche:450,normale:700,pluvieuse:950}, RN={seche:'année sèche',normale:'année normale',pluvieuse:'année pluvieuse'};
+  const IRN={faible:'faible',moyenne:'moyenne',importante:'importante'};
+  // Hypothèses simplifiées : besoin en eau, part de la pluie utilisée par la culture, recharge, rendement maximal (q/ha)
+  const AGRI={
+    raisonnee:{label:'en production raisonnée',need:1,eff:1,rech:.20,ymax:{ble:68,mais:95,tournesol:22},info:''},
+    intensive:{label:'en production intensive',need:1.1,eff:1,rech:.20,ymax:{ble:80,mais:115,tournesol:25},
+      info:'<h3>Agriculture intensive</h3><p>On cherche le <strong>rendement maximal</strong> : engrais et pesticides de synthèse, variétés très productives, plantes serrées. Les récoltes sont importantes, mais les cultures ont <strong>besoin de beaucoup d’eau</strong>. Le sol, souvent laissé nu en hiver et pauvre en matière organique, absorbe moins bien la pluie.</p>'},
+    bio:{label:'en agriculture biologique',need:.9,eff:1.1,rech:.22,ymax:{ble:38,mais:70,tournesol:19},
+      info:'<h3>Agriculture biologique</h3><p>Sans engrais ni pesticides de synthèse. Les <strong>rendements sont plus faibles</strong> (souvent 30 à 50 % de moins). Le sol, plus riche en matière organique et souvent couvert (haies, couverts végétaux, rotations), <strong>retient mieux l’eau</strong> et laisse mieux s’infiltrer la pluie. Mais si on irrigue trop, la nappe baisse quand même ! <br><em>Dans ce modèle : besoin en eau −10 %, pluie mieux utilisée +10 %, recharge 22 % au lieu de 20 %. En réalité, tout dépend des pratiques de chaque exploitation.</em></p>'}};
+  const FACT=[1.0,0.97,0.72,0.95,0.66,0.9,0.52,0.82,0.5,0.56];  // climat de plus en plus sec : baisse des pluies + années de sécheresse
+  const rainYear=y=>Math.round(RAIN[par.rain]*(par.clim==='change'?FACT[clamp(y,0,9)]:1));
+  const dryWord=P=>P<420?'très sèche':P<600?'sèche':P<800?'normale':'pluvieuse';
+  const RW=[.16,.14,.12,.08,.03,0,0,0,.03,.10,.16,.18];       // recharge de la nappe (surtout automne-hiver)
+  const PW=[0,0,0,0,.10,.25,.35,.25,.05,0,0,0];               // pompage (saison d’irrigation)
+  const PRW=[.10,.08,.08,.08,.09,.07,.05,.06,.08,.10,.11,.10]; // répartition des pluies
+  const GROW=[.3,.35,.45,.6,.75,.9,1,1,.6,.25,.25,.3];
+  const MONTHS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  let par={crop:'ble',agri:'intensive',irr:'moyenne',rain:'normale',years:10,clim:'change'},sim,saved=null,acc=0,t=0,uiT=0;
+  let drops=[],sprays=[],infil=[],bflow=[],lift=[],ad={r:0,s:0,i:0,b:0,l:0};
+  let curves=[],cur=null,curScen=null,msgShown=false;
+  const scene={hover:null,picked:null};
+  const grains=[...Array(420)].map(()=>({x:rnd(0,W),y:rnd(G+14,H),r:rnd(1,2.4)}));
+
+  function budget(p,P){const cr=CROPS[p.crop],ag=AGRI[p.agri];P=P??RAIN[p.rain];const hot=1+.4*Math.max(0,(700-P)/350),need=Math.round(cr.need*ag.need*hot),eff=Math.round(cr.eff*P*ag.eff),D=Math.max(0,need-eff);
+    const I=Math.round(p.irr==='faible'?.5*D:p.irr==='moyenne'?D:D+150);
+    const ratio=(eff+I)/need,state=ratio<.85?'manque':ratio>1.25?'exces':'ok';
+    const R=ag.rech*2*Math.max(0,P-330),pump=.4*I,ret=.15*pump;  // recharge : seule la pluie au-delà de ce que prennent sol et plantes (≈330 mm) atteint la nappe ; année sèche = chaleur = plantes plus gourmandes  // en mm sur la surface de la nappe (500 ha) ; 1 mm = 5 000 m³
+    const yf=ratio<1?Math.pow(Math.max(ratio,.3),1.5):1,Ymax=ag.ymax[p.crop],Y=Math.round(Ymax*yf);
+    const Yfail=Math.round(Ymax*Math.pow(Math.max(eff/need,.3),1.5));
+    return{P,eff,need,D,I,ratio,state,R,pump,ret,Y,Ymax,Yfail};}
+  function reset(){sim={harvest:0,empty:false,fail:false,emptyM:0,y0:D0,lastDrop:null,b:budget(par,rainYear(0)),m:0,depth:D0,hist:[[0,D0]],pumpV:0,rechV:0,baseV:0,running:false,done:false,
+      cur:{rech:0,pump:0,base:K*(BED-D0)/12,m:0},yr:{in:0,out:0},last:null,dry:false};
+    acc=0;drops=[];sprays=[];infil=[];bflow=[];lift=[];refresh();chart();}
+  function step(){if(sim.m%12===0){sim.b=budget(par,rainYear(Math.floor(sim.m/12)));if(sim.m>0)sim.lastDrop=sim.depth-sim.y0;sim.y0=sim.depth;sim.fail=false;}const b=sim.b,m=sim.m%12;
+    let pump=b.pump*PW[m];sim.empty=sim.depth>=FLOOR-0.3;sim.dry=sim.empty;if(sim.empty){if(PW[m]>0){pump=0;sim.fail=true;}sim.emptyM++;}
+    const rech=b.R*RW[m]+.15*pump;
+    const base=K*Math.max(0,BED-sim.depth)/12;
+    sim.depth=clamp(sim.depth-(rech-pump-base)/SY,0.5,FLOOR);
+    sim.m++;sim.hist.push([sim.m/12,sim.depth]);
+    if(sim.m%12===0)sim.harvest+=(sim.fail?b.Yfail:b.Y)*20;   // q/ha × 200 ha ÷ 10 = tonnes
+    sim.pumpV+=pump*5000;sim.rechV+=rech*5000;sim.baseV+=base*5000;
+    sim.yr.in+=rech*5000;sim.yr.out+=(pump+base)*5000;
+    if(sim.m%12===0){sim.last={...sim.yr};sim.yr={in:0,out:0};}
+    sim.cur={rech,pump,base,m};
+    if(sim.m>=par.years*12){sim.running=false;sim.done=true;}}
+  function update(dt){if(sim.running)t+=dt;else if(sim.done){drops=[];sprays=[];infil=[];bflow=[];lift=[];}
+    if(sim.running){acc+=dt;while(acc>=MD&&sim.running){acc-=MD;step();}}
+    const cur=sim.cur,on=sim.running;
+    if(on){const rr=sim.b.P*PRW[cur.m]*1.1;ad.r+=dt*rr;while(ad.r>=1){ad.r--;drops.push({x:rnd(40,W-20),y:rnd(70,100)});}
+      if(cur.pump>0){ad.s+=dt*cur.pump*2.2;while(ad.s>=1){ad.s--;const n=Math.floor(rnd(0,12));sprays.push({x:72+n*40+rnd(-4,4),y:G-58,vy:rnd(40,70),vx:rnd(-15,15)});}
+        ad.l+=dt*18;while(ad.l>=1){ad.l--;lift.push({d:0});}}
+      ad.i+=dt*cur.rech*1.6;while(ad.i>=1){ad.i--;const x=rnd(40,770);infil.push({x,y:G+14});}
+      ad.b+=dt*cur.base*1.4;while(ad.b>=1){ad.b--;bflow.push({x:rnd(680,720),k:0});}}
+    drops.forEach(d=>d.y+=430*dt);drops=drops.filter(d=>d.y<G);
+    sprays.forEach(s=>{s.y+=s.vy*dt;s.x+=s.vx*dt;s.vy+=200*dt;});sprays=sprays.filter(s=>s.y<G-4);
+    infil.forEach(p=>{p.y+=38*dt;p.x+=Math.sin(p.y*.15)*.2;});infil=infil.filter(p=>p.y<wtY(p.x));
+    bflow.forEach(p=>{p.x+=60*dt;});bflow=bflow.filter(p=>p.x<835);
+    lift.forEach(p=>p.d+=160*dt);lift=lift.filter(p=>p.d<liftPath().len);
+    uiT+=dt;if(uiT>.15){uiT=0;if(sim.running||sim.done){refresh();chart();}}}
+  function coneAmp(){return sim.running&&sim.cur.pump>0&&!sim.empty?clamp(8+sim.cur.pump*1.6,0,48):0;}
+  function wtY(x){return Math.min(G+FLOOR*PXM,G+sim.depth*PXM+coneAmp()*Math.exp(-(((x-WELLX)/85)**2)));}
+  function liftPath(){const yb=Math.min(wtY(WELLX),G+WELLBOT*PXM);return poly([[WELLX,yb],[WELLX,G-34],[520,G-60]]);}
+  const yBed=G+BED*PXM;
+  function riverPx(){return sim.depth<BED?Math.max(5,(BED-sim.depth)*PXM):5;}
+
+  function drawTruck(x,y){c.save();c.translate(x,y);
+    c.fillStyle='#1f2328';[[-46,0],[-14,0],[18,0]].forEach(([dx])=>{c.beginPath();c.arc(dx,-5,6,0,7);c.fill();});
+    c.fillStyle='#c9ced6';rr(c,-60,-34,62,24,11);c.fill();c.strokeStyle='#8b9099';c.lineWidth=1.5;c.stroke();
+    c.fillStyle='#2f7fd6';c.font=`700 9px ${FONT}`;c.textAlign='center';c.textBaseline='middle';c.fillText('EAU',-29,-22);c.textAlign='left';
+    c.fillStyle='#c2402e';rr(c,4,-36,24,28,4);c.fill();c.fillStyle='#dff1f6';c.fillRect(8,-32,12,9);
+    c.fillStyle='#4b5563';c.fillRect(-62,-10,92,4);c.restore();}
+  function drawCrop(x,base,type,g,state){const h={ble:40,mais:72,tournesol:60}[type]*g*(state==='manque'?.62:state==='mort'?.5:1);
+    const col=state==='mort'?'#a5793e':state==='manque'?'#b0a03c':state==='exces'?'#7cab63':'#3f8f35';
+    c.strokeStyle=col;c.fillStyle=col;c.lineWidth=type==='mais'?3:2;
+    if(type==='ble'){for(let i=-1;i<=1;i++){c.beginPath();c.moveTo(x+i*3,base);c.lineTo(x+i*4,base-h);c.stroke();
+        if(g>.55){c.fillStyle=g>.95?'#d7b443':col;c.beginPath();c.ellipse(x+i*4,base-h-4,2.2,6,0,0,7);c.fill();}}}
+    else{c.beginPath();c.moveTo(x,base);c.lineTo(x,base-h);c.stroke();
+      for(let j=1;j<=3;j++){const yy=base-h*j/4,s=j%2?1:-1;c.beginPath();c.ellipse(x+s*7,yy,8,3,s*.5,0,7);c.fill();}
+      if(type==='tournesol'&&g>.6){c.fillStyle='#f2c230';c.beginPath();c.arc(x,base-h-4,7,0,7);c.fill();c.fillStyle='#7a4a24';c.beginPath();c.arc(x,base-h-4,3,0,7);c.fill();}
+      if(type==='mais'&&g>.7){c.fillStyle='#e8c95a';c.beginPath();c.ellipse(x+4,base-h*.55,3,7,.3,0,7);c.fill();}}}
+
+  function draw(){const cur=sim.cur,m=cur.m,b=sim.b;
+    const dark=sim.running?clamp(b.P*PRW[m]/100,0,.85):clamp(b.P/1400,0,.6);
+    let g=c.createLinearGradient(0,0,0,G);g.addColorStop(0,mix('#b7def0','#8e9cab',dark*.6));g.addColorStop(1,'#e8f4f4');c.fillStyle=g;c.fillRect(0,0,W,G);
+    const cc=mix('#ffffff','#7d8a99',dark);cloud(c,620+Math.sin(t*.3)*10,62,1.1,cc);cloud(c,760+Math.sin(t*.25)*8,48,.9,cc);
+    if(b.P>=620)cloud(c,470+Math.sin(t*.2)*10,72,.8,cc);
+    c.strokeStyle='rgba(47,127,214,.65)';c.lineWidth=1.5;drops.forEach(d=>{c.beginPath();c.moveTo(d.x,d.y);c.lineTo(d.x-2,d.y+10);c.stroke();});
+    // sol
+    c.fillStyle='#d9b483';c.fillRect(0,G,W,H-G);
+    c.fillStyle='#5b9fdc';c.beginPath();c.moveTo(0,H);for(let x=0;x<=W;x+=8)c.lineTo(x,wtY(x));c.lineTo(W,H);c.closePath();c.fill();
+    grains.forEach(q=>{c.fillStyle=q.y>wtY(q.x)?'rgba(20,70,130,.35)':'rgba(120,80,40,.3)';c.beginPath();c.arc(q.x,q.y,q.r,0,7);c.fill();});
+    c.strokeStyle='#1d64b5';c.lineWidth=2.5;c.beginPath();for(let x=0;x<=W;x+=8)x?c.lineTo(x,wtY(x)):c.moveTo(x,wtY(x));c.stroke();
+    {const yf=G+FLOOR*PXM;c.fillStyle='#8f8676';c.fillRect(0,yf,W,H-yf);c.strokeStyle='rgba(60,55,45,.35)';c.lineWidth=1;for(let y=yf+8;y<H;y+=9){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke();}
+      c.strokeStyle='#c2402e';c.lineWidth=2;c.setLineDash([8,5]);c.beginPath();c.moveTo(40,yf);c.lineTo(W,yf);c.stroke();c.setLineDash([]);
+      tag(c,'Fond de la nappe (roche imperméable) : en dessous, plus d’eau',500,yf+18,{size:11,bg:'rgba(255,255,255,.88)'});}
+    c.fillStyle='#7a5233';c.fillRect(0,G,W,12);c.fillStyle='#86c060';c.fillRect(0,G-4,W,6);
+    if(b.state==='exces'&&GROW[m]>.4){c.fillStyle='rgba(61,143,224,.6)';for(let x=60;x<520;x+=52){c.beginPath();c.ellipse(x+13,G-2,10,3,0,0,7);c.fill();}}
+    // rivière (entaille)
+    c.fillStyle='#e8f4f4';c.beginPath();c.moveTo(790,G-4);c.lineTo(830,yBed);c.lineTo(890,yBed);c.lineTo(930,G-4);c.fill();
+    const wp=riverPx(),ws=yBed-wp,xl=y=>790+40*(y-G)/(yBed-G),xr=y=>930-40*(y-G)/(yBed-G);
+    c.fillStyle='#3d8fe0';c.beginPath();c.moveTo(xl(ws),ws);c.lineTo(830,yBed);c.lineTo(890,yBed);c.lineTo(xr(ws),ws);c.fill();
+    c.strokeStyle='#7a5233';c.lineWidth=3;c.beginPath();c.moveTo(790,G-4);c.lineTo(830,yBed);c.lineTo(890,yBed);c.lineTo(930,G-4);c.stroke();
+    c.fillStyle='#8b6b4a';c.fillRect(772,G-6,176,7);c.fillStyle='#6d5238';c.fillRect(772,G+1,176,3);
+    c.strokeStyle='#6d5238';c.lineWidth=3;[800,860,920].forEach(x=>{c.beginPath();c.moveTo(x,G+4);c.lineTo(x+(x<860?18:x>860?-18:0),yBed-2);c.stroke();});
+    c.strokeStyle='#5a4330';c.lineWidth=2;c.beginPath();c.moveTo(772,G-16);c.lineTo(948,G-16);c.stroke();for(let x=776;x<=944;x+=14){c.beginPath();c.moveTo(x,G-6);c.lineTo(x,G-16);c.stroke();}
+    bflow.forEach(p=>{c.fillStyle='#1f6fd1';c.beginPath();c.arc(p.x,Math.min(wtY(p.x)+6,yBed-4),3,0,7);c.fill();});
+    if(sim.depth<BED&&cur.base>0.5)arrow(c,730,wtY(730)+14,800,Math.min(wtY(800)+8,yBed-6),'rgba(29,100,181,.9)',3);
+    // puits
+    c.fillStyle='#8b9099';c.fillRect(WELLX-5,G-2,10,WELLBOT*PXM+2);
+    const wy=wtY(WELLX);if(wy<G+WELLBOT*PXM){c.fillStyle='#3d8fe0';c.fillRect(WELLX-3,wy,6,G+WELLBOT*PXM-wy);}
+    c.fillStyle='#e7e0d3';c.fillRect(WELLX-20,G-34,40,32);c.fillStyle='#9b8e7a';c.fillRect(WELLX-24,G-38,48,6);
+    c.strokeStyle='#6d7380';c.lineWidth=5;c.beginPath();c.moveTo(WELLX,G-34);c.lineTo(520,G-60);c.stroke();
+    // rampe d'irrigation
+    c.strokeStyle='#6d7380';c.lineWidth=5;c.beginPath();c.moveTo(56,G-60);c.lineTo(520,G-60);c.stroke();
+    c.lineWidth=3;for(let x=90;x<=500;x+=136){c.beginPath();c.moveTo(x-12,G-2);c.lineTo(x,G-60);c.lineTo(x+12,G-2);c.stroke();}
+    lift.forEach(p=>{const[x,y]=along(liftPath(),p.d);c.fillStyle='#1f6fd1';c.beginPath();c.arc(x,y,2.6,0,7);c.fill();});
+    sprays.forEach(s=>{c.fillStyle='rgba(31,111,209,.8)';c.beginPath();c.arc(s.x,s.y,2,0,7);c.fill();});
+    // cultures
+    const harvested=(par.crop!=='ble'&&(m>=9||m<=2))||(par.crop==='ble'&&m===7);
+    const bio=par.agri==='bio',sp=bio?34:24;
+    if(bio){for(let x=16;x<=44;x+=9){c.fillStyle=x%2?'#2f6e2a':'#3f8f35';c.beginPath();c.arc(x,G-14-(x%3)*4,12,0,7);c.fill();}
+      c.fillStyle='rgba(120,160,70,.55)';for(let x=60;x<=520;x+=8)c.fillRect(x,G-6,5,4);}
+    tag(c,bio?'Agriculture biologique':par.agri==='raisonnee'?'Production raisonnée':'Production intensive',300,G-112,{size:12,bg:par.agri==='intensive'?'#5e6f91':'#3f8f35',fg:'#fff'});
+    for(let x=66;x<=510;x+=sp){if(harvested){c.strokeStyle='#c9a85a';c.lineWidth=2;c.beginPath();c.moveTo(x,G-2);c.lineTo(x,G-8);c.stroke();}else drawCrop(x,G-2,par.crop,GROW[m]*(sim.fail?.75:1),sim.fail?'mort':b.state);}
+    infil.forEach(p=>{c.fillStyle='rgba(31,111,209,.85)';c.beginPath();c.arc(p.x,p.y,2.4,0,7);c.fill();});
+    // règle de profondeur
+    c.fillStyle='rgba(255,255,255,.85)';c.fillRect(0,G,40,H-G);c.strokeStyle='#14303a';c.lineWidth=1;c.font=`700 11px ${FONT}`;c.fillStyle='#14303a';c.textAlign='left';c.textBaseline='middle';
+    for(let d=0;d<=20;d++){const y=G+d*PXM;c.beginPath();c.moveTo(32,y);c.lineTo(d%5?37:28,y);c.stroke();if(d%5===0&&d<20)c.fillText(d?'−'+d:'0',4,y+ (d?0:6));}
+    c.fillText('m',4,H-8);
+    // étiquettes
+    const wtx=380,wty=wtY(wtx);tag(c,'Niveau de la nappe : −'+fmt(sim.depth,1)+' m',wtx-80,Math.min(wty+8,H-34),{bg:'#1d64b5',fg:'#fff',size:13});
+    tag(c,'Zone non saturée',60,Math.min(G+18,wty-28),{size:12});
+    tag(c,'Nappe (zone saturée)',60,Math.min(G+FLOOR*PXM-26,Math.max(wty+40,G+50)),{size:12,bg:'rgba(255,255,255,.85)'});
+    tag(c,'Rivière',826,G-34,{size:13});tag(c,'Puits',WELLX+26,G-34,{size:13});
+    if(sim.depth>=BED)tag(c,'La nappe n’alimente plus la rivière',640,yBed+16,{size:12,bg:'#c2402e',fg:'#fff'});
+    if(sim.empty){tag(c,'Nappe vide : le puits est à sec !',WELLX-110,G+FLOOR*PXM-40,{size:13,bg:'#c2402e',fg:'#fff'});
+      const tx=W+60-((t*70)%(W-280));drawTruck(tx,G-6);tag(c,'Camion-citerne : de l’eau qui vient de loin',600,G-92,{size:12,bg:'#14303a',fg:'#fff'});
+      if(sim.fail)tag(c,'Les cultures manquent d’eau !',120,G-90,{size:13,bg:'#c2402e',fg:'#fff'});}
+    // état
+    const yrN=Math.min(par.years,Math.floor(sim.m/12)+1);
+    rr(c,52,12,290,58,10);c.fillStyle='rgba(255,255,255,.92)';c.fill();
+    c.fillStyle='#14303a';c.font=`800 20px "Baloo 2",${FONT}`;c.textBaseline='alphabetic';c.fillText(sim.m===0&&!sim.running?'Début de la simulation':`Année ${yrN} · ${MONTHS[m]}`,64,38);
+    c.font=`700 13px ${FONT}`;let x=64;
+    if(sim.running&&cur.pump>0)x+=tag(c,'Pompage pour irriguer',x,46,{size:11,bg:'#5e6f91',fg:'#fff'})+6;
+    if(sim.running&&cur.rech>2)tag(c,'Recharge par infiltration',x,46,{size:11,bg:'#2f7fd6',fg:'#fff'});
+    if(sim.running||sim.m>0){const dw=dryWord(b.P);tag(c,`Pluie de l’année : ${b.P} mm · ${dw}`,360,16,{size:13,bg:dw==='très sèche'?'#c2402e':dw==='sèche'?'#e08a2c':'#2f7fd6',fg:'#fff'});}
+    drawHover(c,scene);}
+
+  scene.regions=()=>{const wy=wtY(300);return[
+    {id:'nuages',x:440,y:20,w:440,h:90,title:'Les précipitations',chip:'Pluie',text:'La pluie apporte de l’eau au sol. Mais seule une partie s’infiltre jusqu’à la nappe : le reste s’évapore, est utilisé par les plantes ou ruisselle. Ici, une année normale, environ <strong>20 % de la pluie</strong> recharge la nappe, surtout en automne et en hiver. Une année sèche, presque toute la pluie est utilisée par le sol et les plantes : <strong>la nappe ne se recharge presque pas</strong>.'},
+    {id:'rampe',x:50,y:G-72,w:480,h:20,title:'L’irrigation',chip:'Rampe d’irrigation',text:'La rampe arrose les champs en été avec l’eau <strong>pompée dans la nappe</strong>. L’irrigation complète la pluie quand elle ne suffit pas. Une petite partie de l’eau d’irrigation s’infiltre et retourne à la nappe.'},
+    {id:'cultures',x:50,y:G-50,w:480,h:52,title:'Les cultures',chip:'Cultures',text:'Les cultures ont besoin d’eau pour se développer. Le <strong>maïs</strong> pousse en été, quand il pleut peu : il a souvent besoin d’irrigation. Le <strong>blé</strong> pousse surtout en hiver et au printemps, quand il pleut davantage. Le <strong>tournesol</strong> supporte mieux le manque d’eau.'},
+    {id:'puits',x:WELLX-26,y:G-42,w:52,h:WELLBOT*PXM+44,title:'Le puits',chip:'Puits',text:'Le puits (ou forage) descend jusqu’à la nappe. Une pompe y prélève l’eau. Pendant le pompage, le niveau de la nappe baisse autour du puits. Le puits descend jusqu’au fond de la nappe (−17 m). Si la nappe est vide, il est à sec : plus d’eau pour arroser.'},
+    {id:'riviere',x:786,y:G-10,w:150,h:yBed-G+16,title:'La rivière',chip:'Rivière',text:'Quand la nappe est plus haute que le fond de la rivière, elle l’<strong>alimente</strong>, même sans pluie. Si la nappe descend sous le fond de la rivière (−5 m ici), elle ne l’alimente plus : le débit de la rivière baisse.'},
+    {id:'regle',x:0,y:G,w:42,h:H-G,title:'La profondeur',chip:'Profondeur',text:'Profondeur sous la surface du sol, en mètres. « −8 m » signifie que le haut de la nappe est à 8 mètres sous nos pieds.'},
+    {id:'nappe',x:42,y:wy,w:W-42,h:Math.max(10,H-wy),title:'La nappe phréatique (zone saturée)',chip:'Nappe',text:'Ici, l’eau remplit tous les espaces entre les grains de roche. Le niveau <strong>monte</strong> quand les entrées (infiltration) dépassent les sorties (pompage, écoulement vers la rivière) et <strong>baisse</strong> dans le cas contraire.'},
+    {id:'ns',x:42,y:G+12,w:W-42,h:Math.max(10,wy-G-12),title:'La zone non saturée',chip:'Zone non saturée',text:'Les espaces entre les grains contiennent de l’air et un peu d’eau. L’eau de pluie traverse lentement cette zone pour rejoindre la nappe.'}];};
+  reset();
+  explorer(cv,W,H,scene,$('#info2'),$('#chips2'));
+
+  function refresh(){const b=sim.b,cn=CROPS[par.crop].name,cl=cn.toLowerCase(),emptyNow=sim.m>0&&(sim.depth>=FLOOR-0.3||sim.fail);
+    const yr=Math.min(par.years,Math.floor(Math.max(0,sim.m-1)/12)+1),dw=dryWord(b.P),dry=dw==='sèche'||dw==='très sèche';
+    $('#st2').textContent=sim.running?`Simulation en cours : année ${yr}`:sim.done?'Simulation terminée (10 ans)':sim.m>0?'En pause':'Choisis un scénario pour commencer';
+    let h='';
+    if(!curScen){h=`<p>${par.clim==='change'?'Climat <strong>de plus en plus sec</strong> : la pluie baisse d’année en année, avec des années de sécheresse.':'Climat <strong>stable</strong> : 700 mm de pluie chaque année.'}</p><p>Choisis un scénario : l’explication de la culture, de l’arrosage et de leurs conséquences pour la nappe s’affichera ici.</p>`;}
+    else{h=`<p>${PLANT[par.crop]}</p><p>${MODE[par.agri]}</p><p><strong>Conséquences pour la nappe</strong> (${CLN[par.clim]}) : ${curScen[par.clim==='change'?'conC':'conS']}</p>`;
+      h+=`<p class="harv">Récolte totale${sim.done?'':' jusqu’ici'} : <strong>${fmt(sim.harvest)} tonnes de ${cl}</strong> <small>(200 ha)</small></p>`;
+      if(emptyNow)h+=`<p class="alert"><strong>En ce moment, la nappe est vide :</strong> le puits est à sec, des camions-citernes apportent de l’eau de loin, mais pas assez pour irriguer. Les cultures dépérissent.</p>`;}
+    $('#expl2').innerHTML=h;
+    if(sim.done&&curScen&&!msgShown){msgShown=true;$('#info2').innerHTML=`<h3>Résultat : ${curScen.t} · ${CLN[par.clim]}</h3><p>${curScen[par.clim==='change'?'conC':'conS']}</p>`+(sim.emptyM>0?`<p style="margin-top:6px;background:#fde3df;border-radius:10px;padding:8px 10px;color:#7a1f12"><strong>La nappe a été vide pendant ${Math.round(sim.emptyM)} mois.</strong> Il a fallu faire venir de l’eau par camions-citernes et les récoltes se sont effondrées.</p>`:'')+`<p style="margin-top:6px"><strong>Après 10 ans : nappe à −${fmt(sim.depth,1)} m, ${fmt(sim.harvest)} tonnes de ${cl} récoltées.</strong> Compare avec les autres scénarios et l’autre climat.</p>`;}}
+  const CLN={change:'climat de plus en plus sec',stable:'climat stable'};
+  function chart(){const r_=18,w=640,h=200,l=56,r=18,tp=8,bm=34,iw=w-l-r,ih=h-tp-bm,X=v=>l+v/par.years*iw,Y=d=>tp+d/20*ih;let s='';
+    const nyr=Math.min(par.years,sim.m===0&&!sim.running?0:Math.floor(Math.max(0,sim.m-1)/12)+1);
+    for(let y=0;y<nyr;y++){const dw=dryWord(rainYear(y));if(dw!=='sèche'&&dw!=='très sèche')continue;const tr=dw==='très sèche';
+      s+=`<rect x="${X(y)}" y="${tp}" width="${X(y+1)-X(y)}" height="${ih}" fill="${tr?'#d6402e':'#e08a2c'}" opacity="${tr?.2:.14}"><title>Année ${y+1} : ${dw} (${rainYear(y)} mm)</title></rect>`;
+      const cx=(X(y)+X(y+1))/2;s+=`<text x="${cx}" y="${tp+12}" text-anchor="middle" style="font:700 11px var(--f-body);fill:${tr?'#b0321f':'#a3600f'}">${tr?`<tspan x="${cx}">très</tspan><tspan x="${cx}" dy="13">sèche</tspan>`:'sèche'}</text>`;}
+    for(let d=0;d<=20;d+=5)s+=`<line class="grid" x1="${l}" x2="${w-r}" y1="${Y(d)}" y2="${Y(d)}"/><text class="tick" x="${l-8}" y="${Y(d)+4}" text-anchor="end">${d?'−'+d:0} m</text>`;
+    for(let v=0;v<=par.years;v++)s+=`<text class="tick" x="${X(v)}" y="${h-bm+18}" text-anchor="middle">${v}</text>`;
+    s+=`<text class="tick" x="${l+iw/2}" y="${h-2}" text-anchor="middle" style="font-weight:700">Années</text>`;
+    s+=`<rect x="${l}" y="${Y(FLOOR)}" width="${iw}" height="${Y(20)-Y(FLOOR)}" fill="#8f8676" opacity=".35"/><line x1="${l}" x2="${w-r}" y1="${Y(FLOOR)}" y2="${Y(FLOOR)}" stroke="#c2402e" stroke-width="2" stroke-dasharray="6 4"/><text class="tick" x="${l+6}" y="${Y(FLOOR)+13}" style="fill:#c2402e;font-weight:700">nappe vide</text>`;
+    s+=`<line x1="${l}" x2="${w-r}" y1="${Y(BED)}" y2="${Y(BED)}" stroke="#7a5233" stroke-dasharray="6 5" stroke-width="1.5"/><text class="tick" x="${w-r-4}" y="${Y(BED)+15}" text-anchor="end" style="fill:#7a5233">fond de la rivière</text>`;
+    const pd=hs=>hs.filter(p=>p[0]<=par.years+1e-6).map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)).join('');
+    const list=curves.length?curves:[{col:'#0a7287',hist:sim.hist}];
+    list.forEach(k=>{s+=`<path d="${pd(k.hist)}" fill="none" stroke="${k.col}" stroke-width="${k===cur?3.5:2.5}" stroke-linejoin="round"${k.dash?' stroke-dasharray="7 5"':''}/>`;
+      const e=k.hist[k.hist.length-1];if(e[0]<=par.years)s+=`<circle cx="${X(e[0])}" cy="${Y(e[1])}" r="4.5" fill="${k.col}"/>`;});
+    $('#chart2').innerHTML=s;
+
+    $('#leg2').innerHTML=(par.clim==='change'?'<span><i style="display:inline-block;width:14px;height:12px;background:#e08a2c;opacity:.35;border-radius:2px"></i>année sèche</span><span><i style="display:inline-block;width:14px;height:12px;background:#d6402e;opacity:.45;border-radius:2px"></i>année très sèche</span>':'')+(curves.length?curves.map(k=>`<span><svg width="26" height="10" aria-hidden="true"><line x1="1" y1="5" x2="25" y2="5" stroke="${k.col}" stroke-width="3"${k.dash?' stroke-dasharray="6 4"':''}/></svg>${k.name} · <strong>${fmt(k.sim?k.sim.harvest:0)} t récoltées</strong></span>`).join(''):'<span>Lance un scénario : sa courbe apparaîtra ici et restera pour comparer.</span>');}
+
+  const SC2=[
+    {t:'Maïs (gourmand en eau), production intensive',col:'#c2402e',p:{crop:'mais',agri:'intensive',irr:'importante',rain:'normale'},
+     conS:'On récolte le plus, mais la nappe baisse chaque année : on pompe beaucoup plus d’eau que la pluie n’en recharge. Elle passe sous le fond de la rivière, qui n’est plus alimentée. C’est la <strong>surexploitation</strong> de la nappe.',
+     conC:'Les sécheresses aggravent tout : la nappe <strong>se vide</strong> au bout de quelques années. Le puits reste à sec pendant plus de deux ans, il faut des camions-citernes et les récoltes s’effondrent. Au total, on récolte <strong>moins qu’en production raisonnée</strong> !'},
+    {t:'Maïs (gourmand en eau), production raisonnée',col:'#e08a2c',p:{crop:'mais',agri:'raisonnee',irr:'moyenne',rain:'normale'},
+     conS:'La récolte est un peu plus faible qu’en intensif, mais la nappe tient : on prélève à peu près ce que la pluie recharge chaque hiver.',
+     conC:'Même en raisonné, le maïs irrigué en été souffre des sécheresses : la nappe baisse fortement et finit par se vider en fin de période. <strong>Quand le climat s’assèche, une culture gourmande en eau devient difficile à tenir.</strong>'},
+    {t:'Blé, production intensive',col:'#b5892a',p:{crop:'ble',agri:'intensive',irr:'importante',rain:'normale'},
+     conS:'C’est la plus forte récolte de blé, et la nappe ne baisse qu’un peu : le blé pousse au printemps, quand il reste de l’eau dans le sol.',
+     conC:'Avec les sécheresses, l’eau pompée en plus fait <strong>nettement baisser la nappe</strong>, qui passe loin sous le fond de la rivière. Produire plus coûte cher en eau.'},
+    {t:'Blé, production raisonnée',col:'#2e8a4a',p:{crop:'ble',agri:'raisonnee',irr:'moyenne',rain:'normale'},
+     conS:'La nappe reste stable : les prélèvements sont <strong>compatibles avec la recharge</strong> par la pluie.',
+     conC:'La nappe baisse pendant les années très sèches puis remonte en partie les années normales. C’est le scénario qui <strong>préserve le mieux la nappe</strong>, avec une récolte un peu plus faible.'}];
+  const PLANT={mais:'<strong>Le maïs</strong> pousse en été, quand il pleut le moins. Il a besoin de beaucoup d’eau (environ 650 mm, encore plus les années chaudes) et la pluie ne lui en apporte qu’une petite partie : il faut beaucoup irriguer. C’est la céréale qui produit le plus (jusqu’à 110 quintaux par hectare).',
+    ble:'<strong>Le blé</strong> est semé en automne et pousse surtout au printemps : il profite des pluies de l’hiver et de l’eau stockée dans le sol. Il a besoin de moins d’irrigation que le maïs, mais produit moins (environ 75 quintaux par hectare).'};
+  const MODE={intensive:'<strong>Production intensive</strong> : beaucoup d’engrais et de pesticides, des variétés très productives semées serrées, et une irrigation abondante « pour être sûr ». Objectif : la <strong>récolte maximale</strong>. Mais ces plantes très productives ont besoin de plus d’eau, et une partie de l’eau pompée est gaspillée.',
+    raisonnee:'<strong>Production raisonnée</strong> : engrais et pesticides limités au nécessaire, et on arrose seulement ce qui manque après la pluie. La récolte est un peu plus faible (environ 15 % de moins), mais on <strong>prélève beaucoup moins d’eau</strong> dans la nappe.'};
+  const NOP={set(){}},sa=NOP,sc=NOP,si=NOP,sr=NOP;
+  let lastBtn=null;
+  const CLIMTXT={change:'<h3>Des sécheresses de plus en plus fréquentes</h3><p>Avec le réchauffement climatique, les étés sont plus chauds et les sécheresses plus fréquentes. Dans la simulation, la pluie passe de <strong>700 mm</strong> la 1<sup>re</sup> année à environ <strong>400 mm</strong> la 10<sup>e</sup>, avec des années très sèches. Une année sèche, presque toute la pluie est prise par le sol, les plantes et l’évaporation : <strong>presque rien n’atteint la nappe</strong>. Et comme il fait plus chaud, <strong>les cultures ont besoin de plus d’irrigation</strong>. Regarde la courbe plonger pendant les bandes orange et rouges.</p>',
+    stable:'<h3>Climat stable</h3><p>Il tombe 700 mm de pluie chaque année : c’est la situation de référence, pour comparer avec un climat de plus en plus sec.</p>'};
+  const sclim=bindSeg('s2-clim',v=>{par.clim=v;$('#clim2note').textContent=v==='change'?'La pluie baisse d’année en année, avec des sécheresses.':'La même quantité de pluie chaque année.';
+    if(curScen&&lastBtn)runScen(curScen,lastBtn);else{reset();$('#info2').innerHTML=CLIMTXT[v];}});
+  $('#clim2note').textContent='La pluie baisse d’année en année, avec des sécheresses.';
+  const box=$('#scen2');box.className='sq';
+  SC2.forEach(sc2=>{const b=document.createElement('button');b.type='button';b.innerHTML=`<i style="background:${sc2.col}"></i><span>${sc2.t}</span>`;b.addEventListener('click',()=>runScen(sc2,b));box.appendChild(b);});
+  function addCurve(name,col,dash){curves=curves.filter(k=>k.name!==name);cur={name,col,dash,hist:sim.hist,sim};curves.push(cur);}
+  function runScen(x,btn){Object.assign(par,x.p,{years:10});lastBtn=btn;sa.set(par.agri);sc.set(par.crop);si.set(par.irr);sr.set(par.rain);
+    box.querySelectorAll('button').forEach(z=>z.setAttribute('aria-pressed',String(z===btn)));
+    reset();addCurve(x.t+' · '+CLN[par.clim],x.col,par.clim==='stable');curScen=x;msgShown=false;sim.running=true;
+    $('#info2').innerHTML=`<h3>${x.t} · ${CLN[par.clim]}</h3><p>Observe la nappe, la rivière et les cultures. Les bandes orange et rouges du graphique montrent les années sèches.</p>`;refresh();chart();}
+  $('#b2-reset').addEventListener('click',()=>{curves=[];cur=null;curScen=null;box.querySelectorAll('button').forEach(z=>z.setAttribute('aria-pressed','false'));reset();});
+  reset();
+  return{update,draw};
+})();
+
+/* ================= PARTIE 3 : pollution ================= */
+const P3A=(()=>{
+  // Carte vue de dessus (haut) + coupe du sous-sol (bas), même échelle horizontale : 1 colonne = 24 px = 10 m.
+  const PZ=[8,15,22,35].map(col=>col*24+12);
+  const W=960,H=640,HB=580,MY=46,RH=24,CW=24,ROWS=14,COLS=40,MB=MY+ROWS*RH,CY=MB+10,DAYS=120,DT=.18,EVDUR=4,RDUR=1.2,PZX=8*CW+12;
+  const RAINS=[12,28,45,70,95,110],SPRAY=[20,60],FERT=5,CONV_E=12*CW;
+  const cv=$('#cv3a'),c=setupCanvas(cv,W,H);
+  const LEV={faible:0,moyenne:1,importante:2};
+  const zone=col=>col<=11?'conv':col===12?'haie':col<=21?'bio':col===22?'bande':col<=24?'riv':'foret';
+  const isField=r=>r>=3;
+  let par={engrais:'moyenne',pest:'moyenne',perm:'faible',pluie:'moyenne',vent:'faible'};
+  let wet=0,rv=0;
+  const puddles=[...Array(46)].map(()=>{const x=rnd(6,22*CW-6);return{x,y:rnd(MY+8,MB-8),s:rnd(.5,1.2),a:rnd(0,3)};});
+  const isRain=d=>RAINS.some(e=>d>=e&&d<e+2);
+  let S,running=false,acc=0,t=0,showMap=false,parts=[],uiT=0,spawn={},SCcur=null,SCshown=false,picked=null,hover=null;
+  const WELLS=[{x:18*CW+12,y:MY+8*RH+12},{x:32*CW+12,y:MY+6*RH+12}];
+  const trees=[...Array(95)].map(()=>({x:rnd(25*CW+8,W-6),y:rnd(MY+6,MB-6),r:rnd(9,15),k:Math.random()}));
+  const flowers=[...Array(60)].map(()=>({x:rnd(13*CW+4,22*CW-4),y:rnd(MY+3*RH+4,MB-4),k:Math.random()}));
+  const treesC=[...Array(14)].map((_,i)=>({x:614+i*25+rnd(-4,4),h:rnd(26,40)}));
+  const surfY=x=>x<=528?410+x*.05:x<=552?lerp(436.4,440,(x-528)/24):x<=600?440:445-(x-600)*.03;
+  const nappeY=x=>x<=552?470+x*.04:x<=600?492:492-(x-600)*.03;
+  function base(r,col){const z=zone(col);if(z==='riv')return 0;if(z==='foret')return 12;if(!isField(r))return 15;return(z==='conv'||z==='bio')?20:15;}
+  const doseN=()=>[50,80,140][LEV[par.engrais]],doseP=()=>[150,600,1000][LEV[par.pest]];
+  const wind=()=>({nul:{f:.005,L:20,v:6},faible:{f:.02,L:60,v:28},fort:{f:.08,L:260,v:95}})[par.vent];
+  function rates(){const R=[.3,.6,1][{faible:0,moyenne:1,forte:2}[par.pluie]];return par.perm==='faible'?{R,r:.12*R,l:.04*R}:{R,r:.03*R,l:.15*R};}
+
+  /* ---- zones de mesure ---- */
+  const STATIONS=[
+    {n:1,lab:'Champ conventionnel',type:'sol',col:6,r:9},
+    {n:2,lab:'Champ bio, près de la haie',type:'sol',col:14,r:6},
+    {n:3,lab:'Champ bio, près de la rivière',type:'sol',col:21,r:11},
+    {n:4,lab:'Rivière en amont des champs',type:'eau',src:'riv',r:0},
+    {n:5,lab:'Rivière en aval des champs',type:'eau',src:'riv',r:13},
+    {n:6,lab:'Forêt, en lisière',type:'sol',col:26,r:10},
+    {n:7,lab:'Forêt, au cœur',type:'sol',col:38,r:10},
+    {n:8,lab:'Puits du champ bio (nappe)',type:'eau',src:'nappe',col:18,w:0},
+    {n:9,lab:'Puits de la forêt (nappe)',type:'eau',src:'nappe',col:32,w:1},];
+  const COL={ok:'#3aa655',warn:'#f2b705',bad:'#d6402e',none:'#b9c4c6'};
+  const stPos=st=>st.pz!==undefined?[PZ[st.pz]+28,surfY(PZ[st.pz])-16]:st.w!==undefined?[WELLS[st.w].x,WELLS[st.w].y-22]:st.src==='riv'?[24*CW,MY+st.r*RH+(st.r?4:14)]:[st.col*CW+12,MY+st.r*RH+12];
+  function meas(o){if(o.type==='sol')return{N:S.N[o.r][o.col],P:S.P[o.r][o.col]};if(o.src==='nappe')return{N:S.nN[o.col],P:S.nP[o.col]};return riverConc(o.r);}
+  function level(type,k,v){if(v===null)return'none';
+    if(type==='eau'){if(k==='N')return v>50?'bad':v>25?'warn':'ok';return v>=.1?'bad':v>=.02?'warn':'ok';}
+    if(k==='N')return v>90?'bad':v>50?'warn':'ok';return v>=200?'bad':v>=10?'warn':'ok';}
+  function val(o,k){const v=o[k];
+    if(k==='N')return fmt(v,0)+(o.type==='eau'?' mg/L':' mg/kg de terre');
+    if(o.type==='eau')return v<.02?'moins de 0,02 µg/L':fmt(v,2)+' µg/L';
+    return v<10?'moins de 10 µg/kg':fmt(v,0)+' µg/kg de terre';}
+
+  /* ---- modèle ---- */
+  function init(){S={day:0,N:[],P:[],nN:[],nP:[],pN:Array(ROWS).fill(0),pP:Array(ROWS).fill(0),done:false,started:false,fin:false};
+    for(let r=0;r<ROWS;r++){S.N.push([]);S.P.push([]);for(let col=0;col<COLS;col++){S.N[r].push(base(r,col));S.P[r].push(0);}}
+    for(let col=0;col<COLS;col++){S.nN.push(col>24?6:10);S.nP.push(0);}
+    STATIONS.forEach(st=>{st.N=null;st.P=null;});
+    parts=[];acc=0;running=false;picked=null;refresh();}
+  function step(){const d=S.day,w=wind();
+    if(d===FERT)for(let r=3;r<ROWS;r++){for(let col=0;col<=11;col++)S.N[r][col]+=doseN();for(let col=13;col<=21;col++)S.N[r][col]+=25;} // bio : compost
+    if(d>=15&&d<=100)for(let r=3;r<ROWS;r++)for(let col=0;col<=21;col++){const z=zone(col),u=z==='conv'?75/86:z==='bio'?35/86:0;if(u)S.N[r][col]=Math.max(base(r,col),S.N[r][col]-u);} // absorption par les plantes
+    if(SPRAY.includes(d)){const D=doseP();
+      for(let r=0;r<ROWS;r++)for(let col=0;col<COLS;col++){
+        if(col<=11){if(r>=3)S.P[r][col]+=D*.9;continue;}
+        const dist=col*CW+12-CONV_E+(r<3?(3-r)*RH:0);
+        const dep=D*w.f*Math.exp(-dist/w.L)*(col>12?.75:1)*(r<3?Math.exp(-(3-r)*RH/30):1); // dérive, freinée par la haie
+        if(zone(col)==='riv')S.pP[r]+=dep*4;else S.P[r][col]+=dep;}}
+    const kd=Math.exp(-Math.LN2/30),kn=Math.exp(-Math.LN2/300);  // dégradation : demi-vie 30 j dans le sol
+    for(let r=0;r<ROWS;r++)for(let col=0;col<COLS;col++)S.P[r][col]*=kd;
+    for(let col=0;col<COLS;col++)S.nP[col]*=kn;
+    if(RAINS.includes(d))rain();
+    const a=.08,nN=S.nN.slice(),nP=S.nP.slice();                  // la nappe s'écoule vers la rivière
+    for(let col=0;col<=22;col++){const mN=a*(S.nN[col]-10),mP=a*S.nP[col];nN[col]-=mN;nP[col]-=mP;if(col<22){nN[col+1]+=mN;nP[col+1]+=mP;}}
+    S.nN=nN;S.nP=nP;
+    for(let r=0;r<ROWS;r++){S.pN[r]*=.7;S.pP[r]*=.7;}              // la rivière évacue les apports
+    S.day++;STATIONS.forEach(st=>{const m=meas(st);st.N=Math.max(st.N||0,m.N);st.P=Math.max(st.P||0,m.P);});
+    if(S.day>=DAYS){running=false;S.done=true;}}
+  function rain(){const q=rates();
+    for(let r=0;r<ROWS;r++){let lN=0,lP=0;
+      for(let col=0;col<=22;col++){const mob=Math.max(0,S.N[r][col]-base(r,col)),ro=mob*q.r,le=mob*q.l;
+        S.N[r][col]-=ro+le;S.nN[col]+=le*.065;
+        const mp=S.P[r][col],rop=mp*q.r*.5,lep=mp*q.l*.35;S.P[r][col]-=rop+lep;S.nP[col]+=lep*.0006;
+        lN+=ro;lP+=rop;const cap=col<=11?.03:col===12?.25:col<=21?.06:.3;  // haie et bande enherbée retiennent plus
+        const dN=lN*cap,dP=lP*cap;lN-=dN;lP-=dP;S.N[r][col]+=dN;S.P[r][col]+=dP;}
+      S.pN[r]+=lN;S.pP[r]+=lP;}}
+  function riverConc(r){let cN=0,cP=0;for(let i=0;i<=r;i++){cN+=S.pN[i];cP+=S.pP[i];}
+    const fr=clamp(r-2,0,11)/11;
+    return{N:8+.04*cN+.3*Math.max(0,S.nN[22]-10)*fr,P:.002*cP+.3*S.nP[22]*fr};}
+
+  /* ---- tracteurs ---- */
+  function lanes(x0,x1,n){const pts=[],w=(x1-x0)/n,top=MY+3*RH+12,bot=MB-12;
+    for(let i=0;i<n;i++){const x=x0+w*(i+.5);if(i%2===0)pts.push([x,top],[x,bot]);else pts.push([x,bot],[x,top]);}return poly(pts);}
+  const PATH_CONV=lanes(0,CONV_E,6),PATH_BIO=lanes(13*CW,22*CW,4);
+  const evDay=d=>d===FERT||SPRAY.includes(d);
+  const dayDur=d=>evDay(d)?EVDUR:isRain(d)?RDUR:DT;
+  function tractorAt(path){const d=clamp(acc/EVDUR,0,1)*path.len,[x,y]=along(path,d),[xa,ya]=along(path,Math.max(0,d-3)),[xb,yb]=along(path,Math.min(path.len,d+3));
+    return{x,y,a:Math.atan2(yb-ya,xb-xa)};}
+  function drawTractor(T,kind){c.save();c.translate(T.x,T.y);c.rotate(T.a);c.scale(1.4,1.4);   // l'avant du tracteur est vers +x
+    if(kind==='spray'){c.strokeStyle='#4b5563';c.lineWidth=3;c.beginPath();c.moveTo(-27,-26);c.lineTo(-27,26);c.stroke();
+      c.fillStyle='#c21fb0';for(let k=-24;k<=24;k+=8){c.beginPath();c.arc(-27,k,2,0,7);c.fill();}
+      c.fillStyle='#f4f4f4';rr(c,-25,-7,12,14,3);c.fill();c.strokeStyle='#9aa3ad';c.lineWidth=1;c.stroke();}
+    else{c.fillStyle=kind==='bio'?'#7a4a24':'#17c3b2';rr(c,-26,-8,14,16,3);c.fill();c.strokeStyle='rgba(0,0,0,.35)';c.lineWidth=1;c.stroke();
+      c.fillStyle='#4b5563';c.beginPath();c.arc(-27,-4,3,0,7);c.arc(-27,4,3,0,7);c.fill();}
+    c.fillStyle='#4b5563';c.fillRect(-13,-1.5,4,3);
+    c.fillStyle='#1f2328';c.fillRect(-9,-11,10,5);c.fillRect(-9,6,10,5);c.fillRect(6,-9,6,3);c.fillRect(6,6,6,3);
+    c.fillStyle=kind==='bio'?'#3f8f35':'#c2402e';rr(c,-9,-6,23,12,3);c.fill();
+    c.fillStyle='#dff1f6';rr(c,-7,-5,9,10,2);c.fill();c.strokeStyle='#14303a';c.lineWidth=1;c.stroke();
+    c.restore();}
+
+  /* ---- animation ---- */
+  function emit(k,rate,dt,fn){spawn[k]=(spawn[k]||0)+rate*dt;while(spawn[k]>=1){spawn[k]--;parts.push(fn());}}
+  const behind=(T,back,side)=>[T.x-Math.cos(T.a)*back-Math.sin(T.a)*side,T.y-Math.sin(T.a)*back+Math.cos(T.a)*side];
+  function update(dt){t+=dt;
+    if(running){acc+=dt;let dd=dayDur(S.day);while(running&&acc>=dd){acc-=dd;step();dd=dayDur(S.day);}}
+    const d=S.day,w=wind(),q=rates();
+    if(running&&evDay(d)){const T=tractorAt(PATH_CONV);
+      if(d===FERT){emit('f',110,dt,()=>{const[x,y]=behind(T,rnd(40,56),rnd(-30,30));return{k:'gran',x,y,col:'#17c3b2',life:0};});
+        const B=tractorAt(PATH_BIO);emit('b',70,dt,()=>{const[x,y]=behind(B,rnd(40,54),rnd(-26,26));return{k:'gran',x,y,col:'#7a4a24',life:0};});}
+      else emit('m',190,dt,()=>{const[x,y]=behind(T,rnd(37,44),rnd(-36,36));return{k:'mist',x,y,x0:Math.max(x,CONV_E),vx:w.v*rnd(.8,1.2),vy:rnd(-5,5),life:0};});}
+    const raining=running&&isRain(d);
+    rv+=((raining?1:0)-rv)*Math.min(1,dt*2);
+    if(raining)wet=Math.min(1,wet+dt*.35*q.R*(par.perm==='faible'?1.4:.7));else if(running)wet=Math.max(0,wet-dt*.25);
+    if(false)emit('z',9,dt,()=>{const xs=[...PZ,WELLS[0].x,WELLS[1].x],x=xs[Math.floor(rnd(0,xs.length))];return{k:'lift',x,y:nappeY(x)+26,top:surfY(x)-8};});
+    if(raining){
+      emit('r',220+260*q.R,dt,()=>{const x=rnd(-20,W);if(Math.random()<.78)return{k:'rain',x,y:MY+rnd(-6,40),ty:rnd(MY+40,MB),len:rnd(12,20)};return{k:'rain',x,y:CY+rnd(0,8),ty:surfY(x),len:rnd(10,16)};});
+      emit('o',320*q.r+8,dt,()=>({k:'run',x:rnd(0,21*CW),y:rnd(MY+3*RH+3,MB-3)}));
+      emit('l',260*q.l+4,dt,()=>{const x=rnd(0,528);return{k:'leach',x,y:surfY(x)+6};});}
+    parts.forEach(p=>{switch(p.k){
+      case'gran':p.life+=dt;break;
+      case'mist':p.life+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.a=.75*Math.exp(-Math.max(0,p.x-p.x0)/w.L)*clamp(1.4-p.life/2.5,0,1);break;
+      case'rain':p.y+=650*dt;p.x+=40*dt;if(p.y>=p.ty&&Math.random()<.35)parts.push({k:'splash',x:p.x,y:p.ty,life:0});break;
+      case'splash':p.life+=dt;break;
+      case'lift':p.y-=45*dt;break;
+      case'run':p.x+=75*dt;break;
+      case'leach':p.y+=(par.perm==='faible'?22:45)*dt;break;}});
+    parts=parts.filter(p=>p.k==='splash'?p.life<.35:p.k==='lift'?p.y>p.top:p.k==='gran'?p.life<1.6:p.k==='mist'?(p.a>.04&&p.x<W):p.k==='rain'?p.y<p.ty:p.k==='run'?p.x<22*CW+12:p.y<nappeY(p.x));
+    if(parts.length>2500)parts.splice(0,parts.length-2500);
+    if(!running&&S.done&&!S.fin){S.fin=true;refresh();}
+    uiT+=dt;if(uiT>.25){uiT=0;if(running)refresh();}}
+
+  /* ---- dessin ---- */
+  function drawTimeline(){const d=S.day;rr(c,4,4,W-8,34,8);c.fillStyle='#ffffff';c.fill();
+    const date=new Date(2026,2,1+Math.min(d,DAYS-1)).toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
+    c.fillStyle='#14303a';c.font=`800 17px "Baloo 2",${FONT}`;c.textBaseline='middle';c.textAlign='left';c.fillText(`Jour ${d} · ${date}`,14,22);
+    const x0=250,x1=940,X=v=>x0+v/DAYS*(x1-x0);
+    c.strokeStyle='#cddfdd';c.lineWidth=6;c.lineCap='round';c.beginPath();c.moveTo(x0,21);c.lineTo(x1,21);c.stroke();
+    c.strokeStyle='#0a7287';c.beginPath();c.moveTo(x0,21);c.lineTo(X(d),21);c.stroke();c.lineCap='butt';
+    const mk=(v,col,txt)=>{c.fillStyle=col;c.beginPath();c.arc(X(v),21,6,0,7);c.fill();c.fillStyle='#fff';c.font=`700 9px ${FONT}`;c.textAlign='center';c.fillText(txt,X(v),21.5);};
+    const cl=(cx,cy,s)=>{c.fillStyle='#2f7fd6';c.beginPath();[[-4,1,4],[0,-2,5],[5,1,4]].forEach(([dx,dy,r])=>{c.moveTo(cx+dx*s+r*s,cy+dy*s);c.arc(cx+dx*s,cy+dy*s,r*s,0,7);});c.fill();c.fillRect(cx-8*s,cy+1*s,16*s,4*s);};
+    RAINS.forEach(v=>cl(X(v),20,1.1));mk(FERT,'#17c3b2','E');SPRAY.forEach(v=>mk(v,'#c21fb0','P'));
+    c.textAlign='left';c.font=`700 10px ${FONT}`;c.fillStyle='#52707a';const lt='E engrais · P pesticides ·',lw=c.measureText(lt).width;c.fillText(lt,x0+390,9.5);cl(x0+398+lw,9,.7);c.fillStyle='#52707a';c.fillText('pluie',x0+408+lw,9.5);}
+  function drawMap(){
+    c.fillStyle='#b9db8f';c.fillRect(0,MY,23*CW,3*RH);
+    c.fillStyle='#9cc25a';c.fillRect(0,MY+3*RH,CONV_E,11*RH);
+    c.strokeStyle='rgba(70,110,40,.45)';c.lineWidth=2;for(let x=6;x<CONV_E;x+=8){c.beginPath();c.moveTo(x,MY+3*RH+4);c.lineTo(x,MB-4);c.stroke();}
+    c.fillStyle='#d8caa0';c.fillRect(CONV_E,MY+3*RH,CW,11*RH);
+    for(let y=MY+3*RH+10;y<MB;y+=15){c.fillStyle='#2f6e2a';c.beginPath();c.arc(CONV_E+12+(Math.round(y/15)%2?3:-3),y,9,0,7);c.fill();}
+    [[3,4,'#b5cf63'],[7,3,'#d9c766'],[10,4,'#8fbf5c']].forEach(([r0,n,col])=>{c.fillStyle=col;c.fillRect(13*CW,MY+r0*RH,9*CW,n*RH);c.strokeStyle='rgba(60,90,30,.35)';c.lineWidth=1.5;
+      for(let y=MY+r0*RH+5;y<MY+(r0+n)*RH;y+=7){c.beginPath();c.moveTo(13*CW+3,y);c.lineTo(22*CW-3,y);c.stroke();}});
+    flowers.forEach(f=>{c.fillStyle=f.k>.5?'#f4f1e6':'#e9c53b';c.beginPath();c.arc(f.x,f.y,1.8,0,7);c.fill();});
+    c.fillStyle='#8fcf6a';c.fillRect(22*CW,MY,CW,ROWS*RH);
+    c.fillStyle='#3d8fe0';c.fillRect(23*CW,MY,2*CW,ROWS*RH);
+    c.strokeStyle='rgba(255,255,255,.55)';c.lineWidth=2;for(let i=0;i<10;i++){const y=MY+((t*40+i*34)%(ROWS*RH)),x=23*CW+8+(i%3)*14;c.beginPath();c.moveTo(x,y);c.lineTo(x,Math.min(MB,y+10));c.stroke();}
+    c.fillStyle='#4f7f3c';c.fillRect(25*CW,MY,15*CW,ROWS*RH);
+    trees.forEach(tr=>{c.fillStyle=tr.k>.5?'#2f6a2b':'#3d7e35';c.beginPath();c.arc(tr.x,tr.y,tr.r,0,7);c.fill();});
+    if(showMap){for(let r=0;r<ROWS;r++)for(let col=0;col<COLS;col++){const z=zone(col),x=col*CW,y=MY+r*RH;
+        if(z==='riv'){const q=riverConc(r);c.fillStyle=`rgba(23,195,178,${clamp((q.N-10)/45,0,.7)})`;c.fillRect(x,y,CW,RH);c.fillStyle=`rgba(194,31,176,${clamp(q.P/1.5,0,.7)})`;c.fillRect(x,y,CW,RH);continue;}
+        c.fillStyle=`rgba(23,195,178,${clamp((S.N[r][col]-base(r,col))/80,0,.7)})`;c.fillRect(x,y,CW,RH);
+        c.fillStyle=`rgba(194,31,176,${clamp(S.P[r][col]/300,0,.7)})`;c.fillRect(x,y,CW,RH);}}
+    if(wet>.02){c.fillStyle=`rgba(61,143,224,${.16*wet})`;c.fillRect(0,MY,22*CW,ROWS*RH);
+      puddles.forEach(p=>{const rx=(3+15*wet)*p.s;c.fillStyle=`rgba(47,127,214,${.55*Math.min(1,wet*1.6)})`;c.beginPath();c.ellipse(p.x,p.y,rx,rx*.45,0,0,7);c.fill();
+        c.strokeStyle=`rgba(255,255,255,${.5*wet})`;c.lineWidth=1;c.beginPath();c.ellipse(p.x-rx*.2,p.y-rx*.1,rx*.45,rx*.15,0,0,7);c.stroke();});}
+    WELLS.forEach(w=>{c.fillStyle='#e7e0d3';c.beginPath();c.arc(w.x,w.y,9,0,7);c.fill();c.strokeStyle='#6d7380';c.lineWidth=2;c.stroke();c.fillStyle='#2f7fd6';c.beginPath();c.arc(w.x,w.y,4.5,0,7);c.fill();});
+    parts.forEach(p=>{if(p.k==='gran'){c.globalAlpha=clamp(1.6-p.life,0,1);c.fillStyle=p.col;c.beginPath();c.arc(p.x,p.y,2.4,0,7);c.fill();c.globalAlpha=1;}
+      else if(p.k==='mist'){c.fillStyle=`rgba(194,31,176,${p.a})`;c.beginPath();c.arc(p.x,p.y,3.6,0,7);c.fill();}
+      else if(p.k==='run'){c.strokeStyle='#2f7fd6';c.lineWidth=2.4;c.lineCap='round';c.beginPath();c.moveTo(p.x-9,p.y);c.lineTo(p.x,p.y);c.stroke();c.lineCap='butt';}});
+    if(rv>.4){tag(c,'Ruissellement : l’eau coule à la surface →',300,MB-56,{size:12,bg:'#1d64b5',fg:'#fff'});}
+    if(evDay(S.day)&&(running||acc>0)){if(S.day===FERT){drawTractor(tractorAt(PATH_CONV),'fert');drawTractor(tractorAt(PATH_BIO),'bio');}else drawTractor(tractorAt(PATH_CONV),'spray');}
+    tag(c,'Prairie',8,MY+8,{size:12});tag(c,'Champ conventionnel',8,MY+3*RH+8,{size:13});tag(c,'Champ bio',13*CW+8,MY+3*RH+8,{size:13,bg:'#3f8f35',fg:'#fff'});
+    tag(c,'Haie',CONV_E-14,MB-26,{size:11});tag(c,'Rivière ↓',23*CW-14,MY+28,{size:12,bg:'#1d64b5',fg:'#fff'});tag(c,'Forêt',27*CW,MY+8,{size:13,bg:'#2f6a2b',fg:'#fff'});
+    tag(c,'Pente douce vers la rivière →',12,MB-26,{size:11});
+    tag(c,par.vent==='nul'?'Pas de vent':'Vent '+par.vent+' vers l’est →',W-170,MB-28,{size:12,bg:'#14303a',fg:'#fff'});}
+  function drawBadge(st){const[x,y]=stPos(st),on=S.started,a=level(st.type,'N',on?st.N:null),b=level(st.type,'P',on?st.P:null),sel=picked===st,hv=hover===st;
+    if(sel||hv){c.strokeStyle=sel?'#f2b705':'rgba(255,255,255,.9)';c.lineWidth=3;c.setLineDash([5,4]);c.beginPath();c.arc(x,y,24,0,7);c.stroke();c.setLineDash([]);}
+    rr(c,x-21,y-12,42,24,12);c.fillStyle='#ffffff';c.fill();c.strokeStyle='#14303a';c.lineWidth=sel?2.5:1.5;c.stroke();
+    [[a,'E',-10],[b,'P',10]].forEach(([lv,l,dx])=>{c.fillStyle=COL[lv];c.beginPath();c.arc(x+dx,y,8.5,0,7);c.fill();
+      c.fillStyle=lv==='warn'?'#14303a':'#fff';c.font=`700 10px ${FONT}`;c.textAlign='center';c.textBaseline='middle';c.fillText(l,x+dx,y+.5);});
+    c.fillStyle='#14303a';c.font=`700 9px ${FONT}`;c.fillText(st.n,x,y-17);c.textAlign='left';}
+  function drawCoupe(){
+    c.fillStyle='#e8f4f4';c.fillRect(0,CY,W,HB-CY);
+    c.fillStyle='#d9b483';c.beginPath();c.moveTo(0,HB);for(let x=0;x<=W;x+=6)c.lineTo(x,surfY(x));c.lineTo(W,HB);c.fill();
+    c.fillStyle='#6b4a2e';c.beginPath();for(let x=0;x<=W;x+=6)c.lineTo(x,surfY(x));for(let x=W;x>=0;x-=6)c.lineTo(x,surfY(x)+8);c.fill();
+    c.fillStyle='#5ea4dd';c.beginPath();c.moveTo(0,HB);for(let x=0;x<=W;x+=6)c.lineTo(x,nappeY(x));c.lineTo(W,HB);c.fill();
+    if(showMap)for(let col=0;col<COLS;col++){const x=col*CW,y=nappeY(x+12);c.fillStyle=`rgba(23,195,178,${clamp((S.nN[col]-10)/45,0,.7)})`;c.fillRect(x,y,CW,HB-y);c.fillStyle=`rgba(194,31,176,${clamp(S.nP[col]/.3,0,.7)})`;c.fillRect(x,y,CW,HB-y);}
+    c.fillStyle='#e8f4f4';c.beginPath();c.moveTo(552,440);c.lineTo(562,512);c.lineTo(590,512);c.lineTo(600,445);c.fill();
+    c.fillStyle='#3d8fe0';c.beginPath();c.moveTo(559,492);c.lineTo(562,512);c.lineTo(590,512);c.lineTo(593,492);c.fill();
+    for(let x=6;x<CONV_E;x+=10){c.strokeStyle='#5e9a3a';c.lineWidth=2;c.beginPath();c.moveTo(x,surfY(x));c.lineTo(x,surfY(x)-9);c.stroke();}
+    c.fillStyle='#2f6e2a';c.beginPath();c.arc(CONV_E+12,surfY(CONV_E+12)-12,13,0,7);c.fill();
+    for(let x=316;x<528;x+=13){c.strokeStyle=x%26?'#8fbf5c':'#c9b14a';c.lineWidth=2;c.beginPath();c.moveTo(x,surfY(x));c.lineTo(x,surfY(x)-7-(x%3)*2);c.stroke();}
+    treesC.forEach(tr=>{const b=surfY(tr.x);c.fillStyle='#6b4a2e';c.fillRect(tr.x-2,b-tr.h*.5,4,tr.h*.5);c.fillStyle='#2f6a2b';c.beginPath();c.arc(tr.x,b-tr.h*.6,tr.h*.35,0,7);c.fill();});
+    WELLS.forEach(w=>{c.strokeStyle='#6d7380';c.lineWidth=4;c.beginPath();c.moveTo(w.x,surfY(w.x)-8);c.lineTo(w.x,nappeY(w.x)+25);c.stroke();});
+    arrow(c,180,548,290,552,'rgba(20,70,140,.8)',3);arrow(c,420,552,520,555,'rgba(20,70,140,.8)',3);arrow(c,820,550,700,548,'rgba(20,70,140,.8)',3);
+    parts.forEach(p=>{if(p.k==='lift'){c.fillStyle='#bfe3ff';c.beginPath();c.arc(p.x,p.y,2.2,0,7);c.fill();}
+      if(p.k==='leach'){c.strokeStyle='#5fb0f0';c.lineWidth=2.4;c.lineCap='round';c.beginPath();c.moveTo(p.x,p.y-7);c.lineTo(p.x,p.y);c.stroke();c.lineCap='butt';}});
+    if(rv>.4){tag(c,'Infiltration : l’eau s’enfonce vers la nappe ↓',250,452,{size:12,bg:'#1d64b5',fg:'#fff'});}
+    tag(c,'Coupe du sous-sol',8,CY+4,{size:12});
+    tag(c,'Nappe phréatique : elle s’écoule vers la rivière',12,HB-24,{size:11,bg:'rgba(255,255,255,.85)'});
+    c.strokeStyle='#14303a';c.lineWidth=1;c.setLineDash([4,4]);c.beginPath();c.moveTo(0,MB+5);c.lineTo(W,MB+5);c.stroke();c.setLineDash([]);}
+  function drawClouds(){if(rv<.02)return;c.save();c.beginPath();c.rect(0,MY,W,MB-MY);c.clip();c.fillStyle=`rgba(20,40,60,${.14*rv})`;c.fillRect(0,MY,W,MB-MY);
+    c.globalAlpha=rv;
+    for(let i=0;i<9;i++){const x=((i*125+t*14)%(W+160))-80;cloud(c,x,MY+8+(i%2)*14,1.25,i%2?'#7d8896':'#8e99a6');}c.restore();}
+  function drawLegend(){const y0=HB+6;rr(c,4,y0,W-8,H-y0-4,10);c.fillStyle='#ffffff';c.fill();c.strokeStyle='#cddfdd';c.lineWidth=1;c.stroke();
+    c.font=`700 13px ${FONT}`;c.textBaseline='middle';c.textAlign='left';let x=16;const y=y0+16,y2=y0+38;
+    const item=(draw,txt,yy)=>{draw(x,yy);c.fillStyle='#14303a';c.fillText(txt,x+16,yy+.5);x+=c.measureText(txt).width+36;};
+    const dot=col=>(px,py)=>{c.fillStyle=col;c.beginPath();c.arc(px+5,py,4.5,0,7);c.fill();};
+    item(dot('#17c3b2'),'Engrais',y);item(dot('#c21fb0'),'Pesticides',y);item(dot('#7a4a24'),'Compost (bio)',y);
+    item((px,py)=>{c.strokeStyle='#2f7fd6';c.lineWidth=2;c.beginPath();c.moveTo(px+3,py-7);c.lineTo(px+7,py+7);c.stroke();},'Pluie',y);
+    item((px,py)=>{c.strokeStyle='#2f7fd6';c.lineWidth=2.4;c.beginPath();c.moveTo(px,py);c.lineTo(px+10,py);c.stroke();},'Ruissellement',y);
+    item((px,py)=>{c.strokeStyle='#5fb0f0';c.lineWidth=2.4;c.beginPath();c.moveTo(px+5,py-5);c.lineTo(px+5,py+5);c.stroke();},'Infiltration',y);
+    item((px,py)=>{c.fillStyle='rgba(47,127,214,.6)';c.beginPath();c.ellipse(px+5,py,8,3.5,0,0,7);c.fill();},'Flaques',y);
+    x=16;c.fillStyle='#14303a';c.fillText('Zones de mesure (E = engrais, P = pesticides) :',x,y2);x+=c.measureText('Zones de mesure (E = engrais, P = pesticides) :').width+14;
+    [['ok','rien ou presque'],['warn','un peu'],['bad','beaucoup']].forEach(([lv,txt])=>{rr(c,x,y2-9,36,18,9);c.fillStyle='#fff';c.fill();c.strokeStyle='#14303a';c.lineWidth=1.2;c.stroke();
+      [['E',x+9],['P',x+27]].forEach(([l,cx])=>{c.fillStyle=COL[lv];c.beginPath();c.arc(cx,y2,7,0,7);c.fill();c.fillStyle=lv==='warn'?'#14303a':'#fff';c.font=`700 9px ${FONT}`;c.textAlign='center';c.fillText(l,cx,y2+.5);});
+      c.textAlign='left';c.font=`700 13px ${FONT}`;c.fillStyle='#14303a';c.fillText(txt,x+42,y2+.5);x+=42+c.measureText(txt).width+22;});}
+  function draw(){c.fillStyle='#edf4f3';c.fillRect(0,0,W,H);
+    drawTimeline();drawMap();drawCoupe();drawClouds();
+    parts.forEach(p=>{if(p.k==='rain'){c.strokeStyle='rgba(120,180,240,.85)';c.lineWidth=1.6;c.beginPath();c.moveTo(p.x,p.y);c.lineTo(p.x-p.len*.12,p.y-p.len);c.stroke();}
+      else if(p.k==='splash'){c.strokeStyle=`rgba(200,230,255,${1-p.life/.35})`;c.lineWidth=1.2;c.beginPath();c.ellipse(p.x,p.y,2+p.life*16,1+p.life*6,0,0,7);c.stroke();}});
+    STATIONS.forEach(drawBadge);drawLegend();}
+
+  /* ---- explications des zones ---- */
+  const PZTXT='Un <strong>piézomètre</strong> est un tube enfoncé jusqu’à la nappe : on y pompe un peu d’eau pour l’analyser. ';
+  const WORD={ok:'rien ou presque',warn:'un peu',bad:'beaucoup',none:'pas encore mesuré'};
+  function cause(st,eN,eP){const air=par.vent!=='nul',ruis=par.perm==='faible',found=eN!=='ok'||eP!=='ok';
+    switch(st.n){
+      case 1:return'C’est le champ traité : le tracteur y répand les engrais et les pesticides. Les plantes absorbent une partie des engrais, le reste peut partir avec l’eau. Les pesticides se dégradent peu à peu dans le sol.';
+      case 2:case 3:{let s=eP!=='ok'?'Ce champ bio n’est <strong>jamais traité</strong> : ces pesticides viennent du champ voisin, '+([air&&'par l’<strong>air</strong> (le vent a emporté des gouttelettes pendant la pulvérisation)',ruis&&'par l’<strong>eau qui ruisselle</strong> pendant les pluies'].filter(Boolean).join(' et ')||'transportés par l’eau ou l’air')+'.':(par.vent==='nul'?'Pas de pesticide ici : il n’y avait pas de vent pendant la pulvérisation, et la haie a freiné l’eau qui ruisselle.':'Pas de pesticide ici : la haie et la distance ont suffi à les arrêter.');
+        s+=eN==='ok'?' Les nitrates mesurés viennent du compost utilisé en bio, en quantité normale.':' Des nitrates en trop sont arrivés avec l’eau qui ruisselle depuis le champ conventionnel.';return s;}
+      case 4:return'La rivière arrive ici <strong>avant</strong> de longer les champs : c’est un point de comparaison. '+(found?'Un peu de produit a quand même été porté jusqu’ici.':'Son eau est propre. Compare avec la zone 5, en aval.');
+      case 5:return found?'En longeant les champs, la rivière reçoit l’<strong>eau qui ruisselle</strong> pendant les pluies et l’eau de la nappe, chargées de produits. Compare avec la zone 4, en amont : là-bas, l’eau est propre.':'La rivière est restée propre ici : peu d’eau a ruisselé depuis les champs.';
+      case 6:return eP!=='ok'?'La forêt n’est jamais traitée et la rivière la sépare des champs : seul le <strong>vent</strong> a pu apporter ces pesticides. C’est la <strong>dérive</strong> des gouttelettes pendant la pulvérisation.':'Le vent n’a pas porté de gouttelettes jusqu’ici.';
+      case 7:return eP!=='ok'?'Le vent a porté des gouttelettes très loin, jusqu’au cœur de la forêt.':'Trop loin du champ traité : même par grand vent, les gouttelettes retombent avant d’arriver ici. Compare avec la zone 6, en lisière.';
+      case 8:return found?'L’eau du puits vient de la <strong>nappe</strong>. L’eau de pluie s’est infiltrée sous le champ conventionnel en entraînant des produits, puis la nappe s’est écoulée lentement jusqu’ici, sous le champ bio. Ce champ n’a pourtant jamais été traité !':(par.perm==='importante'?'La pollution voyage lentement dans la nappe : elle n’est pas encore arrivée ici.':'Le sol argileux laisse peu passer l’eau : peu de produits ont atteint la nappe.');
+      case 11:return PZTXT+(found?'Il est sous le champ bio, qui n’est <strong>jamais traité</strong>. Les produits sont arrivés par la nappe, qui s’écoule lentement depuis le dessous du champ conventionnel (zone 10) vers la rivière.':'La nappe est encore propre ici : '+(par.perm==='importante'?'la pollution voyage lentement dans la nappe et n’est pas encore arrivée.':'le sol argileux a laissé passer peu de produits.'));
+      case 12:return PZTXT+(found?'Ici, la nappe arrive au bord de la rivière, qu’elle alimente : les produits qu’elle transporte finissent dans la rivière.':'Pas de pollution détectée dans la nappe près de la rivière.');
+      case 13:return PZTXT+'De l’autre côté de la rivière, la nappe de la forêt n’est pas reliée aux champs : son eau reste propre. Compare avec la zone 10.';
+      case 10:return PZTXT+(found?'Ici, juste sous le champ traité, l’eau de pluie qui s’infiltre a entraîné des produits jusqu’à la nappe.'+(par.perm==='importante'?' Le sol sableux laisse passer l’eau très vite.':''):'Peu de produits ont atteint la nappe ici : le sol argileux laisse peu passer l’eau.');
+      case 9:return'La nappe sous la forêt n’est pas reliée aux champs : la rivière les sépare. Son eau reste propre.';}}
+  function explain(st){const on=S.started,a=level(st.type,'N',on?st.N:null),b=level(st.type,'P',on?st.P:null);
+    if(!on)return`<h3>Zone ${st.n} : ${st.lab}</h3><p>Rien n’a encore été mesuré. Lance un scénario, puis reviens cliquer ici.</p>`;
+    const pl=lv=>`<span class="lv" style="background:${COL[lv]};color:${lv==='warn'?'#14303a':'#fff'}">${WORD[lv]}</span>`;
+    return`<h3>Zone ${st.n} : ${st.lab}</h3><p style="display:grid;grid-template-columns:auto auto;justify-content:start;gap:6px 12px;align-items:center"><strong>Engrais (nitrates)</strong><span>${pl(a)} <small>${val(st,'N')}</small></span><strong>Pesticides</strong><span>${pl(b)} <small>${val(st,'P')}</small></span></p><p style="margin-top:6px">${cause(st,a,b)}</p>`;}
+
+  /* ---- interface ---- */
+  const pt=e=>{const bb=cv.getBoundingClientRect();return{x:(e.clientX-bb.left)/bb.width*W,y:(e.clientY-bb.top)/bb.height*H};};
+  const hit=p=>STATIONS.find(st=>{const[x,y]=stPos(st);return Math.abs(p.x-x)<=24&&Math.abs(p.y-y)<=15;});
+  cv.addEventListener('mousemove',e=>{hover=hit(pt(e))||null;cv.style.cursor=hover?'pointer':'default';});
+  cv.addEventListener('mouseleave',()=>{hover=null;});
+  cv.addEventListener('click',e=>{const st=hit(pt(e));if(st){picked=st;$('#info3a').innerHTML=explain(st);chips.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));}});
+  const INFO=[
+    ['Champ conventionnel','Il reçoit des <strong>engrais de synthèse</strong> (jour 5) et <strong>deux traitements de pesticides</strong> (jours 20 et 60). Le tracteur épand l’engrais en granulés et pulvérise les pesticides en fines gouttelettes.'],
+    ['Champ bio','Il ne reçoit <strong>aucun pesticide de synthèse</strong>, seulement du compost (engrais naturel). S’il contient des pesticides, ils viennent forcément d’ailleurs.'],
+    ['Haie','La haie freine le vent et l’eau qui ruisselle : elle retient une partie des gouttelettes de pesticides et des substances transportées.'],
+    ['Bande enherbée','Cette bande d’herbe le long de la rivière filtre l’eau qui ruisselle et piège une partie des polluants avant la rivière.'],
+    ['Rivière','Elle coule du nord vers le sud. Elle reçoit l’eau qui ruisselle des champs et l’eau de la nappe.'],
+    ['Forêt','Jamais traitée. Mais pendant la pulvérisation, le vent peut emporter des gouttelettes très loin : c’est la <strong>dérive</strong>.'],
+    ['Nappe','Les puits (zones 8 et 9) prélèvent l’eau de la nappe. L’eau qui s’infiltre sous les champs rejoint la nappe, qui s’écoule lentement vers la rivière (voir la coupe). La pollution d’une nappe arrive <strong>avec retard</strong> et dure longtemps.'],
+    ['Le temps qui passe','Les pesticides sont peu à peu <strong>dégradés</strong> dans le sol (ici, la moitié disparaît en 30 jours). Les produits arrivent dans la rivière surtout <strong>pendant et juste après les pluies</strong>.']];
+  const chips=$('#chips3a');INFO.forEach(([ti,tx])=>{const b=document.createElement('button');b.type='button';b.textContent=ti;b.addEventListener('click',()=>{picked=null;$('#info3a').innerHTML='<h3>'+ti+'</h3><p>'+tx+'</p>';chips.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});chips.appendChild(b);});
+  function start(){if(S.done)init();running=true;S.started=true;refresh();}
+  const SC3=[
+    {t:'Pulvérisation un jour de grand vent',d:'Le vent souffle vers le champ bio et la forêt pendant le traitement.',col:'#c21fb0',p:{engrais:'moyenne',pest:'importante',perm:'faible',pluie:'faible',vent:'fort'},
+     eng:'Ils restent surtout dans le champ conventionnel : les pluies sont faibles, peu d’engrais part avec l’eau, et les plantes en absorbent la plus grande partie.',
+     pest:'Pulvérisés en fines gouttelettes un jour de grand vent, ils sont emportés par l’<strong>air</strong> : c’est la <strong>dérive</strong>. On en retrouve dans le champ bio (zones 2 et 3) et jusqu’en lisière de forêt (zone 6), de l’autre côté de la rivière. Plus on s’éloigne, moins il y en a : le cœur de la forêt (zone 7) est épargné. Un peu tombe aussi dans la rivière (zone 5).',
+     msg:'Les gouttelettes de pesticides emportées par le vent (la <strong>dérive</strong>) se retrouvent dans le champ bio et jusqu’en lisière de forêt, de l’autre côté de la rivière (zones 2, 3 et 6). Plus on s’éloigne, moins il y en a : le cœur de la forêt est épargné (zone 7).'},
+    {t:'Gros orages sur un sol argileux',d:'Le sol laisse mal passer l’eau : elle ruisselle vers la rivière.',col:'#c2402e',p:{engrais:'importante',pest:'importante',perm:'faible',pluie:'forte',vent:'faible'},
+     eng:'Le sol argileux absorbe mal l’eau : pendant les orages, elle <strong>ruisselle</strong> à la surface et emporte l’excès d’engrais à travers le champ bio jusqu’à la rivière (zone 5). Très peu d’engrais atteint la nappe.',
+     pest:'Ils suivent le même chemin : entraînés par le ruissellement, ils traversent le champ bio (zones 2 et 3) et arrivent dans la rivière en aval des champs (zone 5). En amont (zone 4), l’eau reste propre.',
+     msg:'L’eau qui <strong>ruisselle</strong> emporte engrais et pesticides : elle traverse le champ bio puis rejoint la rivière. En aval des champs (zone 5), l’eau dépasse les normes ; en amont (zone 4), elle reste propre.'},
+    {t:'Gros orages sur un sol sableux',d:'Le sol laisse bien passer l’eau : elle s’infiltre vers la nappe.',col:'#2f7fd6',p:{engrais:'importante',pest:'importante',perm:'importante',pluie:'forte',vent:'faible'},
+     eng:'Le sol sableux laisse bien passer l’eau : les nitrates, très solubles, <strong>s’infiltrent</strong> jusqu’à la nappe. La nappe s’écoule lentement vers la rivière et les transporte sous le champ bio : on les retrouve dans son puits (zone 8), alors que ce champ n’a jamais été traité.',
+     pest:'Une partie s’infiltre aussi jusqu’à la nappe et suit le même chemin jusqu’au puits du champ bio (zone 8) ; le reste se dégrade peu à peu dans le sol. De l’autre côté de la rivière, la nappe de la forêt n’est pas reliée aux champs : son puits reste propre (zone 9).',
+     msg:''},
+    {t:'Pratiques raisonnées',d:'Peu d’engrais et de pesticides, traitement sans vent.',col:'#2e8a4a',p:{engrais:'faible',pest:'faible',perm:'faible',pluie:'moyenne',vent:'nul'},
+     eng:'La dose est adaptée aux besoins des plantes : elles absorbent presque tout. Très peu d’engrais quitte le champ.',
+     pest:'Sans vent, pas de dérive : le champ bio et la forêt restent propres. Mais après les pluies, un peu de pesticide ruisselle jusqu’à la rivière (zone 5), assez pour dépasser la norme : la haie et la bande enherbée en retiennent une partie.',
+     msg:'Avec des doses adaptées et un traitement sans vent, on ne retrouve presque rien dans le champ bio, la forêt et les puits. Après les pluies, un peu de pesticide arrive quand même dans la rivière (zone 5), assez pour dépasser la norme de l’eau potable : la haie et la bande enherbée aident à le limiter.'}];
+  SC3.forEach(x=>{const b=document.createElement('button');b.type='button';b.innerHTML=`<i style="background:${x.col}"></i><b>${x.t}</b><span>${x.d}</span>`;
+    b.addEventListener('click',()=>{Object.assign(par,x.p);$('#scen3').querySelectorAll('button').forEach(z=>z.setAttribute('aria-pressed',String(z===b)));
+      wet=0;rv=0;init();SCcur=x;SCshown=false;setExpl(x,x.t);$('#info3a').innerHTML='<h3>Zones de mesure</h3><p>Observe les tracteurs, puis la pluie. Clique sur les badges E / P quand ils changent de couleur.</p>';start();});
+    $('#scen3').appendChild(b);});
+  function generic(){const e=[],p=[];
+    e.push(par.engrais==='faible'?'Dose faible : les plantes en absorbent presque tout.':'Les plantes n’absorbent pas tout : l’excès peut partir avec l’eau de pluie.');
+    e.push(par.perm==='faible'?'Sur ce sol argileux, l’eau <strong>ruisselle</strong> : regarde la rivière en aval (zone 5).':'Sur ce sol sableux, l’eau <strong>s’infiltre</strong> : regarde le puits du champ bio (zone 8).');
+    p.push(par.vent==='fort'?'Grand vent : la <strong>dérive</strong> porte les gouttelettes jusqu’au champ bio et à la lisière de la forêt.':par.vent==='faible'?'Vent faible : un peu de dérive vers le champ bio, tout près du champ traité.':'Pas de vent : pas de dérive par l’air.');
+    p.push('Avec la pluie, ils suivent aussi le chemin de l’eau : '+(par.perm==='faible'?'ruissellement vers la rivière.':'infiltration vers la nappe.'));
+    return{eng:e.join(' '),pest:p.join(' ')};}
+  function setExpl(x,title){$('#expl3body').innerHTML=`<p style="margin:0 0 10px"><strong>${title}</strong></p><div class="ex"><i style="background:#17c3b2"></i><b>Les engrais</b><p>${x.eng}</p></div><div class="ex"><i style="background:#c21fb0"></i><b>Les pesticides</b><p>${x.pest}</p></div>`;}
+  function refresh(){const d=S.day;
+    $('#st3a').textContent=running?(RAINS.some(e=>d>=e&&d<e+2)?'Il pleut…':d===FERT?'Les tracteurs épandent l’engrais (granulés turquoise) et le compost (bio)…':SPRAY.includes(d)?'Le tracteur pulvérise les pesticides…':'Saison en cours…'):S.done?'Saison terminée : clique sur les zones pour comprendre':'';
+    if(S.done&&!SCshown){SCshown=true;picked=null;$('#info3a').innerHTML='<h3>Saison terminée</h3><p>Vérifie l’explication ci-dessus : clique sur les zones de mesure, leur couleur montre où sont arrivés les engrais et les pesticides.</p>';}
+    else if(picked)$('#info3a').innerHTML=explain(picked);}
+  init();
+  return{update,draw};
+})();
+
+/* ================= Onglets et boucle d’animation ================= */
+const SCENES={usages:P1,irrigation:P2,pollution:P3A};
+let active='usages';
+function show(name){if(!SCENES[name])name=name==='erosion'?'pollution':'usages';active=name;
+  document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===name)));
+  ['usages','irrigation','pollution'].forEach(n=>{$('#p-'+n).hidden=n!==name;});
+  try{if(location.hash!=='#'+name)history.replaceState(null,'','#'+name);}catch(e){}}
+document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.tab)));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+try{show(location.hash.slice(1)||'usages');}catch(e){show('usages');}
+let last=performance.now();
+function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;try{SCENES[active].update(dt);SCENES[active].draw();}catch(e){console.error(e);}requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+</script>
+
+</body></html>
