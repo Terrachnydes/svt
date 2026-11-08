@@ -36,6 +36,21 @@ a.thumb:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
 .cl{font:inherit;font-size:.85rem;font-weight:700;padding:7px 12px;border-radius:7px;border:1px solid #c96442;background:transparent;color:#c96442;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .cl:hover{background:#c96442;color:#fff}.cl:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
 .cl svg{width:15px;height:15px}
+.cs{font:inherit;font-size:.85rem;font-weight:700;padding:7px 12px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.cs:hover{border-color:var(--accent);color:var(--accent)}.cs:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+dialog#gen{width:min(860px,calc(100vw - 32px));max-height:calc(100vh - 32px);border:1px solid var(--line);border-radius:14px;padding:0;background:var(--surface);color:var(--fg)}
+dialog#gen::backdrop{background:rgba(0,0,0,.45)}
+.gh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.gh h2{font-family:var(--display);font-size:1.25rem;margin:0}.gh p{margin:2px 0 0;color:var(--muted);font-size:.85rem}
+.gx{font:inherit;border:0;background:none;color:var(--muted);font-size:1.3rem;cursor:pointer;line-height:1}
+.gf{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;padding:16px 18px}
+.gf label{display:flex;flex-direction:column;gap:4px;font-size:.82rem;font-weight:700;color:var(--muted)}
+.gf input,.gf select,.gf textarea{font:inherit;font-size:.95rem;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--fg)}
+.gf .full{grid-column:1/-1}.gf textarea{min-height:52px;resize:vertical}
+.ga{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:0 18px 14px}
+#gst{font-size:.88rem;color:var(--muted)}#gst.err{color:#c0392b}
+#gout{margin:0 18px 18px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:var(--bg);white-space:pre-wrap;font-family:var(--body);font-size:.95rem;line-height:1.5;max-height:52vh;overflow:auto}
+#gout:empty{display:none}
 .lnk{font-size:.82rem;color:var(--muted)}
 .lnk:hover{color:var(--accent)}
 .tag{font-size:.75rem;color:var(--muted);border:1px dashed var(--line);padding:4px 8px;border-radius:6px}
@@ -55,7 +70,7 @@ a.thumb:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
 <div class="wrap">
   <header>
     <h1>Mes sites SVT</h1>
-    <p>Clique sur l'aperçu pour ouvrir le site. « Copier le lien » copie l'adresse GitHub, celle qui s'ouvre pour les élèves. « Modifier avec Claude » ouvre la conversation où le site a été créé.</p>
+    <p>Clique sur l'aperçu pour ouvrir le site. « Copier le lien » copie l'adresse GitHub, celle qui s'ouvre pour les élèves. « Modifier avec Claude » ouvre le site sur Claude. « Consignes » génère une activité notée sur 20 qui exploite le site.</p>
   </header>
   <div class="sync">
     <button class="big" id="sync" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Mettre à jour maintenant</button>
@@ -66,6 +81,18 @@ a.thumb:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
   <p id="none" class="empty" hidden>Aucun site ne correspond.</p>
 </div>
 
+<dialog id="gen" aria-labelledby="gtitle">
+  <div class="gh"><div><h2 id="gtitle">Consignes et correction</h2><p id="gsite"></p></div><button class="gx" type="button" id="gclose" aria-label="Fermer">✕</button></div>
+  <div class="gf">
+    <label>Nombre de consignes<input id="gn" type="number" min="1" max="10" value="3"></label>
+    <label>Niveau<select id="gniv"><option>6e</option><option selected>5e</option><option>4e</option><option>3e</option><option>2nde</option></select></label>
+    <label>Difficulté<select id="gdif"><option value="facile">Plus facile</option><option value="normal" selected>Normale</option><option value="difficile">Plus difficile</option></select></label>
+    <label>Durée (min)<input id="gdur" type="number" min="10" max="120" value="40"></label>
+    <label class="full">Précisions (facultatif)<textarea id="gpre" placeholder="Ex. : insister sur l'onglet Crue de la Seine, pas de calcul…"></textarea></label>
+  </div>
+  <div class="ga"><button class="btn" type="button" id="ggo">Générer</button><button class="cs" type="button" id="gstop" hidden>Arrêter</button><button class="cs" type="button" id="gcopy" hidden>Copier le texte</button><span id="gst" role="status"></span></div>
+  <div id="gout"></div>
+</dialog>
 <script>
 const GH="https://terrachnydes.github.io/svt/";
 const data=__DATA__;
@@ -81,7 +108,7 @@ function card(i){
   const vis=i.img?`<img src="${i.img}" alt="Aperçu : ${esc(i.t)}" loading="lazy">`
     :`<div class="ph">${ICON[i.k]||ICON.doc}<span>${i.k==="prive"?"Privé":"Document Claude"}</span></div>`;
   const cl=(i.v||i.c)?`<a class="cl" href="${i.v||i.c}" target="_blank" rel="noopener" title="${i.v?"Ouvre la conversation Claude de ce site":"Ouvre l'artifact sur Claude (conversation pas encore renseignée)"}">${SPARK}Modifier avec Claude</a>`:"";
-  const acts=i.f?`<button class="btn" data-u="${url(i.f)}">Copier le lien</button>${cl}`
+  const acts=i.f?`<button class="btn" data-u="${url(i.f)}">Copier le lien</button>${cl}<button class="cs" type="button" data-g="${esc(i.f)}">Consignes</button>`
     :`<span class="tag">${i.k==="prive"?"Gardé privé":"Pas sur GitHub"}</span>${i.c?`<a class="lnk" href="${i.c}" target="_blank" rel="noopener">Ouvrir sur Claude</a>`:""}`;
   return `<article class="card"><${u?"a":"div"} class="thumb" ${href}>${vis}</${u?"a":"div"}><div class="body"><b>${esc(i.t)}</b>${i.f?`<small>${esc(i.f)}</small>`:""}<div class="acts">${acts}</div></div></article>`;
 }
@@ -118,6 +145,90 @@ syncBtn.addEventListener("click",async()=>{
     syncBtn.disabled=false;
   }
 });
+
+/* ===== Générateur de consignes (capacité « sample ») ===== */
+const SITES={};data.forEach(([g,items])=>items.forEach(i=>{if(i.f)SITES[i.f]=i;}));
+const $g=id=>document.getElementById(id);
+const gen=$g("gen"),gout=$g("gout"),gst=$g("gst"),ggo=$g("ggo"),gstop=$g("gstop"),gcopy=$g("gcopy");
+let sample=null,gcur=null,gctl=null;
+(async()=>{try{sample=await window.claude?.use?.("sample")}catch(_){sample=null}})();
+const PREF="consignes.prefs.v1";
+try{const p=JSON.parse(localStorage.getItem(PREF)||"{}");["gn","gniv","gdif","gdur"].forEach(k=>{if(p[k]!=null)$g(k).value=p[k]})}catch(_){}
+function savePrefs(){try{localStorage.setItem(PREF,JSON.stringify({gn:$g("gn").value,gniv:$g("gniv").value,gdif:$g("gdif").value,gdur:$g("gdur").value}))}catch(_){}}
+list.addEventListener("click",e=>{const b=e.target.closest("[data-g]");if(!b)return;
+  gcur=SITES[b.dataset.g];$g("gsite").textContent=gcur.t+" — "+url(gcur.f);
+  let last="";try{last=localStorage.getItem("consignes.last."+gcur.f)||""}catch(_){}
+  gout.textContent=last;gcopy.hidden=!last;gst.className="";gst.textContent=last?"Dernière génération pour ce site.":"";
+  if(!sample){gst.textContent="La génération fonctionne quand tu ouvres cette page dans Claude.";}
+  gen.showModal();});
+$g("gclose").onclick=()=>{gctl?.abort();gen.close()};
+const DIF={facile:"Rends les consignes plus faciles que d'habitude : questions plus guidées, vocabulaire simple, moins d'éléments à relier dans chaque réponse.",
+  normal:"Garde une difficulté normale pour ce niveau.",
+  difficile:"Rends les consignes plus difficiles que d'habitude : moins guidées, davantage de raisonnement, de comparaison et de liens de cause à effet."};
+function prompt(s,n,niv,dif,dur,pre){
+return `Tu es professeur de SVT au collège en France. Génère ${n} consigne${n>1?"s":""} de réflexion qui exploite${n>1?"nt":""} le logiciel suivant (un site interactif utilisé par les élèves).
+
+Site : « ${s.t} »
+Adresse pour les élèves : ${url(s.f)}
+Textes, boutons, onglets et réglages présents dans le site (extraits automatiquement) :
+"""
+${s.x||"(contenu non disponible)"}
+"""
+
+Règles :
+- Niveau des élèves : ${niv}. ${DIF[dif]}
+- La réponse de chaque consigne doit pouvoir se découper en plusieurs éléments pour être facilement corrigeable par une IA.
+- Le but est que les élèves comprennent les mécanismes biologiques ou géologiques que le site leur présente et qu'ils le manipulent (faire une expérience, changer un réglage, comparer, observer).
+- Appuie-toi uniquement sur ce que le site montre réellement : nomme les onglets, boutons et réglages tels qu'ils apparaissent ci-dessus. N'invente pas de valeur ou de résultat que le site ne donne pas ; si une réponse dépend d'une manipulation, décris le résultat attendu tel que le site le présente.
+- Les élèves ont ${dur} minutes pour faire l'activité.
+- Le barème total doit faire exactement 20 points, répartis entre les consignes (la somme des points de chaque consigne doit être égale à son total).
+- Nomme les consignes A, B, C… dans l'ordre.${pre?`
+- Précisions du professeur : ${pre}`:""}
+
+Présente ta réponse en texte brut (sans markdown, sans gras, sans titres avec #), en deux parties exactement sous cette forme :
+
+CONSIGNES
+
+Consigne A : …
+Consigne B : …
+
+CORRECTION ET BARÈME
+
+Consigne A - Texte - Cumulatif - 6 pts
+1 pt : élément de réponse attendu / formulations acceptées
+2 pts : élément de réponse attendu / formulations acceptées
+
+Exemple de style attendu (sur un autre sujet) :
+Consigne A : À l'aide du document 1, identifie les régions de la Terre où les températures moyennes sont les plus élevées et celles où elles sont les plus faibles. Donne une valeur approximative pour chacune et décris comment la température évolue lorsqu'on s'éloigne de l'équateur vers les pôles.
+Consigne A - Texte - Cumulatif - 6 pts
+1 pt : Il fait le plus chaud près de l'équateur / dans les régions proches de l'équateur
+1 pt : Une température élevée entre 20 et 35 °C environ (toute valeur approchée est acceptée)
+1 pt : Il fait le plus froid près des pôles / dans les régions proches des pôles
+1 pt : Une température basse entre −5 et −30 °C environ (toute valeur approchée est acceptée)
+2 pts : La température baisse quand on s'éloigne de l'équateur / quand on va vers les pôles / elle augmente quand on se rapproche de l'équateur
+
+N'écris rien d'autre que ces deux parties.`;}
+ggo.onclick=async()=>{
+  if(!gcur)return;
+  if(!sample){gst.className="err";gst.textContent="La génération fonctionne quand tu ouvres cette page dans Claude.";return;}
+  const n=Math.max(1,Math.min(10,parseInt($g("gn").value)||3)),dur=Math.max(10,Math.min(120,parseInt($g("gdur").value)||40));
+  savePrefs();
+  gctl=new AbortController();ggo.disabled=true;gstop.hidden=false;gcopy.hidden=true;gst.className="";gst.textContent="Claude réfléchit… (souvent 30 s à 1 min)";gout.textContent="";
+  const site=gcur;
+  try{
+    const r=await sample(prompt(site,n,$g("gniv").value,$g("gdif").value,dur,$g("gpre").value.trim()),
+      {modelTier:"complex",cache:false,signal:gctl.signal,onText:({text})=>{gout.textContent=text;gst.textContent="Écriture en cours…";}});
+    gout.textContent=r.text;gst.textContent="Terminé. Vérifie que le barème fait bien 20 points.";
+    try{localStorage.setItem("consignes.last."+site.f,r.text)}catch(_){}
+  }catch(e){
+    if(e&&e.text)gout.textContent=e.text;
+    gst.className=e&&e.code==="cancelled"?"":"err";
+    gst.textContent=e&&e.code==="not_granted"?"Autorisation refusée : accepte que la page utilise Claude pour générer.":e&&e.code==="cancelled"?"Arrêté.":e&&e.code==="rate_limited"?"Trop de demandes : réessaie dans un moment.":"La génération a échoué ("+((e&&e.code)||"erreur")+").";
+  }finally{ggo.disabled=false;gstop.hidden=true;gcopy.hidden=!gout.textContent;gctl=null;}
+};
+gstop.onclick=()=>gctl?.abort();
+gcopy.onclick=()=>{const t=gout.textContent;const ok=()=>{gcopy.textContent="Copié ✓";setTimeout(()=>gcopy.textContent="Copier le texte",1800)};
+  try{navigator.clipboard.writeText(t).then(ok,()=>{const r=document.createRange();r.selectNodeContents(gout);const s=getSelection();s.removeAllRanges();s.addRange(r);gcopy.textContent="Ctrl+C pour copier"})}catch(_){}};
 document.getElementById("q").addEventListener("input",e=>render(e.target.value));
 render("");
 </script>

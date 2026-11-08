@@ -6,7 +6,7 @@ Usage : python3 _recap/build_hub.py [fichier.html ...]
     qui n'ont pas encore d'aperçu dans _recap/apercus/.
   - Reconstruit _recap/mes-sites.html à partir de tpl.html + sites.json.
 """
-import asyncio, base64, json, os, re, subprocess, sys, unicodedata
+import asyncio, base64, html, json, os, re, subprocess, sys, unicodedata
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -18,6 +18,35 @@ APERCUS = os.path.join(HERE, "apercus")
 def slug(f):
     s = unicodedata.normalize("NFD", f[:-5]).encode("ascii", "ignore").decode().lower()
     return re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+
+
+def fiche(path, cap=12000):
+    src = open(path, encoding="utf-8", errors="ignore").read()
+    src = re.sub(r"<style.*?</style>", " ", src, flags=re.S | re.I)
+    scripts = re.findall(r"<script[^>]*>(.*?)</script>", src, flags=re.S | re.I)
+    body = re.sub(r"<script.*?</script>", " ", src, flags=re.S | re.I)
+    body = re.sub(r"<svg.*?</svg>", " ", body, flags=re.S | re.I)
+    out, seen = [], set()
+    def add(t):
+        t = html.unescape(re.sub(r"<[^>]+>", " ", t))
+        t = re.sub(r"\$\{[^}]*\}", "…", t)
+        t = re.sub(r"\s+", " ", t).strip()
+        if len(t) < 3 or t.lower() in seen: return
+        if re.search(r"[{}]|=>|\);|\bconst \b|\bfunction\b", t): return
+        words = re.findall(r"[A-Za-zÀ-ÿ]{3,}", t)
+        if len(words) < 2 and len(t) < 25 and not re.search(r"[A-Za-zÀ-ÿ]{4,}", t): return
+        letters = sum(c.isalpha() or c in " '’,.;:!?()-%°" for c in t)
+        if letters / len(t) < .75: return
+        seen.add(t.lower()); out.append(t)
+    for part in re.split(r"<[^>]+>", body):
+        add(part)
+    for s in scripts:
+        for q in re.findall(r"'((?:[^'\\\n]|\\.){4,})'|\"((?:[^\"\\\n]|\\.){4,})\"|`((?:[^`\\]|\\.){4,})`", s):
+            t = next(x for x in q if x)
+            if re.search(r"[A-Za-zÀ-ÿ]{3,} [A-Za-zÀ-ÿ'’]{2,}", t) or re.search(r"[À-ÿ]", t):
+                add(t.replace("\\'", "'").replace("\\n", " "))
+    txt = " | ".join(out)
+    return txt[:cap]
 
 
 def three_dir():
@@ -83,7 +112,7 @@ def main():
                 continue
             ap = os.path.join(APERCUS, slug(s["fichier"]) + ".webp")
             img = ("data:image/webp;base64," + base64.b64encode(open(ap, "rb").read()).decode()) if os.path.exists(ap) else None
-            items.append({"t": s["titre"], "f": s["fichier"], "c": s["artifact"], "v": s.get("conversation"), "img": img})
+            items.append({"t": s["titre"], "f": s["fichier"], "c": s["artifact"], "v": s.get("conversation"), "x": fiche(os.path.join(REPO, s["fichier"])) if os.path.exists(os.path.join(REPO, s["fichier"])) else "", "img": img})
         if items:
             data.append([th, items])
     d = cfg["derniere_maj"].split("-")
