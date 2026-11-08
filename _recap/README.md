@@ -30,3 +30,4 @@ Le bouton « Mettre à jour maintenant » de la page récap la lance aussi. Elle
 2. Ajouter l'entrée dans `sites.json` → `sites` (avec la `version` lue), et le retirer de `en_attente`.
 3. `python3 _recap/build_hub.py <fichier>.html`, commit, push.
 4. Lire puis republier la page récap avec `_recap/mes-sites.html`, sans passer `capabilities`.
+5. Ajouter l'URL GitHub du site dans la « liste blanche » du cahier numérique : Google Sheet `1ABGFTjPtowzLW2vnhZ20Bmk63kC5lYjzouLHpYwfi30`, onglet `Cours`, colonne F, première case vide à partir de F100 (connecteur Google Sheets).
