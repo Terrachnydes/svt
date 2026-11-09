@@ -34,9 +34,23 @@ Cette phrase veut dire : GitHub + page « Mes sites SVT » + colonne F du Google
 4. Lire puis republier la page récap avec `_recap/mes-sites.html`, sans passer `capabilities`.
 5. Ajouter l'URL GitHub du site dans la « liste blanche » du cahier numérique : Google Sheet `1ABGFTjPtowzLW2vnhZ20Bmk63kC5lYjzouLHpYwfi30`, onglet `Cours`, colonne F, première case vide à partir de F100 (connecteur Google Sheets).
 
+## Organisation des catégories
+
+Le bouton « Organiser mes sites » de la page récap permet à Erwan de déplacer un site dans une autre catégorie (glisser-déposer ou menu « Catégorie »), de renommer, réordonner, créer ou supprimer (si vide) une catégorie.
+C'est enregistré dans la base de la page (capacité `db`), document `organisation/config` :
+`{"themes": [catégories dans l'ordre], "place": {fichier: catégorie}, "ren": {catégorie d'origine: nouveau nom}}`.
+La page applique ce document par-dessus `sites.json` : c'est lui qui fait foi.
+
+Pour recopier l'organisation dans `sites.json` (la synchro de nuit le fait) :
+1. Lire le document : `ArtifactData`, action `get`, url de la page récap, collection `organisation`, doc_id `config`. S'il n'existe pas, il n'y a rien à faire.
+2. L'enregistrer en JSON dans un fichier, puis `python3 _recap/apply_orga.py <fichier>.json`.
+3. Si `sites.json` a changé : `python3 _recap/build_hub.py`, commit, push, republier la page récap.
+
+Quand on ajoute un nouveau site, lui donner une catégorie qui existe déjà dans `sites.json` → `themes` (après la recopie ci-dessus).
+
 ## Consignes et correction
 
 Chaque carte de la page récap a un bouton « Consignes » : nombre de consignes, niveau (6e → 2nde), difficulté, durée et précisions,
 puis Claude génère les consignes et le barème sur 20 (capacité `sample` de la page, sur le compte de la personne qui l'utilise).
 Le contenu du site envoyé à Claude est un extrait automatique des textes, boutons et réglages du fichier (`fiche()` dans `build_hub.py`).
-La page déclare les capacités `mcp` (bouton de synchro) et `sample` (consignes) : ne pas les retirer en republiant.
+La page déclare les capacités `mcp` (bouton de synchro), `sample` (consignes), `db` et `user` (organisation des catégories) : ne pas les retirer en republiant (republier SANS passer `capabilities` les conserve).

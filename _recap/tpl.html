@@ -64,6 +64,28 @@ dialog#gen::backdrop{background:rgba(0,0,0,.45)}
 .sync-txt b{font-size:.95rem}.sync-txt span{color:var(--muted);font-size:.85rem}
 #msg{font-size:.9rem;font-weight:700;color:var(--accent)}#msg.err{color:#c0392b}
 .empty{color:var(--muted)}
+/* Organisation des catégories */
+.tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tools #q{flex:1 1 280px}
+.org{font:inherit;font-size:.95rem;font-weight:700;padding:11px 16px;border-radius:8px;border:1px solid var(--accent);background:var(--surface);color:var(--accent);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.org:hover{background:var(--accent-soft)}.org:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.org svg{width:18px;height:18px}
+.org.on{background:var(--accent);color:var(--bg)}
+.orgbar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;background:var(--accent-soft);border:1px solid var(--accent);border-radius:12px;padding:12px 16px}
+.orgbar p{margin:0;flex:1 1 300px;font-size:.92rem}
+#orgmsg{font-size:.88rem;font-weight:700;color:var(--accent)}#orgmsg.err{color:#c0392b}
+section.om{border:2px dashed var(--line);border-radius:12px;padding:12px;transition:border-color .15s,background .15s}
+section.om.over{border-color:var(--accent);background:var(--accent-soft)}
+.oh{align-items:center!important}
+.tn{font-family:var(--display);font-size:1.2rem;font-weight:600;padding:5px 9px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--fg);min-width:0;flex:1 1 220px;max-width:460px}
+.tn:focus{outline:2px solid var(--accent);outline-offset:1px}
+.ib{font:inherit;font-size:.85rem;padding:6px 10px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.ib:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}.ib:disabled{opacity:.4;cursor:default}
+.ib.del:hover:not(:disabled){border-color:#c0392b;color:#c0392b}
+.om .grid:empty::before{content:"Catégorie vide : glisse un site ici ou choisis-la dans le menu d'un site.";color:var(--muted);font-size:.9rem;grid-column:1/-1;padding:18px 4px}
+.om .card{cursor:grab}.om .card.drag{opacity:.4}
+.mv{display:flex;flex-direction:column;gap:3px;font-size:.78rem;font-weight:700;color:var(--muted)}
+.mv select{font:inherit;font-size:.88rem;padding:6px 8px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--fg)}
 @media (prefers-reduced-motion:reduce){.thumb img{transition:none}}
 </style>
 
@@ -76,7 +98,15 @@ dialog#gen::backdrop{background:rgba(0,0,0,.45)}
     <button class="big" id="sync" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Mettre à jour maintenant</button>
     <div class="sync-txt"><b>Sites mis à jour le __MAJ__</b><span>Mise à jour automatique chaque nuit à minuit. Le bouton lance la même mise à jour tout de suite (quelques minutes).</span><span id="msg" role="status"></span></div>
   </div>
-  <input id="q" type="search" placeholder="Rechercher un site…" aria-label="Rechercher un site">
+  <div class="tools">
+    <input id="q" type="search" placeholder="Rechercher un site…" aria-label="Rechercher un site">
+    <button class="org" id="orgbtn" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M17.5 14v7M14 17.5h7"/></svg><span>Organiser mes sites</span></button>
+  </div>
+  <div class="orgbar" id="orgbar" hidden>
+    <p><b>Mode organisation.</b> Glisse un site vers une autre catégorie (ou utilise son menu « Catégorie »). Clique sur le nom d'une catégorie pour le renommer. Tout est enregistré tout de suite.</p>
+    <button class="btn" type="button" id="orgnew">+ Nouvelle catégorie</button>
+    <span id="orgmsg" role="status"></span>
+  </div>
   <div id="list" style="display:flex;flex-direction:column;gap:32px"></div>
   <p id="none" class="empty" hidden>Aucun site ne correspond.</p>
 </div>
@@ -110,18 +140,123 @@ function card(i){
   const cl=(i.v||i.c)?`<a class="cl" href="${i.v||i.c}" target="_blank" rel="noopener" title="${i.v?"Ouvre la conversation Claude de ce site":"Ouvre l'artifact sur Claude (conversation pas encore renseignée)"}">${SPARK}Modifier avec Claude</a>`:"";
   const acts=i.f?`<button class="btn" data-u="${url(i.f)}">Copier le lien</button>${cl}<button class="cs" type="button" data-g="${esc(i.f)}">Consignes</button>`
     :`<span class="tag">${i.k==="prive"?"Gardé privé":"Pas sur GitHub"}</span>${i.c?`<a class="lnk" href="${i.c}" target="_blank" rel="noopener">Ouvrir sur Claude</a>`:""}`;
-  return `<article class="card"><${u?"a":"div"} class="thumb" ${href}>${vis}</${u?"a":"div"}><div class="body"><b>${esc(i.t)}</b>${i.f?`<small>${esc(i.f)}</small>`:""}<div class="acts">${acts}</div></div></article>`;
+  return `<article class="card"><${u?"a":"div"} class="thumb" ${href} draggable="false">${vis}</${u?"a":"div"}><div class="body"><b>${esc(i.t)}</b>${i.f?`<small>${esc(i.f)}</small>`:""}<div class="acts">${acts}</div></div></article>`;
+}
+/* ===== Organisation des catégories (capacité « db ») =====
+   Document organisation/config : { themes:[catégories dans l'ordre], place:{fichier:catégorie}, ren:{catégorie d'origine:nom actuel} }.
+   La synchro de nuit le recopie dans _recap/sites.json. */
+const ORIG=data.map(([g])=>g);
+const ALL=data.flatMap(([g,it])=>it.map(i=>Object.assign(i,{g0:g})));
+let orga=null,orgMode=false,orgRef=null;
+const base=()=>({themes:[...ORIG],place:{},ren:{}});
+function clean(o){
+  const th=[];(Array.isArray(o&&o.themes)?o.themes:[]).forEach(t=>{t=String(t).trim();if(t&&!th.includes(t))th.push(t)});
+  const obj=x=>x&&typeof x==="object"&&!Array.isArray(x)?Object.fromEntries(Object.entries(x).filter(([k,v])=>typeof v==="string")):{};
+  return{themes:th.length?th:[...ORIG],place:obj(o&&o.place),ren:obj(o&&o.ren)};
+}
+function view(){
+  if(!orga)return data;
+  const th=[...orga.themes],m=new Map(th.map(t=>[t,[]]));
+  for(const i of ALL){
+    let g=i.f&&orga.place[i.f];
+    if(!g||!m.has(g))g=orga.ren[i.g0]||i.g0;
+    if(!m.has(g)){m.set(g,[]);th.push(g)}
+    m.get(g).push(i);
+  }
+  return th.map(t=>[t,m.get(t)]);
 }
 function render(q){
-  list.innerHTML="";let n=0;const f=norm(q||"");
-  data.forEach(([g,items])=>{
-    const hit=items.filter(i=>norm(i.t+" "+g).includes(f));if(!hit.length)return;n+=hit.length;
+  if(q===undefined)q=document.getElementById("q").value;
+  list.innerHTML="";let n=0;const f=orgMode?"":norm(q||"");
+  const v=view(),names=v.map(([g])=>g);
+  v.forEach(([g,items],k)=>{
+    const hit=items.filter(i=>norm(i.t+" "+g).includes(f));if(!hit.length&&!orgMode)return;n+=hit.length;
     const s=document.createElement("section");
-    s.innerHTML=`<h2>${g} <span>${hit.length} site${hit.length>1?"s":""}</span></h2><div class="grid">${hit.map(card).join("")}</div>`;
+    const cnt=`<span>${hit.length} site${hit.length>1?"s":""}</span>`;
+    if(!orgMode){
+      s.innerHTML=`<h2>${esc(g)} ${cnt}</h2><div class="grid">${hit.map(card).join("")}</div>`;
+    }else{
+      s.className="om";s.dataset.t=g;
+      const opts=t=>names.map(x=>`<option${x===t?" selected":""}>${esc(x)}</option>`).join("");
+      const cards=hit.map(i=>card(i).replace('<article class="card">',`<article class="card" draggable="true" data-f="${esc(i.f)}">`)
+        .replace('<div class="acts">',`<label class="mv">Catégorie<select data-mv="${esc(i.f)}">${opts(g)}</select></label><div class="acts">`)).join("");
+      s.innerHTML=`<h2 class="oh"><input class="tn" value="${esc(g)}" aria-label="Nom de la catégorie" maxlength="80"> ${cnt}
+        <button class="ib" type="button" data-up title="Monter la catégorie"${k===0?" disabled":""}>↑</button>
+        <button class="ib" type="button" data-down title="Descendre la catégorie"${k===v.length-1?" disabled":""}>↓</button>
+        <button class="ib del" type="button" data-del title="${hit.length?"Vide d'abord la catégorie pour la supprimer":"Supprimer la catégorie"}"${hit.length?" disabled":""}>Supprimer</button></h2>
+        <div class="grid">${cards}</div>`;
+    }
     list.appendChild(s);
   });
-  none.hidden=n>0;
+  none.hidden=n>0||orgMode;
 }
+const orgbtn=document.getElementById("orgbtn"),orgbar=document.getElementById("orgbar"),orgmsg=document.getElementById("orgmsg");
+let saving=Promise.resolve(),msgT=null;
+function say(t,err){orgmsg.className=err?"err":"";orgmsg.textContent=t;clearTimeout(msgT);if(!err&&t)msgT=setTimeout(()=>orgmsg.textContent="",2500)}
+function commit(o){
+  orga=o;render();if(!orgRef){say("Enregistrement impossible ici.",true);return}
+  const body=JSON.parse(JSON.stringify(o));say("Enregistrement…");
+  saving=saving.then(()=>orgRef.set(body)).then(()=>say("Enregistré ✓"),e=>say(e&&e.code==="invalid_argument"?"Tu n'as pas le droit de modifier l'organisation.":e&&e.code==="quota_exceeded"?"Espace de stockage plein.":"Enregistrement impossible ("+((e&&e.code)||"erreur")+"). Réessaie.",true));
+}
+const cloneO=()=>JSON.parse(JSON.stringify(orga||base()));
+function move(f,t){const o=cloneO();o.place[f]=t;commit(o)}
+function renameT(old,nw){
+  nw=nw.replace(/\s+/g," ").trim();if(!nw||nw===old)return render();
+  const o=cloneO();if(o.themes.includes(nw)){say("La catégorie « "+nw+" » existe déjà.",true);return render()}
+  if(!o.themes.includes(old))o.themes.push(old);
+  o.themes=o.themes.map(t=>t===old?nw:t);
+  for(const k in o.place)if(o.place[k]===old)o.place[k]=nw;
+  ORIG.forEach(g=>{if((o.ren[g]||g)===old)o.ren[g]=nw});
+  commit(o);
+}
+function syncThemes(o){view().forEach(([g])=>{if(!o.themes.includes(g))o.themes.push(g)});return o}
+list.addEventListener("change",e=>{
+  if(!orgMode)return;
+  const sel=e.target.closest("[data-mv]");if(sel){move(sel.dataset.mv,sel.value);return}
+  const tn=e.target.closest(".tn");if(tn)renameT(tn.closest("section").dataset.t,tn.value);
+});
+list.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.classList.contains("tn"))e.target.blur();if(e.key==="Escape"&&e.target.classList.contains("tn")){e.target.value=e.target.closest("section").dataset.t;e.target.blur()}});
+list.addEventListener("click",e=>{
+  if(!orgMode)return;const b=e.target.closest("[data-up],[data-down],[data-del]");if(!b)return;
+  const t=b.closest("section").dataset.t,o=syncThemes(cloneO()),k=o.themes.indexOf(t);
+  if(b.hasAttribute("data-del")){o.themes.splice(k,1);for(const g in o.ren)if(o.ren[g]===t)delete o.ren[g];commit(o);return}
+  const j=b.hasAttribute("data-up")?k-1:k+1;if(j<0||j>=o.themes.length)return;
+  [o.themes[k],o.themes[j]]=[o.themes[j],o.themes[k]];commit(o);
+});
+document.getElementById("orgnew").onclick=()=>{
+  const o=syncThemes(cloneO());let n="Nouvelle catégorie",k=2;while(o.themes.includes(n))n="Nouvelle catégorie "+k++;
+  o.themes.push(n);commit(o);
+  const inp=[...list.querySelectorAll("section.om")].find(s=>s.dataset.t===n)?.querySelector(".tn");
+  if(inp){inp.scrollIntoView({behavior:"smooth",block:"center"});inp.focus();inp.select()}
+};
+/* glisser-déposer */
+let dragF=null;
+list.addEventListener("dragstart",e=>{const c=e.target.closest&&e.target.closest(".om .card");if(!c)return;dragF=c.dataset.f;c.classList.add("drag");try{e.dataTransfer.setData("text/plain",dragF);e.dataTransfer.effectAllowed="move"}catch(_){}});
+list.addEventListener("dragend",()=>{dragF=null;list.querySelectorAll(".drag,.over").forEach(x=>x.classList.remove("drag","over"))});
+list.addEventListener("dragenter",e=>{if(dragF&&e.target.closest("section.om"))e.preventDefault()});
+list.addEventListener("dragover",e=>{const s=dragF&&e.target.closest("section.om");if(!s)return;e.preventDefault();list.querySelectorAll(".over").forEach(x=>x!==s&&x.classList.remove("over"));s.classList.add("over")});
+list.addEventListener("drop",e=>{const s=dragF&&e.target.closest("section.om");if(!s)return;e.preventDefault();const f=dragF;dragF=null;
+  const now=view().find(([g,it])=>it.some(i=>i.f===f));if(now&&now[0]===s.dataset.t)return render();move(f,s.dataset.t)});
+orgbtn.onclick=()=>{
+  orgMode=!orgMode;orgbtn.classList.toggle("on",orgMode);orgbtn.querySelector("span").textContent=orgMode?"Terminé":"Organiser mes sites";
+  orgbar.hidden=!orgMode;document.getElementById("q").disabled=orgMode;say("");render();
+};
+(async()=>{
+  let db=null,user=null;
+  try{db=await window.claude?.use?.("db")}catch(_){db=null}
+  if(!db)return;
+  try{user=await window.claude?.use?.("user")}catch(_){user=null}
+  let can=null;try{can=user?await user.canEdit():null}catch(_){can=null}
+  orgRef=db.doc("organisation/config");
+  const t=setTimeout(()=>{},10000);
+  orgRef.onSnapshot(s=>{
+    clearTimeout(t);
+    orga=s.exists?clean(s.data()):null;
+    const a=document.activeElement;
+    if(!(orgMode&&a&&(a.classList.contains("tn")||a.matches("[data-mv]"))))render();
+  },()=>{clearTimeout(t)});
+  if(can!==false)orgbtn.hidden=false;
+})();
 list.addEventListener("click",e=>{
   const b=e.target.closest(".btn");if(!b)return;const u=b.dataset.u;
   const done=()=>{b.textContent="Copié ✓";b.classList.add("ok");setTimeout(()=>{b.textContent="Copier le lien";b.classList.remove("ok")},1800)};
