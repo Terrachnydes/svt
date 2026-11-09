@@ -241,6 +241,20 @@ svg.map{cursor:default;touch-action:auto}
 .envb{display:inline-block;margin-top:8px;padding:4px 10px;border-radius:20px;font-size:13px;font-weight:700;border:2px solid}
 .fcard .indt{animation:none;margin-top:6px}
 .fcard.fbig svg{height:260px}
+.site.sel circle.dot{stroke:#ffd84d;stroke-width:4}
+.sp-empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--muted);text-align:center;padding:20px}
+.sp-empty svg{width:180px}.sp-empty p{font-size:17px;font-weight:700;margin:0;color:#3d4b54}
+.sp{padding:14px 16px 18px}
+.sp-head{display:flex;align-items:center;gap:12px;margin-bottom:12px;animation:fadeUp .35s both}
+.sp-num{flex:0 0 40px;height:40px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#f59a63,#b0441b);color:#fff;font-weight:800;font-size:19px;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.sp-head h2{margin:0;font-size:21px}.sp-head p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
+.sp-card{display:grid;grid-template-columns:130px 1fr;gap:12px;align-items:start;border:1px solid var(--line);border-left:6px solid;border-radius:12px;padding:10px;margin-bottom:12px;background:#fffdf8;box-shadow:0 2px 8px rgba(0,0,0,.05);animation:fadeUp .45s both}
+.sp-card.env-mer{border-left-color:#2a6fb0;background:#fffdf8;color:var(--ink)}.sp-card.env-terre{border-left-color:#4b8a2e;background:#fffdf8;color:var(--ink)}
+.sp-img svg{width:130px;height:130px;display:block;border-radius:10px;background:radial-gradient(circle at 50% 42%,#fffaf0 0,#efe3c8 80%)}
+.sp-txt h3{margin:0 0 4px;font-size:16px}.sp-txt p{margin:0 0 6px;font-size:14px;line-height:1.45}
+.sp-txt .sp-size{font-size:12.5px;color:var(--muted)}
+.sp-env{display:flex;align-items:center;gap:8px;border-radius:9px;padding:6px 10px;border:2px solid}
+.sp-env span{font-size:22px}.sp-env small{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.4px;opacity:.85}.sp-env b{font-size:14.5px}
 .ft-box{margin-top:16px;border:1px solid var(--line);border-radius:12px;padding:10px 12px 12px;background:#fffdf8;box-shadow:0 2px 8px rgba(0,0,0,.05)}
 .ft-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .ft-head h3{margin:0;font-size:15.5px;color:var(--blue)}
@@ -269,12 +283,7 @@ td.ft-env.env-terre{background:#e7f4e1;color:#2c5a18;border-right:5px solid #4b8
 <body>
 <header>
  <h1><span class="logo"><span>⏳</span></span>Voyage dans le temps : le Bassin parisien</h1>
- <nav>
-  <button id="tabGuide" class="on">Enquête guidée</button>
-  <button id="tabFree">Explorer librement</button>
-  <button id="tabCmp">Comparer deux époques</button>
-  <button id="tabLex">Lexique</button>
- </nav>
+
 </header>
 <main id="main">
  <section class="mapwrap" id="mapWrap">
@@ -651,7 +660,7 @@ function warp(from,to){if(reduced||from===to)return;const w=$('#warp');w.classLi
   $('#wNum').textContent=u>=1&&to===0?'Aujourd’hui':`− ${v} Ma`;if(u<1)warpRaf=requestAnimationFrame(step)};warpRaf=requestAnimationFrame(step)}
 function moveChipBar(){const on=$('.chip.on'),bar=$('#chipbar');if(!on||!bar)return;bar.style.left=on.offsetLeft+8+'px';bar.style.width=on.offsetWidth-16+'px'}
 addEventListener('resize',moveChipBar);
-function setPeriod(pid,anim=true){const prev=cur;cur=pid;mv.setPeriod(pid,anim);renderFossilPanel(pid);const P=PERIODS[pid];if(anim&&prev)warp(PERIODS[prev].ma,P.ma);
+function setPeriod(pid,anim=true){const prev=cur;cur=pid;mv.setPeriod(pid,anim);renderFossilPanel(pid);if(typeof selSite!=='undefined'&&selSite&&SITES[selSite].period!==pid){selSite=null;$$('.site',mv.svg).forEach(el=>el.classList.remove('sel'));renderEmpty();mv.pulse(Object.keys(SITES))}const P=PERIODS[pid];if(anim&&prev)warp(PERIODS[prev].ma,P.ma);
  $('#mapT').textContent=P.ma?`${P.name} — il y a ${P.ma} millions d’années`:'Aujourd’hui';
  $('#mapW').title=(P.ma?'Reconstitution simplifiée : personne n’a vu ces paysages. Les scientifiques les dessinent à partir des roches et des fossiles. ':'')+P.doute+' Les pointillés montrent la France actuelle : ils servent seulement de repère, la France n’existait pas à cette époque !';
  $('#mapW').textContent=P.ma?'Reconstitution simplifiée ⓘ':'Carte simplifiée ⓘ';
@@ -666,21 +675,16 @@ function stopPlay(){clearInterval(timer);timer=null;$('#play').textContent='▶ 
 $('#play').onclick=()=>{if(timer){stopPlay();return}if(cur==='act')setPeriod('carb');$('#play').textContent='❚❚ Pause';timer=setInterval(()=>{const i=P_ORDER.indexOf(cur);if(i>=P_ORDER.length-1){stopPlay();return}setPeriod(P_ORDER[i+1])},5000)};
 
 /* ===== Fiche d’un site ===== */
-function openSite(id){const S=SITES[id];const P=PERIODS[S.period];
- const warn=cur!==S.period?`<div class="box todo" style="margin-top:0"><b>Attention :</b> cette roche date du <b>${P.name}</b>, mais la carte affichée est celle de l’époque « ${PERIODS[cur].name} ».<div style="margin-top:6px"><button class="btn small or" id="goP">Afficher la carte du ${P.name}</button></div></div>`:'';
- openModal(`Site ${id} — ${S.name}`,`${warn}<div class="sgrid"><div>
-  <div class="rock">${rockSVG(S.texture,id*31)}<div class="cap">Dessin de la roche (ce n’est pas une photo)</div></div>
-  <table class="kv" style="margin-top:8px"><tr><td>Roche</td><td><b>${esc(S.rock)}</b></td></tr><tr><td>Âge de la roche</td><td>${esc(S.age)}</td></tr><tr><td>Où ?</td><td>${esc(S.where)}</td></tr></table></div>
-  <div><h3 style="margin:0 0 4px;color:var(--blue)">🔍 Ce que j’observe</h3><ul class="obs">${S.obs.map(o=>`<li>${esc(o)}</li>`).join('')}</ul>
-  <div class="box help"><h4>Rappel</h4>Une roche formée de débris de coquilles et de squelettes est une ${mot('sed','roche sédimentaire')}. Les ${mot('fossile','fossiles')} qu’elle contient nous renseignent sur le milieu où elle s’est formée.</div></div></div>
-  <h3 style="margin:14px 0 8px;color:var(--blue)">🦴 Les fossiles trouvés dans cette roche</h3>
-  <div class="fgrid">${S.fossils.map((f,i)=>{const F=FOSSILS[f];return `<div class="fcard" style="animation-delay:${.15+i*.12}s">${fossilSVG(f)}<div class="nm">${esc(F.name)}</div><div class="sz">Taille : ${esc(F.size)}</div><div style="text-align:left;margin-top:5px">${esc(F.desc)}</div>${envBadge(F)}<div class="indt">💡 ${esc(F.ind)}</div></div>`}).join('')}</div>
-  <p class="small">Dessins schématiques, pas à l’échelle.</p>
-  <div class="row" style="justify-content:flex-end"><button class="btn" id="closeS">Retour à l’enquête</button></div>`);
- $$('[data-ind]',$('#modal')).forEach(b=>b.onclick=()=>{const d=document.createElement('div');d.className='indt';d.textContent=FOSSILS[b.dataset.ind].ind;b.replaceWith(d)});
- $('#closeS').onclick=closeModal;const g=$('#goP');if(g)g.onclick=()=>{setPeriod(S.period);openSite(id)};
- setData(d=>{d.seen=d.seen||{};d.seen[id]=1});if(mode==='guide')renderGuide()}
-
+function renderEmpty(){$('#guide').innerHTML=`<div class="sp-empty"><svg viewBox="0 0 120 70" aria-hidden="true">${[1,2,3,4].map((n,k)=>`<g transform="translate(${18+k*28} 35)"><circle r="12" fill="#c0572b" stroke="#fff" stroke-width="3"/><text text-anchor="middle" dominant-baseline="central" fill="#fff" font-weight="800" font-size="13">${n}</text></g>`).join('')}</svg><p>Clique sur une zone de prélèvement</p></div>`}
+let selSite=null;
+function openSite(id){const S=SITES[id],P=PERIODS[S.period];selSite=id;
+ $$('.site',mv.svg).forEach(el=>el.classList.toggle('sel',el.dataset.id===String(id)));mv.pulse([]);
+ if(cur!==S.period){stopPlay();setPeriod(S.period)}
+ $('#guide').innerHTML=`<div class="sp"><div class="sp-head"><span class="sp-num">${id}</span><div><h2>${esc(S.name)}</h2><p>${esc(P.name)} · il y a environ ${P.ma} millions d’années</p></div></div>
+  ${S.fossils.map((f,k)=>{const F=FOSSILS[f];return `<article class="sp-card env-${F.env}" style="animation-delay:${.08+k*.1}s"><div class="sp-img">${fossilSVG(f)}</div><div class="sp-txt">
+   <h3>${esc(F.name)}</h3><p>${esc(F.desc)}</p><p class="sp-size">Taille : ${esc(F.size)}</p>
+   <div class="sp-env env-${F.env}"><span>${ENV[F.env].ico}</span><div><small>Où il vivait</small><b>${esc(F.milieu)}</b></div></div></div></article>`}).join('')}</div>`;
+ $('#guide').scrollTop=0}
 const envBadge=F=>`<span class="envb env-${F.env}">${ENV[F.env].ico} ${esc(F.milieu)}</span>`;
 function openFossil(fid,site){const F=FOSSILS[fid];
  openModal(F.name,`<div class="sgrid"><div class="fcard fbig" style="animation:none">${fossilSVG(fid)}</div><div>
@@ -825,10 +829,9 @@ function printSheet(){const pr=$('#print');pr.innerHTML=`<h2>Voyage dans le temp
  document.body.classList.add('printing');window.print();setTimeout(()=>document.body.classList.remove('printing'),500)}
 
 /* ===== Onglets ===== */
-function setTab(t){mode=t;$('#tabGuide').classList.toggle('on',t==='guide');$('#tabFree').classList.toggle('on',t==='free');if(t==='guide')renderGuide();else renderFree()}
-$('#tabGuide').onclick=()=>setTab('guide');$('#tabFree').onclick=()=>setTab('free');$('#tabCmp').onclick=()=>openCompare();$('#tabLex').onclick=openLex;
+function setTabUnused(t){mode=t;$('#tabGuide').classList.toggle('on',t==='guide');$('#tabFree').classList.toggle('on',t==='free');if(t==='guide')renderGuide();else renderFree()}
 
-setPeriod(STEPS[data.step].p||'act',false);renderGuide();
+setPeriod('act',false);renderEmpty();mv.pulse(Object.keys(SITES));
 </script>
 </body>
 </html>
