@@ -311,7 +311,7 @@ td.ft-env.env-terre{background:#e7f4e1;color:#2c5a18;border-right:5px solid #4b8
    <div><i style="background:var(--deep)"></i>Mer profonde</div>
    <div><i style="background:var(--shallow)"></i>Mer peu profonde</div>
    <div><i style="background:var(--litt)"></i>Côtes, lagunes</div>
-   <div><i style="background:var(--land)"></i>Terre (hors de l’eau)</div>
+   <div><i style="background:var(--land)"></i>Terre (plaines, forêts)</div>
    <div><i style="background:var(--relief)"></i>Montagnes, reliefs</div>
    <div><i class="dash"></i>France d’aujourd’hui (repère)</div>
    <div>⭐ Paris (repère) · <b style="color:var(--orange)">①</b> Zone de prélèvement</div>
@@ -382,9 +382,16 @@ const P_ORDER=['carb','trias','jur','cret','eoc','act'];
 const PERIODS={
  carb:{name:'Carbonifère',ma:320,era:1,lat:'près de l’équateur',latVal:5,
   polys:[['shallow',[[-7,50.7],[2,50.75],[11,50.8],[11,53.5],[-7,53.5]],'line'],
-   ['litt',[[-7,50.3],[1,50.4],[4,50.5],[8,50.4],[11,50.3],[11,50.85],[6,50.85],[2.5,50.75],[1,50.72],[-7,50.65]]],
-   ['relief',[[-7,40],[11,40],[11,49.5],[8,49.9],[5,50.1],[2,50.0],[-1,49.9],[-4,49.75],[-7,49.6]]]],
-  labels:[[1.8,46.6,'Chaîne hercynienne'],[-2.6,48.1,'(futur Massif armoricain)'],[3.0,45.0,'(futur Massif central)'],[4.6,50.6,'Plaines et marécages'],[2.2,51.8,'Mer peu profonde']],
+   ['litt',[[-7,50.55],[1,50.62],[4,50.68],[8,50.62],[11,50.6],[11,50.85],[6,50.85],[2.5,50.78],[1,50.74],[-7,50.68]]],
+   ['relief',[[-6.5,49.2],[-3,49.4],[-0.6,48.9],[0.2,47.8],[-0.6,46.8],[-3,46.6],[-6.5,47.2]]],
+   ['relief',[[0.5,47.1],[3.0,47.5],[5.2,46.8],[5.5,45.2],[4.6,43.6],[2.4,43.4],[0.6,44.4],[0.1,45.8]]],
+   ['relief',[[6.2,49.0],[8.6,49.2],[9.2,47.6],[7.6,47.0],[6.0,47.6]]],
+   ['relief',[[3.8,50.25],[6.0,50.5],[9.5,50.75],[10.5,50.0],[6.5,49.65],[4.2,49.85]]],
+   ['relief',[[-7,42.2],[3.5,42.8],[11,43.0],[11,40],[-7,40]]],
+   ['relief',[[6.5,45.8],[11,46.4],[11,43.6],[7.6,44.1]]],
+   ['forest',[[1.95,46.8],[3.45,46.85],[3.65,45.95],[2.15,45.85]]],
+   ['forest',[[3.65,45.9],[5.05,45.9],[5.15,45.0],[3.75,44.95]]]],
+  labels:[[-2.2,50.2,'Forêts marécageuses'],[2.3,48.2,'Plaines couvertes de forêts'],[4.8,51.25,'Mer peu profonde'],[-3.0,48.05,'(futur Massif armoricain)'],[1.9,44.6,'(futur Massif central)'],[-1.5,42.0,'Chaîne hercynienne (montagnes)']],
   txt:'Les continents se rassemblent en un seul bloc. Notre région est près de l’équateur, au milieu d’une grande chaîne de montagnes (la chaîne hercynienne). Au nord, des plaines marécageuses bordent la mer.',
   doute:'Très grande incertitude : les montagnes de cette époque ont depuis été usées par l’érosion.'},
  trias:{name:'Trias',ma:230,era:2,lat:'zone tropicale',latVal:20,
@@ -392,8 +399,9 @@ const PERIODS={
    ['litt',[[3.9,48.2],[4.0,50.1],[7.0,50.2],[11,50.5],[11,44.6],[9.0,44.1],[7.5,44.0],[5.6,44.6],[4.6,46.0]]],
    ['relief',[[-5.2,48.7],[-3.5,49.0],[-1.6,49.5],[-0.3,48.9],[-0.2,47.6],[-1.2,46.7],[-2.8,46.8],[-4.8,47.5]]],
    ['relief',[[1.6,46.5],[3.0,46.8],[4.3,46.3],[4.5,45.0],[3.7,43.9],[2.3,43.9],[1.5,45.0]]],
-   ['relief',[[-0.5,52.2],[2.5,51.6],[5.5,51.0],[7.5,50.65],[8.3,51.4],[5.0,52.8],[0,53.2]]]],
-  labels:[[-2.6,48.1,'Massif armoricain'],[3.0,45.3,'Massif central'],[7.7,47.6,'Lagunes salées'],[8.9,41.9,'Mer'],[0.9,48.4,'Plaines']],
+   ['relief',[[-0.5,52.2],[2.5,51.6],[5.5,51.0],[7.5,50.65],[8.3,51.4],[5.0,52.8],[0,53.2]]],
+   ['shallow',[[5.8,49.0],[6.3,50.0],[11,50.4],[11,46.2],[8.4,46.8],[8.0,48.0],[7.6,48.95],[6.6,48.95]]]],
+  labels:[[-2.6,48.1,'Massif armoricain'],[3.0,45.3,'Massif central'],[6.4,47.3,'Côtes et lagunes'],[8.6,49.7,'Mer peu profonde'],[8.9,41.9,'Mer'],[0.9,48.4,'Plaines']],
   txt:'Tous les continents forment un seul super-continent : la Pangée. La région, sous un climat tropical, est surtout une terre basse. À l’est s’étendent des lagunes salées.',
   doute:'Grande incertitude sur la position exacte des côtes.'},
  jur:{name:'Jurassique',ma:160,era:2,lat:'≈ 30° Nord',latVal:32,
@@ -402,8 +410,9 @@ const PERIODS={
    ['relief',[[1.9,46.3],[3.6,46.4],[4.1,45.3],[3.6,44.2],[2.4,44.3],[1.7,45.3]]],
    ['land',[[-1.5,53.5],[-0.8,52.0],[1.5,51.5],[4.0,51.3],[5.2,51.6],[5,53.5]]],
    ['land',[[5.4,50.5],[7.0,50.1],[9.0,50.3],[11,50.6],[11,52.0],[8.0,51.6],[6.0,51.2]]],
-   ['land',[[-7,40],[-7,42.4],[-4,42.7],[-1.5,42.4],[0.8,41.6],[1.5,40]]]],
-  labels:[[-2.9,47.95,'Massif armoricain'],[2.85,45.35,'Massif central'],[8.3,43.6,'Mer profonde'],[8.1,51.0,'Ardennes'],[-3.6,41.6,'Terre']],
+   ['land',[[-7,40],[-7,42.4],[-4,42.7],[-1.5,42.4],[0.8,41.6],[1.5,40]]],
+   ['litt',[[5.05,45.5],[6.2,45.55],[6.4,46.55],[5.35,46.62]]]],
+  labels:[[-2.9,47.95,'Massif armoricain'],[2.85,45.35,'Massif central'],[8.3,43.6,'Mer profonde'],[6.9,46.9,'Lagunes'],[8.1,51.0,'Ardennes'],[-3.6,41.6,'Terre']],
   txt:'La Pangée se casse en morceaux. Regarde bien la carte : quelles zones sont dans l’eau, lesquelles sont hors de l’eau ?',
   doute:'Le contour des îles et des côtes est simplifié.'},
  cret:{name:'Crétacé',ma:90,era:2,lat:'≈ 35° Nord',latVal:36,
@@ -425,8 +434,9 @@ const PERIODS={
    ['relief',[[-2.2,43.25],[0.0,43.0],[2.0,42.8],[3.4,42.5],[3.4,41.8],[0,41.9],[-2.2,42.6]]],
    ['relief',[[6.3,46.2],[7.5,46.6],[9.5,46.8],[9.0,45.6],[7.6,44.6],[6.6,44.3],[6.1,45.0]]],
    ['relief',[[-4.8,48.6],[-3.0,48.8],[-1.4,48.8],[-0.6,48.3],[-0.8,47.4],[-2.0,47.0],[-3.6,47.5],[-4.6,47.9]]],
-   ['relief',[[2.0,46.2],[3.6,46.3],[4.2,45.3],[3.6,44.2],[2.4,44.3],[1.8,45.3]]]],
-  labels:[[-5.4,44.6,'Océan Atlantique'],[0.6,42.45,'Pyrénées (se soulèvent)'],[-2.7,48.05,'Massif armoricain'],[2.9,45.3,'Massif central'],[5.6,47.6,'Terre'],[7.8,45.5,'Début des Alpes']],
+   ['relief',[[2.0,46.2],[3.6,46.3],[4.2,45.3],[3.6,44.2],[2.4,44.3],[1.8,45.3]]],
+   ['litt',[[2.15,48.85],[2.6,49.3],[3.35,49.35],[3.45,48.95],[2.95,48.7],[2.4,48.72]]]],
+  labels:[[-5.4,44.6,'Océan Atlantique'],[0.6,42.45,'Pyrénées (se soulèvent)'],[-2.7,48.05,'Massif armoricain'],[2.9,45.3,'Massif central'],[5.6,47.6,'Terre'],[3.6,49.55,'Lagunes'],[7.8,45.5,'Début des Alpes']],
   txt:'L’Afrique se rapproche de l’Europe : les Pyrénées se soulèvent et les Alpes commencent à se former. Observe ce qu’il reste de la mer.',
   doute:'Les côtes ont souvent changé pendant l’Éocène : la carte en donne une image moyenne.'},
  act:{name:'Aujourd’hui',ma:0,era:3,lat:'≈ 42 à 51° Nord',latVal:46,
@@ -452,7 +462,7 @@ const FOSSILS={
  ammonite:{name:'Ammonite (Perisphinctes)',size:'5 à 30 cm',desc:'Coquille enroulée en spirale, ornée de côtes. Groupe d’animaux disparu, cousin des seiches et des pieuvres.',ind:'Les ammonites vivaient uniquement dans la mer.',draw:'ammonite'},
  brachiopode:{name:'Brachiopodes',size:'1 à 4 cm',desc:'Coquille à deux parties (valves) de tailles différentes.',ind:'Les brachiopodes vivent uniquement dans la mer.',draw:'brachio'},
  teleosaurus:{name:'Téléosaure (crocodile marin)',size:'animal de plusieurs mètres',desc:'Crâne très allongé avec de nombreuses dents pointues. Il a été découvert à Caen et porte son nom : Teleosaurus cadomensis.',ind:'Ce crocodile disparu vivait dans la mer, près des côtes.',draw:'teleosaurus'},
- dino:{name:'Os de dinosaure (Poekilopleuron)',size:'animal de plusieurs mètres',desc:'Os d’un dinosaure carnivore découvert en 1835 dans une carrière de Caen. L’original a été détruit en 1944 pendant la guerre ; il en reste des moulages.',ind:'Les dinosaures vivaient sur la terre ferme, pas dans la mer !',draw:'bone'},
+ dino:{name:'Os de dinosaure (Poekilopleuron)',size:'animal de plusieurs mètres',desc:'Os d’un dinosaure carnivore découvert en 1835 dans une carrière de Caen. Ce dinosaure vivait sur une terre proche ; son cadavre a été emporté jusqu’à la mer, où ses os ont été recouverts de sédiments. L’original a été détruit en 1944 ; il en reste des moulages.',ind:'Les dinosaures vivaient sur la terre ferme, pas dans la mer !',draw:'bone'},
  coccolithe:{name:'Coccolithes',size:'quelques millièmes de mm',desc:'Minuscules plaques de calcaire qui recouvraient des algues microscopiques. On ne les voit qu’au microscope électronique. La craie en est presque entièrement formée.',ind:'Ces algues microscopiques flottent dans la mer, près de la surface.',draw:'coccolithe'},
  belemnite:{name:'Bélemnite',size:'5 à 10 cm',desc:'Pièce calcaire en forme de balle de fusil : c’est la partie dure, à l’intérieur du corps d’un animal disparu ressemblant à un calmar.',ind:'Les bélemnites vivaient uniquement dans la mer.',draw:'belemnite'},
  oursin:{name:'Oursin (Echinocorys)',size:'5 à 8 cm',desc:'Squelette en forme de casque, avec cinq bandes qui partent du sommet.',ind:'Les oursins vivent uniquement dans la mer.',draw:'echinocorys'},
@@ -503,7 +513,7 @@ Object.assign(FOSSILS,{
  rhabdodon:{name:'Os de dinosaure (Rhabdodon)',size:'animal de 4 m',desc:'Dinosaure herbivore typique du sud de la France à la fin du Crétacé.',env:'terre',milieu:'Terre ferme',draw:'bone'},
  ambre:{name:'Insecte dans l’ambre',size:'insectes de quelques mm',desc:'L’ambre est une résine d’arbre durcie. Des insectes s’y sont collés et ont été conservés.',env:'terre',milieu:'Forêt au bord de la mer',draw:'amber'},
  hetero:{name:'Ammonite déroulée',size:'quelques cm à 30 cm',desc:'Ammonite dont la coquille n’est pas enroulée serrée : elle forme un crochet.',env:'mer',milieu:'Mer profonde',draw:'hetero'},
- palaeo:{name:'Palaeotherium',size:'animal de 1 à 2 m',desc:'Mammifère herbivore ressemblant à un tapir. Georges Cuvier l’a reconstitué en 1804 à partir d’os trouvés dans les carrières de gypse de Montmartre.',env:'terre',milieu:'Terre ferme',draw:'palaeo'},
+ palaeo:{name:'Palaeotherium',size:'animal de 1 à 2 m',desc:'Mammifère herbivore ressemblant à un tapir. Georges Cuvier l’a reconstitué en 1804 à partir d’os trouvés dans le gypse de Montmartre, une roche formée dans des lagunes qui s’asséchaient.',env:'terre',milieu:'Terre ferme, au bord des lagunes',draw:'palaeo'},
  mamQuercy:{name:'Dents et mâchoires de mammifères',size:'quelques mm à quelques cm',desc:'Des milliers d’os piégés dans des fissures du calcaire : premiers chevaux, primates, rongeurs…',env:'terre',milieu:'Terre ferme',draw:'molar'},
  osQuercy:{name:'Os de reptiles et d’oiseaux',size:'quelques cm',desc:'Lézards, serpents, tortues et oiseaux tombés dans les fissures.',env:'terre',milieu:'Terre ferme',draw:'bone'},
  oursinCoeur:{name:'Oursin en forme de cœur',size:'3 à 6 cm',desc:'Oursin qui vivait enfoui dans le sable du fond.',env:'mer',milieu:'Mer',draw:'micraster'},
@@ -513,7 +523,7 @@ Object.assign(FOSSILS,{
 FOSSILS.dino.env='terre';FOSSILS.teleosaurus.milieu='Mer, près des côtes';
 /* ===== Zones de prélèvement (elles changent selon l'époque) ===== */
 const SITES={
- c1:{period:'carb',name:'Boulonnais (Pas-de-Calais)',lon:1.75,lat:50.82,age:'≈ 335 Ma',rock:'Calcaire',fossils:['productus','lithostrotion','crinoideC']},
+ c1:{period:'carb',name:'Boulonnais (Pas-de-Calais)',lon:1.65,lat:50.9,age:'≈ 335 Ma',rock:'Calcaire',fossils:['productus','lithostrotion','crinoideC']},
  c2:{period:'carb',name:'Bassin houiller du Nord (Lens)',lon:2.75,lat:50.45,age:'≈ 310 Ma',rock:'Schistes et charbon',fossils:['fougere','calamites','lepido']},
  c3:{period:'carb',name:'Commentry (Allier)',lon:2.74,lat:46.29,age:'≈ 300 Ma',rock:'Schistes et charbon',fossils:['meganeura','fougere']},
  c4:{period:'carb',name:'Saint-Étienne (Loire)',lon:4.39,lat:45.44,age:'≈ 300 Ma',rock:'Grès et charbon',fossils:['cordaites','calamites']},
@@ -657,7 +667,7 @@ function star(){const [x,y]=proj(...PARIS);let p='';for(let k=0;k<10;k++){const 
 /* ===== Carte : chaque époque devient un « relief » continu (mer profonde → montagnes).
    Pendant une transition, on mélange les deux reliefs : la mer avance ou recule progressivement. ===== */
 const S=1.25,CW=Math.round(W*S),CH=Math.round(H*S),VMIN=-3.5,VMAX=3.5;
-const VAL={deep:-3,shallow:-1.2,litt:.25,land:1.2,relief:2.6};
+const VAL={deep:-3,shallow:-1.2,litt:.25,land:1.2,forest:1.72,relief:2.6};
 function blur(a,w,h,r){const t=new Float32Array(a.length),n=2*r+1;
  for(let y=0;y<h;y++){const o=y*w;let s=0;for(let k=-r;k<=r;k++)s+=a[o+Math.min(w-1,Math.max(0,k))];
   for(let x=0;x<w;x++){t[o+x]=s/n;s+=a[o+Math.min(w-1,x+r+1)]-a[o+Math.max(0,x-r)]}}
@@ -668,7 +678,7 @@ function fieldOf(pid){if(fields[pid])return fields[pid];
  const c=document.createElement('canvas');c.width=CW;c.height=CH;const x=c.getContext('2d');
  const enc=v=>{const r=Math.round((v-VMIN)/(VMAX-VMIN)*255);return `rgb(${r},${r},${r})`};
  x.setTransform(S,0,0,S,0,0);const P=PERIODS[pid];
- x.fillStyle=enc(VAL[pid==='carb'||pid==='trias'||pid==='eoc'?'land':'shallow']);x.fillRect(-20,-20,W+40,H+40);
+ x.fillStyle=enc(VAL[pid==='carb'?'forest':pid==='trias'||pid==='eoc'?'land':'shallow']);x.fillRect(-20,-20,W+40,H+40);
  for(const [cl,pts,m] of P.polys){x.fillStyle=enc(VAL[cl]);x.fill(new Path2D(m==='line'?linePath(pts):smoothPath(pts)))}
  const d=x.getImageData(0,0,CW,CH).data,f=new Float32Array(CW*CH);
  for(let i=0;i<f.length;i++)f[i]=VMIN+d[i*4]/255*(VMAX-VMIN);
