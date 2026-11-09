@@ -233,6 +233,20 @@ document.getElementById("orgnew").onclick=()=>{
 let dragF=null;
 list.addEventListener("dragstart",e=>{const c=e.target.closest&&e.target.closest(".om .card");if(!c)return;dragF=c.dataset.f;c.classList.add("drag");try{e.dataTransfer.setData("text/plain",dragF);e.dataTransfer.effectAllowed="move"}catch(_){}});
 list.addEventListener("dragend",()=>{dragF=null;list.querySelectorAll(".drag,.over").forEach(x=>x.classList.remove("drag","over"))});
+/* défilement automatique pendant le glissement : près du haut ou du bas de la fenêtre, la page défile (plus vite près du bord) */
+let dragY=null,scrollRaf=null;
+document.addEventListener("dragover",e=>{if(dragF)dragY=e.clientY});
+function autoScroll(){
+  if(!dragF){scrollRaf=null;dragY=null;return}
+  if(dragY!=null){
+    const h=innerHeight,z=Math.min(140,h*.2);let v=0;
+    if(dragY<z)v=-Math.ceil(4+(z-Math.max(dragY,0))/z*26);
+    else if(dragY>h-z)v=Math.ceil(4+(Math.min(dragY,h)-(h-z))/z*26);
+    if(v)scrollBy(0,v);
+  }
+  scrollRaf=requestAnimationFrame(autoScroll);
+}
+list.addEventListener("dragstart",()=>{if(dragF&&!scrollRaf){dragY=null;scrollRaf=requestAnimationFrame(autoScroll)}});
 list.addEventListener("dragenter",e=>{if(dragF&&e.target.closest("section.om"))e.preventDefault()});
 list.addEventListener("dragover",e=>{const s=dragF&&e.target.closest("section.om");if(!s)return;e.preventDefault();list.querySelectorAll(".over").forEach(x=>x!==s&&x.classList.remove("over"));s.classList.add("over")});
 list.addEventListener("drop",e=>{const s=dragF&&e.target.closest("section.om");if(!s)return;e.preventDefault();const f=dragF;dragF=null;
