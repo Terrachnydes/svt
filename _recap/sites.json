@@ -162,7 +162,7 @@
    "fichier": "reconstituer-paysage.html",
    "artifact": "https://claude.ai/artifact/44ChknVvmwNKCXbQpmropW",
    "version": "1794233414-6077",
-   "verifie": "2026-11-09"
+   "verifie": "2026-11-10"
   }
  ],
  "ignores": [
@@ -174,5 +174,14 @@
   "https://claude.ai/artifact/Q819rD8JpgV5C3CkhFa7fc",
   "https://claude.ai/artifact/BKgJeE9qovNYfSuwcRjjFF"
  ],
- "en_attente": []
+ "en_attente": [
+  {
+   "titre": "Laboratoire des microorganismes",
+   "url": "https://claude.ai/artifact/Wa3p5qXtATScybZSVU62j1"
+  },
+  {
+   "titre": "Où passe notre eau douce ?",
+   "url": "https://claude.ai/artifact/BKkpaDmtVjGjQb3wuxZrLu"
+  }
+ ]
 }
