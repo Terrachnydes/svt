@@ -241,6 +241,22 @@ svg.map{cursor:default;touch-action:auto}
 .envb{display:inline-block;margin-top:8px;padding:4px 10px;border-radius:20px;font-size:13px;font-weight:700;border:2px solid}
 .fcard .indt{animation:none;margin-top:6px}
 .fcard.fbig svg{height:260px}
+.ft-box{margin-top:16px;border:1px solid var(--line);border-radius:12px;padding:10px 12px 12px;background:#fffdf8;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.ft-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.ft-head h3{margin:0;font-size:15.5px;color:var(--blue)}
+.ft-leg{display:flex;gap:5px}.ft-leg span{font-size:12px;font-weight:700;border-radius:6px;padding:2px 8px}
+.ftab{width:100%;border-collapse:separate;border-spacing:0 5px;margin-top:6px;font-size:13.5px}
+.ftab th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);padding:2px 6px;font-weight:700}
+.ftab td{padding:4px 6px;vertical-align:middle;background:#fff;border-top:1px solid #eee5d4;border-bottom:1px solid #eee5d4}
+.ftab td:first-child{border-left:1px solid #eee5d4;border-radius:8px 0 0 8px}.ftab td:last-child{border-right:1px solid #eee5d4;border-radius:0 8px 8px 0}
+.ft-row{cursor:pointer;animation:fadeUp .4s both}
+.ft-row:hover td{background:#faf5ea}
+.ft-fos{display:flex;align-items:center;gap:8px}
+.ft-fos svg{width:42px;height:42px;flex:0 0 42px;border-radius:7px;background:radial-gradient(circle at 50% 42%,#fffaf0 0,#efe3c8 80%)}
+td.ft-env{font-weight:700;white-space:nowrap;border-left:none}
+td.ft-env.env-mer{background:#e1effa;color:#174c7c;border-right:5px solid #2a6fb0!important}
+td.ft-env.env-terre{background:#e7f4e1;color:#2c5a18;border-right:5px solid #4b8a2e!important}
+.ft-row:hover td.ft-env.env-mer{background:#d2e6f7}.ft-row:hover td.ft-env.env-terre{background:#dbeed2}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.warp{display:none}}
 #print{display:none}
 @media print{
@@ -264,7 +280,6 @@ svg.map{cursor:default;touch-action:auto}
  <section class="mapwrap" id="mapWrap">
   <svg class="map" id="map" aria-label="Carte de la France à l’époque choisie"></svg>
   <div class="maptitle"><span class="t" id="mapT"></span><span class="w" id="mapW" title="">Carte simplifiée ⓘ</span></div>
-  <aside class="fpanel" id="fpanel" aria-label="Fossiles de l’époque affichée"></aside>
   <div class="globe" id="globe" title="Les continents se déplacent : la région n’a pas toujours été à la même latitude.">
    <svg viewBox="-30 -30 60 60" width="58" height="58"><defs><clipPath id="gclip"><circle r="26"/></clipPath><radialGradient id="gGlobe" cx=".35" cy=".3"><stop offset="0" stop-color="#f4fbff"/><stop offset="1" stop-color="#9cc3dc"/></radialGradient></defs>
     <circle r="26" fill="url(#gGlobe)" stroke="#6f8fa2"/>
@@ -618,7 +633,7 @@ class MapView{
  pulse(ids){$$('.site',this.svg).forEach(el=>el.classList.toggle('pulse',ids.includes(el.dataset.id)))}
 }
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const mv=new MapView($('#map'),{onSite:id=>openSite(id),par:'xMaxYMid meet'});
+const mv=new MapView($('#map'),{onSite:id=>openSite(id),par:'xMidYMid meet'});
 
 /* ===== Sauvegarde ===== */
 const KEY='voyageTemps4e.v1';let mem={};
@@ -674,12 +689,14 @@ function openFossil(fid,site){const F=FOSSILS[fid];
   ${site?`<div class="row" style="margin-top:12px"><button class="btn or" id="toSite">Voir la fiche du site ${site}</button></div>`:''}</div></div><p class="small">Dessin schématique, pas à l’échelle.</p>`);
  const b=$('#toSite');if(b)b.onclick=()=>openSite(site)}
 /* Panneau latéral : fossiles de l’époque affichée */
-function renderFossilPanel(pid){const groups=[...Object.values(SITES).filter(s=>s.period===pid).map(s=>({where:`Site ${s.n} · ${s.name}`,site:s.n,fossils:s.fossils})),...(EXTRA[pid]||[])];
- let h=`<div class="fp-h">Fossiles de cette époque</div><div class="fp-leg"><span class="env-mer">🌊 Mer</span><span class="env-terre">🌿 Terre ferme</span></div>`;
- if(!groups.length)h+=`<p class="fp-none">${pid==='act'?'Aujourd’hui : on observe des êtres vivants actuels, pas des fossiles.':'Aucun fossile étudié pour cette époque dans ce logiciel.'}</p>`;
- let k=0;groups.forEach(g=>{h+=`<div class="fp-site">${esc(g.where)}</div>`;g.fossils.forEach(f=>{const F=FOSSILS[f];
-  h+=`<button class="fp-card env-${F.env}" data-f="${f}" data-s="${g.site||''}" style="animation-delay:${.08*k++}s" title="${esc(F.name)}">${fossilSVG(f)}<span class="fp-t"><b>${esc(F.short||F.name)}</b><span>${ENV[F.env].ico} ${esc(F.milieu)}</span></span></button>`})});
- const p=$('#fpanel');p.innerHTML=h;p.scrollTop=0;$$('.fp-card',p).forEach(b=>b.onclick=()=>openFossil(b.dataset.f,b.dataset.s))}
+function renderFossilPanel(pid){const box=$('#ftable');if(!box)return;const P=PERIODS[pid];
+ const groups=[...Object.values(SITES).filter(s=>s.period===pid).map(s=>({where:`Site ${s.n} · ${s.name}`,site:s.n,fossils:s.fossils})),...(EXTRA[pid]||[])];
+ let rows='';groups.forEach(g=>g.fossils.forEach(f=>{const F=FOSSILS[f];
+  rows+=`<tr class="ft-row" data-f="${f}" data-s="${g.site||''}" title="Clique pour agrandir"><td class="ft-fos">${fossilSVG(f)}<b>${esc(F.short||F.name)}</b></td><td>${esc(g.where)}</td><td class="ft-env env-${F.env}">${ENV[F.env].ico} ${esc(F.milieu)}</td></tr>`}));
+ box.innerHTML=`<div class="ft-box"><div class="ft-head"><h3>🦴 Fossiles de l’époque : ${esc(P.name)}</h3><span class="ft-leg"><span class="env-mer">🌊 Mer</span><span class="env-terre">🌿 Terre ferme</span></span></div>
+  ${rows?`<table class="ftab"><thead><tr><th>Fossile</th><th>Lieu</th><th>Milieu de vie</th></tr></thead><tbody>${rows}</tbody></table><p class="small" style="margin:6px 0 0">Clique sur une ligne pour agrandir le fossile. Change d’époque avec la frise du temps.</p>`
+  :`<p class="small" style="margin:6px 0 0">${pid==='act'?'Aujourd’hui : on observe des êtres vivants actuels, pas des fossiles.':'Aucun fossile étudié pour cette époque dans ce logiciel.'}</p>`}</div>`;
+ $$('.ft-row',box).forEach(r=>r.onclick=()=>openFossil(r.dataset.f,r.dataset.s))}
 
 /* ===== Fenêtres ===== */
 function openModal(title,html){const m=$('#modal');m.innerHTML=`<div class="mbox" role="dialog" aria-modal="true"><div class="mhead"><h2>${esc(title)}</h2><button class="x" aria-label="Fermer">×</button></div><div class="mbody">${html}</div></div>`;m.hidden=false;m.querySelector('.x').onclick=closeModal;m.onclick=e=>{if(e.target===m)closeModal()}}
@@ -716,7 +733,7 @@ const STEPS=[
   <div class="box help"><h4>Comment utiliser le logiciel</h4><ul style="margin:0;padding-left:18px">
    <li>En bas, la <b>frise du temps</b> : clique sur une époque pour changer de carte.</li>
    <li>Sur la carte, les <b style="color:var(--orange)">ronds orange numérotés</b> sont des sites à étudier : clique dessus.</li>
-   <li>À gauche de la carte : les <b>fossiles de l’époque</b>, en <b style="color:#2a6fb0">bleu</b> ceux qui vivaient dans la mer, en <b style="color:#4b8a2e">vert</b> ceux de la terre ferme. Clique sur un fossile pour l’agrandir.</li>
+   <li>Sous les consignes, le <b>tableau des fossiles</b> de l’époque affichée : en <b style="color:#2a6fb0">bleu</b> ceux qui vivaient dans la mer, en <b style="color:#4b8a2e">vert</b> ceux de la terre ferme. Clique sur une ligne pour agrandir le fossile.</li>
    <li>Les <span class="mot" data-m="ma">mots soulignés</span> sont expliqués quand tu cliques dessus.</li></ul></div>
   <label><b>Ton prénom et ta classe :</b></label><input type="text" id="nameIn" value="${esc(data.name)}" placeholder="Ex. : Léa, 4e B">`},
  {t:'Étape 1 — Lire une carte du passé',p:'act',h:()=>`
@@ -758,9 +775,9 @@ function bilanHTML(){return `<p>Voici le tableau de ton enquête, rempli à part
 let mode='guide';
 function renderGuide(){const i=data.step,S=STEPS[i];const g=$('#guide');
  g.innerHTML=`<div class="gtop"><div class="small">Enquête guidée · ${i===0?'Introduction':i===STEPS.length-1?'Bilan':'Étape '+i+' sur '+(STEPS.length-2)}</div><div class="steps">${STEPS.map((s,k)=>`<button class="${k===i?'on':k<i?'done':''}" data-st="${k}" title="${esc(s.t)}"></button>`).join('')}</div></div>
- <div class="gbody"><h2>${esc(S.t)}</h2>${S.h()}</div>
+ <div class="gbody"><h2>${esc(S.t)}</h2>${S.h()}<div id="ftable"></div></div>
  <div class="gnav"><button class="btn sec" id="prevS" ${i===0?'disabled style="visibility:hidden"':''}>◀ Précédent</button><button class="btn" id="nextS" ${i===STEPS.length-1?'style="visibility:hidden"':''}>${i===0?'Commencer l’enquête ▶':'Étape suivante ▶'}</button></div>`;
- mv.pulse(S.sites||[]);
+ mv.pulse(S.sites||[]);renderFossilPanel(cur);
  $$('[data-st]',g).forEach(b=>b.onclick=()=>goStep(+b.dataset.st));$('#prevS').onclick=()=>goStep(i-1);$('#nextS').onclick=()=>goStep(i+1);
  $$('[data-go]',g).forEach(b=>b.onclick=()=>{stopPlay();setPeriod(b.dataset.go)});
  $$('[data-site]',g).forEach(b=>b.onclick=()=>openSite(b.dataset.site));
@@ -782,8 +799,8 @@ function renderFree(){const P=PERIODS[cur];const here=Object.values(SITES).filte
  $('#guide').innerHTML=`<div class="gbody"><h2>${esc(P.name)}</h2><p class="small">${P.ma?'Il y a environ '+P.ma+' millions d’années':'Aujourd’hui'}</p>
  <p>${esc(P.txt)}</p><div class="box help"><h4>À savoir</h4>${P.ma?'Cette carte est une '+mot('reconst','reconstitution simplifiée')+'. ':''}${esc(P.doute)} La région se trouvait ${esc(P.lat)}.</div>
  <h3 style="color:var(--blue)">Sites de cette époque</h3>${here.length?here.map(s=>`<p><button class="btn small or" data-site="${s.n}">Site ${s.n} — ${esc(s.name)}</button> <span class="small">${esc(s.rock)}</span></p>`).join(''):'<p class="small">Aucun site à étudier pour cette époque dans ce logiciel.</p>'}
- <h3 style="color:var(--blue)">Tous les sites</h3>${Object.values(SITES).map(s=>`<p style="margin:5px 0"><button class="btn small sec" data-site="${s.n}">Site ${s.n} — ${esc(s.name)}</button> <span class="small">${esc(s.age)}</span></p>`).join('')}</div>`;
- mv.pulse(here.map(s=>String(s.n)));$$('[data-site]',$('#guide')).forEach(b=>b.onclick=()=>openSite(b.dataset.site))}
+ <h3 style="color:var(--blue)">Tous les sites</h3>${Object.values(SITES).map(s=>`<p style="margin:5px 0"><button class="btn small sec" data-site="${s.n}">Site ${s.n} — ${esc(s.name)}</button> <span class="small">${esc(s.age)}</span></p>`).join('')}<div id="ftable"></div></div>`;
+ mv.pulse(here.map(s=>String(s.n)));renderFossilPanel(cur);$$('[data-site]',$('#guide')).forEach(b=>b.onclick=()=>openSite(b.dataset.site))}
 
 /* ===== Comparer ===== */
 const staticMap=pid=>`<svg viewBox="0 0 ${W} ${H}"><image href="${periodImage(pid)}" width="${W}" height="${H}"/>${labelsSVG(pid)}<path class="fr-outline" d="${linePath(FR)}"/>${star().replace(/ data-x="[^"]*" data-y="[^"]*"/,'')}</svg>`;
