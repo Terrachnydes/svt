@@ -241,14 +241,18 @@ svg.map{cursor:default;touch-action:auto}
 .envb{display:inline-block;margin-top:8px;padding:4px 10px;border-radius:20px;font-size:13px;font-weight:700;border:2px solid}
 .fcard .indt{animation:none;margin-top:6px}
 .fcard.fbig svg{height:260px}
+.legend{left:50%!important;right:auto!important;transform:translateX(-50%);bottom:8px!important;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 12px;padding:5px 12px!important;font-size:11.5px!important;line-height:1.4!important;width:max-content;max-width:calc(100% - 20px)}
+.site circle.dot{r:11}.site text{font-size:12px}
 .site.sel circle.dot{stroke:#ffd84d;stroke-width:4}
 .sp-empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--muted);text-align:center;padding:20px}
-.sp-empty svg{width:180px}.sp-empty p{font-size:17px;font-weight:700;margin:0;color:#3d4b54}
+.sp-empty svg{max-width:100%}.sp-empty span{font-size:14px}.sp-empty p{font-size:17px;font-weight:700;margin:0;color:#3d4b54}
 .sp{padding:14px 16px 18px}
 .sp-head{display:flex;align-items:center;gap:12px;margin-bottom:12px;animation:fadeUp .35s both}
 .sp-num{flex:0 0 40px;height:40px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#f59a63,#b0441b);color:#fff;font-weight:800;font-size:19px;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)}
 .sp-head h2{margin:0;font-size:21px}.sp-head p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
 .sp-card{display:grid;grid-template-columns:130px 1fr;gap:12px;align-items:start;border:1px solid var(--line);border-left:6px solid;border-radius:12px;padding:10px;margin-bottom:12px;background:#fffdf8;box-shadow:0 2px 8px rgba(0,0,0,.05);animation:fadeUp .45s both}
+.sp-card.env-cote{border-left-color:#c39a2e;background:#fffdf8;color:var(--ink)}
+.env-cote{background:#fbf1d3;border-color:#c39a2e;color:#6b4f0e}
 .sp-card.env-mer{border-left-color:#2a6fb0;background:#fffdf8;color:var(--ink)}.sp-card.env-terre{border-left-color:#4b8a2e;background:#fffdf8;color:var(--ink)}
 .sp-img svg{width:130px;height:130px;display:block;border-radius:10px;background:radial-gradient(circle at 50% 42%,#fffaf0 0,#efe3c8 80%)}
 .sp-txt h3{margin:0 0 4px;font-size:16px}.sp-txt p{margin:0 0 6px;font-size:14px;line-height:1.45}
@@ -303,15 +307,15 @@ td.ft-env.env-terre{background:#e7f4e1;color:#2c5a18;border-right:5px solid #4b8
    <b id="glat"></b><span id="gtxt"></span>
   </div>
   <div class="warp" id="warp"><span class="ring"></span><span class="ring r2"></span><span class="ring r3"></span><div class="ctr"><div class="dir" id="wDir"></div><div class="num" id="wNum"></div><div class="lab" id="wLab"></div></div></div>
-  <details class="legend" open><summary>Légende</summary>
+  <div class="legend">
    <div><i style="background:var(--deep)"></i>Mer profonde</div>
    <div><i style="background:var(--shallow)"></i>Mer peu profonde</div>
    <div><i style="background:var(--litt)"></i>Côtes, lagunes</div>
    <div><i style="background:var(--land)"></i>Terre (hors de l’eau)</div>
    <div><i style="background:var(--relief)"></i>Montagnes, reliefs</div>
    <div><i class="dash"></i>France d’aujourd’hui (repère)</div>
-   <div>⭐ Paris (repère) · <b style="color:var(--orange)">①</b> Site à étudier</div>
-  </details>
+   <div>⭐ Paris (repère) · <b style="color:var(--orange)">①</b> Zone de prélèvement</div>
+  </div>
  </section>
  <aside id="guide"></aside>
 </main>
@@ -378,9 +382,9 @@ const P_ORDER=['carb','trias','jur','cret','eoc','act'];
 const PERIODS={
  carb:{name:'Carbonifère',ma:320,era:1,lat:'près de l’équateur',latVal:5,
   polys:[['shallow',[[-7,50.7],[2,50.75],[11,50.8],[11,53.5],[-7,53.5]],'line'],
-   ['litt',[[-7,50.3],[1,50.45],[4,50.55],[8,50.4],[11,50.3],[11,51.15],[6,51.3],[1,51.25],[-7,51.0]]],
+   ['litt',[[-7,50.3],[1,50.4],[4,50.5],[8,50.4],[11,50.3],[11,50.85],[6,50.85],[2.5,50.75],[1,50.72],[-7,50.65]]],
    ['relief',[[-7,40],[11,40],[11,49.5],[8,49.9],[5,50.1],[2,50.0],[-1,49.9],[-4,49.75],[-7,49.6]]]],
-  labels:[[1.8,46.6,'Chaîne hercynienne'],[-2.6,48.1,'(futur Massif armoricain)'],[3.0,45.0,'(futur Massif central)'],[2.4,50.78,'Plaines et marécages'],[2.2,51.8,'Mer peu profonde']],
+  labels:[[1.8,46.6,'Chaîne hercynienne'],[-2.6,48.1,'(futur Massif armoricain)'],[3.0,45.0,'(futur Massif central)'],[4.6,50.6,'Plaines et marécages'],[2.2,51.8,'Mer peu profonde']],
   txt:'Les continents se rassemblent en un seul bloc. Notre région est près de l’équateur, au milieu d’une grande chaîne de montagnes (la chaîne hercynienne). Au nord, des plaines marécageuses bordent la mer.',
   doute:'Très grande incertitude : les montagnes de cette époque ont depuis été usées par l’érosion.'},
  trias:{name:'Trias',ma:230,era:2,lat:'zone tropicale',latVal:20,
@@ -393,7 +397,7 @@ const PERIODS={
   txt:'Tous les continents forment un seul super-continent : la Pangée. La région, sous un climat tropical, est surtout une terre basse. À l’est s’étendent des lagunes salées.',
   doute:'Grande incertitude sur la position exacte des côtes.'},
  jur:{name:'Jurassique',ma:160,era:2,lat:'≈ 30° Nord',latVal:32,
-  polys:[['deep',[[5.2,46.6],[7.5,47.2],[11,47.5],[11,40],[3.6,40],[3.8,42.6],[4.6,44.3]]],
+  polys:[['deep',[[6.2,45.4],[7.6,46.4],[11,46.8],[11,40],[3.6,40],[3.7,42.6],[4.3,44.0],[4.6,45.0],[5.6,45.2]]],
    ['relief',[[-5.4,48.8],[-3.2,49.1],[-1.6,49.2],[-0.6,48.5],[-0.7,47.3],[-2.4,46.6],[-4.7,47.4]]],
    ['relief',[[1.9,46.3],[3.6,46.4],[4.1,45.3],[3.6,44.2],[2.4,44.3],[1.7,45.3]]],
    ['land',[[-1.5,53.5],[-0.8,52.0],[1.5,51.5],[4.0,51.3],[5.2,51.6],[5,53.5]]],
@@ -404,7 +408,8 @@ const PERIODS={
   doute:'Le contour des îles et des côtes est simplifié.'},
  cret:{name:'Crétacé',ma:90,era:2,lat:'≈ 35° Nord',latVal:36,
   polys:[['deep',[[-7,47.4],[-5.2,46.6],[-3.4,45.4],[-2.4,44.3],[-2.2,43.6],[-7,43.4]]],
-   ['deep',[[5.4,45.9],[7.5,46.6],[11,46.8],[11,40],[7.6,40],[7.0,42.6],[6.6,43.6],[5.4,44.6]]],
+   ['deep',[[5.4,45.9],[7.5,46.6],[11,46.8],[11,40],[7.6,40],[7.0,42.6],[6.8,43.7],[6.4,44.2],[5.0,44.4],[4.9,45.0]]],
+   ['litt',[[-1.6,46.4],[-0.2,46.6],[0.6,46.1],[0.2,45.6],[-0.9,45.7]]],
    ['relief',[[-5.6,48.9],[-3.0,49.2],[-1.2,49.3],[0.1,48.5],[-0.3,47.0],[-2.4,46.3],[-4.9,47.2]]],
    ['relief',[[1.3,46.9],[3.2,47.1],[4.4,46.6],[4.7,45.0],[4.0,43.8],[2.4,43.8],[1.3,45.2]]],
    ['land',[[5.5,50.4],[7.5,49.6],[8.2,48.2],[8.6,47.6],[11,47.8],[11,52],[7.0,51.6]]],
@@ -459,7 +464,7 @@ const FOSSILS={
 FOSSILS.fougere={name:'Fougères géantes (Pecopteris)',short:'Fougères géantes',size:'feuilles de plusieurs dizaines de cm',desc:'Empreintes de feuilles de fougères arborescentes, conservées dans les roches qui accompagnent le charbon. Le charbon s’est formé à partir de ces plantes accumulées dans des marécages.',ind:'Les fougères poussent sur la terre ferme, dans des lieux humides.',draw:'fern'};
 FOSSILS.calamites={name:'Prêles géantes (Calamites)',short:'Prêles géantes',size:'tiges de plusieurs mètres',desc:'Tiges découpées en segments, avec de fines côtes : ce sont des cousines géantes des prêles actuelles.',ind:'Les prêles poussent sur la terre ferme, au bord de l’eau douce.',draw:'calamites'};
 /* Milieu de vie de chaque fossile (code couleur : mer = bleu, terre = vert) */
-const ENV={mer:{c:'mer',ico:'🌊',lab:'Mer'},terre:{c:'terre',ico:'🌿',lab:'Terre ferme'}};
+const ENV={mer:{c:'mer',ico:'🌊',lab:'Mer'},cote:{c:'cote',ico:'🏖️',lab:'Côte, lagune'},terre:{c:'terre',ico:'🌿',lab:'Terre ferme ou eau douce'}};
 [['entroque','mer','Mer'],['polypier','mer','Mer chaude peu profonde'],['ammonite','mer','Mer'],['brachiopode','mer','Mer'],
  ['teleosaurus','mer','Mer, près des côtes'],['dino','terre','Terre ferme'],['coccolithe','mer','Mer (en surface)'],['belemnite','mer','Mer'],
  ['oursin','mer','Mer'],['nummulite','mer','Mer chaude peu profonde'],['campanile','mer','Mer peu profonde'],['orbitolite','mer','Mer peu profonde'],
@@ -471,24 +476,68 @@ Object.assign(FOSSILS.campanile,{short:'Campanile géant'});
 const EXTRA={carb:[{where:'Nord de la France (bassin houiller), ≈ 310 Ma',fossils:['fougere','calamites']}]};
 
 /* ===== Les 4 sites ===== */
+/* ===== Fossiles supplémentaires ===== */
+Object.assign(FOSSILS,{
+ productus:{name:'Brachiopode (Productus)',size:'3 à 10 cm',desc:'Grande coquille bombée à deux valves inégales, couverte de petites épines qui la stabilisaient sur le fond.',env:'mer',milieu:'Mer peu profonde',draw:'brachio'},
+ lithostrotion:{name:'Corail (Lithostrotion)',size:'colonies de plusieurs dm',desc:'Colonie de corail formée de nombreux petits tubes serrés les uns contre les autres.',env:'mer',milieu:'Mer chaude peu profonde',draw:'polypier'},
+ crinoideC:{name:'Crinoïdes (« lis de mer »)',size:'disques de quelques mm',desc:'Animaux fixés au fond par une longue tige faite de petits disques empilés. Leurs débris forment des calcaires entiers.',env:'mer',milieu:'Mer',draw:'entroque'},
+ lepido:{name:'Écorce de Lépidodendron',size:'arbre jusqu’à 30 m',desc:'Écorce couverte d’écailles en losanges : ce sont les traces des feuilles d’un arbre géant, cousin des petits lycopodes actuels.',env:'terre',milieu:'Forêt marécageuse',draw:'lepido'},
+ meganeura:{name:'Libellule géante (Meganeura)',size:'70 cm d’envergure',desc:'Insecte cousin des libellules, l’un des plus grands insectes connus. Découvert à Commentry.',env:'terre',milieu:'Terre ferme, près de l’eau douce',draw:'dragonfly'},
+ cordaites:{name:'Feuilles de Cordaïtes',size:'feuilles jusqu’à 1 m',desc:'Longues feuilles en lanière aux nervures parallèles, d’un grand arbre ancêtre des conifères.',env:'terre',milieu:'Terre ferme',draw:'cordaites'},
+ voltzia:{name:'Rameau de conifère (Voltzia)',size:'rameaux de 5 à 20 cm',desc:'Petit rameau couvert de courtes aiguilles, d’un conifère qui poussait près de l’eau.',env:'terre',milieu:'Terre ferme, au bord d’un delta',draw:'voltzia'},
+ limule:{name:'Limule',size:'5 à 30 cm',desc:'Animal à carapace en fer à cheval et à longue queue pointue. Des limules vivent encore aujourd’hui sur les plages d’Amérique et d’Asie.',env:'cote',milieu:'Côte, eaux peu profondes',draw:'limule'},
+ ceratites:{name:'Ammonite (Ceratites)',size:'5 à 15 cm',desc:'Coquille enroulée aux grosses côtes ; ses cloisons internes dessinent des dents de scie.',env:'mer',milieu:'Mer peu profonde',draw:'ammonite'},
+ encrinus:{name:'Crinoïde (Encrinus)',size:'tige jusqu’à 1 m',desc:'« Lis de mer » à couronne de bras épais. Ses débris forment le calcaire à entroques de Lorraine.',env:'mer',milieu:'Mer peu profonde',draw:'entroque'},
+ dentrequin:{name:'Dents de requins',size:'quelques mm à quelques cm',desc:'Le squelette des requins ne se conserve presque jamais : on retrouve surtout leurs dents, très dures.',env:'mer',milieu:'Mer',draw:'tooth'},
+ dentmam:{name:'Dent de petit mammifère',size:'1 à 2 mm',desc:'Minuscule dent d’un des tout premiers mammifères, de la taille d’une musaraigne. Elle a été apportée par l’eau jusqu’au bord de la mer.',env:'terre',milieu:'Terre ferme',draw:'molar'},
+ ammoniteVN:{name:'Ammonites',size:'quelques cm à 20 cm',desc:'Coquilles enroulées et cloisonnées, souvent conservées dans une argile grise.',env:'mer',milieu:'Mer',draw:'ammonite'},
+ ichthyo:{name:'Vertèbre d’ichthyosaure',size:'vertèbre de 5 à 10 cm',desc:'Vertèbre en forme de disque d’un reptile marin à l’allure de dauphin.',env:'mer',milieu:'Pleine mer',draw:'vertebra'},
+ poulpe:{name:'Poulpe (Proteroctopus)',size:'environ 10 cm',desc:'Un des plus anciens poulpes connus. Son corps mou s’est conservé grâce à des conditions exceptionnelles.',env:'mer',milieu:'Mer assez profonde',draw:'octopus'},
+ crevette:{name:'Crevettes',size:'quelques cm',desc:'Crustacés conservés avec leurs pattes et leurs antennes.',env:'mer',milieu:'Mer assez profonde',draw:'shrimp'},
+ poissonC:{name:'Poissons',size:'quelques cm à 30 cm',desc:'Squelettes complets conservés dans un calcaire très fin, déposé dans une eau calme.',env:'cote',milieu:'Lagune',draw:'fish'},
+ alligatorellus:{name:'Petit crocodile (Alligatorellus)',size:'environ 40 cm',desc:'Petit crocodile conservé entier.',env:'cote',milieu:'Lagune et rivages',draw:'teleosaurus'},
+ empreinte:{name:'Empreintes de sauropode',size:'piste de plus de 150 m',desc:'Traces de pas d’un dinosaure géant à long cou, laissées dans de la boue molle qui a ensuite durci.',env:'cote',milieu:'Vasière au bord de la mer, découverte à marée basse',draw:'footprint'},
+ micraster:{name:'Oursin (Micraster)',size:'4 à 6 cm',desc:'Squelette en forme de cœur avec cinq zones en pétales sur le dessus.',env:'mer',milieu:'Mer',draw:'micraster'},
+ inoceramus:{name:'Inocérames',size:'quelques cm à plus de 50 cm',desc:'Grandes coquilles plates à deux valves, ornées de plis.',env:'mer',milieu:'Mer',draw:'inoceramus'},
+ oeuf:{name:'Œufs de dinosaure',size:'environ 20 cm',desc:'Œufs ronds pondus par de grands dinosaures herbivores (titanosaures), souvent retrouvés en morceaux.',env:'terre',milieu:'Terre ferme (plaines et rivières)',draw:'egg'},
+ rhabdodon:{name:'Os de dinosaure (Rhabdodon)',size:'animal de 4 m',desc:'Dinosaure herbivore typique du sud de la France à la fin du Crétacé.',env:'terre',milieu:'Terre ferme',draw:'bone'},
+ ambre:{name:'Insecte dans l’ambre',size:'insectes de quelques mm',desc:'L’ambre est une résine d’arbre durcie. Des insectes s’y sont collés et ont été conservés.',env:'terre',milieu:'Forêt au bord de la mer',draw:'amber'},
+ hetero:{name:'Ammonite déroulée',size:'quelques cm à 30 cm',desc:'Ammonite dont la coquille n’est pas enroulée serrée : elle forme un crochet.',env:'mer',milieu:'Mer profonde',draw:'hetero'},
+ palaeo:{name:'Palaeotherium',size:'animal de 1 à 2 m',desc:'Mammifère herbivore ressemblant à un tapir. Georges Cuvier l’a reconstitué en 1804 à partir d’os trouvés dans les carrières de gypse de Montmartre.',env:'terre',milieu:'Terre ferme',draw:'palaeo'},
+ mamQuercy:{name:'Dents et mâchoires de mammifères',size:'quelques mm à quelques cm',desc:'Des milliers d’os piégés dans des fissures du calcaire : premiers chevaux, primates, rongeurs…',env:'terre',milieu:'Terre ferme',draw:'molar'},
+ osQuercy:{name:'Os de reptiles et d’oiseaux',size:'quelques cm',desc:'Lézards, serpents, tortues et oiseaux tombés dans les fissures.',env:'terre',milieu:'Terre ferme',draw:'bone'},
+ oursinCoeur:{name:'Oursin en forme de cœur',size:'3 à 6 cm',desc:'Oursin qui vivait enfoui dans le sable du fond.',env:'mer',milieu:'Mer',draw:'micraster'},
+ feuille:{name:'Feuilles d’arbres',size:'5 à 20 cm',desc:'Empreintes de feuilles très bien conservées, d’arbres d’une forêt chaude.',env:'terre',milieu:'Forêt (terre ferme)',draw:'leaf'},
+ poissonM:{name:'Poissons d’eau douce',size:'quelques cm à 30 cm',desc:'Squelettes complets de poissons déposés au fond d’un lac.',env:'terre',milieu:'Lac d’eau douce',draw:'fish'}
+});
+FOSSILS.dino.env='terre';FOSSILS.teleosaurus.milieu='Mer, près des côtes';
+/* ===== Zones de prélèvement (elles changent selon l'époque) ===== */
 const SITES={
- 1:{n:1,name:'Meuse (Euville)',lon:5.63,lat:48.75,period:'jur',age:'environ 160 millions d’années (Jurassique)',
-  rock:'Calcaire à entroques (« pierre d’Euville »)',texture:'crinoid',
-  obs:['Roche beige clair, dure.','Avec une loupe, on voit plein de petits morceaux ronds collés ensemble.','Avec une goutte d’acide : la roche fait des bulles → c’est un calcaire.'],
-  fossils:['entroque','polypier','ammonite'],where:'Plateaux de la Meuse, à l’est du Bassin parisien, à plus de 200 km de la mer actuelle.'},
- 2:{n:2,name:'Caen',lon:-0.37,lat:49.18,period:'jur',age:'environ 167 millions d’années (Jurassique)',
-  rock:'Calcaire de Caen (« pierre de Caen »)',texture:'caen',
-  obs:['Roche blanc crème, très fine et homogène.','Facile à tailler : elle a servi à construire les abbayes de Caen et la Tour de Londres.','Avec une goutte d’acide : la roche fait des bulles → c’est un calcaire.'],
-  fossils:['brachiopode','teleosaurus','dino'],where:'Carrières autour de Caen, en Normandie.'},
- 3:{n:3,name:'Reims',lon:4.03,lat:49.25,period:'cret',age:'environ 80 millions d’années (Crétacé)',
-  rock:'Craie',texture:'chalk',
-  obs:['Roche blanche, tendre : elle tache les doigts.','Aucun grain visible, même à la loupe.','Avec une goutte d’acide : beaucoup de bulles → c’est un calcaire presque pur.','Les caves de champagne de Reims sont creusées dans cette craie.'],
-  fossils:['coccolithe','belemnite','oursin'],where:'Région de Reims, en Champagne (partie est du Bassin parisien).'},
- 4:{n:4,name:'Paris',lon:2.05,lat:48.62,period:'eoc',age:'environ 45 millions d’années (Éocène)',
-  rock:'Calcaire grossier (« pierre de Paris »)',texture:'grossier',
-  obs:['Roche jaune-beige, souvent remplie de coquilles.','C’est avec cette pierre qu’ont été construits de nombreux monuments et immeubles de Paris.','Avec une goutte d’acide : la roche fait des bulles → c’est un calcaire.'],
-  fossils:['nummulite','campanile','orbitolite'],where:'Sous Paris et dans ses environs (anciennes carrières souterraines).'}
+ c1:{period:'carb',name:'Boulonnais (Pas-de-Calais)',lon:1.75,lat:50.82,age:'≈ 335 Ma',rock:'Calcaire',fossils:['productus','lithostrotion','crinoideC']},
+ c2:{period:'carb',name:'Bassin houiller du Nord (Lens)',lon:2.75,lat:50.45,age:'≈ 310 Ma',rock:'Schistes et charbon',fossils:['fougere','calamites','lepido']},
+ c3:{period:'carb',name:'Commentry (Allier)',lon:2.74,lat:46.29,age:'≈ 300 Ma',rock:'Schistes et charbon',fossils:['meganeura','fougere']},
+ c4:{period:'carb',name:'Saint-Étienne (Loire)',lon:4.39,lat:45.44,age:'≈ 300 Ma',rock:'Grès et charbon',fossils:['cordaites','calamites']},
+ t1:{period:'trias',name:'Vosges du Nord (grès à Voltzia)',lon:7.25,lat:48.72,age:'≈ 245 Ma',rock:'Grès',fossils:['voltzia','limule']},
+ t2:{period:'trias',name:'Moselle (Muschelkalk)',lon:6.9,lat:49.12,age:'≈ 240 Ma',rock:'Calcaire',fossils:['ceratites','encrinus']},
+ t3:{period:'trias',name:'Saint-Nicolas-de-Port (Meurthe-et-Moselle)',lon:6.3,lat:48.63,age:'≈ 205 Ma',rock:'Grès et argiles',fossils:['dentrequin','dentmam']},
+ 1:{period:'jur',name:'Meuse (Euville)',lon:5.63,lat:48.75,age:'≈ 160 Ma',rock:'Calcaire à entroques',fossils:['entroque','polypier','ammonite']},
+ 2:{period:'jur',name:'Caen',lon:-0.45,lat:49.1,age:'≈ 167 Ma',rock:'Calcaire de Caen',fossils:['brachiopode','teleosaurus','dino']},
+ j3:{period:'jur',name:'Villers-sur-Mer (falaises des Vaches Noires)',lon:0.15,lat:49.4,age:'≈ 162 Ma',rock:'Argiles et marnes',fossils:['ammoniteVN','belemnite','ichthyo']},
+ j4:{period:'jur',name:'La Voulte-sur-Rhône (Ardèche)',lon:4.78,lat:44.8,age:'≈ 165 Ma',rock:'Marnes',fossils:['poulpe','crevette']},
+ j5:{period:'jur',name:'Cerin (Ain)',lon:5.45,lat:45.72,age:'≈ 152 Ma',rock:'Calcaire très fin',fossils:['poissonC','alligatorellus']},
+ j6:{period:'jur',name:'Plagne (Ain)',lon:5.82,lat:46.24,age:'≈ 150 Ma',rock:'Calcaire',fossils:['empreinte']},
+ 3:{period:'cret',name:'Reims',lon:4.03,lat:49.25,age:'≈ 80 Ma',rock:'Craie',fossils:['coccolithe','belemnite','oursin']},
+ k2:{period:'cret',name:'Étretat (Seine-Maritime)',lon:0.2,lat:49.71,age:'≈ 90 Ma',rock:'Craie à silex',fossils:['micraster','inoceramus','coccolithe']},
+ k3:{period:'cret',name:'Archingeay (Charente-Maritime)',lon:-0.75,lat:45.93,age:'≈ 100 Ma',rock:'Argiles et sables à ambre',fossils:['ambre','dentrequin']},
+ k4:{period:'cret',name:'Bassin vocontien (Drôme)',lon:5.4,lat:44.42,age:'≈ 110 Ma',rock:'Marnes bleues',fossils:['hetero','belemnite']},
+ k5:{period:'cret',name:'Aix-en-Provence (Sainte-Victoire)',lon:5.6,lat:43.53,age:'≈ 70 Ma',rock:'Argiles rouges',fossils:['oeuf','rhabdodon']},
+ 4:{period:'eoc',name:'Paris (calcaire grossier)',lon:1.8,lat:48.62,age:'≈ 45 Ma',rock:'Calcaire grossier',fossils:['nummulite','campanile','orbitolite']},
+ e2:{period:'eoc',name:'Montmartre (Paris)',lon:2.5,lat:49.02,age:'≈ 36 Ma',rock:'Gypse',fossils:['palaeo']},
+ e3:{period:'eoc',name:'Biarritz (côte des Basques)',lon:-1.56,lat:43.47,age:'≈ 40 Ma',rock:'Marnes et calcaires',fossils:['nummulite','oursinCoeur']},
+ e4:{period:'eoc',name:'Quercy (Lot)',lon:1.6,lat:44.4,age:'≈ 40 Ma',rock:'Argiles dans les fissures du calcaire',fossils:['mamQuercy','osQuercy']},
+ e5:{period:'eoc',name:'Menat (Puy-de-Dôme)',lon:2.9,lat:46.1,age:'≈ 60 Ma',rock:'Roche feuilletée d’un ancien lac',fossils:['feuille','poissonM']}
 };
+P_ORDER.forEach(p=>{let n=0;for(const k in SITES)if(SITES[k].period===p)SITES[k].num=++n});
 const PARIS=[2.35,48.86];
 
 /* ===== Lexique ===== */
@@ -549,6 +598,47 @@ const DRAW={
    for(let i=1;i<w/4;i++)s+=`<line x1="${x-w/2+i*4}" y1="12" x2="${x-w/2+i*4}" y2="108" stroke="${L}" stroke-width=".5" opacity=".7"/>`;
    for(let y=30;y<108;y+=22)s+=`<line x1="${x-w/2-2}" y1="${y}" x2="${x+w/2+2}" y2="${y}" stroke="${L}" stroke-width="2.2"/>`}
   return s},
+ lepido(){const L='#e9dfc8';let s=`<rect x="5" y="5" width="110" height="110" rx="10" fill="#4b4945"/>`;
+  for(let r=0;r<8;r++)for(let c=0;c<6;c++){const x=10+c*20+(r%2?10:0),y=8+r*15;s+=`<path d="M${x},${y-9} L${x+8},${y} L${x},${y+9} L${x-8},${y}Z" fill="#8f846d" stroke="${L}" stroke-width="1"/><circle cx="${x}" cy="${y-1}" r="1.4" fill="${L}"/>`}
+  return `<clipPath id="lp${++clipN}"><rect x="5" y="5" width="110" height="110" rx="10"/></clipPath><g clip-path="url(#lp${clipN})">${s}</g>`},
+ dragonfly(){const L='#e9dfc8';let s=`<rect x="5" y="5" width="110" height="110" rx="10" fill="#4b4945"/>`;
+  for(const [cy,rx,a] of [[40,36,-6],[54,32,6]])for(const g of[-1,1]){const cx=60+g*(rx+2);s+=`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="8" transform="rotate(${g*a} ${cx} ${cy})" fill="#9a8e77" fill-opacity=".55" stroke="${L}" stroke-width="1"/><line x1="60" y1="${cy}" x2="${60+g*rx*2}" y2="${cy+g*a*.6}" stroke="${L}" stroke-width=".6"/>`}
+  return s+`<rect x="57" y="34" width="6" height="74" rx="3" fill="#b7a984" stroke="${L}"/><circle cx="60" cy="28" r="6" fill="#b7a984" stroke="${L}"/>`},
+ cordaites(){const L='#e9dfc8';let s=`<rect x="5" y="5" width="110" height="110" rx="10" fill="#4b4945"/>`;
+  for(const [x,a] of [[40,-14],[60,0],[80,12]]){s+=`<g transform="rotate(${a} ${x} 112)"><path d="M${x},112 C${x-9},80 ${x-8},30 ${x},12 C${x+8},30 ${x+9},80 ${x},112Z" fill="#9a8e77" stroke="${L}"/>`;for(let k=-2;k<=2;k++)s+=`<path d="M${x+k*2.4},106 C${x+k*3},70 ${x+k*2.6},40 ${x+k},18" stroke="${L}" stroke-width=".5" fill="none"/>`;s+=`</g>`}
+  return s},
+ voltzia(){const L='#e9dfc8';let s=`<rect x="5" y="5" width="110" height="110" rx="10" fill="#4b4945"/><path d="M20,108 Q55,70 100,14" stroke="${L}" stroke-width="2.4" fill="none"/>`;
+  for(let k=0;k<22;k++){const t=k/22,x=20+80*t,y=108-94*t-6*Math.sin(t*Math.PI);for(const g of[-1,1])s+=`<line x1="${f1(x)}" y1="${f1(y)}" x2="${f1(x+g*7-4)}" y2="${f1(y-g*5-5)}" stroke="${L}" stroke-width="1.3" stroke-linecap="round"/>`}
+  return s},
+ limule(){return `<path d="M60,14 C96,14 108,44 104,62 L82,66 L60,60 L38,66 L16,62 C12,44 24,14 60,14Z" fill="${FS.f}" stroke="${FS.s}" stroke-width="1.6"/><path d="M38,66 L60,60 L82,66 L76,84 L60,88 L44,84Z" fill="${FS.g}" stroke="${FS.s}" stroke-width="1.4"/><path d="M60,88 L60,116" stroke="${FS.s}" stroke-width="3" stroke-linecap="round"/><path d="M60,20 L60,58 M44,30 Q60,26 76,30" stroke="${FS.s}" stroke-width=".8" fill="none"/><circle cx="44" cy="36" r="2.5" fill="${FS.s}"/><circle cx="76" cy="36" r="2.5" fill="${FS.s}"/>`},
+ molar(){return `<path d="M30,52 Q28,30 42,28 Q50,40 60,30 Q70,40 78,28 Q92,30 90,52 Q88,64 80,66 L74,100 Q70,106 66,98 L62,72 L58,72 L54,98 Q50,106 46,100 L40,66 Q32,64 30,52Z" fill="#f2ead8" stroke="${FS.s}" stroke-width="1.6"/><path d="M36,50 Q60,58 84,50" stroke="${FS.s}" stroke-width=".8" fill="none"/><text x="60" y="116" class="ft">très agrandie</text>`},
+ tooth(){let ser='';for(let i=0;i<14;i++){const t=i/14;ser+=`M${f1(60+24*t)},${f1(12+70*t)}l2,-1`}return `<path d="M60,12 L84,82 Q60,74 36,82Z" fill="#8f8574" stroke="${FS.s}" stroke-width="1.5"/><path d="M60,16 L64,72 Q60,70 56,72Z" fill="#b9ad96" opacity=".7"/><path d="M28,82 Q60,70 92,82 L84,102 Q60,92 36,102Z" fill="${FS.f}" stroke="${FS.s}" stroke-width="1.4"/><path d="${ser}" stroke="${FS.s}" stroke-width=".6"/>`},
+ vertebra(){return `<circle cx="60" cy="60" r="42" fill="${FS.f}" stroke="${FS.s}" stroke-width="1.6"/><circle cx="60" cy="60" r="30" fill="none" stroke="${FS.s}" stroke-width=".8"/><circle cx="60" cy="60" r="16" fill="${FS.g}" stroke="${FS.s}" stroke-width=".8"/><circle cx="60" cy="60" r="4" fill="#8a7550"/>`},
+ octopus(){let s=`<rect x="5" y="5" width="110" height="110" rx="10" fill="#cfc3a6"/>`;
+  for(let k=0;k<8;k++){const a=Math.PI*(.12+.76*k/7),x2=60+46*Math.cos(a),y2=58+52*Math.sin(a);s+=`<path d="M60,58 Q${f1(60+28*Math.cos(a)+(k%2?8:-8))},${f1(58+30*Math.sin(a))} ${f1(x2)},${f1(y2)}" stroke="#6b5636" stroke-width="${k%3?4:5}" fill="none" stroke-linecap="round"/>`}
+  return s+`<ellipse cx="60" cy="38" rx="20" ry="26" fill="#8a7353" stroke="#5a4528" stroke-width="1.4"/><circle cx="52" cy="50" r="2.5" fill="#3b2c16"/><circle cx="68" cy="50" r="2.5" fill="#3b2c16"/>`},
+ shrimp(){let s=`<rect x="5" y="5" width="110" height="110" rx="10" fill="#cfc3a6"/>`;
+  for(let k=0;k<7;k++){const a=-1.2+k*.32,x=60+34*Math.cos(a),y=64+34*Math.sin(a);s+=`<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="9" ry="12" transform="rotate(${f1(a*57.3+90)} ${f1(x)} ${f1(y)})" fill="#8a7353" stroke="#5a4528"/>`}
+  return s+`<path d="M86,38 Q104,14 112,10 M84,36 Q100,24 114,24" stroke="#5a4528" stroke-width="1.3" fill="none"/>`+[0,1,2,3].map(k=>`<path d="M${74-k*8},${44+k*2} l-6,14" stroke="#5a4528" stroke-width="1.2"/>`).join('')},
+ fish(){let s=`<rect x="5" y="5" width="110" height="110" rx="10" fill="#e3d9bf"/><path d="M14,60 Q40,34 80,52 L106,38 L100,60 L106,82 L80,68 Q40,86 14,60Z" fill="#9c8a66" stroke="#5a4528" stroke-width="1.4"/>`;
+  for(let x=26;x<78;x+=5)s+=`<path d="M${x},${49+(x-26)*.06} L${x+2},${71-(x-26)*.06}" stroke="#5a4528" stroke-width=".7"/>`;
+  return s+`<path d="M24,58 L80,60" stroke="#5a4528" stroke-width="1.4"/><circle cx="24" cy="56" r="3" fill="#3b2c16"/><path d="M46,46 L54,32 L62,48 M50,74 L56,86 L62,72" stroke="#5a4528" fill="#b5a47f"/>`},
+ footprint(){let s=`<rect x="5" y="5" width="110" height="110" rx="10" fill="#d9cba6"/>`;
+  for(const [x,y,r] of [[34,94,0],[62,74,0],[46,48,0],[78,26,0]]){s+=`<ellipse cx="${x}" cy="${y}" rx="13" ry="11" fill="#a7926a" stroke="#6b5636" stroke-width="1.4"/><ellipse cx="${x-1}" cy="${y+1}" rx="8" ry="6" fill="#8f7b55"/>`;for(let k=-1;k<=1;k++)s+=`<path d="M${x+k*6},${y-10} l${k*2},-5" stroke="#6b5636" stroke-width="2" stroke-linecap="round"/>`}
+  return s},
+ micraster(){const o='M60,22 C70,10 100,14 104,46 C108,80 82,108 60,110 C38,108 12,80 16,46 C20,14 50,10 60,22Z';let s=`<path d="${o}" fill="${FS.f}" stroke="${FS.s}" stroke-width="1.6"/><path d="M60,22 L60,46" stroke="${FS.s}" stroke-width="2"/>`;
+  [-90,-30,30,150,210].forEach((d,i)=>{const L=i===0?22:(i<3?20:24),cx=60+L/2*Math.cos(d*Math.PI/180),cy=56+L/2*Math.sin(d*Math.PI/180);s+=`<ellipse cx="${f1(cx)}" cy="${f1(cy)}" rx="${L/2}" ry="4" transform="rotate(${d} ${f1(cx)} ${f1(cy)})" fill="${FS.g}" stroke="${FS.s}" stroke-width=".8"/>`});return s},
+ inoceramus(){const p='M30,30 C14,46 10,78 30,96 C52,114 96,108 108,82 C118,58 100,30 72,22 C56,18 40,20 30,30Z';let s=`<path d="${p}" fill="${FS.f}" stroke="${FS.s}" stroke-width="1.6"/>`;
+  for(const k of [.86,.72,.58,.44,.3])s+=`<path d="${p}" transform="translate(34 30) scale(${k}) translate(-34 -30)" fill="none" stroke="${FS.s}" stroke-width="${f1(1/k)}" opacity=".8"/>`;return s},
+ egg(){return `<circle cx="58" cy="60" r="42" fill="#e9e1cf" stroke="${FS.s}" stroke-width="1.6"/><path d="M30,40 L48,56 L40,78 M48,56 L72,50 L88,70 M72,50 L76,24 M40,78 L66,86 L88,70" stroke="${FS.s}" stroke-width="1.2" fill="none"/>`+[...Array(40)].map((_,i)=>`<circle cx="${f1(58+36*Math.cos(i*2.4)*((i%7)/7))}" cy="${f1(60+36*Math.sin(i*2.4)*((i%7)/7))}" r=".9" fill="${FS.s}" opacity=".5"/>`).join('')},
+ amber(){return `<defs><radialGradient id="am${++clipN}" cx=".35" cy=".3"><stop offset="0" stop-color="#ffd27a"/><stop offset="1" stop-color="#c9741a"/></radialGradient></defs><path d="M22,58 C18,28 50,12 74,18 C102,24 110,56 98,80 C86,104 46,108 30,92 C24,84 23,70 22,58Z" fill="url(#am${clipN})" stroke="#8a4a0c" stroke-width="1.6"/><g stroke="#4a2a06" stroke-width="1.4" fill="#5a3408"><ellipse cx="62" cy="62" rx="4" ry="11"/><circle cx="62" cy="48" r="4"/><path d="M58,58 l-10,-8 M66,58 l10,-8 M58,64 l-10,4 M66,64 l10,4 M58,70 l-8,8 M66,70 l8,8" fill="none"/><ellipse cx="52" cy="56" rx="10" ry="4" fill="#f5e3b0" fill-opacity=".6"/><ellipse cx="72" cy="56" rx="10" ry="4" fill="#f5e3b0" fill-opacity=".6"/></g><ellipse cx="44" cy="34" rx="12" ry="6" fill="#fff" opacity=".35"/>`},
+ hetero(){let s=`<path d="M30,108 L30,40 Q30,14 58,14 Q86,14 86,40 L86,60" fill="none" stroke="${FS.s}" stroke-width="18" stroke-linecap="round"/><path d="M30,108 L30,40 Q30,14 58,14 Q86,14 86,40 L86,60" fill="none" stroke="${FS.f}" stroke-width="15" stroke-linecap="round"/>`;
+  for(let y=104;y>40;y-=7)s+=`<line x1="23" y1="${y}" x2="37" y2="${y}" stroke="${FS.s}" stroke-width="1"/>`;for(let a=0;a<=8;a++){const t=Math.PI*(1+a/8),x=58+28*Math.cos(t),y=40+26*Math.sin(t);s+=`<line x1="${f1(x+7*Math.cos(t))}" y1="${f1(y+7*Math.sin(t))}" x2="${f1(x-7*Math.cos(t))}" y2="${f1(y-7*Math.sin(t))}" stroke="${FS.s}" stroke-width="1"/>`}
+  return s},
+ palaeo(){let t='';for(let x=24;x<74;x+=6)t+=`<path d="M${x},${78} l3,7 l3,-7" fill="#f2ead8" stroke="${FS.s}" stroke-width=".7"/>`;
+  return `<path d="M10,70 Q12,58 26,56 Q50,46 74,40 Q92,34 104,44 Q114,56 108,70 Q100,84 80,82 L26,80 Q12,80 10,70Z" fill="${FS.f}" stroke="${FS.s}" stroke-width="1.6"/><circle cx="84" cy="54" r="7" fill="#8a7550"/><path d="M60,60 Q74,66 96,64" stroke="${FS.s}" stroke-width=".8" fill="none"/><path d="M26,82 Q50,96 78,92 Q96,90 100,80" fill="${FS.g}" stroke="${FS.s}" stroke-width="1.4"/>${t}<text x="60" y="112" class="ft">crâne (schéma)</text>`},
+ leaf(){let s=`<rect x="5" y="5" width="110" height="110" rx="10" fill="#e3d9bf"/><path d="M60,10 C96,30 100,80 60,104 C20,80 24,30 60,10Z" fill="#a89a74" stroke="#5a4528" stroke-width="1.4"/><path d="M60,12 L60,114" stroke="#5a4528" stroke-width="1.6"/>`;
+  for(let y=26;y<96;y+=10)for(const g of[-1,1])s+=`<path d="M60,${y+6} Q${60+g*14},${y} ${60+g*(26-Math.abs(y-56)*.3)},${y-4}" stroke="#5a4528" stroke-width=".8" fill="none"/>`;return s},
  bone(){return `<path d="M20,50 Q12,38 24,34 Q36,32 38,44 L86,48 Q92,34 104,40 Q112,48 102,57 Q112,66 102,76 Q90,80 86,68 L38,72 Q34,86 22,80 Q10,72 20,62 Q14,56 20,50Z" fill="${FS.f}" stroke="${FS.s}" stroke-width="1.6"/><text x="60" y="104" class="ft">os (schéma)</text>`}
 };
 const fossilSVG=fid=>`<svg viewBox="0 0 120 120" role="img" aria-label="${esc(FOSSILS[fid].name)}"><g class="fz" filter="url(#emboss)">${DRAW[FOSSILS[fid].draw]()}</g></svg>`;
@@ -627,8 +717,8 @@ function periodImage(pid){if(imgCache[pid])return imgCache[pid];const c=document
 class MapView{
  constructor(svg,opt={}){this.svg=svg;this.opt=opt;this.pid=null;this.C=null;this.D=null;this.Lt=null;
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('preserveAspectRatio',opt.par||'xMidYMid meet');
-  let sit='';for(const k in SITES){const S=SITES[k];const [x,y]=proj(S.lon,S.lat);sit+=`<g class="site" data-id="${k}" transform="translate(${f1(x)} ${f1(y)})"><title>Site ${k} : ${esc(S.name)}</title><circle class="ring" r="14"/><g class="pin drop" style="animation-delay:${.3+k*.15}s"><circle class="dot" r="13"/><text>${k}</text></g></g>`}
-  svg.innerHTML=`<foreignObject x="0" y="0" width="${W}" height="${H}"><canvas xmlns="http://www.w3.org/1999/xhtml" width="${CW}" height="${CH}" style="width:${W}px;height:${H}px;display:block"></canvas></foreignObject><g class="lbls"></g><path class="fr-outline" d="${linePath(FR)}"/><path class="fr-outline" d="${linePath(CORSE)}"/>${star().replace(/ data-x="[^"]*" data-y="[^"]*"/,'')}<g>${sit}</g>`;
+  let sit='';for(const k in SITES){const S=SITES[k];const [x,y]=proj(S.lon,S.lat);sit+=`<g class="site" data-id="${k}" transform="translate(${f1(x)} ${f1(y)})"><title>${S.num} : ${esc(S.name)}</title><circle class="ring" r="14"/><g class="pin"><circle class="dot" r="13"/><text>${S.num}</text></g></g>`}
+  sit=sit.replace(/class="site" data-id="([^"]+)"/g,(m,k)=>`class="site" data-id="${k}" data-p="${SITES[k].period}"`);svg.innerHTML=`<foreignObject x="0" y="0" width="${W}" height="${H}"><canvas xmlns="http://www.w3.org/1999/xhtml" width="${CW}" height="${CH}" style="width:${W}px;height:${H}px;display:block"></canvas></foreignObject><g class="lbls"></g><path class="fr-outline" d="${linePath(FR)}"/><path class="fr-outline" d="${linePath(CORSE)}"/>${star().replace(/ data-x="[^"]*" data-y="[^"]*"/,'')}<g>${sit}</g>`;
   this.ctx=svg.querySelector('canvas').getContext('2d');this.img=this.ctx.createImageData(CW,CH);this.L=svg.querySelector('.lbls');
   svg.addEventListener('click',e=>{const g=e.target.closest('.site');if(g&&this.opt.onSite)this.opt.onSite(g.dataset.id)});
   svg.addEventListener('animationend',e=>{if(e.target.classList&&e.target.classList.contains('drop'))e.target.classList.remove('drop')})}
@@ -640,6 +730,7 @@ class MapView{
    if(u<1)this.raf=requestAnimationFrame(step);else{this.raf=null;this.L.innerHTML=labelsSVG(pid);this.L.classList.remove('out')}};
   this.raf=requestAnimationFrame(step)}
  pulse(ids){$$('.site',this.svg).forEach(el=>el.classList.toggle('pulse',ids.includes(el.dataset.id)))}
+ showSites(pid){$$('.site',this.svg).forEach((el,i)=>{const on=el.dataset.p===pid;el.style.display=on?'':'none';el.classList.remove('sel');const g=el.querySelector('.pin');g.classList.remove('drop');if(on){void g.getBoundingClientRect();g.style.animationDelay=(.5+.12*SITES[el.dataset.id].num)+'s';g.classList.add('drop')}})}
 }
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const mv=new MapView($('#map'),{onSite:id=>openSite(id),par:'xMidYMid meet'});
@@ -660,7 +751,7 @@ function warp(from,to){if(reduced||from===to)return;const w=$('#warp');w.classLi
   $('#wNum').textContent=u>=1&&to===0?'Aujourd’hui':`− ${v} Ma`;if(u<1)warpRaf=requestAnimationFrame(step)};warpRaf=requestAnimationFrame(step)}
 function moveChipBar(){const on=$('.chip.on'),bar=$('#chipbar');if(!on||!bar)return;bar.style.left=on.offsetLeft+8+'px';bar.style.width=on.offsetWidth-16+'px'}
 addEventListener('resize',moveChipBar);
-function setPeriod(pid,anim=true){const prev=cur;cur=pid;mv.setPeriod(pid,anim);renderFossilPanel(pid);if(typeof selSite!=='undefined'&&selSite&&SITES[selSite].period!==pid){selSite=null;$$('.site',mv.svg).forEach(el=>el.classList.remove('sel'));renderEmpty();mv.pulse(Object.keys(SITES))}const P=PERIODS[pid];if(anim&&prev)warp(PERIODS[prev].ma,P.ma);
+function setPeriod(pid,anim=true){const prev=cur;cur=pid;mv.setPeriod(pid,anim);renderFossilPanel(pid);mv.showSites(pid);if(typeof selSite!=='undefined'){selSite=null;renderEmpty();mv.pulse(Object.keys(SITES).filter(k=>SITES[k].period===pid))}const P=PERIODS[pid];if(anim&&prev)warp(PERIODS[prev].ma,P.ma);
  $('#mapT').textContent=P.ma?`${P.name} — il y a ${P.ma} millions d’années`:'Aujourd’hui';
  $('#mapW').title=(P.ma?'Reconstitution simplifiée : personne n’a vu ces paysages. Les scientifiques les dessinent à partir des roches et des fossiles. ':'')+P.doute+' Les pointillés montrent la France actuelle : ils servent seulement de repère, la France n’existait pas à cette époque !';
  $('#mapW').textContent=P.ma?'Reconstitution simplifiée ⓘ':'Carte simplifiée ⓘ';
@@ -675,12 +766,13 @@ function stopPlay(){clearInterval(timer);timer=null;$('#play').textContent='▶ 
 $('#play').onclick=()=>{if(timer){stopPlay();return}if(cur==='act')setPeriod('carb');$('#play').textContent='❚❚ Pause';timer=setInterval(()=>{const i=P_ORDER.indexOf(cur);if(i>=P_ORDER.length-1){stopPlay();return}setPeriod(P_ORDER[i+1])},5000)};
 
 /* ===== Fiche d’un site ===== */
-function renderEmpty(){$('#guide').innerHTML=`<div class="sp-empty"><svg viewBox="0 0 120 70" aria-hidden="true">${[1,2,3,4].map((n,k)=>`<g transform="translate(${18+k*28} 35)"><circle r="12" fill="#c0572b" stroke="#fff" stroke-width="3"/><text text-anchor="middle" dominant-baseline="central" fill="#fff" font-weight="800" font-size="13">${n}</text></g>`).join('')}</svg><p>Clique sur une zone de prélèvement</p></div>`}
+function renderEmpty(){const n=Object.values(SITES).filter(x=>x.period===cur).length;
+ $('#guide').innerHTML=n?`<div class="sp-empty"><svg viewBox="0 0 ${Math.max(4,n)*28+8} 70" style="width:${Math.min(320,Math.max(4,n)*45)}px" aria-hidden="true">${[...Array(n)].map((_,k)=>`<g transform="translate(${20+k*28} 35)"><circle r="12" fill="#c0572b" stroke="#fff" stroke-width="3"/><text text-anchor="middle" dominant-baseline="central" fill="#fff" font-weight="800" font-size="13">${k+1}</text></g>`).join('')}</svg><p>Clique sur une zone de prélèvement</p></div>`
+ :`<div class="sp-empty"><p>Aujourd’hui : pas de prélèvement</p><span>Choisis une autre époque sur la frise.</span></div>`}
 let selSite=null;
 function openSite(id){const S=SITES[id],P=PERIODS[S.period];selSite=id;
  $$('.site',mv.svg).forEach(el=>el.classList.toggle('sel',el.dataset.id===String(id)));mv.pulse([]);
- if(cur!==S.period){stopPlay();setPeriod(S.period)}
- $('#guide').innerHTML=`<div class="sp"><div class="sp-head"><span class="sp-num">${id}</span><div><h2>${esc(S.name)}</h2><p>${esc(P.name)} · il y a environ ${P.ma} millions d’années</p></div></div>
+ $('#guide').innerHTML=`<div class="sp"><div class="sp-head"><span class="sp-num">${S.num}</span><div><h2>${esc(S.name)}</h2><p>${esc(S.rock)} · ${esc(S.age)}</p></div></div>
   ${S.fossils.map((f,k)=>{const F=FOSSILS[f];return `<article class="sp-card env-${F.env}" style="animation-delay:${.08+k*.1}s"><div class="sp-img">${fossilSVG(f)}</div><div class="sp-txt">
    <h3>${esc(F.name)}</h3><p>${esc(F.desc)}</p><p class="sp-size">Taille : ${esc(F.size)}</p>
    <div class="sp-env env-${F.env}"><span>${ENV[F.env].ico}</span><div><small>Où il vivait</small><b>${esc(F.milieu)}</b></div></div></div></article>`}).join('')}</div>`;
@@ -831,7 +923,7 @@ function printSheet(){const pr=$('#print');pr.innerHTML=`<h2>Voyage dans le temp
 /* ===== Onglets ===== */
 function setTabUnused(t){mode=t;$('#tabGuide').classList.toggle('on',t==='guide');$('#tabFree').classList.toggle('on',t==='free');if(t==='guide')renderGuide();else renderFree()}
 
-setPeriod('act',false);renderEmpty();mv.pulse(Object.keys(SITES));
+setPeriod('act',false);
 </script>
 </body>
 </html>
