@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voyage dans le temps — Bassin parisien</title>
+<style>
+:root{--bg:#f3efe6;--ink:#1c2830;--muted:#55636c;--line:#d8cfbd;--card:#fff;--blue:#2d6b8a;--orange:#c0572b;--green:#2e7d4f;--red:#b3261e;
+--deep:#1f4e8c;--shallow:#7fb2e0;--land:#8fbc72;--relief:#94704a;--litt:#ead9a4;}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);font-size:15px}
+body{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+button{font:inherit;cursor:pointer}
+header{display:flex;align-items:center;gap:12px;padding:7px 14px;background:#24323c;color:#fff;flex:0 0 auto}
+header h1{font-size:18px;margin:0;white-space:nowrap}
+nav{display:flex;gap:6px;margin-left:auto}
+nav button{background:transparent;color:#eef3f6;border:1px solid #52646f;border-radius:8px;padding:6px 12px;font-size:14px}
+nav button:hover{background:#34464f}
+nav button.on{background:#f0dcae;color:#24323c;border-color:#f0dcae;font-weight:700}
+#main{flex:1 1 auto;display:grid;grid-template-columns:61fr 39fr;min-height:0}
+.mapwrap{position:relative;overflow:hidden;background:#cfdbe3;min-height:0}
+svg.map{width:100%;height:100%;display:block;touch-action:none;cursor:grab;user-select:none}
+svg.map.grabbing{cursor:grabbing}
+.zoombar{position:absolute;left:10px;top:52px;display:flex;flex-direction:column;gap:5px;z-index:3}
+.zoombar button{width:38px;height:38px;border-radius:8px;border:1px solid #9aa9b2;background:#fff;font-size:20px;line-height:1;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.maptitle{position:absolute;top:8px;left:10px;right:10px;z-index:3;display:flex;gap:8px;align-items:center;flex-wrap:wrap;pointer-events:none}
+.maptitle .t{background:#24323c;color:#fff;border-radius:8px;padding:5px 11px;font-weight:700;font-size:15px}
+.maptitle .w{background:#fff3cd;color:#6d4b00;border:1px solid #e5c766;border-radius:8px;padding:4px 9px;font-size:12.5px;pointer-events:auto;cursor:help}
+.legend{position:absolute;right:10px;bottom:10px;z-index:3;background:rgba(255,255,255,.95);border-radius:10px;padding:7px 10px;font-size:12.5px;box-shadow:0 1px 4px rgba(0,0,0,.18);line-height:1.6}
+.legend i{display:inline-block;width:16px;height:11px;border-radius:2px;margin-right:6px;vertical-align:-1px;border:1px solid rgba(0,0,0,.2)}
+.legend .dash{border:none;border-top:2px dashed #333;height:0;width:16px;vertical-align:3px}
+.legend summary{cursor:pointer;font-weight:700}
+.globe{position:absolute;right:10px;top:8px;z-index:3;background:rgba(255,255,255,.95);border-radius:10px;padding:5px 7px;text-align:center;font-size:11px;color:var(--muted);box-shadow:0 1px 3px rgba(0,0,0,.15);width:104px;cursor:help}
+.globe b{color:var(--ink);font-size:12px;display:block}
+.u-deep{fill:var(--deep)}.u-shallow{fill:var(--shallow)}.u-land{fill:var(--land)}.u-relief{fill:var(--relief)}.u-litt{fill:var(--litt)}
+path.u-land,path.u-relief,path.u-litt{stroke:rgba(40,30,10,.35);stroke-width:1;vector-effect:non-scaling-stroke}
+.fr-outline{fill:none;stroke:#1b1b1b;stroke-width:1.6;stroke-dasharray:6 4;vector-effect:non-scaling-stroke;opacity:.7;pointer-events:none}
+.lbl text{font-size:13px;font-weight:600;fill:#14212b;paint-order:stroke;stroke:rgba(255,255,255,.85);stroke-width:3px;text-anchor:middle;pointer-events:none;font-style:italic}
+.paris{pointer-events:none}
+.paris path{fill:#ffd84d;stroke:#24323c;stroke-width:1.5}
+.paris text{font-size:13px;font-weight:800;fill:#24323c;paint-order:stroke;stroke:#fff;stroke-width:3.5px}
+.site{cursor:pointer}
+.site circle.ring{fill:none;stroke:#ffd84d;stroke-width:4;opacity:0}
+.site.pulse circle.ring{opacity:1;animation:pulse 1.4s infinite}
+@keyframes pulse{0%{r:14;opacity:1}100%{r:26;opacity:0}}
+.site circle.dot{fill:var(--orange);stroke:#fff;stroke-width:3}
+.site text{fill:#fff;font-weight:800;font-size:14px;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.site:hover circle.dot{fill:#d9692f}
+#guide{background:var(--card);border-left:1px solid var(--line);overflow:auto;min-height:0;display:flex;flex-direction:column}
+.gtop{padding:10px 16px 8px;border-bottom:1px solid var(--line);background:#faf7f0;position:sticky;top:0;z-index:2}
+.steps{display:flex;gap:4px;margin-top:6px}
+.steps button{flex:1;height:9px;border-radius:5px;border:none;background:#ddd5c4;padding:0}
+.steps button.done{background:#8fbf9f}.steps button.on{background:var(--blue)}
+.gbody{padding:12px 16px 16px;flex:1}
+.gbody h2{margin:0 0 6px;font-size:20px}
+.gbody p,.gbody li{line-height:1.5}
+.box{border-radius:10px;padding:10px 12px;margin:10px 0}
+.box.mission{background:#eaf3f8;border:1px solid #bcd7e5}
+.box.todo{background:#fff8e6;border:1px solid #ecd59a}
+.box.todo ol{margin:4px 0 0;padding-left:20px}
+.box.help{background:#f1f7ef;border:1px solid #c5ddc0;font-size:14px}
+.box h4{margin:0 0 4px;font-size:14px;text-transform:uppercase;letter-spacing:.4px;color:var(--blue)}
+.box.todo h4{color:#8a5a00}.box.help h4{color:var(--green)}
+.q{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:12px 0;background:#fffdf8}
+.q .qt{font-weight:700;margin-bottom:7px}
+.q .ch{display:flex;flex-direction:column;gap:6px}
+.q .ch button{text-align:left;border:2px solid #cfc6b4;background:#fff;border-radius:8px;padding:8px 10px;font-size:14.5px}
+.q .ch button:hover{border-color:var(--blue)}
+.q .ch button.good{border-color:var(--green);background:#e8f5ec}
+.q .ch button.bad{border-color:var(--red);background:#fbeceb}
+.fb{margin-top:8px;padding:8px 10px;border-radius:8px;font-size:14px;line-height:1.45}
+.fb.good{background:#e8f5ec;color:#1d5a35}.fb.bad{background:#fbeceb;color:#7d1d16}
+textarea,input[type=text]{width:100%;font:inherit;padding:8px 10px;border:1px solid #b9b0a0;border-radius:8px}
+textarea{min-height:80px}
+.btn{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:14.5px;font-weight:600}
+.btn:hover{filter:brightness(1.1)}
+.btn.sec{background:#e8e1d2;color:var(--ink)}
+.btn.or{background:var(--orange)}
+.btn.small{padding:6px 10px;font-size:13.5px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.gnav{display:flex;justify-content:space-between;gap:8px;padding:10px 16px;border-top:1px solid var(--line);background:#faf7f0;position:sticky;bottom:0}
+.mot{border-bottom:2px dotted var(--blue);color:#1d4e66;cursor:help;font-weight:600}
+#pop{position:fixed;z-index:90;max-width:300px;background:#24323c;color:#fff;border-radius:10px;padding:9px 12px;font-size:14px;line-height:1.4;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+#pop b{color:#ffd84d}
+footer{flex:0 0 auto;background:#fff;border-top:1px solid var(--line);padding:7px 14px;display:flex;gap:10px;align-items:center}
+.flabel{font-size:12.5px;color:var(--muted);line-height:1.25;width:96px}
+.chips{display:flex;gap:6px;flex:1}
+.chip{flex:1;border:2px solid #cfc6b4;background:#fff;border-radius:10px;padding:5px 4px;text-align:center;line-height:1.2}
+.chip b{display:block;font-size:14px}.chip span{font-size:12px;color:var(--muted)}
+.chip:hover{border-color:var(--blue)}
+.chip.on{background:#24323c;border-color:#24323c;color:#fff}.chip.on span{color:#d9e3e8}
+.chip.era1{border-top:5px solid #5d7f5a}.chip.era2{border-top:5px solid #3d7c96}.chip.era3{border-top:5px solid #c4893d}
+#play{white-space:nowrap}
+#modal{position:fixed;inset:0;background:rgba(20,28,34,.6);z-index:60;display:flex;align-items:center;justify-content:center}
+#modal[hidden]{display:none}
+.mbox{background:#fff;border-radius:14px;width:min(980px,96vw);max-height:94vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.mhead{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--line);background:#faf7f0;position:sticky;top:0;z-index:2}
+.mhead h2{margin:0;font-size:19px;flex:1}
+.x{background:none;border:none;font-size:28px;line-height:1;color:#555;padding:0 6px}
+.mbody{padding:14px 18px 18px}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rock{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.rock svg{display:block;width:100%;height:120px}
+.cap{font-size:12px;color:var(--muted);padding:4px 8px;background:#faf7f0}
+.obs{margin:8px 0;padding-left:20px}.obs li{margin:3px 0}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.fcard{border:1px solid var(--line);border-radius:10px;background:#fffdf8;padding:8px;text-align:center;font-size:13.5px}
+.fcard svg{width:100%;height:100px;display:block}
+.fcard .nm{font-weight:700;margin:4px 0}
+.fcard .sz{font-size:12px;color:var(--muted)}
+.ind{margin-top:6px;border:1px dashed var(--green);color:var(--green);background:#fff;border-radius:7px;padding:4px 8px;font-size:13px;font-weight:600}
+.indt{margin-top:6px;background:#e8f5ec;color:#1d5a35;border-radius:7px;padding:6px 8px;font-size:13px;text-align:left}
+.ft{font-size:7px;fill:#5b4a30;text-anchor:middle}
+.kv{width:100%;border-collapse:collapse;font-size:14px}
+.kv td{border-bottom:1px solid #eee5d4;padding:5px 4px;vertical-align:top}
+.kv td:first-child{color:var(--muted);width:40%}
+table.bil{border-collapse:collapse;width:100%;font-size:13.5px;margin:8px 0}
+table.bil th,table.bil td{border:1px solid var(--line);padding:6px;text-align:left;vertical-align:top}
+table.bil th{background:#f4efe3}
+.cmpg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cmpg svg{width:100%;height:auto;border-radius:10px;border:1px solid var(--line);display:block;background:#cfdbe3}
+.lex dt{font-weight:700;margin-top:8px;color:var(--blue)}.lex dd{margin:2px 0 0 0;line-height:1.45}
+.small{font-size:12.5px;color:var(--muted)}
+.btn.small{color:#fff}.btn.sec.small{color:var(--ink)}
+
+/* ================= HABILLAGE GRAPHIQUE & ANIMATIONS ================= */
+:root{--deep:#1e4f8e;--shallow:#84b8e6;--land:#95c379;--relief:#94704a;--litt:#ecdcaa}
+body{background:linear-gradient(180deg,#f6f2e9,#efe8da)}
+header{background:linear-gradient(90deg,#17262f,#21404f 55%,#2a5468);box-shadow:0 2px 10px rgba(0,0,0,.28);position:relative;z-index:6}
+header h1{display:flex;align-items:center;gap:9px;font-size:19px;letter-spacing:.2px}
+.logo{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff1c2,#e2a636 70%,#b97a17);box-shadow:0 0 0 2px rgba(255,255,255,.25),0 0 14px rgba(255,214,110,.45);font-size:17px}
+.logo span{display:inline-block;animation:spin 10s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+nav button{transition:background .2s,transform .15s,box-shadow .2s}
+nav button:hover{transform:translateY(-1px)}
+nav button.on{box-shadow:0 2px 10px rgba(240,220,174,.35)}
+/* carte */
+.mapwrap{background:#8fbbe0}
+.mapwrap::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+ background:radial-gradient(ellipse at center,transparent 58%,rgba(8,24,36,.30) 100%),
+ url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .14 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.u-deep{fill:url(#gDeep)}.u-shallow{fill:url(#gShallow)}.u-land{fill:url(#gLand)}.u-relief{fill:url(#gRelief)}.u-litt{fill:url(#gLitt)}
+path.u-land,path.u-relief,path.u-litt{filter:url(#landSh);stroke:rgba(50,35,10,.4)}
+.wave{fill:url(#waves);pointer-events:none}.mnt{fill:url(#mnt);pointer-events:none}.sand{fill:url(#sand);pointer-events:none}
+.lbl text{font-size:13.5px;fill:#10202a;stroke:rgba(255,255,255,.9);stroke-width:3.5px;letter-spacing:.3px}
+.player .lbl text{animation:fadeIn .8s .8s both}
+.zoombar button{transition:transform .15s,background .15s}
+.zoombar button:hover{transform:scale(1.08);background:#f3f8fb}
+.maptitle .t{background:linear-gradient(90deg,#1c2d37,#2b4b5c);box-shadow:0 3px 10px rgba(0,0,0,.25);font-size:15.5px;transition:opacity .3s}
+.legend,.globe{backdrop-filter:blur(3px);box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.legend i{border-radius:3px}
+.site .pin{transform-box:fill-box;transform-origin:center;transition:transform .2s cubic-bezier(.3,1.6,.5,1)}
+.site:hover .pin{transform:scale(1.2)}
+.site .pin.drop{animation:drop .7s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes drop{from{transform:translateY(-40px) scale(.2);opacity:0}to{transform:none;opacity:1}}
+.site circle.dot{fill:url(#gPin);filter:drop-shadow(0 2px 2px rgba(0,0,0,.45))}
+.paris path{fill:url(#gStar);transform-box:fill-box;transform-origin:center;animation:twinkle 2.8s ease-in-out infinite;filter:drop-shadow(0 0 3px rgba(255,215,80,.9))}
+@keyframes twinkle{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.18) rotate(12deg)}}
+/* machine à remonter le temps */
+.warp{position:absolute;inset:0;z-index:4;display:grid;place-items:center;pointer-events:none;opacity:0}
+.warp.go{animation:warpFade 1.7s ease both}
+@keyframes warpFade{0%{opacity:0}12%{opacity:1}78%{opacity:1}100%{opacity:0}}
+.warp .ctr{position:relative;background:rgba(15,28,36,.84);color:#fff;border-radius:18px;padding:12px 26px 10px;text-align:center;box-shadow:0 10px 34px rgba(0,0,0,.4);border:1px solid rgba(255,216,77,.45)}
+.warp .dir{font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;color:#ffd84d}
+.warp .num{font-size:40px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.15}
+.warp .lab{font-size:13px;opacity:.85}
+.warp .ring{position:absolute;left:50%;top:50%;width:140px;height:140px;margin:-70px 0 0 -70px;border-radius:50%;border:3px solid rgba(255,216,77,.85);opacity:0}
+.warp.go .ring{animation:ringOut 1.4s ease-out both}.warp.go .ring.r2{animation-delay:.22s}.warp.go .ring.r3{animation-delay:.44s}
+@keyframes ringOut{from{transform:scale(.3);opacity:.9}to{transform:scale(5.5);opacity:0}}
+/* frise */
+footer{background:linear-gradient(180deg,#fff,#f7f3ea);box-shadow:0 -2px 10px rgba(0,0,0,.06)}
+.chips{position:relative;padding-bottom:6px}
+.chip{transition:transform .25s cubic-bezier(.3,1.5,.5,1),background .3s,color .3s,box-shadow .3s;position:relative}
+.chip:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.1)}
+.chip.on{transform:translateY(-3px) scale(1.03);background:linear-gradient(180deg,#2b4656,#1c2d37);box-shadow:0 6px 16px rgba(0,0,0,.25)}
+.chipbar{position:absolute;bottom:0;height:4px;border-radius:3px;background:linear-gradient(90deg,#ffd84d,#f0a43a);box-shadow:0 0 8px rgba(255,200,60,.8);transition:left .6s cubic-bezier(.5,1.4,.5,1),width .6s}
+#play{transition:transform .15s}
+/* panneau guide */
+.steps button{transition:background .5s,transform .3s}
+.steps button.on{transform:scaleY(1.35)}
+.gbody.in-r{animation:slideR .45s cubic-bezier(.2,.9,.3,1) both}.gbody.in-l{animation:slideL .45s cubic-bezier(.2,.9,.3,1) both}
+@keyframes slideR{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes slideL{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
+.box{box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.box.mission{background:linear-gradient(135deg,#eaf4fa,#dcecf5)}
+.q{box-shadow:0 2px 8px rgba(0,0,0,.05);transition:box-shadow .2s}
+.q .ch button{transition:transform .12s,border-color .2s,background .25s,box-shadow .2s}
+.q .ch button:hover{transform:translateX(3px);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.q .ch button.good::after{content:" ✔";color:var(--green);font-weight:800}
+.popok{animation:popok .55s cubic-bezier(.3,1.6,.5,1)}
+@keyframes popok{0%{transform:scale(1)}40%{transform:scale(1.06)}100%{transform:scale(1)}}
+.shake{animation:shake .45s}
+@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+.fb.fresh{animation:fadeUp .4s both}
+.cf{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;z-index:95;animation:cf 1s cubic-bezier(.2,.7,.4,1) forwards}
+@keyframes cf{to{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
+.btn{transition:filter .15s,transform .12s,box-shadow .2s;box-shadow:0 2px 5px rgba(0,0,0,.15)}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,.18)}
+.btn:active{transform:translateY(1px)}
+.btn.or{background:linear-gradient(180deg,#d4683a,#b44c22)}
+.btn:not(.sec):not(.or){background:linear-gradient(180deg,#3580a3,#285f7c)}
+/* fenêtres */
+#modal{animation:fadeIn .25s both;backdrop-filter:blur(2px)}
+.mbox{animation:popIn .4s cubic-bezier(.2,1.3,.4,1) both}
+@keyframes popIn{from{opacity:0;transform:translateY(20px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.fcard{animation:fadeUp .5s both;transition:transform .25s,box-shadow .25s;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.fcard:hover{transform:translateY(-5px);box-shadow:0 10px 22px rgba(0,0,0,.14)}
+.fcard svg{background:radial-gradient(circle at 50% 42%,#fffaf0 0,#f1e6cd 75%);border-radius:10px;height:110px}
+.fcard svg .fz{transition:transform .5s cubic-bezier(.3,1.4,.5,1);transform-box:fill-box;transform-origin:center}
+.fcard:hover svg .fz{transform:scale(1.08) rotate(-4deg)}
+.ind{transition:background .2s,transform .15s}.ind:hover{background:#e8f5ec;transform:scale(1.03)}
+.indt{animation:flipIn .5s cubic-bezier(.3,1.4,.5,1) both;transform-origin:top}
+@keyframes flipIn{from{opacity:0;transform:perspective(400px) rotateX(-80deg)}to{opacity:1;transform:none}}
+.rock{box-shadow:0 3px 10px rgba(0,0,0,.12)}
+.cmpg svg{box-shadow:0 4px 14px rgba(0,0,0,.15)}
+#pop{animation:fadeUp .2s both}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.warp{display:none}}
+#print{display:none}
+@media print{
+ body.printing>*:not(#print){display:none!important}
+ body.printing{height:auto;overflow:visible;display:block;background:#fff}
+ body.printing #print{display:block;padding:10px;font-size:13px}
+}
+</style>
+</head>
+<body>
+<header>
+ <h1><span class="logo"><span>⏳</span></span>Voyage dans le temps : le Bassin parisien</h1>
+ <nav>
+  <button id="tabGuide" class="on">Enquête guidée</button>
+  <button id="tabFree">Explorer librement</button>
+  <button id="tabCmp">Comparer deux époques</button>
+  <button id="tabLex">Lexique</button>
+ </nav>
+</header>
+<main id="main">
+ <section class="mapwrap" id="mapWrap">
+  <svg class="map" id="map" aria-label="Carte de la France à l’époque choisie"></svg>
+  <div class="maptitle"><span class="t" id="mapT"></span><span class="w" id="mapW" title="">Carte simplifiée ⓘ</span></div>
+  <div class="zoombar"><button data-a="in" title="Zoomer">+</button><button data-a="out" title="Dézoomer">−</button><button data-a="reset" title="Voir toute la carte">⟲</button></div>
+  <div class="globe" id="globe" title="Les continents se déplacent : la région n’a pas toujours été à la même latitude.">
+   <svg viewBox="-30 -30 60 60" width="58" height="58"><defs><clipPath id="gclip"><circle r="26"/></clipPath><radialGradient id="gGlobe" cx=".35" cy=".3"><stop offset="0" stop-color="#f4fbff"/><stop offset="1" stop-color="#9cc3dc"/></radialGradient></defs>
+    <circle r="26" fill="url(#gGlobe)" stroke="#6f8fa2"/>
+    <g clip-path="url(#gclip)" fill="none" stroke="#7fa3b8" stroke-width=".7">
+     <ellipse rx="26" ry="26"><animate attributeName="rx" values="26;0;26" dur="8s" repeatCount="indefinite"/></ellipse>
+     <ellipse rx="13" ry="26"><animate attributeName="rx" values="13;26;0;13" keyTimes="0;.25;.75;1" dur="8s" repeatCount="indefinite"/></ellipse>
+     <line x1="-26" x2="26" y1="-13" y2="-13" stroke-dasharray="2 2"/><line x1="-26" x2="26" y1="13" y2="13" stroke-dasharray="2 2"/>
+    </g>
+    <line x1="-26" x2="26" y1="0" y2="0" stroke="#d9534f" stroke-width="1.2"/>
+    <circle id="gdot" r="4.2" fill="#c0572b" stroke="#fff" stroke-width="1.2" style="transition:transform 1.4s cubic-bezier(.4,1.4,.5,1)"/>
+   </svg>
+   <b id="glat"></b><span id="gtxt"></span>
+  </div>
+  <div class="warp" id="warp"><span class="ring"></span><span class="ring r2"></span><span class="ring r3"></span><div class="ctr"><div class="dir" id="wDir"></div><div class="num" id="wNum"></div><div class="lab" id="wLab"></div></div></div>
+  <details class="legend" open><summary>Légende</summary>
+   <div><i style="background:var(--deep)"></i>Mer profonde</div>
+   <div><i style="background:var(--shallow)"></i>Mer peu profonde</div>
+   <div><i style="background:var(--litt)"></i>Côtes, lagunes</div>
+   <div><i style="background:var(--land)"></i>Terre (hors de l’eau)</div>
+   <div><i style="background:var(--relief)"></i>Montagnes, reliefs</div>
+   <div><i class="dash"></i>France d’aujourd’hui (repère)</div>
+   <div>⭐ Paris (repère) · <b style="color:var(--orange)">①</b> Site à étudier</div>
+  </details>
+ </section>
+ <aside id="guide"></aside>
+</main>
+<footer>
+ <div class="flabel"><b>Frise du temps</b><br>Clique sur une époque</div>
+ <div class="chips" id="chips"></div>
+ <button class="btn small" id="play">▶ Faire défiler</button>
+</footer>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+ <linearGradient id="gDeep" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="704" y2="680"><stop offset="0" stop-color="#2a5fa0"/><stop offset="1" stop-color="#143a6b"/></linearGradient>
+ <linearGradient id="gShallow" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="704" y2="680"><stop offset="0" stop-color="#a6d2f2"/><stop offset="1" stop-color="#6ea7d9"/></linearGradient>
+ <linearGradient id="gLand" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="300" y2="680"><stop offset="0" stop-color="#afd58f"/><stop offset="1" stop-color="#7cab5f"/></linearGradient>
+ <linearGradient id="gRelief" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="300" y2="680"><stop offset="0" stop-color="#ad8a60"/><stop offset="1" stop-color="#7a593a"/></linearGradient>
+ <linearGradient id="gLitt" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="680"><stop offset="0" stop-color="#f5e8bf"/><stop offset="1" stop-color="#e0ca8b"/></linearGradient>
+ <radialGradient id="gPin" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#f59a63"/><stop offset="1" stop-color="#b0441b"/></radialGradient>
+ <radialGradient id="gStar" cx=".4" cy=".35"><stop offset="0" stop-color="#fff6c2"/><stop offset="1" stop-color="#f2b625"/></radialGradient>
+ <pattern id="waves" width="40" height="20" patternUnits="userSpaceOnUse"><path d="M0 10 Q10 5 20 10 T40 10" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="1.1"/><path d="M-20 0 Q-10 -5 0 0 T20 0 T40 0 M-20 20 Q-10 15 0 20 T20 20 T40 20" fill="none" stroke="#fff" stroke-opacity=".14" stroke-width="1"/>
+  <animateTransform attributeName="patternTransform" type="translate" values="0 0;40 0" dur="9s" repeatCount="indefinite"/></pattern>
+ <pattern id="mnt" width="24" height="30" patternUnits="userSpaceOnUse"><path d="M3 13 L8 5 L13 13 M10 13 L14 8 L18 13 M15 28 L20 20 L25 28 M-9 28 L-4 20 L1 28" fill="none" stroke="#4a3018" stroke-opacity=".5" stroke-width="1.1" stroke-linejoin="round"/><path d="M8 5 L9.5 7.5 L6.5 7.5Z M20 20 L21.5 22.5 L18.5 22.5Z" fill="#fff" fill-opacity=".55"/></pattern>
+ <pattern id="sand" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r=".8" fill="#a88a45" fill-opacity=".45"/><circle cx="7" cy="8" r=".7" fill="#a88a45" fill-opacity=".35"/></pattern>
+ <filter id="landSh" x="-5%" y="-5%" width="110%" height="110%"><feDropShadow dx="0" dy="2.5" stdDeviation="2.5" flood-color="#0b2236" flood-opacity=".38"/></filter>
+ <filter id="emboss" x="-15%" y="-15%" width="130%" height="130%">
+  <feGaussianBlur in="SourceAlpha" stdDeviation="1.6" result="b"/>
+  <feSpecularLighting in="b" surfaceScale="3.5" specularConstant=".75" specularExponent="16" lighting-color="#fff" result="s"><fePointLight x="-40" y="-60" z="140"/></feSpecularLighting>
+  <feComposite in="s" in2="SourceAlpha" operator="in" result="s2"/>
+  <feComposite in="SourceGraphic" in2="s2" operator="arithmetic" k1="0" k2="1" k3=".55" k4="0" result="lit"/>
+  <feDropShadow in="lit" dx="2" dy="3" stdDeviation="2.2" flood-color="#3b2a10" flood-opacity=".35"/></filter>
+ <filter id="stone" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="3" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 .3  0 0 0 0 .24  0 0 0 0 .12  0 0 0 .5 0"/><feComposite in2="SourceGraphic" operator="in"/></filter>
+ <linearGradient id="gloss" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></linearGradient>
+</defs></svg>
+<div id="modal" hidden></div>
+<div id="pop" hidden></div>
+<div id="print"></div>
+
+<script>
+"use strict";
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const NS='http://www.w3.org/2000/svg';
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const W=704,H=680;
+const proj=(lon,lat)=>[(lon+6.5)*41.4,(52.3-lat)*60];
+const f1=n=>Math.round(n*10)/10;
+function smoothPath(ll){const ext=a=>[a[0]<=-7?-16:a[0]>=11?20:a[0],a[1]<=40.5?34:a[1]>=53?59:a[1]];
+ const p=ll.map(a=>{const b=ext(a);return proj(b[0],b[1])});const n=p.length;let d=`M${f1(p[0][0])},${f1(p[0][1])}`;
+ for(let i=0;i<n;i++){const p0=p[(i-1+n)%n],p1=p[i],p2=p[(i+1)%n],p3=p[(i+2)%n];
+  d+=`C${f1(p1[0]+(p2[0]-p0[0])/6)},${f1(p1[1]+(p2[1]-p0[1])/6)} ${f1(p2[0]-(p3[0]-p1[0])/6)},${f1(p2[1]-(p3[1]-p1[1])/6)} ${f1(p2[0])},${f1(p2[1])}`}
+ return d+'Z'}
+function linePath(ll){return ll.map((a,i)=>{const p=proj(a[0],a[1]);return(i?'L':'M')+f1(p[0])+','+f1(p[1])}).join('')+'Z'}
+
+/* ===== Contours actuels simplifiés (repère) ===== */
+const FR=[[2.55,51.08],[1.85,50.95],[1.6,50.73],[1.6,50.2],[1.08,49.93],[0.1,49.5],[0.23,49.42],[0.08,49.36],[-0.3,49.33],[-1.1,49.36],[-1.26,49.69],[-1.62,49.65],[-1.94,49.72],[-1.85,49.4],[-1.6,49.0],[-1.55,48.65],[-2.0,48.65],[-2.75,48.55],[-3.05,48.82],[-3.6,48.75],[-4.0,48.72],[-4.6,48.6],[-4.78,48.35],[-4.55,48.15],[-4.73,48.04],[-4.37,47.8],[-3.9,47.85],[-3.4,47.7],[-3.12,47.48],[-2.75,47.5],[-2.45,47.28],[-2.2,47.25],[-2.03,47.08],[-2.25,46.98],[-1.85,46.6],[-1.6,46.4],[-1.15,46.2],[-1.05,45.95],[-1.25,45.75],[-1.05,45.6],[-1.15,45.2],[-1.25,44.66],[-1.35,44.2],[-1.45,43.7],[-1.53,43.5],[-1.78,43.37],
+[-1.4,43.25],[-0.75,42.95],[0.0,42.7],[0.7,42.85],[1.45,42.6],[1.73,42.5],[2.5,42.35],[3.17,42.43],
+[3.05,42.75],[3.05,43.05],[3.3,43.27],[3.7,43.4],[4.1,43.55],[4.6,43.4],[4.9,43.38],[5.35,43.3],[5.7,43.18],[5.93,43.1],[6.2,43.12],[6.6,43.17],[6.75,43.4],[7.0,43.53],[7.27,43.69],[7.5,43.78],
+[7.65,44.15],[7.0,44.25],[6.85,44.5],[7.05,44.85],[6.65,45.1],[7.15,45.45],[6.82,45.83],[6.45,46.0],[6.15,46.15],[6.08,46.45],[6.4,46.75],[6.95,47.3],[7.0,47.48],[7.55,47.58],[7.6,48.0],[7.8,48.55],[8.2,48.97],[7.6,49.1],[7.0,49.2],[6.7,49.17],[6.35,49.47],[5.8,49.53],[5.45,49.5],[4.85,49.8],[4.85,50.15],[4.2,49.95],[4.15,50.28],[3.65,50.4],[3.2,50.75]];
+const CORSE=[[9.4,43.0],[9.55,42.6],[9.5,42.1],[9.25,41.6],[9.1,41.38],[8.6,41.7],[8.75,41.95],[8.6,42.2],[8.65,42.6],[9.2,42.75],[9.35,43.0]];
+const iH=FR.findIndex(p=>p[0]===-1.78),iC=FR.findIndex(p=>p[0]===3.17),iM=FR.findIndex(p=>p[0]===7.5);
+const ATL=FR.slice(0,iH+1),MED=FR.slice(iC,iM+1);
+const EUROPE=[[-7,40.5],[-7,43.55],[-5.8,43.6],[-5.0,43.55],[-3.8,43.48],[-2.9,43.42],...ATL.slice().reverse(),[3.4,51.38],[4.0,51.95],[4.6,52.4],[4.8,53.2],[11,53.2],[11,42.8],[10.5,43.0],[10.3,43.5],[10.2,43.9],[9.4,44.3],[8.6,44.35],[8.0,43.9],...MED.slice().reverse(),[3.2,42.0],[2.8,41.6],[2.2,41.3],[1.0,41.05],[0.8,40.5]];
+const ENGLAND=[[-7,49.95],[-5.7,50.05],[-5.0,50.0],[-4.2,50.35],[-3.5,50.4],[-3.0,50.7],[-2.0,50.6],[-1.0,50.75],[0.3,50.75],[1.0,50.95],[1.4,51.2],[1.4,51.4],[0.8,51.55],[1.6,51.9],[1.75,52.5],[1.7,53.2],[-7,53.2]];
+
+/* ===== Les 6 époques ===== */
+const P_ORDER=['carb','trias','jur','cret','eoc','act'];
+const PERIODS={
+ carb:{name:'Carbonifère',ma:320,era:1,lat:'près de l’équateur',latVal:5,
+  polys:[['shallow',[[-7,50.7],[2,50.75],[11,50.8],[11,53.5],[-7,53.5]],'line'],
+   ['litt',[[-7,50.3],[1,50.45],[4,50.55],[8,50.4],[11,50.3],[11,51.15],[6,51.3],[1,51.25],[-7,51.0]]],
+   ['relief',[[-7,40],[11,40],[11,49.5],[8,49.9],[5,50.1],[2,50.0],[-1,49.9],[-4,49.75],[-7,49.6]]]],
+  labels:[[1.8,45.6,'Grande chaîne de montagnes'],[2.4,50.78,'Plaines et marécages'],[2.2,51.8,'Mer peu profonde']],
+  txt:'Les continents se rassemblent en un seul bloc. Notre région est près de l’équateur, au milieu d’une grande chaîne de montagnes (la chaîne hercynienne). Au nord, des plaines marécageuses bordent la mer.',
+  doute:'Très grande incertitude : les montagnes de cette époque ont depuis été usées par l’érosion.'},
+ trias:{name:'Trias',ma:230,era:2,lat:'zone tropicale',latVal:20,
+  polys:[['shallow',[[6.2,42.0],[7.0,43.0],[9.0,43.7],[11,44.0],[11,40],[6.5,40]]],
+   ['litt',[[3.9,48.2],[4.0,50.1],[7.0,50.2],[11,50.5],[11,44.6],[9.0,44.1],[7.5,44.0],[5.6,44.6],[4.6,46.0]]],
+   ['relief',[[-5.2,48.7],[-3.5,49.0],[-1.6,49.5],[-0.3,48.9],[-0.2,47.6],[-1.2,46.7],[-2.8,46.8],[-4.8,47.5]]],
+   ['relief',[[1.6,46.5],[3.0,46.8],[4.3,46.3],[4.5,45.0],[3.7,43.9],[2.3,43.9],[1.5,45.0]]],
+   ['relief',[[-0.5,52.2],[2.5,51.6],[5.5,51.0],[7.5,50.65],[8.3,51.4],[5.0,52.8],[0,53.2]]]],
+  labels:[[-2.6,48.1,'Massif armoricain'],[3.0,45.3,'Massif central'],[7.7,47.6,'Lagunes salées'],[8.9,41.9,'Mer'],[0.9,48.4,'Plaines']],
+  txt:'Tous les continents forment un seul super-continent : la Pangée. La région, sous un climat tropical, est surtout une terre basse. À l’est s’étendent des lagunes salées.',
+  doute:'Grande incertitude sur la position exacte des côtes.'},
+ jur:{name:'Jurassique',ma:160,era:2,lat:'≈ 30° Nord',latVal:32,
+  polys:[['deep',[[5.2,46.6],[7.5,47.2],[11,47.5],[11,40],[3.6,40],[3.8,42.6],[4.6,44.3]]],
+   ['land',[[-5.4,48.8],[-3.2,49.1],[-1.6,49.2],[-0.6,48.5],[-0.7,47.3],[-2.4,46.6],[-4.7,47.4]]],
+   ['land',[[1.9,46.3],[3.6,46.4],[4.1,45.3],[3.6,44.2],[2.4,44.3],[1.7,45.3]]],
+   ['land',[[-1.5,53.5],[-0.8,52.0],[1.5,51.5],[4.0,51.3],[5.2,51.6],[5,53.5]]],
+   ['land',[[5.4,50.5],[7.0,50.1],[9.0,50.3],[11,50.6],[11,52.0],[8.0,51.6],[6.0,51.2]]],
+   ['land',[[-7,40],[-7,42.4],[-4,42.7],[-1.5,42.4],[0.8,41.6],[1.5,40]]]],
+  labels:[[-2.9,47.95,'Massif armoricain'],[2.85,45.35,'Massif central'],[8.3,43.6,'Mer profonde'],[8.1,51.0,'Ardennes'],[-3.6,41.6,'Terre']],
+  txt:'La Pangée se casse en morceaux. Regarde bien la carte : quelles zones sont dans l’eau, lesquelles sont hors de l’eau ?',
+  doute:'Le contour des îles et des côtes est simplifié.'},
+ cret:{name:'Crétacé',ma:90,era:2,lat:'≈ 35° Nord',latVal:36,
+  polys:[['deep',[[-7,47.4],[-5.2,46.6],[-3.4,45.4],[-2.4,44.3],[-2.2,43.6],[-7,43.4]]],
+   ['deep',[[5.4,45.9],[7.5,46.6],[11,46.8],[11,40],[7.6,40],[7.0,42.6],[6.6,43.6],[5.4,44.6]]],
+   ['land',[[-5.6,48.9],[-3.0,49.2],[-1.2,49.3],[0.1,48.5],[-0.3,47.0],[-2.4,46.3],[-4.9,47.2]]],
+   ['land',[[1.3,46.9],[3.2,47.1],[4.4,46.6],[4.7,45.0],[4.0,43.8],[2.4,43.8],[1.3,45.2]]],
+   ['land',[[5.5,50.4],[7.5,49.6],[8.2,48.2],[8.6,47.6],[11,47.8],[11,52],[7.0,51.6]]],
+   ['land',[[4.9,44.0],[6.3,44.1],[6.6,43.4],[5.3,43.2]]],
+   ['land',[[-7,40],[-7,42.3],[-3.5,42.5],[-0.5,41.9],[1.2,40]]]],
+  labels:[[-2.9,48.0,'Massif armoricain'],[2.9,45.3,'Massif central'],[-5.3,45.1,'Océan'],[9.2,49.4,'Terre'],[8.7,43.0,'Mer profonde']],
+  txt:'Le niveau des mers est très haut sur toute la Terre. L’océan Atlantique s’élargit. Observe la place de la mer et des terres.',
+  doute:'Les côtes ont bougé pendant cette période : la carte montre une situation moyenne.'},
+ eoc:{name:'Éocène',ma:45,era:3,lat:'≈ 40° Nord',latVal:40,
+  polys:[['shallow',[[-7,50.2],[-5.7,49.5],[-5.3,48.2],[-4.4,47.4],[-2.0,46.4],[-1.1,45.8],[-0.2,45.0],[0.3,44.2],[-0.3,43.5],[-1.5,43.3],[-7,43.5]]],
+   ['deep',[[-7,47.8],[-5.6,46.8],[-3.6,45.6],[-2.6,44.4],[-2.4,43.65],[-7,43.6]]],
+   ['shallow',[[-1.5,49.75],[-0.5,50.2],[0.5,51.2],[1.5,53.5],[5,53.5],[4.6,51.6],[4.0,50.6],[3.6,49.5],[3.1,48.6],[2.2,48.3],[1.4,48.6],[0.9,49.1]]],
+   ['relief',[[-2.2,43.25],[0.0,43.0],[2.0,42.8],[3.4,42.5],[3.4,41.8],[0,41.9],[-2.2,42.6]]],
+   ['relief',[[6.3,46.2],[7.5,46.6],[9.5,46.8],[9.0,45.6],[7.6,44.6],[6.6,44.3],[6.1,45.0]]]],
+  labels:[[-5.4,44.6,'Océan Atlantique'],[0.6,42.45,'Pyrénées (se soulèvent)'],[2.9,46.3,'Terre'],[7.8,45.5,'Début des Alpes']],
+  txt:'L’Afrique se rapproche de l’Europe : les Pyrénées se soulèvent et les Alpes commencent à se former. Observe ce qu’il reste de la mer.',
+  doute:'Les côtes ont souvent changé pendant l’Éocène : la carte en donne une image moyenne.'},
+ act:{name:'Aujourd’hui',ma:0,era:3,lat:'≈ 42 à 51° Nord',latVal:46,
+  polys:[['deep',[[-7,47.9],[-5.5,47.1],[-4.2,46.0],[-2.8,44.8],[-2.1,43.85],[-2.4,43.62],[-4.5,43.75],[-7,43.75]],'line'],
+   ['deep',[[3.25,41.8],[3.6,42.6],[4.3,42.85],[5.3,42.92],[6.4,42.92],[7.3,43.45],[8.3,43.85],[9.2,43.95],[9.7,43.5],[9.7,40.5],[3.25,40.5]],'line'],
+   ['land',EUROPE,'line'],['land',ENGLAND,'line'],
+   ['relief',[[5.6,45.3],[6.6,46.3],[7.6,46.5],[11,46.8],[11,45.5],[8,45.5],[7.2,44.2],[6.4,43.9],[5.7,44.4]]],
+   ['relief',[[-1.6,43.2],[0.5,42.9],[2.8,42.55],[2.6,42.2],[0.5,42.35],[-1.5,42.8]]],
+   ['relief',[[2.0,46.0],[4.2,45.9],[4.4,44.9],[3.6,43.9],[2.3,44.2],[1.8,45.2]]],
+   ['relief',[[6.75,48.6],[7.25,48.5],[7.0,47.75],[6.6,47.85]]],
+   ['relief',[[5.6,46.3],[6.1,46.3],[7.1,47.3],[6.7,47.5],[5.8,46.9]]],
+   ['relief',CORSE,'line']],
+  labels:[[-3.2,49.75,'Manche'],[-4.8,45.4,'Océan Atlantique'],[5.0,42.3,'Mer Méditerranée'],[8.4,46.1,'Alpes'],[0.4,42.62,'Pyrénées'],[3.0,45.15,'Massif central']],
+  txt:'La France telle que tu la connais : les côtes, les grandes montagnes, la mer peu profonde près des côtes et les grands fonds au large.',
+  doute:'Carte simplifiée.'}
+};
+
+/* ===== Fossiles (avec indice pour l’élève) ===== */
+const FOSSILS={
+ entroque:{name:'Crinoïdes (« lis de mer »)',size:'morceaux de tige de quelques mm',desc:'On trouve surtout des petits disques empilés : ce sont des morceaux de la tige de l’animal (on les appelle « entroques »).',ind:'Aujourd’hui, les crinoïdes vivent uniquement dans la mer.',draw:'entroque'},
+ polypier:{name:'Coraux (polypiers)',size:'colonies de quelques cm à plusieurs dm',desc:'Squelette calcaire formé de nombreuses petites loges serrées.',ind:'Les coraux vivent dans la mer. Ceux qui forment des récifs aiment les eaux chaudes, claires et peu profondes.',draw:'polypier'},
+ ammonite:{name:'Ammonite (Perisphinctes)',size:'5 à 30 cm',desc:'Coquille enroulée en spirale, ornée de côtes. Groupe d’animaux disparu, cousin des seiches et des pieuvres.',ind:'Les ammonites vivaient uniquement dans la mer.',draw:'ammonite'},
+ brachiopode:{name:'Brachiopodes',size:'1 à 4 cm',desc:'Coquille à deux parties (valves) de tailles différentes.',ind:'Les brachiopodes vivent uniquement dans la mer.',draw:'brachio'},
+ teleosaurus:{name:'Téléosaure (crocodile marin)',size:'animal de plusieurs mètres',desc:'Crâne très allongé avec de nombreuses dents pointues. Il a été découvert à Caen et porte son nom : Teleosaurus cadomensis.',ind:'Ce crocodile disparu vivait dans la mer, près des côtes.',draw:'teleosaurus'},
+ dino:{name:'Os de dinosaure (Poekilopleuron)',size:'animal de plusieurs mètres',desc:'Os d’un dinosaure carnivore découvert en 1835 dans une carrière de Caen. L’original a été détruit en 1944 pendant la guerre ; il en reste des moulages.',ind:'Les dinosaures vivaient sur la terre ferme, pas dans la mer !',draw:'bone'},
+ coccolithe:{name:'Coccolithes',size:'quelques millièmes de mm',desc:'Minuscules plaques de calcaire qui recouvraient des algues microscopiques. On ne les voit qu’au microscope électronique. La craie en est presque entièrement formée.',ind:'Ces algues microscopiques flottent dans la mer, près de la surface.',draw:'coccolithe'},
+ belemnite:{name:'Bélemnite',size:'5 à 10 cm',desc:'Pièce calcaire en forme de balle de fusil : c’est la partie dure, à l’intérieur du corps d’un animal disparu ressemblant à un calmar.',ind:'Les bélemnites vivaient uniquement dans la mer.',draw:'belemnite'},
+ oursin:{name:'Oursin (Echinocorys)',size:'5 à 8 cm',desc:'Squelette en forme de casque, avec cinq bandes qui partent du sommet.',ind:'Les oursins vivent uniquement dans la mer.',draw:'echinocorys'},
+ nummulite:{name:'Nummulites',size:'quelques mm à 2 cm',desc:'Coquille en forme de pièce de monnaie. Coupée en deux, elle montre une spirale de petites loges. C’est un être vivant formé d’une seule cellule !',ind:'Les nummulites vivaient dans la mer.',draw:'nummulite'},
+ campanile:{name:'Campanile géant (Campanile giganteum)',size:'jusqu’à 50 cm',desc:'Énorme coquille en forme de vis : un des plus grands escargots fossiles connus.',ind:'Ce grand escargot vivait dans la mer, près des côtes.',draw:'campanile'},
+ orbitolite:{name:'Orbitolites',size:'quelques mm à 2 cm',desc:'Petit disque plat orné de fins cercles. Comme les nummulites, c’est un être vivant d’une seule cellule.',ind:'Les orbitolites vivaient dans la mer.',draw:'orbitolites'}
+};
+
+/* ===== Les 4 sites ===== */
+const SITES={
+ 1:{n:1,name:'Meuse (Euville)',lon:5.63,lat:48.75,period:'jur',age:'environ 160 millions d’années (Jurassique)',
+  rock:'Calcaire à entroques (« pierre d’Euville »)',texture:'crinoid',
+  obs:['Roche beige clair, dure.','Avec une loupe, on voit plein de petits morceaux ronds collés ensemble.','Avec une goutte d’acide : la roche fait des bulles → c’est un calcaire.'],
+  fossils:['entroque','polypier','ammonite'],where:'Plateaux de la Meuse, à l’est du Bassin parisien, à plus de 200 km de la mer actuelle.'},
+ 2:{n:2,name:'Caen',lon:-0.37,lat:49.18,period:'jur',age:'environ 167 millions d’années (Jurassique)',
+  rock:'Calcaire de Caen (« pierre de Caen »)',texture:'caen',
+  obs:['Roche blanc crème, très fine et homogène.','Facile à tailler : elle a servi à construire les abbayes de Caen et la Tour de Londres.','Avec une goutte d’acide : la roche fait des bulles → c’est un calcaire.'],
+  fossils:['brachiopode','teleosaurus','dino'],where:'Carrières autour de Caen, en Normandie.'},
+ 3:{n:3,name:'Reims',lon:4.03,lat:49.25,period:'cret',age:'environ 80 millions d’années (Crétacé)',
+  rock:'Craie',texture:'chalk',
+  obs:['Roche blanche, tendre : elle tache les doigts.','Aucun grain visible, même à la loupe.','Avec une goutte d’acide : beaucoup de bulles → c’est un calcaire presque pur.','Les caves de champagne de Reims sont creusées dans cette craie.'],
+  fossils:['coccolithe','belemnite','oursin'],where:'Région de Reims, en Champagne (partie est du Bassin parisien).'},
+ 4:{n:4,name:'Paris',lon:2.05,lat:48.62,period:'eoc',age:'environ 45 millions d’années (Éocène)',
+  rock:'Calcaire grossier (« pierre de Paris »)',texture:'grossier',
+  obs:['Roche jaune-beige, souvent remplie de coquilles.','C’est avec cette pierre qu’ont été construits de nombreux monuments et immeubles de Paris.','Avec une goutte d’acide : la roche fait des bulles → c’est un calcaire.'],
+  fossils:['nummulite','campanile','orbitolite'],where:'Sous Paris et dans ses environs (anciennes carrières souterraines).'}
+};
+const PARIS=[2.35,48.86];
+
+/* ===== Lexique ===== */
+const LEX={
+ ma:['Ma','« Million d’années ». 160 Ma = il y a 160 millions d’années.'],
+ fossile:['Fossile','Reste (coquille, os, dent) ou trace d’un être vivant, conservé dans une roche.'],
+ sed:['Roche sédimentaire','Roche formée par l’accumulation, couche après couche, de petits morceaux (sable, débris de coquilles…) au fond de l’eau ou à la surface de la Terre.'],
+ calcaire:['Calcaire','Roche sédimentaire qui fait des bulles quand on y met une goutte d’acide. Elle est souvent formée de débris de coquilles et de squelettes.'],
+ craie:['Craie','Calcaire blanc, tendre et très fin, formé presque entièrement de coccolithes.'],
+ actualisme:['Principe d’actualisme','Idée selon laquelle les êtres vivants du passé vivaient dans les mêmes milieux que les êtres vivants actuels qui leur ressemblent. Exemple : les oursins vivent dans la mer aujourd’hui, donc les oursins fossiles vivaient aussi dans la mer.'],
+ reconst:['Reconstitution','Carte dessinée par des scientifiques à partir des roches et des fossiles. Elle est approximative : personne n’a vu ces paysages !'],
+ bassin:['Bassin parisien','Grande région en forme de cuvette, autour de Paris, où des roches sédimentaires se sont empilées pendant des millions d’années.'],
+ massif:['Massif','Région de terres plus hautes, faite de roches anciennes (ex. : Massif central, Massif armoricain en Bretagne).'],
+ pangee:['Pangée','Super-continent qui rassemblait presque toutes les terres de la planète il y a environ 300 à 200 millions d’années.'],
+ deplac:['Déplacement des continents','Les continents bougent très lentement (quelques centimètres par an). En des millions d’années, ils parcourent des milliers de kilomètres.']
+};
+const mot=(k,t)=>`<span class="mot" data-m="${k}">${t}</span>`;
+
+/* ===== Dessins de fossiles et de roches (schémas originaux) ===== */
+const FS={s:'#5b4a30',f:'#dcc99e',g:'#c6ae7c'};let clipN=0;
+const DRAW={
+ ammonite(){const a=4,b=Math.log(52/4)/(6*Math.PI);let sp='';for(let t=0;t<=6*Math.PI+0.01;t+=0.08){const r=a*Math.exp(b*t);sp+=(t?'L':'M')+f1(60+r*Math.cos(t))+','+f1(60+r*Math.sin(t))}
+  let rb='';for(let t=2*Math.PI;t<=6*Math.PI;t+=0.21){const r1=a*Math.exp(b*(t-2*Math.PI)),r2=a*Math.exp(b*t),c=Math.cos(t),s=Math.sin(t),rm=r1+(r2-r1)*0.55;
+   rb+=`M${f1(60+r1*c)},${f1(60+r1*s)}L${f1(60+rm*c)},${f1(60+rm*s)}L${f1(60+r2*Math.cos(t-0.05))},${f1(60+r2*Math.sin(t-0.05))}M${f1(60+rm*c)},${f1(60+rm*s)}L${f1(60+r2*Math.cos(t+0.07))},${f1(60+r2*Math.sin(t+0.07))}`}
+  return `<circle cx="60" cy="60" r="52.5" fill="${FS.f}" stroke="${FS.s}" stroke-width="1.6"/><path d="${rb}" stroke="${FS.s}" stroke-width=".8" fill="none" opacity=".85"/><path d="${sp}" stroke="${FS.s}" stroke-width="1.7" fill="none"/>`},
+ entroque(){let s='';for(let i=0;i<12;i++)s+=`<rect x="18" y="${16+i*7}" width="30" height="7" rx="2.5" fill="${i%2?FS.f:FS.g}" stroke="${FS.s}" stroke-width=".8"/>`;
+  s+=`<circle cx="84" cy="56" r="24" fill="${FS.f}" stroke="${FS.s}" stroke-width="1.5"/>`;for(let k=0;k<36;k++){const a=k*Math.PI/18;s+=`<line x1="${f1(84+8*Math.cos(a))}" y1="${f1(56+8*Math.sin(a))}" x2="${f1(84+22*Math.cos(a))}" y2="${f1(56+22*Math.sin(a))}" stroke="${FS.s}" stroke-width=".5"/>`}
+  return s+`<circle cx="84" cy="56" r="4" fill="#fff8e6" stroke="${FS.s}"/><text x="33" y="111" class="ft">tige</text><text x="84" y="92" class="ft">disque vu de dessus</text>`},
+ polypier(){const id='cp'+(++clipN);let s=`<defs><clipPath id="${id}"><circle cx="60" cy="60" r="50"/></clipPath></defs><circle cx="60" cy="60" r="51" fill="${FS.g}" stroke="${FS.s}" stroke-width="1.6"/><g clip-path="url(#${id})">`;const R=11;
+  for(let row=-1;row<9;row++)for(let col=-1;col<8;col++){const cx=col*R*1.732+(row%2?R*0.866:0)+4,cy=row*R*1.5+4;let hx='';for(let k=0;k<6;k++){const a=Math.PI/6+k*Math.PI/3;hx+=(k?'L':'M')+f1(cx+R*Math.cos(a))+','+f1(cy+R*Math.sin(a))}
+   s+=`<path d="${hx}Z" fill="${FS.f}" stroke="${FS.s}" stroke-width=".9"/>`;for(let k=0;k<12;k++){const a=k*Math.PI/6;s+=`<line x1="${f1(cx+2*Math.cos(a))}" y1="${f1(cy+2*Math.sin(a))}" x2="${f1(cx+8*Math.cos(a))}" y2="${f1(cy+8*Math.sin(a))}" stroke="${FS.s}" stroke-width=".4"/>`}}
+  return s+'</g>'},
+ campanile(){let s='';const n=10,top=8,bot=112,step=(bot-top)/n,hw=29;
+  for(let i=0;i<n;i++){const y1=top+i*step,y2=y1+step,w1=hw*(i/n)+1.5,w2=hw*((i+1)/n)+1.5;
+   s+=`<path d="M${f1(60-w1)},${f1(y1)}L${f1(60+w1)},${f1(y1)}Q${f1(60+w2+2.5)},${f1((y1+y2)/2)} ${f1(60+w2)},${f1(y2)}L${f1(60-w2)},${f1(y2)}Q${f1(60-w2-2.5)},${f1((y1+y2)/2)} ${f1(60-w1)},${f1(y1)}Z" fill="${i%2?FS.f:FS.g}" stroke="${FS.s}" stroke-width="1"/>`;
+   const ym=(y1+y2)/2,wm=(w1+w2)/2;for(let k=-2;k<=2;k++)s+=`<circle cx="${f1(60+k*wm*0.38)}" cy="${f1(ym)}" r="${f1(Math.max(.8,step*.17))}" fill="${FS.g}" stroke="${FS.s}" stroke-width=".5"/>`}
+  return s},
+ brachio(){const o='M60,14 C88,18 104,48 100,74 C96,98 78,108 60,108 C42,108 24,98 20,74 C16,48 32,18 60,14Z';let r='';for(let k=0;k<=16;k++){const a=Math.PI*(0.12+0.76*k/16);r+=`M60,24 L${f1(60-46*Math.cos(a))},${f1(24+82*Math.sin(a))}`}
+  return `<path d="${o}" fill="${FS.f}" stroke="${FS.s}" stroke-width="1.6"/><path d="${r}" stroke="${FS.s}" stroke-width=".6" opacity=".7"/><circle cx="60" cy="18" r="3.5" fill="#8a7550" stroke="${FS.s}"/>`},
+ belemnite(){return `<path d="M52,8 L68,8 L69,84 Q61,118 51,84 Z" fill="${FS.f}" stroke="${FS.s}" stroke-width="1.6"/><path d="M55,8 L65,8 L61,34 L59,34Z" fill="#8a7550"/>`},
+ echinocorys(){let s=`<path d="M60,10 C95,10 108,40 108,62 C108,92 86,110 60,110 C34,110 12,92 12,62 C12,40 25,10 60,10Z" fill="${FS.f}" stroke="${FS.s}" stroke-width="1.6"/>`;
+  [-90,-18,54,126,198].forEach(d=>{const a=d*Math.PI/180;for(const off of[-4,4])for(let r=6;r<46;r+=4){s+=`<circle cx="${f1(60+r*Math.cos(a)-off*Math.sin(a)*(r/46))}" cy="${f1(54+r*Math.sin(a)+off*Math.cos(a)*(r/46))}" r=".9" fill="${FS.s}"/>`}});return s},
+ coccolithe(){let s=`<circle cx="60" cy="56" r="40" fill="#efe9da" stroke="${FS.s}"/>`;for(let k=0;k<14;k++){const a=k*2*Math.PI/14,cx=60+28*Math.cos(a),cy=56+28*Math.sin(a),deg=a*180/Math.PI+90;
+  s+=`<g transform="rotate(${f1(deg)} ${f1(cx)} ${f1(cy)})"><ellipse cx="${f1(cx)}" cy="${f1(cy)}" rx="15" ry="10" fill="${FS.f}" stroke="${FS.s}" stroke-width=".8"/><ellipse cx="${f1(cx)}" cy="${f1(cy)}" rx="6" ry="3.5" fill="none" stroke="${FS.s}" stroke-width=".6"/></g>`}
+  return s+`<ellipse cx="60" cy="56" rx="15" ry="10" fill="${FS.f}" stroke="${FS.s}"/><text x="60" y="112" class="ft">vu au microscope électronique</text>`},
+ nummulite(){let sp='';for(let t=0;t<=10*Math.PI;t+=0.08){const r=2+t*1.35;sp+=(t?'L':'M')+f1(60+r*Math.cos(t))+','+f1(56+r*Math.sin(t))}let se='';for(let t=2*Math.PI;t<=10*Math.PI;t+=0.32){const r1=2+(t-2*Math.PI)*1.35,r2=2+t*1.35;se+=`M${f1(60+r1*Math.cos(t))},${f1(56+r1*Math.sin(t))}L${f1(60+r2*Math.cos(t+.05))},${f1(56+r2*Math.sin(t+.05))}`}
+  return `<circle cx="60" cy="56" r="45" fill="${FS.f}" stroke="${FS.s}" stroke-width="1.6"/><path d="${se}" stroke="${FS.s}" stroke-width=".5"/><path d="${sp}" fill="none" stroke="${FS.s}" stroke-width="1.1"/><text x="60" y="114" class="ft">coupée en deux</text>`},
+ orbitolites(){let s=`<circle cx="60" cy="58" r="48" fill="${FS.f}" stroke="${FS.s}" stroke-width="1.6"/>`;for(let r=6;r<48;r+=3.2)s+=`<circle cx="60" cy="58" r="${f1(r)}" fill="none" stroke="${FS.s}" stroke-width=".45"/>`;return s},
+ teleosaurus(){let t='';for(let x=14;x<70;x+=3.5)t+=`M${x},${f1(56.5-(x-14)*0.06)}l0,-3M${x},${f1(63.5+(x-14)*0.06)}l0,3`;
+  return `<path d="M6,60 Q8,54 18,55.5 L70,51 Q82,36 102,36 Q118,44 116,60 Q118,76 102,84 Q82,84 70,69 L18,64.5 Q8,66 6,60Z" fill="${FS.f}" stroke="${FS.s}" stroke-width="1.6"/><path d="${t}" stroke="${FS.s}" stroke-width=".8"/><ellipse cx="92" cy="48" rx="6" ry="5" fill="#8a7550"/><ellipse cx="92" cy="72" rx="6" ry="5" fill="#8a7550"/><text x="60" y="104" class="ft">crâne vu de dessus</text>`},
+ bone(){return `<path d="M20,50 Q12,38 24,34 Q36,32 38,44 L86,48 Q92,34 104,40 Q112,48 102,57 Q112,66 102,76 Q90,80 86,68 L38,72 Q34,86 22,80 Q10,72 20,62 Q14,56 20,50Z" fill="${FS.f}" stroke="${FS.s}" stroke-width="1.6"/><text x="60" y="104" class="ft">os (schéma)</text>`}
+};
+const fossilSVG=fid=>`<svg viewBox="0 0 120 120" role="img" aria-label="${esc(FOSSILS[fid].name)}"><g class="fz" filter="url(#emboss)">${DRAW[FOSSILS[fid].draw]()}</g></svg>`;
+function rockSVG(kind,seed=7){const r=rng(seed);let bg,s='';const w=300,h=100;
+ if(kind==='crinoid'){bg='#e4d3ad';for(let i=0;i<260;i++){const x=r()*w,y=r()*h,rr=1+r()*3.2;s+=`<circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(rr)}" fill="${r()<.5?'#d1bb88':'#c9b17b'}" stroke="#9b8456" stroke-width=".5"/>`;if(rr>2.3)s+=`<circle cx="${f1(x)}" cy="${f1(y)}" r=".6" fill="#7a6640"/>`}}
+ if(kind==='caen'){bg='#efe5cb';for(let i=0;i<900;i++)s+=`<circle cx="${f1(r()*w)}" cy="${f1(r()*h)}" r=".55" fill="#d6c79f"/>`;for(let k=1;k<4;k++)s+=`<path d="M0,${k*25} Q150,${k*25+3} 300,${k*25}" stroke="#d9cba6" fill="none"/>`}
+ if(kind==='chalk'){bg='#fbfaf4';for(let i=0;i<500;i++)s+=`<circle cx="${f1(r()*w)}" cy="${f1(r()*h)}" r=".45" fill="#e3e0d4"/>`}
+ if(kind==='grossier'){bg='#e9d79c';for(let i=0;i<700;i++)s+=`<circle cx="${f1(r()*w)}" cy="${f1(r()*h)}" r="${f1(.4+r()*.7)}" fill="${r()<.5?'#d3bd7c':'#dcc98f'}"/>`;
+  for(let i=0;i<30;i++){const x=r()*w,y=r()*h,rr=2+r()*4;s+=`<circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(rr)}" fill="#efe2b4" stroke="#a48d55" stroke-width=".6"/>`}
+  for(let i=0;i<8;i++){const x=r()*w,y=r()*h;s+=`<path d="M${f1(x)},${f1(y)} l18,-4 l-2,6 z" fill="#f2e7c2" stroke="#a48d55" stroke-width=".6"/>`}}
+ return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid slice"><rect width="${w}" height="${h}" fill="${bg}"/><rect width="${w}" height="${h}" fill="#000" filter="url(#stone)" opacity=".55"/>${s}<rect width="${w}" height="${h}" fill="url(#gloss)"/></svg>`}
+
+/* ===== Carte ===== */
+function star(){const [x,y]=proj(...PARIS);let p='';for(let k=0;k<10;k++){const r=k%2?4:10,a=-Math.PI/2+k*Math.PI/5;p+=(k?'L':'M')+f1(r*Math.cos(a))+','+f1(r*Math.sin(a))}
+ return `<g class="paris" data-x="${f1(x)}" data-y="${f1(y)}" transform="translate(${f1(x)} ${f1(y)})"><path d="${p}Z"/><text x="12" y="5">Paris</text></g>`}
+function periodLayer(pid){const P=PERIODS[pid];const base=pid==='carb'||pid==='trias'||pid==='eoc'?'land':'shallow';
+ let s=`<rect class="u-${base}" x="-3000" y="-3000" width="${W+6000}" height="${H+6000}"/>`;if(base==='shallow')s+=`<rect class="wave" x="-3000" y="-3000" width="${W+6000}" height="${H+6000}"/>`;
+ const extra={deep:'wave',shallow:'wave',relief:'mnt',litt:'sand'};
+ for(const [c,pts,m] of P.polys){const d=m==='line'?linePath(pts):smoothPath(pts);s+=`<path class="u-${c}" d="${d}"/>`;if(extra[c])s+=`<path class="${extra[c]}" d="${d}"/>`}
+ for(const [lon,lat,t] of P.labels){const [x,y]=proj(lon,lat);s+=`<g class="lbl" data-x="${f1(x)}" data-y="${f1(y)}" transform="translate(${f1(x)} ${f1(y)})"><text>${esc(t)}</text></g>`}
+ return s}
+class MapView{
+ constructor(svg,opt={}){this.svg=svg;this.opt=opt;this.vb={x:0,y:0,w:W,h:H};this.pid=null;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+  let sit='';for(const k in SITES){const S=SITES[k];const [x,y]=proj(S.lon,S.lat);sit+=`<g class="site" data-id="${k}" data-x="${f1(x)}" data-y="${f1(y)}"><title>Site ${k} : ${esc(S.name)}</title><circle class="ring" r="14"/><g class="pin drop" style="animation-delay:${.3+k*.15}s"><circle class="dot" r="13"/><text>${k}</text></g></g>`}
+  svg.innerHTML=`<g class="layers"></g><path class="fr-outline" d="${linePath(FR)}"/><path class="fr-outline" d="${linePath(CORSE)}"/>${star()}<g>${sit}</g>`;
+  this.gL=svg.querySelector('.layers');this.bind();this.collect();this.updateScale();
+  svg.addEventListener('animationend',e=>{if(e.target.classList&&e.target.classList.contains('drop'))e.target.classList.remove('drop')})}
+ collect(){this.scaled=[...this.svg.querySelectorAll('[data-x]')]}
+ k(){const r=this.svg.getBoundingClientRect();return r.width?Math.max(this.vb.w/r.width,this.vb.h/r.height):1}
+ bind(){const s=this.svg;let st=null;
+  s.addEventListener('pointerdown',e=>{if(e.button!==0)return;st={x:e.clientX,y:e.clientY,vb:{...this.vb},k:this.k()};this.dragged=false});
+  window.addEventListener('pointermove',e=>{if(!st)return;const dx=e.clientX-st.x,dy=e.clientY-st.y;if(!this.dragged&&Math.hypot(dx,dy)<5)return;this.dragged=true;s.classList.add('grabbing');this.stop();this.setVB({x:st.vb.x-dx*st.k,y:st.vb.y-dy*st.k,w:st.vb.w,h:st.vb.h})});
+  window.addEventListener('pointerup',()=>{if(st){st=null;s.classList.remove('grabbing');setTimeout(()=>this.dragged=false,30)}});
+  s.addEventListener('wheel',e=>{e.preventDefault();this.stop();const m=s.getScreenCTM();if(!m)return;const p=s.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const q=p.matrixTransform(m.inverse());this.zoomAt(e.deltaY>0?1.2:1/1.2,q.x,q.y)},{passive:false});
+  s.addEventListener('click',e=>{if(this.dragged)return;const g=e.target.closest('.site');if(g&&this.opt.onSite)this.opt.onSite(g.dataset.id)})}
+ setVB(v){const w=Math.min(Math.max(v.w,W/7),W*1.2),h=w*H/W;let cx=Math.min(Math.max(v.x+v.w/2,0),W),cy=Math.min(Math.max(v.y+v.h/2,0),H);
+  this.vb={x:cx-w/2,y:cy-h/2,w,h};this.svg.setAttribute('viewBox',`${f1(this.vb.x)} ${f1(this.vb.y)} ${f1(w)} ${f1(h)}`);this.updateScale()}
+ updateScale(){const k=Math.round(this.vb.w/W*100)/100;for(const el of this.scaled)el.setAttribute('transform',`translate(${el.dataset.x} ${el.dataset.y}) scale(${k})`)}
+ zoomAt(f,cx,cy){const w=Math.min(Math.max(this.vb.w*f,W/7),W*1.2),r=w/this.vb.w;this.setVB({x:cx-(cx-this.vb.x)*r,y:cy-(cy-this.vb.y)*r,w,h:this.vb.h*r})}
+ stop(){if(this.raf){cancelAnimationFrame(this.raf);this.raf=null}}
+ animateTo(t,ms=700){this.stop();const a={...this.vb},t0=performance.now();const f=now=>{let u=Math.min(1,(now-t0)/ms);u=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+  this.setVB({x:a.x+(t.x-a.x)*u,y:a.y+(t.y-a.y)*u,w:a.w+(t.w-a.w)*u,h:a.h+(t.h-a.h)*u});this.raf=u<1?requestAnimationFrame(f):null};this.raf=requestAnimationFrame(f)}
+ focus(lon,lat,z=2.4){const [x,y]=proj(lon,lat);this.animateTo({x:x-W/z/2,y:y-H/z/2,w:W/z,h:H/z})}
+ reset(){this.animateTo({x:0,y:0,w:W,h:H})}
+ setPeriod(pid,anim=true){if(pid===this.pid)return;this.pid=pid;const g=document.createElementNS(NS,'g');g.innerHTML=periodLayer(pid);const olds=[...this.gL.children];this.gL.appendChild(g);
+  if(anim&&olds.length){const c=[this.vb.x+this.vb.w/2,this.vb.y+this.vb.h/2];g.style.transformOrigin=`${f1(c[0])}px ${f1(c[1])}px`;g.style.transform='scale(1.07)';g.style.opacity='0';g.getBoundingClientRect();
+   g.style.transition='opacity 1.3s ease-in-out, transform 1.6s cubic-bezier(.2,.8,.3,1)';requestAnimationFrame(()=>requestAnimationFrame(()=>{g.style.opacity='1';g.style.transform='scale(1)'}));clearTimeout(this.tmo);this.tmo=setTimeout(()=>olds.forEach(o=>o.remove()),1400)}
+  else olds.forEach(o=>o.remove());this.collect();this.updateScale()}
+ pulse(ids){$$('.site',this.svg).forEach(el=>el.classList.toggle('pulse',ids.includes(el.dataset.id)))}
+}
+const mv=new MapView($('#map'),{onSite:id=>openSite(id)});
+$('.zoombar').onclick=e=>{const a=e.target.dataset.a;const c=[mv.vb.x+mv.vb.w/2,mv.vb.y+mv.vb.h/2];if(a==='in')mv.zoomAt(1/1.4,...c);if(a==='out')mv.zoomAt(1.4,...c);if(a==='reset')mv.reset()};
+
+/* ===== Sauvegarde ===== */
+const KEY='voyageTemps4e.v1';let mem={};
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return mem}}
+function save(d){mem=d;try{localStorage.setItem(KEY,JSON.stringify(d))}catch(e){}}
+let data=Object.assign({name:'',qcm:{},open:{},step:0},load());
+const setData=(f)=>{f(data);save(data)};
+
+/* ===== Époque affichée ===== */
+let cur=null;
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let warpRaf=null;
+function warp(from,to){if(reduced||from===to)return;const w=$('#warp');w.classList.remove('go');void w.offsetWidth;w.classList.add('go');
+ $('#wDir').textContent=to>from?'⏪ Retour vers le passé':'⏩ Vers le présent';$('#wLab').textContent=to?PERIODS[cur].name:'';
+ cancelAnimationFrame(warpRaf);const t0=performance.now(),D=1200;const step=now=>{let u=Math.min(1,(now-t0)/D);u=1-Math.pow(1-u,3);const v=Math.round(from+(to-from)*u);
+  $('#wNum').textContent=u>=1&&to===0?'Aujourd’hui':`− ${v} Ma`;if(u<1)warpRaf=requestAnimationFrame(step)};warpRaf=requestAnimationFrame(step)}
+function moveChipBar(){const on=$('.chip.on'),bar=$('#chipbar');if(!on||!bar)return;bar.style.left=on.offsetLeft+8+'px';bar.style.width=on.offsetWidth-16+'px'}
+addEventListener('resize',moveChipBar);
+function setPeriod(pid,anim=true){const prev=cur;cur=pid;mv.setPeriod(pid,anim);const P=PERIODS[pid];if(anim&&prev)warp(PERIODS[prev].ma,P.ma);
+ $('#mapT').textContent=P.ma?`${P.name} — il y a ${P.ma} millions d’années`:'Aujourd’hui';
+ $('#mapW').title=(P.ma?'Reconstitution simplifiée : personne n’a vu ces paysages. Les scientifiques les dessinent à partir des roches et des fossiles. ':'')+P.doute+' Les pointillés montrent la France actuelle : ils servent seulement de repère, la France n’existait pas à cette époque !';
+ $('#mapW').textContent=P.ma?'Reconstitution simplifiée ⓘ':'Carte simplifiée ⓘ';
+ const r=26,y=-r*Math.sin(P.latVal*Math.PI/180);
+ $('#gdot').style.transform=`translateY(${f1(y)}px)`;$('#glat').textContent=P.lat;$('#gtxt').textContent=`Position de la région${P.ma?' à cette époque':''} (rouge : équateur)`;
+ $$('.chip').forEach(c=>c.classList.toggle('on',c.dataset.p===pid));moveChipBar();
+ if(mode==='free')renderFree()}
+$('#chips').innerHTML=P_ORDER.map(p=>{const P=PERIODS[p];return `<button class="chip era${P.era}" data-p="${p}"><b>${P.name}</b><span>${P.ma?P.ma+' Ma':'0 Ma'}</span></button>`}).join('')+'<span class="chipbar" id="chipbar"></span>';
+$$('.chip').forEach(c=>c.onclick=()=>{stopPlay();setPeriod(c.dataset.p)});
+let timer=null;
+function stopPlay(){clearInterval(timer);timer=null;$('#play').textContent='▶ Faire défiler'}
+$('#play').onclick=()=>{if(timer){stopPlay();return}if(cur==='act')setPeriod('carb');$('#play').textContent='❚❚ Pause';timer=setInterval(()=>{const i=P_ORDER.indexOf(cur);if(i>=P_ORDER.length-1){stopPlay();return}setPeriod(P_ORDER[i+1])},5000)};
+
+/* ===== Fiche d’un site ===== */
+function openSite(id){const S=SITES[id];const P=PERIODS[S.period];
+ const warn=cur!==S.period?`<div class="box todo" style="margin-top:0"><b>Attention :</b> cette roche date du <b>${P.name}</b>, mais la carte affichée est celle de l’époque « ${PERIODS[cur].name} ».<div style="margin-top:6px"><button class="btn small or" id="goP">Afficher la carte du ${P.name}</button></div></div>`:'';
+ openModal(`Site ${id} — ${S.name}`,`${warn}<div class="sgrid"><div>
+  <div class="rock">${rockSVG(S.texture,id*31)}<div class="cap">Dessin de la roche (ce n’est pas une photo)</div></div>
+  <table class="kv" style="margin-top:8px"><tr><td>Roche</td><td><b>${esc(S.rock)}</b></td></tr><tr><td>Âge de la roche</td><td>${esc(S.age)}</td></tr><tr><td>Où ?</td><td>${esc(S.where)}</td></tr></table></div>
+  <div><h3 style="margin:0 0 4px;color:var(--blue)">🔍 Ce que j’observe</h3><ul class="obs">${S.obs.map(o=>`<li>${esc(o)}</li>`).join('')}</ul>
+  <div class="box help"><h4>Rappel</h4>Une roche formée de débris de coquilles et de squelettes est une ${mot('sed','roche sédimentaire')}. Les ${mot('fossile','fossiles')} qu’elle contient nous renseignent sur le milieu où elle s’est formée.</div></div></div>
+  <h3 style="margin:14px 0 8px;color:var(--blue)">🦴 Les fossiles trouvés dans cette roche</h3>
+  <div class="fgrid">${S.fossils.map((f,i)=>{const F=FOSSILS[f];return `<div class="fcard" style="animation-delay:${.15+i*.12}s">${fossilSVG(f)}<div class="nm">${esc(F.name)}</div><div class="sz">Taille : ${esc(F.size)}</div><div style="text-align:left;margin-top:5px">${esc(F.desc)}</div><button class="ind" data-ind="${f}">💡 Voir l’indice</button></div>`}).join('')}</div>
+  <p class="small">Dessins schématiques, pas à l’échelle.</p>
+  <div class="row" style="justify-content:flex-end"><button class="btn" id="closeS">Retour à l’enquête</button></div>`);
+ $$('[data-ind]',$('#modal')).forEach(b=>b.onclick=()=>{const d=document.createElement('div');d.className='indt';d.textContent=FOSSILS[b.dataset.ind].ind;b.replaceWith(d)});
+ $('#closeS').onclick=closeModal;const g=$('#goP');if(g)g.onclick=()=>{setPeriod(S.period);openSite(id)};
+ setData(d=>{d.seen=d.seen||{};d.seen[id]=1});if(mode==='guide')renderGuide()}
+
+/* ===== Fenêtres ===== */
+function openModal(title,html){const m=$('#modal');m.innerHTML=`<div class="mbox" role="dialog" aria-modal="true"><div class="mhead"><h2>${esc(title)}</h2><button class="x" aria-label="Fermer">×</button></div><div class="mbody">${html}</div></div>`;m.hidden=false;m.querySelector('.x').onclick=closeModal;m.onclick=e=>{if(e.target===m)closeModal()}}
+function closeModal(){$('#modal').hidden=true;$('#modal').innerHTML=''}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();$('#pop').hidden=true}});
+document.addEventListener('click',e=>{const m=e.target.closest('.mot');const p=$('#pop');if(!m){if(!e.target.closest('#pop'))p.hidden=true;return}
+ const L=LEX[m.dataset.m];p.innerHTML=`<b>${esc(L[0])}</b> : ${esc(L[1])}`;p.hidden=false;const r=m.getBoundingClientRect();
+ p.style.left=Math.min(r.left,innerWidth-320)+'px';p.style.top=(r.bottom+6+p.offsetHeight>innerHeight?r.top-p.offsetHeight-6:r.bottom+6)+'px'});
+
+/* ===== L’enquête guidée ===== */
+const Q={
+ q1:{q:'Il y a 160 millions d’années (Jurassique), que trouvait-on à l’emplacement de Paris ⭐ ?',ch:['Une terre (hors de l’eau)','Une mer peu profonde','Une haute montagne'],ok:1,
+  good:'Bravo ! Sur la carte du Jurassique, l’étoile de Paris est dans la zone bleu clair : une mer peu profonde.',bad:'Pas tout à fait. Affiche la carte du Jurassique et regarde la couleur sous l’étoile ⭐, puis compare avec la légende.'},
+ q2:{q:'Les fossiles du site 1 (crinoïdes, coraux, ammonite) sont ceux d’êtres vivants…',ch:['qui vivaient sur la terre ferme','qui vivaient dans la mer','qui vivaient dans les rivières'],ok:1,
+  good:'Exact : les indices montrent que ces trois groupes vivent (ou vivaient) uniquement dans la mer.',bad:'Relis les indices 💡 de chaque fossile dans la fiche du site 1.'},
+ q3:{q:'Donc, le calcaire du site 1 s’est formé…',ch:['au fond d’une mer','sur la terre ferme','dans un lac'],ok:0,
+  good:'Oui ! Les animaux marins sont morts et leurs restes se sont accumulés au fond de la mer : ils ont formé cette roche. On utilise ici le principe d’actualisme.',bad:'Réfléchis : où vivaient les êtres vivants dont on retrouve les restes dans la roche ?'},
+ q4:{q:'La craie de Reims est formée surtout de…',ch:['grains de sable','minuscules plaques d’algues marines (coccolithes)','débris de plantes'],ok:1,
+  good:'Exactement : la craie est un empilement de milliards de coccolithes, des restes d’algues microscopiques qui flottaient dans la mer.',bad:'Ouvre la fiche du site 3 et lis la description des coccolithes.'},
+ q5:{q:'Il y a environ 90 à 80 millions d’années, la région de Reims était…',ch:['recouverte par la mer','une forêt','une montagne'],ok:0,
+  good:'Oui : la carte du Crétacé et les fossiles marins de la craie (coccolithes, bélemnites, oursins) l’indiquent.',bad:'Regarde la carte du Crétacé et pense aux fossiles trouvés dans la craie.'},
+ q6:{q:'Il y a 45 millions d’années, la roche de Paris s’est formée…',ch:['dans la mer','sur la terre ferme','sous un glacier'],ok:0,
+  good:'Bien vu : nummulites, orbitolites et campaniles sont des fossiles marins. La mer recouvrait encore Paris.',bad:'Ouvre la fiche du site 4 et lis les indices 💡 des fossiles.'},
+ q7:{q:'Compare les cartes du Crétacé et de l’Éocène : à l’Éocène, la mer est…',ch:['plus étendue','moins étendue','exactement pareille'],ok:1,
+  good:'Oui : à l’Éocène, la mer ne recouvre plus qu’un « golfe » autour de Paris. Une grande partie de la France est hors de l’eau.',bad:'Utilise « Comparer deux époques » pour mettre les deux cartes côte à côte.'},
+ q8:{q:'Aujourd’hui, Paris se trouve…',ch:['sous la mer','sur une terre émergée'],ok:1,good:'Oui, la mer la plus proche (la Manche) est à environ 150 km.',bad:'Affiche la carte « Aujourd’hui ».'},
+ q9:{q:'Pourquoi trouve-t-on des fossiles d’animaux marins à Paris alors qu’il n’y a pas de mer ?',ch:['Des oiseaux les ont transportés','La mer recouvrait la région quand ces roches se sont formées','Ce sont des animaux d’eau douce'],ok:1,
+  good:'C’est la bonne explication : l’environnement de la région a changé au cours des temps géologiques.',bad:'Repense à tout ce que tu as découvert dans les étapes précédentes.'}
+};
+const STEPS=[
+ {t:'Bienvenue, jeune géologue !',p:'act',h:()=>`
+  <div class="box mission"><h4>Ta mission</h4>Rechercher des indices pour comprendre comment l’environnement du ${mot('bassin','Bassin parisien')} a changé au cours des temps géologiques.</div>
+  <p>Tu vas voyager dans le temps grâce à des cartes et étudier des ${mot('fossile','fossiles')} trouvés dans les roches.</p>
+  <div class="box help"><h4>Comment utiliser le logiciel</h4><ul style="margin:0;padding-left:18px">
+   <li>En bas, la <b>frise du temps</b> : clique sur une époque pour changer de carte.</li>
+   <li>Sur la carte, les <b style="color:var(--orange)">ronds orange numérotés</b> sont des sites à étudier : clique dessus.</li>
+   <li>Molette ou boutons <b>+ / −</b> pour zoomer, clic maintenu pour déplacer la carte.</li>
+   <li>Les <span class="mot" data-m="ma">mots soulignés</span> sont expliqués quand tu cliques dessus.</li></ul></div>
+  <label><b>Ton prénom et ta classe :</b></label><input type="text" id="nameIn" value="${esc(data.name)}" placeholder="Ex. : Léa, 4e B">`},
+ {t:'Étape 1 — Lire une carte du passé',p:'act',h:()=>`
+  <p>Chaque carte montre la région à une époque. Les âges sont donnés en ${mot('ma','Ma')}.</p>
+  <p>Les cartes anciennes sont des ${mot('reconst','reconstitutions simplifiées')} : les pointillés montrent la France actuelle seulement comme <b>repère</b>.</p>
+  <div class="box todo"><h4>À faire</h4><ol><li>Observe la carte « Aujourd’hui » et sa légende (en bas à droite).</li><li>Clique sur <button class="btn small" data-go="jur">Jurassique (160 Ma)</button> dans la frise.</li><li>Repère l’étoile ⭐ de Paris et regarde sa couleur.</li><li>Regarde aussi le petit globe en haut : la région n’était pas au même endroit sur la planète ! (${mot('deplac','déplacement des continents')})</li></ol></div>
+  ${qHTML('q1')}`},
+ {t:'Étape 2 — Enquête au Jurassique',p:'jur',sites:['1','2'],h:()=>`
+  <p>Des roches de cette époque affleurent à l’est du Bassin parisien, dans la Meuse.</p>
+  <div class="box todo"><h4>À faire</h4><ol><li>Clique sur le site <b style="color:var(--orange)">1</b> (Meuse) sur la carte. <button class="btn small or" data-site="1">Ouvrir le site 1</button></li><li>Lis les observations de la roche.</li><li>Pour chaque fossile, clique sur <b>💡 Voir l’indice</b>.</li></ol></div>
+  ${qHTML('q2')}${qHTML('q3')}
+  <div class="box help"><h4>Pour aller plus loin (facultatif)</h4>Le site <b style="color:var(--orange)">2</b> (Caen) date aussi du Jurassique. Dans ce calcaire marin, on a trouvé… un os de dinosaure ! <button class="btn small or" data-site="2">Ouvrir le site 2</button>
+  <p style="margin:8px 0 4px"><b>Comment un dinosaure, animal terrestre, a-t-il pu se retrouver dans une roche formée dans la mer ?</b> <span class="small">(Aide : regarde sur la carte du Jurassique s’il y avait une terre près de Caen.)</span></p>${openHTML('o1')}</div>`},
+ {t:'Étape 3 — Enquête au Crétacé',p:'cret',sites:['3'],h:()=>`
+  <p>Avançons dans le temps : environ 70 millions d’années plus tard.</p>
+  <div class="box todo"><h4>À faire</h4><ol><li>Observe la carte du <button class="btn small" data-go="cret">Crétacé (90 Ma)</button>.</li><li>Ouvre le site <b style="color:var(--orange)">3</b> (Reims). <button class="btn small or" data-site="3">Ouvrir le site 3</button></li><li>Lis ce qu’est la ${mot('craie','craie')} et regarde les indices des fossiles.</li></ol></div>
+  ${qHTML('q4')}${qHTML('q5')}`},
+ {t:'Étape 4 — Enquête à l’Éocène',p:'eoc',sites:['4'],h:()=>`
+  <p>Encore 40 millions d’années plus tard, sous Paris même.</p>
+  <div class="box todo"><h4>À faire</h4><ol><li>Observe la carte de l’<button class="btn small" data-go="eoc">Éocène (45 Ma)</button>.</li><li>Ouvre le site <b style="color:var(--orange)">4</b> (Paris). <button class="btn small or" data-site="4">Ouvrir le site 4</button></li><li>Compare avec la carte du Crétacé : <button class="btn small sec" data-cmp="cret,eoc">Comparer Crétacé / Éocène</button></li></ol></div>
+  ${qHTML('q6')}${qHTML('q7')}`},
+ {t:'Étape 5 — Retour à aujourd’hui',p:'act',h:()=>`
+  <div class="box todo"><h4>À faire</h4><ol><li>Affiche la carte <button class="btn small" data-go="act">Aujourd’hui</button>.</li><li>Tu peux aussi comparer avec le Jurassique : <button class="btn small sec" data-cmp="jur,act">Comparer Jurassique / Aujourd’hui</button></li></ol></div>
+  ${qHTML('q8')}${qHTML('q9')}
+  <div class="box help"><h4>Attention aux trous dans l’histoire</h4>Entre deux cartes, il s’est écoulé des dizaines de millions d’années. Pendant ces périodes, la mer a pu avancer et reculer plusieurs fois : nos 6 cartes ne montrent que quelques « photos » de cette longue histoire.</div>`},
+ {t:'Bilan de l’enquête',p:'act',h:()=>bilanHTML()}
+];
+function qHTML(id){const q=Q[id],a=data.qcm[id];return `<div class="q" data-q="${id}"><div class="qt">❓ ${esc(q.q)}</div><div class="ch">${q.ch.map((c,i)=>`<button data-i="${i}" class="${a===i?(i===q.ok?'good':'bad'):''}">${String.fromCharCode(65+i)}. ${esc(c)}</button>`).join('')}</div>${a!=null?`<div class="fb ${a===q.ok?'good':'bad'}">${a===q.ok?'✅ ':'❌ '}${esc(a===q.ok?q.good:q.bad)}</div>`:''}</div>`}
+function openHTML(id){return `<textarea data-o="${id}" placeholder="Écris ton hypothèse ici…">${esc(data.open[id]||'')}</textarea>`}
+const milieu=(id,txt)=>{const a=data.qcm[id];return a==null?'<i class="small">à compléter</i>':(a===Q[id].ok?txt:'<span style="color:var(--red)">à revoir (étape précédente)</span>')};
+function bilanHTML(){return `<p>Voici le tableau de ton enquête, rempli à partir de tes réponses.</p>
+ <table class="bil"><tr><th>Époque</th><th>Lieu / roche</th><th>Fossiles</th><th>Milieu</th></tr>
+ <tr><td>Jurassique<br><span class="small">≈ 160 Ma</span></td><td>Meuse — calcaire à entroques</td><td>crinoïdes, coraux, ammonites</td><td>${milieu('q3','Mer')}</td></tr>
+ <tr><td>Crétacé<br><span class="small">≈ 90–80 Ma</span></td><td>Reims — craie</td><td>coccolithes, bélemnites, oursins</td><td>${milieu('q5','Mer')}</td></tr>
+ <tr><td>Éocène<br><span class="small">≈ 45 Ma</span></td><td>Paris — calcaire grossier</td><td>nummulites, campaniles</td><td>${milieu('q6','Mer (golfe)')}</td></tr>
+ <tr><td>Aujourd’hui</td><td>Paris</td><td>—</td><td>${milieu('q8','Terre émergée')}</td></tr></table>
+ <p><b>Ma conclusion</b> <span class="small">(aide : « Au cours des temps géologiques, le Bassin parisien a été… Je le sais grâce à… Aujourd’hui… »)</span></p>${openHTML('concl')}
+ <div class="row" style="margin-top:10px"><button class="btn or" id="printB">🖨️ Imprimer ma fiche</button><button class="btn sec" id="resetB">Recommencer l’enquête</button></div>`}
+let mode='guide';
+function renderGuide(){const i=data.step,S=STEPS[i];const g=$('#guide');
+ g.innerHTML=`<div class="gtop"><div class="small">Enquête guidée · ${i===0?'Introduction':i===STEPS.length-1?'Bilan':'Étape '+i+' sur '+(STEPS.length-2)}</div><div class="steps">${STEPS.map((s,k)=>`<button class="${k===i?'on':k<i?'done':''}" data-st="${k}" title="${esc(s.t)}"></button>`).join('')}</div></div>
+ <div class="gbody"><h2>${esc(S.t)}</h2>${S.h()}</div>
+ <div class="gnav"><button class="btn sec" id="prevS" ${i===0?'disabled style="visibility:hidden"':''}>◀ Précédent</button><button class="btn" id="nextS" ${i===STEPS.length-1?'style="visibility:hidden"':''}>${i===0?'Commencer l’enquête ▶':'Étape suivante ▶'}</button></div>`;
+ mv.pulse(S.sites||[]);
+ $$('[data-st]',g).forEach(b=>b.onclick=()=>goStep(+b.dataset.st));$('#prevS').onclick=()=>goStep(i-1);$('#nextS').onclick=()=>goStep(i+1);
+ $$('[data-go]',g).forEach(b=>b.onclick=()=>{stopPlay();setPeriod(b.dataset.go)});
+ $$('[data-site]',g).forEach(b=>b.onclick=()=>{const s=SITES[b.dataset.site];mv.focus(s.lon,s.lat);openSite(b.dataset.site)});
+ $$('[data-cmp]',g).forEach(b=>b.onclick=()=>openCompare(...b.dataset.cmp.split(',')));
+ $$('.q',g).forEach(q=>$$('.ch button',q).forEach(b=>b.onclick=()=>{const id=q.dataset.q,i=+b.dataset.i;setData(d=>d.qcm[id]=i);const y=g.scrollTop;renderGuide();g.scrollTop=y;
+  const nb=$(`.q[data-q="${id}"] button[data-i="${i}"]`,g),fb=$(`.q[data-q="${id}"] .fb`,g);if(fb)fb.classList.add('fresh');
+  if(i===Q[id].ok){nb.classList.add('popok');confetti(nb)}else nb.classList.add('shake')}));
+ $$('[data-o]',g).forEach(t=>t.oninput=()=>setData(d=>d.open[t.dataset.o]=t.value));
+ const n=$('#nameIn');if(n)n.oninput=()=>setData(d=>d.name=n.value);
+ const p=$('#printB');if(p)p.onclick=printSheet;const r=$('#resetB');if(r)r.onclick=()=>{if(confirm('Effacer toutes tes réponses et recommencer ?')){data={name:'',qcm:{},open:{},step:0};save(data);goStep(0)}}}
+function goStep(i){if(i<0||i>=STEPS.length)return;const dir=i>=data.step?'in-r':'in-l';setData(d=>d.step=i);const S=STEPS[i];stopPlay();if(S.p&&S.p!==cur)setPeriod(S.p);mv.reset();renderGuide();$('#guide').scrollTop=0;$('#guide .gbody').classList.add(dir)}
+function confetti(el){if(reduced)return;const r=el.getBoundingClientRect(),cols=['#ffd84d','#2e7d4f','#c0572b','#2d6b8a','#8fbc72','#f08a52'];
+ for(let k=0;k<22;k++){const s=document.createElement('span');s.className='cf';const a=Math.random()*Math.PI*2,d=50+Math.random()*90;
+  s.style.cssText=`left:${r.left+r.width*.75}px;top:${r.top+r.height/2}px;background:${cols[k%cols.length]};--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d-30}px;--r:${Math.random()*720-360}deg`;
+  document.body.appendChild(s);setTimeout(()=>s.remove(),1100)}}
+
+/* ===== Exploration libre ===== */
+function renderFree(){const P=PERIODS[cur];const here=Object.values(SITES).filter(s=>s.period===cur);
+ $('#guide').innerHTML=`<div class="gbody"><h2>${esc(P.name)}</h2><p class="small">${P.ma?'Il y a environ '+P.ma+' millions d’années':'Aujourd’hui'}</p>
+ <p>${esc(P.txt)}</p><div class="box help"><h4>À savoir</h4>${P.ma?'Cette carte est une '+mot('reconst','reconstitution simplifiée')+'. ':''}${esc(P.doute)} La région se trouvait ${esc(P.lat)}.</div>
+ <h3 style="color:var(--blue)">Sites de cette époque</h3>${here.length?here.map(s=>`<p><button class="btn small or" data-site="${s.n}">Site ${s.n} — ${esc(s.name)}</button> <span class="small">${esc(s.rock)}</span></p>`).join(''):'<p class="small">Aucun site à étudier pour cette époque dans ce logiciel.</p>'}
+ <h3 style="color:var(--blue)">Tous les sites</h3>${Object.values(SITES).map(s=>`<p style="margin:5px 0"><button class="btn small sec" data-site="${s.n}">Site ${s.n} — ${esc(s.name)}</button> <span class="small">${esc(s.age)}</span></p>`).join('')}</div>`;
+ mv.pulse(here.map(s=>String(s.n)));$$('[data-site]',$('#guide')).forEach(b=>b.onclick=()=>openSite(b.dataset.site))}
+
+/* ===== Comparer ===== */
+const staticMap=pid=>`<svg viewBox="0 0 ${W} ${H}">${periodLayer(pid)}<path class="fr-outline" d="${linePath(FR)}"/>${star()}</svg>`;
+function openCompare(a='cret',b='eoc'){const opts=s=>P_ORDER.map(p=>`<option value="${p}"${p===s?' selected':''}>${PERIODS[p].name} (${PERIODS[p].ma} Ma)</option>`).join('');
+ openModal('Comparer deux époques',`<p style="margin-top:0">Choisis deux époques et compare la place de la <b>mer</b> (bleu) et des <b>terres</b> (vert, brun). Repère l’étoile ⭐ de Paris.</p>
+ <div class="cmpg"><div><select id="cA">${opts(a)}</select><div id="mA" style="margin-top:6px">${staticMap(a)}</div></div><div><select id="cB">${opts(b)}</select><div id="mB" style="margin-top:6px">${staticMap(b)}</div></div></div>
+ <p class="small">Légende : bleu foncé = mer profonde ; bleu clair = mer peu profonde ; beige = côtes, lagunes ; vert = terre ; brun = montagnes. Cartes simplifiées.</p>`);
+ $('#cA').onchange=e=>$('#mA').innerHTML=staticMap(e.target.value);$('#cB').onchange=e=>$('#mB').innerHTML=staticMap(e.target.value)}
+
+/* ===== Lexique & sources ===== */
+function openLex(){openModal('Lexique',`<dl class="lex">${Object.values(LEX).map(([a,b])=>`<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join('')}</dl>
+ <h3 style="color:var(--blue)">Sources et limites (pour l’enseignant)</h3><ul class="small">
+ <li>Cartes : schémas originaux simplifiés, établis d’après les grandes tendances de : Ziegler P.A. (1990), Geological Atlas of Western and Central Europe ; Dercourt J. et al. (2000), Atlas Peri-Tethys ; Mégnien C. (dir.) (1980), Synthèse géologique du Bassin de Paris, Mém. BRGM 101-103 ; latitudes d’après C.R. Scotese, PALEOMAP. Les contours ne sont pas des données exactes.</li>
+ <li>Formations : cartes géologiques BRGM à 1/50 000 (InfoTerre) — calcaires oxfordiens de la Meuse, Calcaire de Caen (Bathonien), craie campanienne de Champagne, Calcaire grossier lutétien de Paris. À vérifier sur les notices avant usage.</li>
+ <li>Poekilopleuron : Allain R. & Chure D. (2002), Palaeontology 45.</li>
+ <li>Dessins de roches et de fossiles : schémas originaux, non à l’échelle.</li>
+ <li>Les réponses des élèves sont enregistrées dans le navigateur de l’ordinateur utilisé.</li></ul>`)}
+
+/* ===== Impression ===== */
+function printSheet(){const pr=$('#print');pr.innerHTML=`<h2>Voyage dans le temps : le Bassin parisien</h2><p><b>Nom / classe :</b> ${esc(data.name||'…………………')}</p>${bilanHTML().replace(/<div class="row"[\s\S]*$/,'').replace(/<textarea[^>]*>[\s\S]*?<\/textarea>/,`<div style="border:1px solid #999;border-radius:6px;padding:8px;min-height:80px;white-space:pre-wrap">${esc(data.open.concl||'')}</div>`)}
+ ${data.open.o1?`<p><b>Hypothèse sur l’os de dinosaure de Caen :</b></p><div style="border:1px solid #999;border-radius:6px;padding:8px;white-space:pre-wrap">${esc(data.open.o1)}</div>`:''}`;
+ document.body.classList.add('printing');window.print();setTimeout(()=>document.body.classList.remove('printing'),500)}
+
+/* ===== Onglets ===== */
+function setTab(t){mode=t;$('#tabGuide').classList.toggle('on',t==='guide');$('#tabFree').classList.toggle('on',t==='free');if(t==='guide')renderGuide();else renderFree()}
+$('#tabGuide').onclick=()=>setTab('guide');$('#tabFree').onclick=()=>setTab('free');$('#tabCmp').onclick=()=>openCompare();$('#tabLex').onclick=openLex;
+
+setPeriod(STEPS[data.step].p||'act',false);renderGuide();
+</script>
+</body>
+</html>

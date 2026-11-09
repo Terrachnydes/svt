@@ -6,7 +6,7 @@
   "Géologie",
   "Orientation 3e"
  ],
- "derniere_maj": "2026-11-08",
+ "derniere_maj": "2026-11-09",
  "sites": [
   {
    "titre": "Inondations et canicules",
@@ -119,6 +119,15 @@
    "artifact": "https://claude.ai/artifact/44W3zqDrvhCRHnP3JbwpjJ",
    "version": "1792963366-e2fc",
    "verifie": "2026-11-08"
+  },
+  {
+   "titre": "Voyage dans le temps : le Bassin parisien",
+   "theme": "Géologie",
+   "fichier": "voyage-temps-bassin-parisien.html",
+   "artifact": null,
+   "version": null,
+   "verifie": "2026-11-09",
+   "conversation": "https://claude.ai/code/session_01VCq5P8f2PywCZ2xmwvKwc8"
   },
   {
    "titre": "Lycées du 93 après la 3e",
