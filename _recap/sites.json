@@ -1,16 +1,17 @@
 {
  "themes": [
-  "5e — L'eau et le climat",
+  "L'eau et le climat",
   "Fossiles",
   "Génétique et évolution",
   "Géologie",
+  "Le sol",
   "Orientation 3e"
  ],
  "derniere_maj": "2026-11-09",
  "sites": [
   {
    "titre": "Inondations et canicules",
-   "theme": "5e — L'eau et le climat",
+   "theme": "L'eau et le climat",
    "fichier": "inondations-canicules.html",
    "artifact": "https://claude.ai/artifact/QrjS4Y1YJB8aTFeV9kdpQy",
    "version": "1794177174-5329",
@@ -18,7 +19,7 @@
   },
   {
    "titre": "La Terre et ses réserves d'eau",
-   "theme": "5e — L'eau et le climat",
+   "theme": "L'eau et le climat",
    "fichier": "terre-eau (2).html",
    "artifact": "https://claude.ai/artifact/EyatjykGdW4zoznd4Ugjnf",
    "version": null,
@@ -26,7 +27,7 @@
   },
   {
    "titre": "L'atmosphère : vents, nuages et précipitations",
-   "theme": "5e — L'eau et le climat",
+   "theme": "L'eau et le climat",
    "fichier": "atmosphere-5e.html",
    "artifact": "https://claude.ai/artifact/83ARYjuTwR6X25adXjfBqa",
    "version": null,
@@ -34,7 +35,7 @@
   },
   {
    "titre": "Économiser et protéger l'eau",
-   "theme": "5e — L'eau et le climat",
+   "theme": "L'eau et le climat",
    "fichier": "economiser-proteger-eau.html",
    "artifact": "https://claude.ai/artifact/SoN6ANdG6HTMSZFNHg6NjB",
    "version": "1793866992-9395",
@@ -42,7 +43,7 @@
   },
   {
    "titre": "Air, océans et climats",
-   "theme": "5e — L'eau et le climat",
+   "theme": "L'eau et le climat",
    "fichier": "Air, océans et climats.html",
    "artifact": "https://claude.ai/artifact/FJu9wTPRLZUmKNN7BxF2o6",
    "version": null,
@@ -50,7 +51,7 @@
   },
   {
    "titre": "L'eau et les activités humaines",
-   "theme": "5e — L'eau et le climat",
+   "theme": "L'eau et le climat",
    "fichier": "eau-activites-humaines.html",
    "artifact": "https://claude.ai/artifact/HZUA6F88GiCAKLpoeXYJSu",
    "version": "1793784111-1e30",
@@ -122,7 +123,7 @@
   },
   {
    "titre": "Voyage dans le temps : le Bassin parisien",
-   "theme": "Géologie",
+   "theme": "Fossiles",
    "fichier": "voyage-temps-bassin-parisien.html",
    "artifact": null,
    "version": null,
@@ -136,6 +137,15 @@
    "artifact": "https://claude.ai/artifact/4mUvjYnrcfDb97N4oTDtEq",
    "version": null,
    "verifie": "2026-11-08"
+  },
+  {
+   "titre": "Explorateur du sol",
+   "theme": "Le sol",
+   "fichier": "explorateur-du-sol.html",
+   "artifact": null,
+   "version": null,
+   "verifie": "2026-11-09",
+   "conversation": "https://claude.ai/code/session_01VCq5P8d3LW5r5JrwxbV7V3"
   }
  ],
  "ignores": [
