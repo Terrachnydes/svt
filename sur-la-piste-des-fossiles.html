@@ -1,0 +1,1640 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sur la piste des fossiles</title>
+<style>[hidden]{display:none!important}
+:root{--bg:#f3ede1;--ink:#2a251f;--ink2:#6a6155;--accent:#c4621d;--accent2:#de7a2e;--ok:#2f9a4a;--line:#ddd1bb;--card:#fffdf8;--blue:#1f6fb2}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;color:var(--ink);min-height:100vh;
+  background:radial-gradient(circle at 20% 0,#fbf6ec 0,var(--bg) 60%) fixed}
+body.modal-open{overflow:hidden}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);padding:6px 12px;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+button.primary:hover:not(:disabled){background:var(--accent2)}
+button.ghost{background:#fff}
+button.ghost:hover{border-color:var(--accent)}
+button.link{border:0;background:none;color:var(--blue);text-decoration:underline;padding:2px 0;font-size:13px}
+button.big{padding:10px 26px;font-size:17px}
+button.wide{width:100%}
+:focus-visible{outline:3px solid #ffcf3d;outline-offset:2px}
+.ic{width:18px;height:18px;flex:none}
+.eic{width:30px;height:30px;flex:none;border-radius:6px}
+/* ---- en-tête ---- */
+header{background:linear-gradient(180deg,#4a3a29,#33281c);color:#f6ecd8;display:flex;align-items:center;gap:10px;padding:8px 18px;flex-wrap:wrap}
+header .logo{width:32px;height:32px}
+header h1{font-size:20px;margin:0;white-space:nowrap}
+header h1 small{font-weight:400;font-size:13px;opacity:.75;margin-left:8px}
+header .sp{flex:1}
+header #prog{font-size:14px;margin-right:6px}
+header button{background:transparent;border-color:#7a6650;color:#f6ecd8}
+header button:hover{background:#5a4733}
+header button.glow{background:var(--ok);border-color:var(--ok);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(47,154,74,.25)}}
+/* ---- mission ---- */
+.mission{display:flex;gap:14px;align-items:center;margin:12px 18px;padding:10px 18px;background:#fff6dc;border:2px dashed #e0a548;border-radius:14px;font-size:19px;line-height:1.35}
+.mission .mi{width:44px;height:44px;flex:none}
+.mission b{color:#a8460f}
+.mission .sub{font-size:14px;color:var(--ink2);margin-top:2px}
+/* ---- carrières ---- */
+#quarries{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;padding:0 18px 18px;max-width:1700px;margin:0 auto}
+@media (max-width:1100px){#quarries{grid-template-columns:repeat(2,minmax(0,1fr));max-width:900px}}
+.quarry{background:var(--card);border-radius:14px;box-shadow:0 2px 0 #d6c9b1,0 6px 18px rgba(60,40,10,.12);overflow:hidden;display:flex;flex-direction:column;border:3px solid transparent;transition:border-color .3s}
+.quarry.complete{border-color:#e0a548}
+.quarry.done{border-color:var(--ok)}
+.qh{display:flex;align-items:center;gap:8px;padding:7px 10px;background:linear-gradient(180deg,#8a5a33,#5f3b1f);color:#f7ead0}
+.plate{background:linear-gradient(180deg,#f3d991,#d9b56a);color:#3b2a10;border-radius:4px;padding:2px 8px;font-weight:800;font-size:14px;box-shadow:inset 0 0 0 1px #8a6a2c;white-space:nowrap}
+.qh .lieu{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qh .state{margin-left:auto;font-size:12px;font-weight:700;display:flex;align-items:center;gap:3px;white-space:nowrap}
+.quarry.done .qh .state{color:#b9f0c4}
+.scene svg{display:block;width:100%;height:auto}
+.qf{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 10px;min-height:50px}
+.chip{display:inline-flex;align-items:center;gap:4px;background:#f1ebde;border-radius:20px;padding:4px 10px;font-size:13px;font-weight:600;color:var(--ink2)}
+.chip .ic{width:15px;height:15px}
+.chip.ok{background:#dff3e3;color:#1f6b33}
+.qf .open{margin-left:auto;padding:6px 10px;font-size:13.5px}
+.fos,.rk{cursor:pointer}
+.fos .ring,.rk .ring{opacity:0;transition:opacity .15s}
+.fos:hover .ring,.fos:focus .ring,.rk:hover .ring,.rk:focus .ring{opacity:1}
+.fos:focus,.rk:focus{outline:none}
+.fos .dust{transition:opacity .6s}
+.fos.found .dust{opacity:0}
+.fos .chk,.rk .after{display:none}
+.fos.found .chk,.rk.done .after{display:inline}
+.rk.done .before{display:none}
+.rk .before{animation:blink 2.2s infinite}
+@keyframes blink{50%{opacity:.55}}
+.fos.pop{animation:pop .55s;transform-box:fill-box;transform-origin:center}
+@keyframes pop{40%{transform:scale(1.18)}}
+/* ---- toast ---- */
+#toast{position:fixed;left:50%;top:84px;transform:translate(-50%,-20px);background:#2a251f;color:#fff;padding:14px 26px;border-radius:14px;font-size:18px;line-height:1.4;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:.25s;z-index:50;max-width:90vw}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast.ok{background:#1f6b33}
+/* ---- fenêtres ---- */
+.modal{position:fixed;inset:0;background:rgba(30,24,16,.6);display:none;align-items:center;justify-content:center;z-index:20;padding:14px}
+.modal.show{display:flex}
+#mIdent{z-index:30;padding:8px}
+#mHelp,#mBilan{z-index:25}
+.box{background:var(--card);border-radius:14px;width:100%;max-width:1220px;max-height:100%;display:flex;flex-direction:column;box-shadow:0 20px 50px rgba(0,0,0,.35);overflow:hidden}
+.box.small{max-width:680px}
+.box.full{max-width:none;height:100%}
+.mh{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line);background:#f6efe1}
+.mh h2{font-size:18px;margin:0;margin-right:auto}
+.mb{overflow:auto;padding:14px 18px;min-height:0}
+/* ---- labo du site ---- */
+.step{display:flex;gap:10px;align-items:center;font-size:16px;margin:4px 0 10px}
+.step .num{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;flex:none}
+.step .cnt{background:#f1ebde;border-radius:12px;padding:1px 9px;font-size:13px;font-weight:700;margin-left:4px}
+.todo{color:#b0451a;font-style:italic;font-size:14px}
+.fos3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.fcard{border:2px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+.fcard.ok{border-color:var(--ok)}
+.fcard .pic{height:190px;background:radial-gradient(ellipse at 40% 30%,#3a413c,#1f2321);display:flex;align-items:center;justify-content:center;padding:8px}
+.fcard .pic svg{max-width:100%;max-height:100%}
+.fb{padding:10px 12px;display:flex;flex-direction:column;gap:8px;flex:1}
+.fb h4{margin:0;font-size:16px}
+.fb h4 small{font-weight:400;color:var(--ink2);font-size:13px;margin-left:6px}
+.fb dl{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;margin:0;font-size:14px;align-items:center}
+.fb dt{color:var(--ink2);font-weight:600}
+.fb dd{margin:0}
+.fb button{margin-top:auto;text-align:center;line-height:1.25}
+.etag{display:inline-flex;align-items:center;gap:6px;font-weight:600}
+.etag .eic{width:22px;height:22px}
+.agebox{display:grid;grid-template-columns:300px 1fr;gap:14px;margin-bottom:18px;align-items:start}
+.rockc{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px}
+.rockc .pic{width:120px;height:92px;flex:none;background:#2a2f2c;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.rockc .pic svg{max-width:100%;max-height:100%}
+.small{font-size:12.5px;color:var(--ink2)}
+.dating{margin-top:6px;font-size:13px;background:#fff2d9;border-radius:8px;padding:5px 8px}
+.dating span{font-size:17px;font-weight:800;color:#a8460f}
+.frisebox{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.frisebox p{margin:0 0 6px;font-size:14px}
+.frise{width:100%;height:auto;display:block}
+.frise .per[data-period]{cursor:pointer}
+.frise .per[data-period]:hover rect{filter:brightness(1.08);stroke:#1f1a14;stroke-width:2}
+.friseunit{font-size:12px;color:var(--ink2);text-align:right}
+.envs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.envs.big{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.envs.off{opacity:.5}
+.env{justify-content:flex-start;text-align:left;font-size:12.5px;line-height:1.2;padding:4px 6px;border:2px solid var(--line);border-radius:10px;background:#fff}
+.envs.big .env{justify-content:flex-start;padding:8px 10px;font-size:13.5px}
+.envs.big .env .eic{width:38px;height:38px}
+.env .eic{width:26px;height:26px}
+.env:hover:not(:disabled){border-color:var(--accent2)}
+.env.on{border-color:var(--ok);background:#e5f6e8;font-weight:700}
+.sentence{display:flex;gap:10px;align-items:center;background:#e5f6e8;border:2px solid var(--ok);border-radius:12px;padding:12px 16px;font-size:17px;line-height:1.4}
+.sentence .ic{width:28px;height:28px;color:var(--ok)}
+/* ---- identification ---- */
+.consigne{display:flex;gap:18px;align-items:center;background:#e8f2fb;border-bottom:1px solid #c9dcef;padding:10px 16px;font-size:14.5px;line-height:1.4}
+.consigne .ct{flex:1.2}
+.consigne ol{flex:1;margin:0;padding-left:20px}
+.idwrap{display:grid;grid-template-columns:330px minmax(0,1fr);gap:14px;padding:12px 16px 0;flex:1;min-height:0}
+#identLeft{overflow:auto;background:#fff;border:2px solid #e0a548;border-radius:12px;padding:10px}
+#identLeft .fpic{background:radial-gradient(ellipse at 40% 30%,#3a413c,#1f2321);border-radius:8px;height:250px;display:flex;align-items:center;justify-content:center;padding:8px}
+#identLeft .fpic svg{max-width:100%;max-height:100%}
+#identLeft h4{margin:10px 0 2px;font-size:16px}
+#identLeft .obs-t{display:block;margin-top:8px;font-size:14px}
+#identLeft ul{margin:4px 0 0;padding-left:18px;font-size:14px;line-height:1.4}
+#identList{overflow:auto;display:flex;flex-direction:column;gap:8px;padding:0 4px 12px 0;min-height:0}
+.orow{display:grid;grid-template-columns:180px minmax(0,1fr) 420px;gap:12px;align-items:center;background:#fff;border:2px solid var(--line);border-radius:12px;padding:8px;transition:opacity .2s}
+.orow.sel{border-color:var(--ok);background:#f2fbf3}
+.orow.dim{opacity:.6}
+.orow.dim:hover{opacity:1}
+.oimg svg{width:100%;display:block;border-radius:8px}
+.oinfo h4{margin:0 0 4px;font-size:16px}
+.oinfo p{margin:3px 0;font-size:13.5px;line-height:1.35}
+.oact{display:flex;justify-content:center}
+.ep{width:100%}
+.ept{font-size:13.5px;margin-bottom:5px;color:#1f6b33}
+.ept .ic{width:15px;height:15px;vertical-align:-3px}
+#identFoot{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid var(--line);background:#f6efe1}
+#identFoot .ctext{flex:1;font-size:15px;line-height:1.4}
+/* ---- bilan / aide ---- */
+.hint{margin:0 0 10px;color:var(--ink2)}
+.bil4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.bil4 section{border:2px solid var(--line);border-radius:12px;padding:8px 12px;background:#fff}
+.bil4 section.ok{border-color:var(--ok)}
+.bil4 h3{margin:0 0 6px;font-size:16px}
+.bil4 h3 small{font-weight:400;color:var(--ink2);font-size:13px}
+.bil4 table{width:100%;border-collapse:collapse;font-size:13.5px}
+.bil4 th,.bil4 td{border-bottom:1px solid #eee3cf;padding:4px 6px;text-align:left}
+.bil4 th{color:var(--ink2);font-size:12.5px}
+.bil4 p{margin:6px 0 0;font-size:14px}
+.fh{font-size:16px;margin:16px 0 4px}
+.help{font-size:15px;line-height:1.5}
+.help .ex{background:#fff2d9;border-left:4px solid #e0a548;padding:8px 12px;border-radius:0 8px 8px 0}
+@media (max-height:700px){.consigne{font-size:13px;padding:6px 14px}#identLeft .fpic{height:190px}}
+@media print{
+  body *{visibility:hidden}
+  #mBilan,#mBilan *{visibility:visible}
+  #mBilan{position:absolute;inset:0;display:block;background:#fff;padding:0}
+  #mBilan .box{box-shadow:none;max-height:none}
+  #mBilan .mh button{display:none}
+}
+
+.idright{display:flex;flex-direction:column;min-height:0;gap:8px}
+.cats{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:14px;color:var(--ink2)}
+.cats button{padding:4px 12px;border-radius:20px;font-size:13.5px}
+.cats button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.dtwrap{overflow-x:auto;margin-bottom:18px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.dt{border-collapse:collapse;width:100%;font-size:13px}
+.dt th,.dt td{border:1px solid #eadfcb;padding:4px;text-align:center}
+.dt .corner{font-weight:400;font-size:11.5px;color:var(--ink2);width:330px}
+.dt .era{font-size:12px;padding:3px}
+.dt .ph{font-size:13px;line-height:1.15;padding:5px 3px}
+.dt .ph small{display:block;font-weight:400;font-size:11px}
+.dt .rh{text-align:left;font-weight:400;padding:6px 8px}
+.dt .rhi{display:flex;gap:8px;align-items:center}
+.dt .rp{width:64px;height:48px;flex:none;background:#2a2f2c;border-radius:6px;display:flex;align-items:center;justify-content:center;padding:2px}
+.dt .rp svg{max-width:100%;max-height:100%}
+.dt .rt{font-size:12.5px;line-height:1.3;color:#3a332a;margin-top:1px}
+.cell{width:100%;height:40px;border:2px dashed #d6c9b1;border-radius:6px;background:#fbf8f1;padding:0}
+.cell:hover{border-color:var(--accent2)}
+.cell.on{background:#c4621d url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 12.5l5 5L20 6' stroke='white' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/22px no-repeat;border:2px solid #a8460f}
+.dt tr.final{background:#fff6dc}
+.pcell{width:100%;font-size:12px;padding:8px 2px;border:2px solid #d6c9b1;border-radius:8px}
+.pcell.on{background:var(--ok);color:#fff;border-color:var(--ok);font-weight:700}
+</style>
+</head>
+<body>
+<header>
+  <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#e7b85c"/><path d="M16 16m-2 0a2 2 0 1 1 4 0a4 4 0 1 1-8 0a6 6 0 1 1 12 0a8 8 0 1 1-16 0a10 10 0 1 1 20 0" fill="none" stroke="#3b2a10" stroke-width="1.6"/></svg>
+  <h1>Sur la piste des fossiles <small>SVT 4e — retrouver les environnements du passé</small></h1>
+  <span class="sp"></span>
+  <span id="prog"></span>
+  <button id="btnHelp">Le principe d’actualisme</button>
+  <button id="btnBilan">Mon bilan</button>
+  <button id="btnReset" title="Tout recommencer">Recommencer</button>
+</header>
+
+<div class="mission">
+  <svg viewBox="0 0 48 48" class="mi" aria-hidden="true"><circle cx="20" cy="20" r="13" fill="#fff" stroke="#c4410f" stroke-width="5"/><path d="M30 30l12 12" stroke="#c4410f" stroke-width="7" stroke-linecap="round"/></svg>
+  <div><b>Ta mission de paléontologue :</b> sur chaque site, <b>trouve les 3 fossiles</b> cachés dans la roche et <b>prélève un échantillon de roche</b> (repère le cercle orange). Clique dessus !
+  <div class="sub">Quand un site est complet, son laboratoire s’ouvre.</div></div>
+</div>
+
+<main id="quarries"></main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<div class="modal" id="mSite" role="dialog" aria-modal="true" aria-labelledby="siteTitle"><div class="box">
+  <div class="mh"><h2 id="siteTitle"></h2><button class="ghost" data-close>Retour aux carrières ✕</button></div>
+  <div class="mb" id="siteBody"></div>
+</div></div>
+
+<div class="modal" id="mIdent" role="dialog" aria-modal="true" aria-labelledby="identTitle"><div class="box full">
+  <div class="mh"><h2 id="identTitle"></h2><button class="ghost" data-close>Fermer ✕</button></div>
+  <div class="consigne">
+    <div class="ct"><b>Le principe d’actualisme</b> : les êtres vivants du passé avaient les mêmes besoins que les êtres vivants actuels qui leur ressemblent. Un fossile vivait donc probablement <b>dans le même milieu</b> que l’être vivant actuel qui lui ressemble le plus.</div>
+    <ol><li>Observe ton fossile (à gauche).</li><li>Fais défiler les êtres vivants actuels. <b>Attention aux pièges</b> : compare bien chaque détail de la description.</li><li>Sur la même ligne, lis où il vit et choisis son milieu de vie.</li><li>Valide.</li></ol>
+  </div>
+  <div class="idwrap"><aside id="identLeft"></aside><div class="idright"><div id="identCats" class="cats"><span>Trier :</span></div><div id="identList"></div></div></div>
+  <div id="identFoot"></div>
+</div></div>
+
+<div class="modal" id="mBilan" role="dialog" aria-modal="true"><div class="box">
+  <div class="mh"><h2>Mon bilan</h2><button id="btnPrint" class="ghost">Imprimer</button><button class="ghost" data-close>Fermer ✕</button></div>
+  <div class="mb" id="bilanBody"></div>
+</div></div>
+
+<div class="modal" id="mHelp" role="dialog" aria-modal="true"><div class="box small">
+  <div class="mh"><h2>Le principe d’actualisme</h2><button class="ghost" data-close>Fermer ✕</button></div>
+  <div class="mb help">
+    <p>Les lois de la nature n’ont pas changé au cours du temps : les êtres vivants du passé avaient les <b>mêmes besoins</b> que les êtres vivants actuels qui leur ressemblent.</p>
+    <p>On peut donc dire qu’un fossile vivait <b>probablement dans le même milieu</b> que l’être vivant actuel qui lui ressemble le plus.</p>
+    <div class="ex"><b>Exemple :</b> on trouve un fossile qui ressemble beaucoup à un crocodile. Les crocodiles actuels vivent dans les eaux douces des régions chaudes. D’après le principe d’actualisme, ce fossile vivait donc probablement dans des eaux douces chaudes.</div>
+    <p><b>Les étapes :</b></p>
+    <ol><li>Trouver les fossiles et prélever la roche sur chaque site.</li><li>Pour chaque fossile : trouver l’être vivant actuel qui lui ressemble, puis son milieu de vie.</li><li>Dater le site : l’âge de la roche et celui des 3 fossiles permettent de trouver la période.</li><li>Conclure : quel était l’environnement du site, et à quelle époque ?</li></ol>
+  </div>
+</div></div>
+<script>"use strict";
+/* =====================================================================
+   OUTILS DE DESSIN — toutes les coordonnées des fossiles sont en mm
+   ===================================================================== */
+const TAU = Math.PI * 2;
+const fx = n => Math.round(n * 100) / 100;
+function rng(seed) { let s = seed >>> 0; return function () { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function hash(str) { let h = 2166136261; for (const c of str) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
+let DIM_MIN = 0;
+let _uid = 0; const nuid = () => 'k' + (++_uid);
+const M = p => fx(p[0]) + ' ' + fx(p[1]);
+function poly(P, close = true) { return 'M' + P.map(M).join('L') + (close ? 'Z' : ''); }
+function smooth(P, close = true) {
+  const n = P.length; if (n < 3) return poly(P, close);
+  let d = 'M' + M(P[0]); const N = close ? n : n - 1;
+  for (let i = 0; i < N; i++) {
+    const p0 = close ? P[(i - 1 + n) % n] : P[Math.max(i - 1, 0)], p1 = P[i],
+      p2 = close ? P[(i + 1) % n] : P[i + 1], p3 = close ? P[(i + 2) % n] : P[Math.min(i + 2, n - 1)];
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    d += 'C' + M(c1) + ' ' + M(c2) + ' ' + M(p2);
+  }
+  return d + (close ? 'Z' : '');
+}
+function pnoise(R, terms, amp) { const ph = [], am = []; for (let k = 0; k < terms; k++) { ph.push(R() * TAU); am.push((0.4 + 0.6 * R()) / (k + 1)); } return t => { let s = 0; for (let k = 0; k < terms; k++) s += am[k] * Math.sin((k + 2) * t + ph[k]); return s * amp; }; }
+function blob(cx, cy, rx, ry, R, amp = .08, n = 90) {
+  const nz = pnoise(R, 5, amp), rf = t => 1 + nz(t), P = [];
+  for (let i = 0; i < n; i++) { const t = i / n * TAU; P.push([cx + rx * rf(t) * Math.cos(t), cy + ry * rf(t) * Math.sin(t)]); }
+  return { P, d: smooth(P), inside(x, y) { const dx = (x - cx) / rx, dy = (y - cy) / ry; return Math.hypot(dx, dy) < rf(Math.atan2(dy, dx)); } };
+}
+function bbox(P) { let a = 1e9, b = 1e9, c = -1e9, d = -1e9; for (const p of P) { a = Math.min(a, p[0]); b = Math.min(b, p[1]); c = Math.max(c, p[0]); d = Math.max(d, p[1]); } return { x0: a, y0: b, x1: c, y1: d, w: c - a, h: d - b }; }
+const lerp = (a, b, t) => a + (b - a) * t;
+const lerpP = (p, q, t) => [lerp(p[0], q[0], t), lerp(p[1], q[1], t)];
+const rot = (p, c, a) => { const s = Math.sin(a), k = Math.cos(a), x = p[0] - c[0], y = p[1] - c[1]; return [c[0] + x * k - y * s, c[1] + x * s + y * k]; };
+const scaleAbout = (P, c, k) => P.map(p => [c[0] + (p[0] - c[0]) * k, c[1] + (p[1] - c[1]) * k]);
+/* polyligne → polygone effilé (largeur w0 → w1) */
+function taper(C, w0, w1) {
+  const L = [], Rr = [], n = C.length;
+  for (let i = 0; i < n; i++) {
+    const a = C[Math.max(i - 1, 0)], b = C[Math.min(i + 1, n - 1)];
+    let tx = b[0] - a[0], ty = b[1] - a[1]; const l = Math.hypot(tx, ty) || 1; tx /= l; ty /= l;
+    const w = lerp(w0, w1, i / (n - 1)) / 2;
+    L.push([C[i][0] - ty * w, C[i][1] + tx * w]); Rr.push([C[i][0] + ty * w, C[i][1] - tx * w]);
+  }
+  return poly(L.concat(Rr.reverse()));
+}
+function quadPts(p0, c, p1, n = 24) { const P = []; for (let i = 0; i <= n; i++) { const t = i / n, u = 1 - t; P.push([u * u * p0[0] + 2 * u * t * c[0] + t * t * p1[0], u * u * p0[1] + 2 * u * t * c[1] + t * t * p1[1]]); } return P; }
+
+/* Ligne de cote */
+function dimLine(x1, y1, x2, y2, label, fs, off = 0) {
+  if (DIM_MIN && fs < DIM_MIN) { off = off * DIM_MIN / fs; fs = DIM_MIN; }
+  const dx = x2 - x1, dy = y2 - y1, l = Math.hypot(dx, dy), nx = -dy / l, ny = dx / l, t = fs * .45;
+  const a = [x1 + nx * off, y1 + ny * off], b = [x2 + nx * off, y2 + ny * off];
+  const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2; let ang = Math.atan2(dy, dx) * 180 / Math.PI;
+  if (ang > 90 || ang < -90) ang += 180;
+  return `<g class="dim"><path d="M${M(a)}L${M(b)}M${M([a[0] - nx * t, a[1] - ny * t])}L${M([a[0] + nx * t, a[1] + ny * t])}M${M([b[0] - nx * t, b[1] - ny * t])}L${M([b[0] + nx * t, b[1] + ny * t])}" stroke-width="${fx(fs * .09)}"/>` +
+    `<text x="${fx(mx + nx * fs * .75)}" y="${fx(my + ny * fs * .75)}" font-size="${fx(fs)}" text-anchor="middle" dominant-baseline="middle" transform="rotate(${fx(ang)} ${fx(mx + nx * fs * .75)} ${fx(my + ny * fs * .75)})" stroke-width="${fx(fs * .22)}">${label}</text></g>`;
+}
+const mmTxt = v => (v < 10 ? String(Math.round(v * 100) / 100) : String(Math.round(v))).replace('.', ',') + ' mm';
+
+/* =====================================================================
+   ROCHES — blocs de sédiment texturés
+   ===================================================================== */
+const ROCKS = {
+  A: { base: '#e3d9c2', side: '#b3a383', dk: [.40, .35, .25], lt: [1, .99, .94] },
+  B: { base: '#dccfb0', side: '#ab9b77', dk: [.44, .38, .26], lt: [1, .97, .88], lam: '#b2a077', lamSp: .9 },
+  C: { base: '#8b8274', side: '#5c554a', dk: [.20, .18, .15], lt: [.74, .71, .64], lam: '#6c6458', lamSp: 1.5 },
+  D: { base: '#a0a59e', side: '#6f746c', dk: [.25, .27, .27], lt: [.84, .86, .83] }
+};
+function texFilters(u, g, r, R) {
+  const s1 = Math.floor(R() * 900), s2 = Math.floor(R() * 900);
+  return `<filter id="d${u}" x="0" y="0" width="1" height="1"><feTurbulence type="fractalNoise" baseFrequency="${fx(g)}" numOctaves="4" seed="${s1}"/><feColorMatrix type="matrix" values="0 0 0 0 ${r.dk[0]} 0 0 0 0 ${r.dk[1]} 0 0 0 0 ${r.dk[2]} 2.6 0 0 0 -1.12"/><feComposite in2="SourceGraphic" operator="in"/></filter>` +
+    `<filter id="l${u}" x="0" y="0" width="1" height="1"><feTurbulence type="fractalNoise" baseFrequency="${fx(g * .4)}" numOctaves="3" seed="${s2}"/><feColorMatrix type="matrix" values="0 0 0 0 ${r.lt[0]} 0 0 0 0 ${r.lt[1]} 0 0 0 0 ${r.lt[2]} 0 2.4 0 0 -1.05"/><feComposite in2="SourceGraphic" operator="in"/></filter>`;
+}
+/* Bloc de roche : renvoie defs + corps. g = fréquence du grain (1/mm) */
+function slab(w, h, type, R, g, u) {
+  const r = ROCKS[type], nz = pnoise(R, 6, .028), P = [], cx = w / 2, cy = h / 2, a = w / 2 * .955, b = h / 2 * .93;
+  for (let i = 0; i < 150; i++) { const t = i / 150 * TAU, c = Math.cos(t), s = Math.sin(t), e = .42, k = 1 + nz(t) + (R() - .5) * .006; P.push([cx + a * Math.sign(c) * Math.abs(c) ** e * k, cy + b * Math.sign(s) * Math.abs(s) ** e * k]); }
+  const d = smooth(P), th = Math.max(w, h) * .022;
+  let defs = `<clipPath id="c${u}"><path d="${d}"/></clipPath>${texFilters(u, g, r, R)}<filter id="s${u}" x="-.2" y="-.2" width="1.4" height="1.4"><feGaussianBlur stdDeviation="${fx(th * .9)}"/></filter><linearGradient id="v${u}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></linearGradient>`;
+  let body = `<path d="${d}" transform="translate(${fx(th * .5)},${fx(th * 1.9)})" fill="#000" opacity=".55" filter="url(#s${u})"/><path d="${d}" transform="translate(0,${fx(th)})" fill="${r.side}"/><path d="${d}" fill="${r.base}"/><path d="${d}" fill="#000" filter="url(#l${u})"/><path d="${d}" fill="#000" filter="url(#d${u})"/>`;
+  if (r.lam) {
+    const sp = r.lamSp * Math.max(w, h) / 100; let L = '';
+    for (let y = sp * R(); y < h; y += sp * (.5 + R())) {
+      const pts = []; const ph = R() * TAU, am = sp * .18;
+      for (let x = -2; x <= w + 2; x += w / 24) pts.push([x, y + am * Math.sin(x / w * 7 + ph)]);
+      L += `<path d="${smooth(pts, false)}" stroke="${r.lam}" stroke-width="${fx(sp * (.12 + R() * .3))}" opacity="${fx(.25 + R() * .35)}" fill="none"/>`;
+    }
+    body += `<g clip-path="url(#c${u})">${L}</g>`;
+  }
+  body += `<path d="${d}" fill="url(#v${u})"/>`;
+  return { defs, body, d, clip: `url(#c${u})`, P };
+}
+
+/* =====================================================================
+   SITE A
+   ===================================================================== */
+function drawA1(R, u) { // Isastrea — corail colonial cérioïde
+  const w = 170, h = 132, S = slab(w, h, 'A', R, .3, u); let defs = S.defs, b = S.body;
+  const B = blob(85, 64, 69, 51, R, .07);
+  defs += `<radialGradient id="cg${u}" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="#ead8ad"/><stop offset=".75" stop-color="#cdb682"/><stop offset="1" stop-color="#a28859"/></radialGradient><clipPath id="cc${u}"><path d="${B.d}"/></clipPath><radialGradient id="co${u}" cx=".42" cy=".38" r=".62"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#3a2a12" stop-opacity=".3"/></radialGradient>`;
+  b += `<path d="${B.d}" transform="translate(1.6,3.8)" fill="#7f6c48"/><path d="${B.d}" fill="url(#cg${u})"/>`;
+  const s = 3.55, W = (x, y) => [x + 1.3 * Math.sin(y / 9.5) + .8 * Math.sin(x / 7), y + 1.3 * Math.cos(x / 11) + .7 * Math.sin(y / 6.3)];
+  const dx = s * Math.sqrt(3), dy = s * 1.5; let cells = '', calices = '', septa = '';
+  for (let j = -1; j * dy < h + s; j++) for (let i = -1; i * dx < w + s; i++) {
+    const cx = i * dx + (j & 1 ? dx / 2 : 0), cy = j * dy;
+    if (!B.inside(cx, cy) && !B.inside(cx + s, cy) && !B.inside(cx - s, cy) && !B.inside(cx, cy + s)) continue;
+    const hex = []; for (let k = 0; k < 6; k++) { const a = Math.PI / 6 + k * Math.PI / 3; hex.push(W(cx + s * Math.cos(a), cy + s * Math.sin(a))); }
+    const c = W(cx, cy), tone = 208 + Math.floor(R() * 26), worn = R() < .07;
+    cells += `<path d="${poly(hex)}" fill="rgb(${tone},${tone - 18},${tone - 60})" ${worn ? 'fill-opacity=".55"' : ''}/>`;
+    const rc = s * (.26 + R() * .08); calices += `<circle cx="${fx(c[0])}" cy="${fx(c[1])}" r="${fx(rc)}"/>`;
+    if (worn) continue;
+    const n = 18 + Math.floor(R() * 7), a0 = R() * TAU;
+    for (let k = 0; k < n; k++) { const a = a0 + k / n * TAU, r2 = s * (k % 2 ? .6 : .84); septa += `M${M([c[0] + Math.cos(a) * rc * .9, c[1] + Math.sin(a) * rc * .9])}L${M([c[0] + Math.cos(a) * r2, c[1] + Math.sin(a) * r2])}`; }
+    cells += `<path d="${poly(hex)}" fill="none" stroke="#6f5b36" stroke-width=".5"/>`;
+  }
+  b += `<g clip-path="url(#cc${u})">${cells}<g fill="#7d6944" opacity=".75">${calices}</g><path d="${septa}" stroke="#6a5733" stroke-width=".16" fill="none"/></g><path d="${B.d}" fill="url(#co${u})" stroke="#6c5a37" stroke-width=".7"/>`;
+  // débris de matrice collés au bord
+  for (let k = 0; k < 4; k++) { const t = R() * TAU, p = [85 + Math.cos(t) * 66, 64 + Math.sin(t) * 49], bb = blob(p[0], p[1], 3 + R() * 3, 2 + R() * 2, R, .2, 30); b += `<path d="${bb.d}" fill="${ROCKS.A.base}"/><path d="${bb.d}" fill="#000" filter="url(#d${u})"/>`; }
+  const bx = bbox(B.P), fs = 4.2;
+  const dims = dimLine(bx.x0, bx.y1 + 6, bx.x1, bx.y1 + 6, mmTxt(bx.w), fs) + dimLine(bx.x1 + 5, bx.y0, bx.x1 + 5, bx.y1, mmTxt(bx.h), fs) +
+    dimLine(85 - s * .87, 64, 85 + s * .87, 64, '≈ ' + mmTxt(s * 1.73), 2.2, -7);
+  return { w, h, defs, body: b, dims, geo: { L: Math.round(bx.w), H: Math.round(bx.h), c: fx(s * 1.73) } };
+}
+
+function tube(c, r0, th0, dir, turn, w0, n = 46, shrink = .84) {
+  const C = [], L = [], Rr = [], W = [];
+  for (let i = 0; i <= n; i++) { const t = i / n, th = th0 + dir * turn * t, r = r0 * (1 - shrink * t); C.push([c[0] + r * Math.cos(th), c[1] + r * Math.sin(th)]); W.push(w0 * (1 - .82 * t) / 2); }
+  for (let i = 0; i <= n; i++) { const a = C[Math.max(i - 1, 0)], b = C[Math.min(i + 1, n)]; let tx = b[0] - a[0], ty = b[1] - a[1]; const l = Math.hypot(tx, ty); tx /= l; ty /= l; L.push([C[i][0] - ty * W[i], C[i][1] + tx * W[i]]); Rr.push([C[i][0] + ty * W[i], C[i][1] - tx * W[i]]); }
+  return { C, L, Rr, P: L.concat(Rr.slice().reverse()) };
+}
+function ellP(cx, cy, rx, ry, n = 60, a0 = 0) { const P = []; for (let i = 0; i < n; i++) { const t = i / n * TAU; let p = [cx + rx * Math.cos(t), cy + ry * Math.sin(t)]; if (a0) p = rot(p, [cx, cy], a0); P.push(p); } return P; }
+
+function drawA2(R, u) { // Diceras arietinum
+  const w = 132, h = 104, S = slab(w, h, 'A', R, .36, u); let defs = S.defs, b = S.body;
+  const vL = ellP(54, 64, 27, 25, 70, -.15), vR = ellP(84, 66, 21, 21.5, 70, .1);
+  const tL = tube([31, 50], 15, 0, -1, 1.3 * Math.PI, 24, 46, .8), tR = tube([99, 53], 11, Math.PI, 1, 1.25 * Math.PI, 18, 46, .8);
+  // raccord crochet/valve
+  const parts = [smooth(vL), smooth(vR), poly(tL.P), poly(tR.P)];
+  defs += `<radialGradient id="sh${u}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#efe5cf"/><stop offset=".6" stop-color="#d4c29b"/><stop offset="1" stop-color="#a99067"/></radialGradient><clipPath id="un${u}">${parts.map(d => `<path d="${d}"/>`).join('')}</clipPath>`;
+  b += `<g transform="translate(1.5,3.5)" fill="#6d5c3d" opacity=".9">${parts.map(d => `<path d="${d}"/>`).join('')}</g>`;
+  b += `<g stroke="#5f4e31" stroke-width="1.5" fill="none">${parts.map(d => `<path d="${d}"/>`).join('')}</g>`;
+  b += `<g fill="url(#sh${u})">${parts.map(d => `<path d="${d}"/>`).join('')}</g>`;
+  let gl = '';
+  for (let k = .92; k > .3; k -= .085) { gl += `<path d="${smooth(scaleAbout(vL, [44, 44], k))}"/><path d="${smooth(scaleAbout(vR, [90, 48], k))}"/>`; }
+  let sp = '';
+  for (const T of [tL, tR]) {
+    for (let i = 3; i < T.C.length - 2; i += 3) sp += `M${M(T.L[i])}L${M(T.Rr[i])}`;
+    const m1 = T.C.map((c, i) => lerpP(c, T.L[i], .45)), m2 = T.C.map((c, i) => lerpP(c, T.Rr[i], .45));
+    sp += smooth(m1, false) + smooth(m2, false);
+  }
+  b += `<g clip-path="url(#un${u})" fill="none" stroke="#7b6643" stroke-width=".32" opacity=".7">${gl}<path d="${sp}"/></g>`;
+  // ombrage des crochets
+  b += `<g clip-path="url(#un${u})"><path d="${poly(tL.Rr.concat(tL.C.slice().reverse()))}" fill="#3d2c12" opacity=".14"/><path d="${poly(tR.L.concat(tR.C.slice().reverse()))}" fill="#3d2c12" opacity=".14"/></g>`;
+  // commissure
+  b += `<path d="${smooth([[69, 45], [67.4, 53], [69.6, 62], [67.2, 72], [68.6, 80], [66.5, 87.5]], false)}" stroke="#3f311b" stroke-width=".8" fill="none"/><path d="${smooth([[69.8, 45.5], [68.3, 53], [70.4, 62], [68.1, 72], [69.5, 80], [67.4, 87.5]], false)}" stroke="#f3ead5" stroke-width=".35" fill="none" opacity=".7"/>`;
+  for (let k = 0; k < 5; k++) { const p = [30 + R() * 70, 80 + R() * 12], bb = blob(p[0], p[1], 3 + R() * 6, 2 + R() * 3, R, .25, 28); b += `<path d="${bb.d}" fill="${ROCKS.A.base}"/><path d="${bb.d}" fill="#000" filter="url(#d${u})"/>`; }
+  const bx = bbox([...vL, ...vR, ...tL.P, ...tR.P]), fs = 3.6;
+  const dims = dimLine(bx.x0, bx.y1 + 5, bx.x1, bx.y1 + 5, mmTxt(bx.w), fs) + dimLine(bx.x1 + 4, bx.y0, bx.x1 + 4, bx.y1, mmTxt(bx.h), fs);
+  return { w, h, defs, body: b, dims, geo: { L: Math.round(bx.w), H: Math.round(bx.h) } };
+}
+
+function radiole(x, y, ang, L, R, u, broken = false) {
+  const P = [], P2 = [], n = 30;
+  for (let i = 0; i <= n; i++) { const t = i / n, x0 = t * L; let hw; if (t < .05) hw = 1.4; else if (t < .08) hw = 1.9; else if (t < .1) hw = 1.2; else hw = 1.2 + 1.0 * Math.sin(Math.min(1, (t - .1) / .55) * Math.PI / 2) - (t > .65 ? 1.4 * ((t - .65) / .35) ** 1.6 : 0); hw = Math.max(hw, broken && t > .9 ? 1.2 : .45); P.push([x0, -hw]); P2.push([x0, hw]); }
+  let g = `<path d="${poly(P.concat(P2.reverse()))}" fill="#dccaa2" stroke="#6e5a36" stroke-width=".3"/>`;
+  let gr = '';
+  for (let r = -1; r <= 1; r += .5) for (let x0 = L * .12; x0 < L * .95; x0 += 1.1) { const t = x0 / L, hw = t < .65 ? 1.2 + Math.sin(Math.min(1, (t - .1) / .55) * Math.PI / 2) : 2.2 - 1.4 * ((t - .65) / .35) ** 1.6; if (Math.abs(r) * hw > hw - .3) continue; gr += `<circle cx="${fx(x0 + (R() - .5) * .3)}" cy="${fx(r * hw * .8)}" r=".27"/>`; }
+  g += `<g fill="#8b7550">${gr}</g><path d="M${fx(L * .065)} -1.9V1.9" stroke="#5c4a2c" stroke-width=".35"/>`;
+  return `<g transform="translate(${x},${y}) rotate(${ang})">${g}</g>`;
+}
+function drawA3(R, u) { // Paracidaris florigemma
+  const w = 92, h = 80, S = slab(w, h, 'A', R, .5, u); let defs = S.defs, b = S.body;
+  const c = [46, 36], Rt = 22;
+  b += radiole(10, 66, -12, 27, R, u) + radiole(72, 70, -160, 22, R, u, true) + radiole(80, 18, 105, 26, R, u);
+  defs += `<radialGradient id="tg${u}" cx=".42" cy=".38" r=".62"><stop offset="0" stop-color="#f1e7d1"/><stop offset=".75" stop-color="#d9c8a2"/><stop offset="1" stop-color="#a99067"/></radialGradient>`;
+  b += `<circle cx="${c[0] + 1.2}" cy="${c[1] + 2.8}" r="${Rt}" fill="#6f5f42"/><circle cx="${c[0]}" cy="${c[1]}" r="${Rt}" fill="url(#tg${u})" stroke="#6b5735" stroke-width=".6"/>`;
+  let lines = '', pores = '', tub = '', gran = '';
+  const P = (r, a) => [c[0] + r * Math.cos(a), c[1] + r * Math.sin(a)];
+  for (let i = 0; i < 5; i++) {
+    const fa = -Math.PI / 2 + i * TAU / 5, fi = fa + TAU / 10;
+    // ambulacre sinueux
+    for (const sgn of [-1, 1]) {
+      const pts = [];
+      for (let r = 5.5; r <= Rt; r += .5) { const off = (1.5 + .25 * Math.sin(r * 1.6)) / r; pts.push(P(r, fa + sgn * off + .03 * Math.sin(r * .9))); }
+      lines += smooth(pts, false);
+      for (let r = 6; r <= Rt - .4; r += .85) { const off = (.9 + .2 * Math.sin(r * 1.6)) / r; const p = P(r, fa + sgn * off + .03 * Math.sin(r * .9)); pores += `<circle cx="${fx(p[0])}" cy="${fx(p[1])}" r=".22"/>`; }
+    }
+    // suture médiane interambulacraire (zigzag)
+    const zz = []; let k = 0; for (let r = 5.5; r <= Rt; r += 1.9) zz.push(P(r, fi + (k++ % 2 ? .03 : -.03)));
+    lines += poly(zz, false);
+    for (const sgn of [-1, 1]) {
+      const rs = [8, 11.6, 15.4, 19.2];
+      rs.forEach((r, j) => {
+        const a = fi + sgn * (.29 - j * .015), p = P(r, a), tr = Math.min(.17 * r, 3.15);
+        tub += `<circle cx="${fx(p[0])}" cy="${fx(p[1])}" r="${fx(tr)}" fill="#e7dbc0" stroke="#8b7550" stroke-width=".25"/><circle cx="${fx(p[0])}" cy="${fx(p[1])}" r="${fx(tr * .52)}" fill="#cbb68b" stroke="#6e5a36" stroke-width=".2"/><circle cx="${fx(p[0])}" cy="${fx(p[1])}" r="${fx(tr * .25)}" fill="#f4ecd9" stroke="#6e5a36" stroke-width=".15"/><circle cx="${fx(p[0])}" cy="${fx(p[1])}" r="${fx(tr * .07)}" fill="#4a3a20"/>`;
+        const ng = 12; for (let q = 0; q < ng; q++) { const aa = q / ng * TAU, g = [p[0] + Math.cos(aa) * tr * 1.18, p[1] + Math.sin(aa) * tr * 1.18]; if (Math.hypot(g[0] - c[0], g[1] - c[1]) < Rt - .5) gran += `<circle cx="${fx(g[0])}" cy="${fx(g[1])}" r=".3"/>`; }
+        // limite de plaque
+        const r2 = r + (rs[j + 1] ? (rs[j + 1] - r) / 2 : 1.8);
+        const arc = []; for (let q = 0; q <= 8; q++) arc.push(P(r2, fi + sgn * (.02 + q / 8 * .47)));
+        lines += poly(arc, false);
+      });
+    }
+  }
+  const ap = blob(c[0], c[1], 5.6, 5.6, R, .12, 30);
+  b += `<path d="${lines}" stroke="#7e6844" stroke-width=".28" fill="none"/><g fill="#5d4b2d">${pores}</g>${tub}<g fill="#a68f66">${gran}</g><path d="${ap.d}" fill="#8f8061" stroke="#5c4a2c" stroke-width=".4"/><path d="${ap.d}" fill="#000" filter="url(#d${u})"/>`;
+  const fs = 3; const dims = dimLine(c[0] - Rt, c[1] + Rt + 4, c[0] + Rt, c[1] + Rt + 4, mmTxt(2 * Rt), fs) + dimLine(10, 72.5, 10 + 27 * Math.cos(-12 * Math.PI / 180), 72.5 + 27 * Math.sin(-12 * Math.PI / 180), '27 mm', 2.6);
+  return { w, h, defs, body: b, dims, geo: { D: 2 * Rt } };
+}
+
+/* =====================================================================
+   SITE B
+   ===================================================================== */
+function drawB1(R, u) { // Cyprinidé fossile
+  const w = 152, h = 82, S = slab(w, h, 'B', R, .55, u); let defs = S.defs, b = S.body;
+  const x0 = 17, x1 = 123, yc = 41;
+  const hh = x => { const t = Math.max(0, Math.min(1, (x - x0) / (x1 - x0))); return 13 * (t < .36 ? Math.sin(t / .36 * Math.PI / 2) ** .62 : 1 - (t - .36) / .64 * .7); };
+  const yv = x => yc + .8 * Math.sin((x - 40) / 50);
+  const top = [], bot = []; for (let x = x0; x <= x1; x += 1.5) { top.push([x, yv(x) - hh(x) * 1.02]); bot.push([x, yv(x) + hh(x)]); }
+  const bodyP = top.concat(bot.reverse());
+  defs += `<clipPath id="fb${u}"><path d="${smooth(bodyP)}"/></clipPath>`;
+  b += `<path d="${smooth(bodyP)}" fill="#9c7f55" opacity=".38"/>`;
+  // écailles cycloïdes
+  let sc = ''; for (let x = 44; x < 112; x += 2.1) for (let y = 20; y < 60; y += 1.9) { const xx = x + ((Math.round(y / 1.9)) % 2) * 1.05; sc += `M${fx(xx)} ${fx(y - 1)}A1.3 1.3 0 0 1 ${fx(xx)} ${fx(y + 1.3)}`; }
+  b += `<g clip-path="url(#fb${u})"><path d="${sc}" stroke="#6b5232" stroke-width=".16" fill="none" opacity=".35"/></g>`;
+  const bone = '#4b3220';
+  let s = '';
+  const nV = 37, xa = 45, xb = 120, sp = (xb - xa) / (nV - 1);
+  for (let i = 0; i < nV; i++) {
+    const x = xa + i * sp, y = yv(x) - hh(x) * .08, vh = lerp(2.9, 1.4, i / nV), vw = sp * .78;
+    s += `<path d="M${fx(x - vw / 2)} ${fx(y - vh / 2)}Q${fx(x)} ${fx(y - vh * .3)} ${fx(x + vw / 2)} ${fx(y - vh / 2)}L${fx(x + vw / 2)} ${fx(y + vh / 2)}Q${fx(x)} ${fx(y + vh * .3)} ${fx(x - vw / 2)} ${fx(y + vh / 2)}Z" fill="${bone}"/>`;
+    const tH = yv(x) - hh(x) * .92, nl = (y - vh / 2) - tH;
+    s += `<path d="M${fx(x)} ${fx(y - vh / 2)}Q${fx(x + nl * .15)} ${fx(y - vh / 2 - nl * .5)} ${fx(x + nl * .55)} ${fx(tH)}" stroke="${bone}" stroke-width=".32" fill="none"/>`;
+    if (i < 18) {
+      const bY = yv(x) + hh(x) * .9, rl = bY - (y + vh / 2);
+      s += `<path d="M${fx(x)} ${fx(y + vh / 2)}Q${fx(x - 1.5)} ${fx(y + rl * .55)} ${fx(x + rl * .3)} ${fx(bY)}" stroke="${bone}" stroke-width=".36" fill="none"/>`;
+    } else {
+      const bY = yv(x) + hh(x) * .9, rl = bY - (y + vh / 2);
+      s += `<path d="M${fx(x)} ${fx(y + vh / 2)}Q${fx(x + rl * .15)} ${fx(y + vh / 2 + rl * .5)} ${fx(x + rl * .55)} ${fx(bY)}" stroke="${bone}" stroke-width=".3" fill="none"/>`;
+    }
+  }
+  // crâne
+  const sk = [[x0, 40.5], [19, 37.5], [24, 32], [31, 28.6], [38, 27.6], [43, 28.5], [46.2, 33], [46.8, 41], [45.5, 49], [41, 52.5], [33, 52.2], [26, 49], [20.5, 45], [x0, 42]];
+  b += `<path d="${smooth(sk)}" fill="#5a3f26" opacity=".5"/>`;
+  s += `<path d="${smooth(sk)}" fill="none" stroke="${bone}" stroke-width=".55"/>` +
+    `<circle cx="28.5" cy="36" r="4.4" fill="#c9b48c" stroke="${bone}" stroke-width=".55"/><circle cx="28.5" cy="36" r="2.4" fill="none" stroke="${bone}" stroke-width=".2" opacity=".6"/>` +
+    `<path d="M37 31.5Q44.5 39 39 50.5" stroke="${bone}" stroke-width=".8" fill="none"/><path d="M33.5 41Q34.5 47 31 51" stroke="${bone}" stroke-width=".5" fill="none"/>` +
+    `<path d="M17.2 40.2L25.5 42.2M17.6 41.9Q22 44.8 27.8 45.6L30 43" stroke="${bone}" stroke-width=".55" fill="none"/>` +
+    `<path d="M46 31.5Q48.5 42 45.8 52" stroke="${bone}" stroke-width=".9" fill="none"/>` +
+    `<path d="M26 47.5Q29 50.5 34 51.5M27.5 46.6Q31 49.6 36 50.4M29.5 45.6Q33 48.5 38 49.3" stroke="${bone}" stroke-width=".25" fill="none"/>` +
+    `<path d="M22 34Q30 27 42 29.5M32 30Q36 34 35 40" stroke="${bone}" stroke-width=".25" fill="none" opacity=".7"/>`;
+  // nageoires : f(base0, base1, dir, longueurs)
+  const fin = (bases, dirs, lens, sw = .3) => { let p = ''; bases.forEach((B0, i) => { const d = dirs[i], L = lens[i]; const e = [B0[0] + d[0] * L, B0[1] + d[1] * L]; p += `M${M(B0)}Q${M([B0[0] + d[0] * L * .5 + .6, B0[1] + d[1] * L * .5])} ${M(e)}`; }); return `<path d="${p}" stroke="${bone}" stroke-width="${sw}" fill="none" stroke-dasharray="1.1 .25" stroke-linecap="round"/>`; };
+  const nrm = (a) => [Math.cos(a), Math.sin(a)];
+  // dorsale unique
+  { const B = [], D = [], L = []; const n = 10; for (let i = 0; i < n; i++) { const x = 63 + i * 1.35; B.push([x, yv(x) - hh(x) * 1.0]); D.push(nrm(-Math.PI / 2 + .55 + i * .03)); L.push(i < 2 ? 6 + i * 6 : 16.5 - (i - 2) * 1.35); } s += fin(B, D, L, .34); }
+  // pectorale
+  { const B = [], D = [], L = []; for (let i = 0; i < 12; i++) { B.push([47.5 + i * .12, 48 + i * .25]); D.push(nrm(.3 + i * .055)); L.push(14 - i * .6); } s += fin(B, D, L, .26); }
+  // pelvienne
+  { const B = [], D = [], L = []; for (let i = 0; i < 8; i++) { const x = 64 + i * .9; B.push([x, yv(x) + hh(x) * .97]); D.push(nrm(.55 + i * .03)); L.push(10.5 - i * .6); } s += fin(B, D, L, .27); }
+  // anale
+  { const B = [], D = [], L = []; for (let i = 0; i < 9; i++) { const x = 93 + i * 1.05; B.push([x, yv(x) + hh(x) * .95]); D.push(nrm(.75 + i * .02)); L.push(i < 2 ? 4 + i * 4 : 10.5 - (i - 2) * .75); } s += fin(B, D, L, .27); }
+  // caudale fourchue : 19 rayons principaux
+  { const B = [], D = [], L = []; for (let i = 0; i < 19; i++) { const t = i / 18, a = lerp(-.62, .62, t); B.push([121.5, yv(121.5) + lerp(-3.6, 3.6, t)]); D.push(nrm(a)); L.push(7.5 + 13 * Math.abs(a) / .62 + (Math.abs(a) > .55 ? -1.5 : 0)); } s += fin(B, D, L, .3); }
+  // supports (ptérygiophores)
+  let pt = ''; for (let i = 0; i < 9; i++) { const x = 63 + i * 1.35, y0 = yv(x) - hh(x) * .95; pt += `M${fx(x)} ${fx(y0)}L${fx(x - 2)} ${fx(y0 + 5.5)}`; }
+  s += `<path d="${pt}" stroke="${bone}" stroke-width=".22" opacity=".7"/>`;
+  b += `<g opacity=".92">${s}</g>`;
+  const fs = 3.2;
+  const dims = dimLine(x0, 69, 142, 69, '125 mm', fs) + dimLine(57, yv(57) - hh(57) * 1.02, 57, yv(57) + hh(57), mmTxt(hh(57) * 2.02), fs, -10);
+  return { w, h, defs, body: b, dims, geo: { L: 125, H: Math.round(hh(57) * 2.02) } };
+}
+
+function lymnaeaShell(cfg) {
+  const { sh = '#d2c29f', dk = '#5a4930', ap = '#a5916a', lw = .28, id } = cfg;
+  const whorls = [[0, -16.6, 1.3, .9], [-.2, -14.7, 2.5, 1.55], [-.4, -11.8, 3.9, 2.35], [-.4, -7.3, 5.5, 3.3]];
+  let g = `<defs><radialGradient id="lg${id}" cx=".35" cy=".35" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></radialGradient><clipPath id="lb${id}"><ellipse cx="0" cy="5" rx="8.2" ry="11.3"/></clipPath></defs>`;
+  for (const [x, y, rx, ry] of whorls) g += `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${sh}" stroke="${dk}" stroke-width="${lw}"/><ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="url(#lg${id})"/>`;
+  g += `<ellipse cx="0" cy="5" rx="8.2" ry="11.3" fill="${sh}" stroke="${dk}" stroke-width="${lw}"/>`;
+  let gl = ''; for (let k = 0; k < 11; k++) { const x = -7.2 + k * 1.05; gl += `M${fx(x)} -6Q${fx(x - 1.8)} 5 ${fx(x + 1.2)} 16.5`; }
+  g += `<g clip-path="url(#lb${id})"><path d="${gl}" stroke="${dk}" stroke-width="${fx(lw * .5)}" fill="none" opacity=".45"/></g><ellipse cx="0" cy="5" rx="8.2" ry="11.3" fill="url(#lg${id})"/>`;
+  g += `<ellipse cx="3.6" cy="8.4" rx="4.4" ry="7.7" transform="rotate(-9 3.6 8.4)" fill="${ap}" stroke="${dk}" stroke-width="${fx(lw * 1.3)}"/><path d="M.6 2.2C-.9 6 -.6 12 1.6 15.6" stroke="${dk}" stroke-width="${fx(lw * 1.6)}" fill="none"/><path d="M7.4 4C8.5 8 8 13 5.5 15.6" stroke="#fff" stroke-width="${fx(lw * .9)}" fill="none" opacity=".5"/>`;
+  return g;
+}
+function drawB2(R, u) { // Lymnée fossile
+  const w = 52, h = 50, S = slab(w, h, 'B', R, 1.1, u); let defs = S.defs, b = S.body;
+  const k = .93, c = [23, 24.5], a = -17;
+  b += `<g transform="translate(${c[0]} ${c[1]}) rotate(${a}) scale(${k})">${lymnaeaShell({ id: u + 'a' })}<path d="M-6 -1L-2.5 3.5L-4 8L1 12" stroke="#4a3b24" stroke-width=".25" fill="none"/></g>`;
+  b += `<g transform="translate(41 39) rotate(38) scale(.29)">${lymnaeaShell({ id: u + 'b', lw: .6 })}</g>`;
+  for (let i = 0; i < 6; i++) { const x = 5 + R() * 42, y = 5 + R() * 40; if (Math.hypot(x - 23, y - 24) < 17) continue; b += `<path d="M${fx(x)} ${fx(y)}q.8 -.8 1.6 .2" stroke="#efe6cf" stroke-width=".4" fill="none"/>`; }
+  const ar = a * Math.PI / 180, p1 = rot([c[0], c[1] - 17.5 * k], c, ar), p2 = rot([c[0], c[1] + 16.3 * k], c, ar);
+  const dims = dimLine(p1[0], p1[1], p2[0], p2[1], '31 mm', 2.2, -11) + dimLine(c[0] - 8.2 * k, 44.5, c[0] + 8.2 * k, 44.5, '15 mm', 2.2);
+  return { w, h, defs, body: b, dims, geo: {} };
+}
+
+function gyro(x, y, rotd, k, apical, u, i) {
+  const id = u + 'g' + i;
+  if (apical) {
+    let s = `<circle r=".33" fill="url(#gy${u})" stroke="#7b6948" stroke-width=".02"/>`;
+    for (let a = 0; a < 5; a++) { const pts = []; for (let r = .02; r <= .33; r += .02) { const th = a * TAU / 5 + r * 7; pts.push([r * Math.cos(th), r * Math.sin(th)]); } s += `<path d="${smooth(pts, false)}" stroke="#7b6948" stroke-width=".022" fill="none"/>`; }
+    return `<g transform="translate(${fx(x)} ${fx(y)}) rotate(${rotd}) scale(${k})">${s}</g>`;
+  }
+  let s = `<defs><clipPath id="${id}"><ellipse rx=".3" ry=".375"/></clipPath></defs><ellipse rx=".3" ry=".375" fill="url(#gy${u})" stroke="#7b6948" stroke-width=".02"/>`;
+  let l = '', hl = '';
+  for (let j = 0; j < 9; j++) { const yy = -.375 + (j + .5) * .75 / 9; l += `M-.34 ${fx(yy + .07)}Q0 ${fx(yy + .1)} .34 ${fx(yy - .06)}`; hl += `M-.34 ${fx(yy + .05)}Q0 ${fx(yy + .08)} .34 ${fx(yy - .08)}`; }
+  s += `<g clip-path="url(#${id})"><path d="${hl}" stroke="#fffaf0" stroke-width=".018" fill="none" opacity=".8"/><path d="${l}" stroke="#7b6948" stroke-width=".022" fill="none"/></g>`;
+  s += `<path d="M0 -.375l.05 -.04M0 -.375l-.05 -.04M0 -.375v-.05" stroke="#7b6948" stroke-width=".02"/>`;
+  return `<g transform="translate(${fx(x)} ${fx(y)}) rotate(${rotd}) scale(${k})">${s}</g>`;
+}
+function drawB3(R, u) { // Characées : gyrogonites
+  const w = 10.5, h = 7.6, S = slab(w, h, 'B', R, 7, u); let defs = S.defs, b = S.body;
+  defs += `<radialGradient id="gy${u}" cx=".38" cy=".35" r=".75"><stop offset="0" stop-color="#f3ecdb"/><stop offset=".7" stop-color="#d4c49e"/><stop offset="1" stop-color="#9e8b63"/></radialGradient>`;
+  // tiges
+  const stem = (x, y, a, L) => { let s = `<rect x="0" y="-.14" width="${L}" height=".28" rx=".1" fill="#cdbd97" stroke="#7b6948" stroke-width=".02"/>`; for (let t = .5; t < L; t += .85) s += `<rect x="${fx(t)}" y="-.16" width=".09" height=".32" fill="#8a7754"/>`; s += `<path d="M0 -.07H${L}M0 0H${L}M0 .07H${L}" stroke="#9a8762" stroke-width=".012"/>`; return `<g transform="translate(${x} ${y}) rotate(${a})">${s}</g>`; };
+  b += stem(1.3, 6.2, -12, 3.2) + stem(6.4, 1.2, 25, 2.6) + stem(7.8, 6.6, -70, 1.9);
+  const pos = [[2.6, 2.4, 10, 1, 0], [4.1, 3.6, -25, 1.05, 0], [6.0, 3.0, 40, .95, 0], [7.9, 4.2, -10, 1.08, 0], [3.0, 5.0, 70, .92, 0], [5.4, 5.6, 0, 1, 1], [8.6, 2.2, 0, .9, 1], [1.8, 3.9, -40, .85, 0], [6.9, 5.4, 15, 1, 0], [4.9, 1.6, -60, .97, 0]];
+  pos.forEach((p, i) => { b += `<ellipse cx="${p[0] + .05}" cy="${p[1] + .07}" rx=".33" ry=".38" fill="#5c4d33" opacity=".35"/>` + gyro(p[0], p[1], p[2], p[3], p[4], u, i); });
+  const dims = dimLine(4.1 + .3, 3.6 - .375 * 1.05, 4.1 + .3, 3.6 + .375 * 1.05, '0,79 mm', .22, -.6) + dimLine(.3, 7.2, 10.2, 7.2, '≈ 10 mm', .32);
+  return { w, h, defs, body: b, dims, geo: {} };
+}
+
+/* =====================================================================
+   SITE C
+   ===================================================================== */
+function acerLeaf(cfg) { // renvoie {P, inside, base, lobes}
+  const { base, lobes, sinus = 15, basal = 5, tooth = 1.3, period = 5 } = cfg;
+  const bump = x => x < 1 ? (1 - x * x) ** 1.6 : 0;
+  const rA = a => { let r = sinus; for (const L of lobes) { let d = Math.abs(((a - L.a + 540) % 360) - 180); r += (L.L - sinus) * bump(d / L.w); } let db = Math.abs(((a - 90 + 540) % 360) - 180); r -= (sinus - basal) * bump(db / 38); const fr = (a / period) % 1, tt = (fr < 0 ? fr + 1 : fr) ** 1.6; r += tooth * tt * Math.max(0, Math.min(1, (r - sinus) / 6)); return r; };
+  const P = []; for (let a = 0; a < 360; a += .5) { const r = rA(a), t = a * Math.PI / 180; P.push([base[0] + r * Math.cos(t), base[1] + r * Math.sin(t)]); }
+  const inside = (x, y) => { const dx = x - base[0], dy = y - base[1]; let a = Math.atan2(dy, dx) * 180 / Math.PI; if (a < 0) a += 360; return Math.hypot(dx, dy) < rA(a) - .8; };
+  return { P, inside, rA };
+}
+function leafVeins(L, base, lobes, R, wP = .9, col = '#2f2418', sec = .36) {
+  let s = '';
+  const tips = lobes.map(o => { const r = L.rA(o.a) - 1.5, t = o.a * Math.PI / 180; return [base[0] + r * Math.cos(t), base[1] + r * Math.sin(t)]; });
+  tips.forEach((tp, i) => {
+    const ang = lobes[i].a * Math.PI / 180, len = Math.hypot(tp[0] - base[0], tp[1] - base[1]);
+    const C = quadPts(base, [base[0] + Math.cos(ang + .05) * len * .5, base[1] + Math.sin(ang + .05) * len * .5], tp, 30);
+    s += `<path d="${taper(C, wP, wP * .25)}" fill="${col}"/>`;
+    let side = 1;
+    for (let t = .14; t < .9; t += 5.5 / len) {
+      const idx = Math.floor(t * 30), p = C[idx], dir = ang + side * (.75 + R() * .15);
+      const pts = [p]; let q = p, a = dir;
+      for (let k = 0; k < 80; k++) { a = lerp(a, ang, .02); const nq = [q[0] + Math.cos(a) * .6, q[1] + Math.sin(a) * .6]; if (!L.inside(nq[0], nq[1])) break; pts.push(nq); q = nq; }
+      if (pts.length > 3) s += `<path d="${smooth(pts, false)}" stroke="${col}" stroke-width="${sec}" fill="none"/>`;
+      side = -side;
+    }
+  });
+  return s;
+}
+function drawC1(R, u) { // Feuille d'érable fossile
+  const w = 132, h = 128, S = slab(w, h, 'C', R, .38, u); let defs = S.defs, b = S.body;
+  const base = [66, 72], lobes = [{ a: -90, L: 47, w: 27 }, { a: -37, L: 41, w: 25 }, { a: -143, L: 41, w: 25 }, { a: 13, L: 26, w: 23 }, { a: 167, L: 26, w: 23 }];
+  const L = acerLeaf({ base, lobes, sinus: 19 });
+  defs += `<clipPath id="lf${u}"><path d="${poly(L.P)}"/></clipPath>`;
+  b += `<g clip-path="${S.clip}">`;
+  b += `<path d="${poly(L.P)}" fill="#3e3024" opacity=".5" stroke="#2a1f15" stroke-width=".45" stroke-opacity=".6"/>`;
+  let ter = ''; for (let k = 0; k < 420; k++) { const x = 15 + R() * 102, y = 18 + R() * 76; if (!L.inside(x, y)) continue; const a = Math.atan2(y - base[1], x - base[0]) + Math.PI / 2 + (R() - .5) * .8, l = 1.6 + R() * 1.6; ter += `M${fx(x)} ${fx(y)}l${fx(Math.cos(a) * l)} ${fx(Math.sin(a) * l)}`; }
+  b += `<g clip-path="url(#lf${u})"><path d="${ter}" stroke="#2c2117" stroke-width=".14" opacity=".55"/>${leafVeins(L, base, lobes, R)}</g>`;
+  b += `<path d="${taper(quadPts([66, 71], [63, 88], [58, 100], 20), 1.5, 1)}" fill="#2b2016" opacity=".85"/>`;
+  // déchirure du bord
+  b += `</g>`;
+  const bx = bbox(L.P), fs = 3.6;
+  const dims = dimLine(bx.x0, bx.y0 - 4, bx.x1, bx.y0 - 4, mmTxt(bx.w), fs) + dimLine(bx.x1 + 4, bx.y0, bx.x1 + 4, base[1], mmTxt(base[1] - bx.y0), fs) + dimLine(70, 71, 62, 100, '30 mm', 3, -5);
+  return { w, h, defs, body: b, dims, geo: { L: Math.round(bx.w), H: Math.round(base[1] - bx.y0) } };
+}
+
+function drawC2(R, u) { // Bois silicifié
+  const O = [0, 0], a0 = -1.12, a1 = -.55, r0 = 80, r1 = 176;
+  const nz = pnoise(R, 6, .012), P = [];
+  for (let i = 0; i <= 40; i++) { const a = lerp(a0, a1, i / 40); P.push([Math.cos(a) * (r1 + 2 * Math.sin(i * 1.7) * R() - 1.5), Math.sin(a) * (r1 - 1.5 + (R() - .5) * 2)]); }
+  for (let i = 0; i <= 14; i++) { const r = lerp(r1, r0, i / 14), a = a1 + (i % 2 ? .006 : -.004) + nz(i) ; P.push([Math.cos(a) * r, Math.sin(a) * r]); }
+  for (let i = 0; i <= 26; i++) { const a = lerp(a1, a0, i / 26); P.push([Math.cos(a) * (r0 + (R() - .5) * 2.4), Math.sin(a) * (r0 + (R() - .5) * 2.4)]); }
+  for (let i = 0; i <= 14; i++) { const r = lerp(r0, r1, i / 14), a = a0 + (i % 2 ? .008 : -.006) + nz(i + 3); P.push([Math.cos(a) * r, Math.sin(a) * r]); }
+  const bb = bbox(P), m = 8, tx = -bb.x0 + m, ty = -bb.y0 + m;
+  const w = bb.w + 2 * m, h = bb.h + 2 * m + 4;
+  const Pt = P.map(p => [p[0] + tx, p[1] + ty]); const c = [tx, ty];
+  const d = poly(Pt); let defs = `<clipPath id="wd${u}"><path d="${d}"/></clipPath><linearGradient id="wg${u}" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#7b4c28"/><stop offset=".45" stop-color="#b98955"/><stop offset=".8" stop-color="#a06a3a"/><stop offset="1" stop-color="#6f4220"/></linearGradient><filter id="wt${u}" x="0" y="0" width="1" height="1"><feTurbulence type="fractalNoise" baseFrequency=".05 .2" numOctaves="3" seed="${Math.floor(R() * 99)}"/><feColorMatrix type="matrix" values="0 0 0 0 .32 0 0 0 0 .18 0 0 0 0 .08 2 0 0 0 -.85"/><feComposite in2="SourceGraphic" operator="in"/></filter><filter id="ws${u}" x="-.2" y="-.2" width="1.4" height="1.4"><feGaussianBlur stdDeviation="2.4"/></filter>`;
+  let b = `<path d="${d}" transform="translate(2,5.5)" fill="#000" opacity=".5" filter="url(#ws${u})"/><path d="${d}" transform="translate(0,3.2)" fill="#4a2c16"/><path d="${d}" fill="url(#wg${u})"/><path d="${d}" fill="#000" filter="url(#wt${u})"/>`;
+  let g = '';
+  // cernes
+  const rings = []; for (let r = r0 - 2; r < r1 + 2;) { rings.push(r); r += 2.2 + R() * 4.8; }
+  let rl = '', late = '';
+  rings.forEach(r => { const pts = []; for (let a = a0 - .03; a <= a1 + .03; a += .01) { const rr = r + .6 * Math.sin(a * 40 + r); pts.push([c[0] + Math.cos(a) * rr, c[1] + Math.sin(a) * rr]); } rl += smooth(pts, false); late += smooth(pts.map(p => lerpP(c, p, (r - .55) / r)), false); });
+  g += `<path d="${late}" stroke="#5a3418" stroke-width=".9" fill="none" opacity=".35"/><path d="${rl}" stroke="#3d220e" stroke-width=".38" fill="none"/>`;
+  // rayons
+  let ry = ''; for (let a = a0 - .02; a <= a1 + .02; a += .0085 + R() * .004) { const rs = r0 + R() * 8, re = r1 - R() * 6; ry += `M${M([c[0] + Math.cos(a) * rs, c[1] + Math.sin(a) * rs])}L${M([c[0] + Math.cos(a + .002) * re, c[1] + Math.sin(a + .002) * re])}`; }
+  g += `<path d="${ry}" stroke="#e8c79a" stroke-width=".13" opacity=".45"/>`;
+  // pores (vaisseaux)
+  let po = ''; for (let k = 0; k < 2600; k++) { const r = Math.sqrt(lerp(r0 * r0, r1 * r1, R())), a = lerp(a0, a1, R()); const x = c[0] + Math.cos(a) * r, y = c[1] + Math.sin(a) * r; po += `<circle cx="${fx(x)}" cy="${fx(y)}" r="${fx(.11 + R() * .1)}"/>`; }
+  g += `<g fill="#2e1909" opacity=".75">${po}</g>`;
+  // fissures
+  let fi = ''; for (let k = 0; k < 4; k++) { let a = lerp(a0 + .05, a1 - .05, R()), r = r1, pts = []; const end = r1 - 25 - R() * 50; while (r > end) { pts.push([c[0] + Math.cos(a) * r, c[1] + Math.sin(a) * r]); r -= 3; a += (R() - .5) * .01; } fi += poly(pts, false); }
+  g += `<path d="${fi}" stroke="#1f1007" stroke-width=".7" fill="none" opacity=".85"/>`;
+  b += `<g clip-path="url(#wd${u})">${g}</g><path d="${d}" fill="none" stroke="#3a210e" stroke-width=".9"/>`;
+  const fs = 4;
+  const bx = bbox(Pt);
+  const dims = dimLine(bx.x0, bx.y1 + 6, bx.x1, bx.y1 + 6, mmTxt(bx.w), fs) + dimLine(bx.x1 + 3, bx.y0, bx.x1 + 3, bx.y1, mmTxt(bx.h), fs);
+  return { w, h: h + 6, defs, body: b, dims, geo: { L: Math.round(bx.w), H: Math.round(bx.h) } };
+}
+
+function drawC3(R, u) { // Fougère : Osmunda
+  const w = 134, h = 102, S = slab(w, h, 'C', R, .4, u); let defs = S.defs, b = S.body;
+  const C = quadPts([20, 86], [60, 64], [116, 18], 120); let s = '';
+  const col = '#2e241a';
+  const tangent = i => { const a = C[Math.max(i - 1, 0)], q = C[Math.min(i + 1, C.length - 1)]; return Math.atan2(q[1] - a[1], q[0] - a[0]); };
+  let side = 1, cnt = 0;
+  for (let i = 3; i < C.length - 4; i += 5) {
+    const t = i / C.length, ang = tangent(i) + side * 1.05, Lp = 21 * (1 - .5 * t) * (cnt === 3 || cnt === 15 ? .55 : 1), W = 5.6 * (1 - .3 * t), p = C[i];
+    const hw = v => v < .1 ? W / 2 * (.72 + 2.8 * v) : W / 2 * (1 - ((v - .1) / .9) ** 2.6);
+    const Lf = [], Rg = [], ca = Math.cos(ang), sa = Math.sin(ang);
+    for (let k = 0; k <= 22; k++) { const v = k / 22, x = v * Lp, y = hw(v); Lf.push([p[0] + ca * x - sa * y, p[1] + sa * x + ca * y]); Rg.push([p[0] + ca * x + sa * y, p[1] + sa * x - ca * y]); }
+    const outline = Lf.concat(Rg.reverse());
+    s += `<path d="${smooth(outline)}" fill="${col}" fill-opacity=".42" stroke="${col}" stroke-width=".3" stroke-opacity=".6"/>`;
+    let v2 = `M${M(p)}L${M([p[0] + ca * Lp * .94, p[1] + sa * Lp * .94])}`;
+    for (let v = .08; v < .9; v += .075) { const x = v * Lp, m = [p[0] + ca * x, p[1] + sa * x]; for (const sg of [-1, 1]) { const hwv = hw(Math.min(v + .05, 1)) * .92, a2 = ang + sg * .85, l1 = hwv / Math.sin(.85) * .5; const f = [m[0] + Math.cos(a2) * l1, m[1] + Math.sin(a2) * l1]; v2 += `M${M(m)}L${M(f)}L${M([f[0] + Math.cos(a2 - sg * .25) * l1, f[1] + Math.sin(a2 - sg * .25) * l1])}M${M(f)}L${M([f[0] + Math.cos(a2 + sg * .3) * l1 * .9, f[1] + Math.sin(a2 + sg * .3) * l1 * .9])}`; } }
+    s += `<path d="${v2}" stroke="${col}" stroke-width=".14" fill="none" opacity=".8"/>`;
+    side = -side; cnt++;
+  }
+  s += `<path d="${taper(C, 2, .9)}" fill="${col}" opacity=".85"/>`;
+  b += `<g clip-path="${S.clip}">${s}</g>`;
+  const fs = 3.6;
+  const dims = dimLine(12, 98, 120, 98, '≈ 108 mm', fs) + dimLine(126, 8, 126, 92, '≈ 84 mm', fs);
+  return { w, h, defs, body: b, dims, geo: {} };
+}
+
+/* =====================================================================
+   SITE D
+   ===================================================================== */
+function drawD1(R, u) { // Ammonite Cardioceras
+  const w = 86, h = 80, S = slab(w, h, 'D', R, .5, u); let defs = S.defs, b = S.body;
+  const c = [43, 40.5], W = 1.85, bb = Math.log(W) / TAU, R0 = 27.5;
+  const OV = .64, r = t => R0 * Math.exp(bb * t), I = t => OV * r(t - TAU), O = r;
+  const pt = (rad, t) => [c[0] + rad * Math.cos(t + 1.2), c[1] + rad * Math.sin(t + 1.2)];
+  const ts = -4 * Math.PI, dt = Math.PI / 24;
+  let seg = '';
+  for (let t = ts; t < 0 - 1e-6; t += dt) {
+    const A = [], Bv = [], n = 6; for (let k = 0; k <= n; k++) { const tt = t + dt * k / n; A.push(pt(O(tt), tt)); Bv.push(pt(I(tt), tt)); }
+    const f = (t - ts) / -ts, cc = Math.round(lerp(150, 190, f)), col = `rgb(${cc + 18},${cc - 2},${cc - 62})`;
+    seg += `<path d="${poly(A.concat(Bv.reverse()))}" fill="${col}" stroke="${col}" stroke-width=".2"/>`;
+    const Bw = [], Bw2 = []; for (let k = 0; k <= n; k++) { const tt = t + dt * k / n; Bw.push(pt(I(tt), tt)); Bw2.push(pt(lerp(I(tt), O(tt), .2), tt)); }
+    seg += `<path d="${poly(A, false)}" stroke="#4e3a1c" stroke-width=".4" fill="none"/><path d="${poly(Bw, false)}" stroke="#4e3a1c" stroke-width=".4" fill="none"/>`;
+  }
+  b += `<circle cx="${c[0]}" cy="${c[1]}" r="${fx(I(ts) + 1)}" fill="#6f6250"/>` + seg;
+  // côtes bifurquées
+  let ribs = '', hi = '';
+  const nr = 27, dr = TAU / nr;
+  for (let t = ts + dr; t <= -.05; t += dr) {
+    const tmax = t + TAU <= 0 ? (OV * O(t) - I(t)) / (O(t) - I(t)) - .03 : 1;
+    const at = (v, off) => { const rad = lerp(I(t), O(t), v), tt = t + .13 * v * v + off * v; return pt(rad, tt); };
+    const main = [], br1 = [], br2 = [];
+    for (let v = .06; v <= Math.min(.46, tmax); v += .04) main.push(at(v, 0));
+    if (tmax > .46) { for (let v = .46; v <= tmax; v += .04) { br1.push(at(v, -.02)); br2.push(at(v, dr * .5 * (v - .46) / .54 * 1.0)); } }
+    if (main.length > 1) ribs += poly(main, false); if (br1.length > 1) { ribs += poly(br1, false) + poly(br2, false); }
+    hi += poly(main.map(p => [p[0] - .25, p[1] - .25]), false);
+  }
+  b += `<path d="${hi}" stroke="#ecd6a3" stroke-width=".3" fill="none" opacity=".6"/><path d="${ribs}" stroke="#55401d" stroke-width=".55" fill="none" stroke-linecap="round" opacity=".85"/>`;
+  // carène crénelée (dernier tour)
+  let kl = []; let kc = ''; for (let t = -TAU; t <= 0; t += .02) kl.push(pt(O(t) + .9, t));
+  for (let t = -TAU + .05; t <= 0; t += .11) { const p = pt(O(t) + .1, t), q = pt(O(t) + 1, t + .03); kc += `M${M(p)}L${M(q)}`; }
+  const inner = []; for (let t = 0; t >= -TAU; t -= .02) inner.push(pt(O(t), t));
+  b += `<path d="${poly(kl.concat(inner))}" fill="#b49a5f" stroke="#4e3a1c" stroke-width=".35"/><path d="${kc}" stroke="#4e3a1c" stroke-width=".3"/>`;
+  // lignes de suture (phragmocône)
+  let su = ''; const tb = -.55 * TAU;
+  for (let t = tb; t > -1.9 * TAU; t -= TAU / 17) {
+    const tmax = t + TAU <= 0 ? (OV * O(t) - I(t)) / (O(t) - I(t)) - .02 : .98;
+    const ph = R() * TAU, pts = [];
+    for (let v = .03; v <= tmax; v += .006) { const dd = -.07 * Math.max(0, Math.sin(v * Math.PI * 3.2 + .3)) + .035 * Math.sin(v * Math.PI * 6.4) + .012 * Math.sin(v * 90 + ph) * (1 + .6 * Math.sin(v * 13)); pts.push(pt(lerp(I(t), O(t), v), t + dd + .13 * v * v)); }
+    su += poly(pts, false);
+  }
+  b += `<path d="${su}" stroke="#3b2a10" stroke-width=".3" fill="none" opacity=".9"/>`;
+  b += `<path d="M${M(pt(I(0), 0))}L${M(pt(O(0) + .9, 0))}" stroke="#3b2a10" stroke-width=".7"/>`;
+  // diamètre
+  const all = []; for (let t = -TAU; t <= 0; t += .05) all.push(pt(O(t) + .9, t)); const bx = bbox(all), fs = 3;
+  const dims = dimLine(bx.x0, bx.y1 + 3.5, bx.x1, bx.y1 + 3.5, mmTxt(bx.w), fs);
+  return { w, h, defs, body: b, dims, geo: { D: Math.round(bx.w) } };
+}
+
+function drawD2(R, u) { // Bélemnite Hibolithes
+  const w = 134, h = 60, S = slab(w, h, 'D', R, .6, u); let defs = S.defs, b = '';
+  const y0 = 24; const prof = [[17, 3.2], [30, 2.9], [45, 2.65], [60, 3.1], [72, 4.0], [83, 4.55], [93, 4.1], [101, 2.9], [107, 1.5], [111, 0]];
+  const hwAt = x => { for (let i = 0; i < prof.length - 1; i++) if (x <= prof[i + 1][0]) { const t = (x - prof[i][0]) / (prof[i + 1][0] - prof[i][0]), s = t * t * (3 - 2 * t); return lerp(prof[i][1], prof[i + 1][1], s); } return 0; };
+  const T = [], Bt = []; for (let x = 17; x <= 111; x += .7) { T.push([x, y0 - hwAt(x)]); Bt.push([x, y0 + hwAt(x)]); }
+  const brk = [[17, y0 + 3.2], [16, y0 + 1.8], [17.4, y0 + .5], [16.2, y0 - 1], [17.3, y0 - 2.2], [17, y0 - 3.2]];
+  const P = T.concat(Bt.reverse(), brk);
+  defs += `<linearGradient id="bg${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6e4317"/><stop offset=".3" stop-color="#c79151"/><stop offset=".45" stop-color="#e2b77a"/><stop offset=".7" stop-color="#a7712f"/><stop offset="1" stop-color="#5f3810"/></linearGradient><radialGradient id="bx${u}" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#d9a861"/><stop offset="1" stop-color="#8a5622"/></radialGradient>`;
+  b += `<path d="${poly(P)}" transform="translate(.8,2)" fill="#3c3a33" opacity=".55"/>`;
+  // phragmocône sortant
+  const ph = [[3.5, y0 - 3.7], [18, y0 - 2.5], [18, y0 + 2.5], [3.5, y0 + 3.7]];
+  b += `<path d="${poly(ph)}" fill="#8c8473" stroke="#4c463a" stroke-width=".35"/>`;
+  let sep = ''; for (let x = 4.3; x < 18; x += 1.15) { const hw = lerp(3.7, 2.5, (x - 3.5) / 14.5); sep += `M${fx(x)} ${fx(y0 - hw)}Q${fx(x + 1.1)} ${fx(y0)} ${fx(x)} ${fx(y0 + hw)}`; }
+  let si = ''; for (let x = 4.6; x < 18; x += 1.15) si += `<circle cx="${fx(x + .45)}" cy="${fx(y0 + lerp(3.4, 2.3, (x - 3.5) / 14.5))}" r=".28"/>`;
+  b += `<path d="${sep}" stroke="#4c463a" stroke-width=".28" fill="none"/><g fill="#3d382f">${si}</g>`;
+  b += `<path d="${poly(P)}" fill="url(#bg${u})" stroke="#4a2c0b" stroke-width=".4"/>`;
+  b += `<path d="M17.5 ${y0 - 2.4}L41 ${y0 + .3}L17.5 ${y0 + 2.4}" stroke="#4a2c0b" stroke-width=".35" fill="#7a4b1a" fill-opacity=".25" stroke-dasharray="1 .6" opacity=".75"/>`;
+  b += `<path d="M18 ${y0 + 1.4}C40 ${y0 + 1.5} 58 ${y0 + 1.7} 74 ${y0 + 2.6}" stroke="#3e2307" stroke-width=".55" fill="none"/><path d="M18 ${y0 + 1.95}C40 ${y0 + 2.05} 58 ${y0 + 2.25} 74 ${y0 + 3.15}" stroke="#f5d9a8" stroke-width=".25" fill="none" opacity=".7"/>`;
+  b += `<path d="M20 ${y0 - 1.3}C50 ${y0 - 1.1} 80 ${y0 - 2.4} 108 ${y0 - .5}" stroke="#fff3da" stroke-width=".45" fill="none" opacity=".45"/>`;
+  b += `<path d="M41 ${y0 + .3}L110.5 ${y0 + .2}" stroke="#5a340d" stroke-width=".18" opacity=".45" stroke-dasharray="2 1.4"/>`;
+  // coupe transversale d'un 2e rostre
+  const cc = [102, 45.5], rr = 4.6;
+  b += `<ellipse cx="${cc[0] + .6}" cy="${cc[1] + 1.4}" rx="${rr}" ry="${rr * .93}" fill="#3c3a33" opacity=".55"/><ellipse cx="${cc[0]}" cy="${cc[1]}" rx="${rr}" ry="${rr * .93}" fill="url(#bx${u})" stroke="#4a2c0b" stroke-width=".35"/>`;
+  const ap = [cc[0], cc[1] + 1.1]; let con = '', fib = '';
+  for (let k = 1; k <= 9; k++) { const f = k / 9; con += `<ellipse cx="${fx(lerp(ap[0], cc[0], f))}" cy="${fx(lerp(ap[1], cc[1], f))}" rx="${fx(rr * f * .98)}" ry="${fx(rr * .93 * f * .98)}"/>`; }
+  for (let k = 0; k < 64; k++) { const a = k / 64 * TAU; fib += `M${M(ap)}L${M([cc[0] + Math.cos(a) * rr * .97, cc[1] + Math.sin(a) * rr * .9])}`; }
+  b += `<g fill="none" stroke="#5c3510" stroke-width=".1" opacity=".75">${con}</g><path d="${fib}" stroke="#f0cc8f" stroke-width=".07" opacity=".55"/><path d="M${cc[0]} ${cc[1] + rr * .93}l-.5 -1h1z" fill="#4a2c0b"/><circle cx="${ap[0]}" cy="${ap[1]}" r=".22" fill="#3a1f05"/>`;
+  b = S.body + `<g transform="translate(8 0)">${b}</g>`;
+  const fs = 3;
+  const dims = `<g transform="translate(8 0)">` + dimLine(17, 34, 111, 34, '94 mm', fs) + dimLine(84, y0 - 4.55, 84, y0 + 4.55, '9 mm', 2.4, -6) + dimLine(3.5, 15.5, 18, 15.5, '14 mm', 2.4) + dimLine(cc[0] - rr, 53.5, cc[0] + rr, 53.5, '9,2 mm', 2.2) + '</g>';
+  return { w, h, defs, body: b, dims, geo: {} };
+}
+
+function drawD3(R, u) { // Gryphaea dilatata
+  const w = 146, h = 104, S = slab(w, h, 'D', R, .45, u); let defs = S.defs, b = S.body;
+  const lv = 'M58 30C62 48 50 70 34 70C18 70 8 52 9 36C10 22 16 12 24 10C28 9.5 30.5 12 27 15C23 18 22 24 24 28Z';
+  const rv = 'M24 28C35 25 48 26 58 30L58 31.8C48 28.5 35 27.5 24.5 30Z';
+  defs += `<clipPath id="gv${u}"><path d="${lv}"/></clipPath><linearGradient id="gg${u}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ded5c2"/><stop offset=".6" stop-color="#bcb29c"/><stop offset="1" stop-color="#8f8670"/></linearGradient><radialGradient id="gt${u}" cx=".42" cy=".4" r=".7"><stop offset="0" stop-color="#e3dac8"/><stop offset="1" stop-color="#a69c86"/></radialGradient>`;
+  let gl = ''; for (let k = .93; k > .25; k -= .055) gl += `<path d="${lv}" transform="translate(${fx(20 * (1 - k))} ${fx(22 * (1 - k))}) scale(${fx(k)})" stroke-width="${fx(.4 / k)}"/>`;
+  b += `<g transform="translate(6 10) scale(1.27)"><path d="${lv}" transform="translate(.8 2)" fill="#3e403a" opacity=".55"/><path d="${lv}" fill="url(#gg${u})" stroke="#4f4a3c" stroke-width=".5"/><g clip-path="url(#gv${u})" fill="none" stroke="#6d6553" opacity=".75">${gl}</g><path d="${rv}" fill="#cfc6b0" stroke="#4f4a3c" stroke-width=".4"/><path d="M27 15C23 18 22 24 24 28" stroke="#2f2c24" stroke-width=".6" fill="none"/></g>`;
+  // vue de dessus
+  const rim = [[100, 13], [114, 15], [127, 27], [133, 48], [129, 69], [115, 82], [99, 82], [88, 70], [85, 48], [89, 27]];
+  const umb = [98, 17];
+  const lid = scaleAbout(rim, [107, 50], .88).map(p => [p[0] + .5, p[1] + 1.5]);
+  b += `<path d="${smooth(rim)}" transform="translate(1 2.4)" fill="#3e403a" opacity=".55"/><path d="${smooth(rim)}" fill="#a49a83" stroke="#4f4a3c" stroke-width=".55"/><path d="${smooth(lid)}" fill="url(#gt${u})" stroke="#4f4a3c" stroke-width=".45"/>`;
+  let lam = ''; for (let k = .9; k > .15; k -= .07) { const pts = scaleAbout(lid, umb, k).map((p, i) => [p[0] + (R() - .5) * .4, p[1] + (R() - .5) * .4]); lam += `<path d="${smooth(pts)}" stroke-width="${fx(.25 + R() * .35)}"/>`; }
+  b += `<g fill="none" stroke="#6a624f" opacity=".8">${lam}</g><circle cx="${umb[0]}" cy="${umb[1]}" r="1.3" fill="#8e846e"/>`;
+  b += `<g font-size="3.4" fill="#2d2f2a" opacity=".75" text-anchor="middle" font-family="Georgia,serif" font-style="italic"><text x="44" y="${h - 5}">vue latérale</text><text x="109" y="${h - 5}">vue de la valve droite</text></g>`;
+  const fs = 3;
+  const dims = dimLine(6 + 9 * 1.27, 10 + 10 * 1.27 - 3, 6 + 9 * 1.27, 10 + 70 * 1.27, '76 mm', fs, 8) + dimLine(6 + 8.6 * 1.27, 10 + 72.5 * 1.27, 6 + 60 * 1.27, 10 + 72.5 * 1.27, '65 mm', fs) + dimLine(85, 87, 133, 87, '48 mm', fs);
+  return { w, h, defs, body: b, dims, geo: {} };
+}
+
+/* =====================================================================
+   ÉCHANTILLONS DE ROCHE
+   ===================================================================== */
+function drawRock(type, R, u) {
+  const w = 112, h = 82;
+  const g = { A: .32, B: 1.4, C: .95, D: 1.1 }[type];
+  const S = slab(w, h, type, R, g, u); let defs = S.defs, b = S.body, x = '';
+  const inS = () => { let p; do { p = [8 + R() * (w - 16), 8 + R() * (h - 16)]; } while (false); return p; };
+  if (type === 'A') {
+    for (let k = 0; k < 5; k++) { const p = inS(), s = 1.6 + R(); let cl = ''; for (let i = 0; i < 7; i++) { const c = [p[0] + (R() - .5) * 10, p[1] + (R() - .5) * 7], hx = []; for (let q = 0; q < 6; q++) { const a = Math.PI / 6 + q * Math.PI / 3; hx.push([c[0] + s * Math.cos(a), c[1] + s * Math.sin(a)]); } cl += `<path d="${poly(hx)}" fill="#d9c9a0" stroke="#806c45" stroke-width=".35"/><circle cx="${fx(c[0])}" cy="${fx(c[1])}" r="${fx(s * .3)}" fill="#8d7952"/>`; } x += cl; }
+    for (let k = 0; k < 28; k++) { const p = inS(), r = 1.5 + R() * 4, a = R() * 360; x += `<path d="M${-r} 0A${r} ${r * .7} 0 0 1 ${r} 0" transform="translate(${fx(p[0])} ${fx(p[1])}) rotate(${fx(a)})" stroke="#f6f0e2" stroke-width="${fx(.5 + R() * .5)}" fill="none"/>`; }
+    for (let k = 0; k < 10; k++) { const p = inS(); x += `<rect x="${fx(p[0])}" y="${fx(p[1])}" width="${fx(4 + R() * 5)}" height="1" rx=".5" transform="rotate(${fx(R() * 180)} ${fx(p[0])} ${fx(p[1])})" fill="#cdb98f"/>`; }
+    const cv = blob(78, 26, 9, 5, R, .15, 30); x += `<path d="${cv.d}" fill="#faf8f2" stroke="#9c8b6a" stroke-width=".4"/>`;
+    for (let k = 0; k < 18; k++) { const p = [72 + R() * 12, 23 + R() * 6]; if (cv.inside(p[0], p[1])) x += `<path d="M${fx(p[0])} ${fx(p[1])}l1 -1.2l1 1.2l-1 1.2z" fill="#fff" stroke="#c8c2b2" stroke-width=".15"/>`; }
+  } else if (type === 'B') {
+    for (let k = 0; k < 3; k++) { const p = inS(); x += `<g transform="translate(${fx(p[0])} ${fx(p[1])}) rotate(${fx(R() * 360)}) scale(.28)">${lymnaeaShell({ id: u + 'r' + k, lw: .6 })}</g>`; }
+    for (let k = 0; k < 14; k++) { const p = inS(); x += `<ellipse cx="${fx(p[0])}" cy="${fx(p[1])}" rx=".3" ry=".38" fill="#efe6cf" stroke="#8c7955" stroke-width=".06"/>`; }
+    x += `<path d="M14 60l6 -1.2 3 .8" stroke="#5a412a" stroke-width=".35" fill="none"/>`;
+  } else if (type === 'C') {
+    for (let k = 0; k < 60; k++) { const p = inS(), l = 1 + R() * 5; x += `<rect x="${fx(p[0])}" y="${fx(p[1])}" width="${fx(l)}" height="${fx(.3 + R() * .5)}" transform="rotate(${fx((R() - .5) * 20)} ${fx(p[0])} ${fx(p[1])})" fill="#2a2119" opacity=".75"/>`; }
+    for (let k = 0; k < 120; k++) { const p = inS(); x += `<circle cx="${fx(p[0])}" cy="${fx(p[1])}" r=".2" fill="#f4f0e2" opacity="${fx(.4 + R() * .5)}"/>`; }
+  } else {
+    for (let k = 0; k < 14; k++) { const p = inS(), r = 1.5 + R() * 3, a = R() * 360; x += `<path d="M${-r} 0A${r} ${r * .8} 0 0 1 ${r} 0" transform="translate(${fx(p[0])} ${fx(p[1])}) rotate(${fx(a)})" stroke="#d8d1c0" stroke-width="${fx(.6 + R() * .6)}" fill="none"/>`; }
+    for (let k = 0; k < 7; k++) { const p = inS(), r = 1.1 + R() * .6; let st = ''; for (let q = 0; q < 5; q++) { const a = q / 5 * TAU; st += `M${fx(p[0])} ${fx(p[1])}L${fx(p[0] + Math.cos(a) * r * .8)} ${fx(p[1] + Math.sin(a) * r * .8)}`; } x += `<circle cx="${fx(p[0])}" cy="${fx(p[1])}" r="${fx(r)}" fill="#cfc8b6" stroke="#7d786a" stroke-width=".2"/><path d="${st}" stroke="#7d786a" stroke-width=".22"/>`; }
+    const n = [30, 58]; for (let k = 0; k < 9; k++) { const s = 1.4 + R() * 1.5, p = [n[0] + (R() - .5) * 6, n[1] + (R() - .5) * 5]; x += `<rect x="${fx(p[0])}" y="${fx(p[1])}" width="${fx(s)}" height="${fx(s)}" transform="rotate(${fx(R() * 90)} ${fx(p[0])} ${fx(p[1])})" fill="#b39a52" stroke="#5f512a" stroke-width=".2"/><path d="M${fx(p[0])} ${fx(p[1])}l${fx(s * .6)} ${fx(s * .2)}" stroke="#f1df9c" stroke-width=".2"/>`; }
+  }
+  b += `<g clip-path="${S.clip}">${x}</g>`;
+  const dims = dimLine(4, h - 2, w - 4, h - 2, mmTxt(w - 8), 3.4);
+  return { w, h, defs, body: b, dims, geo: {} };
+}
+
+"use strict";
+/* Illustrations des organismes actuels — viewBox 0 0 200 150 */
+function bgWater(u, top = '#cfe6ef', bot = '#7fb0c8') { return `<defs><linearGradient id="wa${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${top}"/><stop offset="1" stop-color="${bot}"/></linearGradient></defs><rect width="200" height="150" rx="6" fill="url(#wa${u})"/>`; }
+function bgAir(u) { return `<defs><linearGradient id="wa${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef3e6"/><stop offset="1" stop-color="#d9e2c8"/></linearGradient></defs><rect width="200" height="150" rx="6" fill="url(#wa${u})"/>`; }
+function scaleBar(x, y, len, label) { return `<g><path d="M${x} ${y}h${len}M${x} ${y - 2}v4M${x + len} ${y - 2}v4" stroke="#1d2a30" stroke-width="1"/><text x="${x + len / 2}" y="${y - 4}" font-size="7" text-anchor="middle" fill="#1d2a30">${label}</text></g>`; }
+
+const ORG_DRAW = {
+  corail(R, u) {
+    let s = bgWater(u, '#d6eef2', '#6fb4c6');
+    const B = blob(100, 98, 76, 46, R, .06);
+    s += `<defs><clipPath id="oc${u}"><path d="${B.d}"/></clipPath><radialGradient id="og${u}" cx=".45" cy=".3" r=".75"><stop offset="0" stop-color="#c8b56a"/><stop offset="1" stop-color="#6f6230"/></radialGradient></defs>`;
+    s += `<path d="M0 132Q60 122 100 128T200 130V150H0Z" fill="#c9b893"/><path d="${B.d}" fill="url(#og${u})"/>`;
+    let c = ''; const sz = 5.2, dx = sz * Math.sqrt(3), dy = sz * 1.5;
+    for (let j = 0; j * dy < 150; j++) for (let i = 0; i * dx < 200; i++) {
+      const cx = i * dx + (j & 1 ? dx / 2 : 0), cy = j * dy; if (!B.inside(cx, cy)) continue;
+      const hx = []; for (let q = 0; q < 6; q++) { const a = Math.PI / 6 + q * Math.PI / 3; hx.push([cx + sz * Math.cos(a), cy + sz * Math.sin(a)]); }
+      c += `<path d="${poly(hx)}" fill="#a99b52" stroke="#5c5224" stroke-width=".8"/><circle cx="${fx(cx)}" cy="${fx(cy)}" r="2.3" fill="#7fae63"/>`;
+      let t = ''; for (let q = 0; q < 10; q++) { const a = q / 10 * TAU; t += `M${fx(cx)} ${fx(cy)}l${fx(Math.cos(a) * 3.6)} ${fx(Math.sin(a) * 3.6)}`; } c += `<path d="${t}" stroke="#b6d79a" stroke-width=".7" stroke-linecap="round"/>`;
+    }
+    s += `<g clip-path="url(#oc${u})">${c}</g><path d="${B.d}" fill="none" stroke="#4d4520" stroke-width="1"/>`;
+    s += `<g transform="translate(150 20)"><circle r="17" fill="#f4f1e6" stroke="#1d2a30"/><g>`;
+    const hx = []; for (let q = 0; q < 6; q++) { const a = Math.PI / 6 + q * Math.PI / 3; hx.push([14 * Math.cos(a), 14 * Math.sin(a)]); }
+    let sp = ''; for (let q = 0; q < 24; q++) { const a = q / 24 * TAU; sp += `M${fx(Math.cos(a) * 3)} ${fx(Math.sin(a) * 3)}L${fx(Math.cos(a) * (q % 2 ? 8 : 11))} ${fx(Math.sin(a) * (q % 2 ? 8 : 11))}`; }
+    s += `<path d="${poly(hx)}" fill="#e2d6a8" stroke="#5c5224"/><path d="${sp}" stroke="#5c5224" stroke-width=".8"/><circle r="3" fill="#8b7d45"/></g><text y="26" font-size="6.5" text-anchor="middle" fill="#1d2a30">squelette d'un corallite</text></g>`;
+    return s + scaleBar(12, 18, 40, '10 cm');
+  },
+  huitre(R, u) {
+    let s = bgWater(u, '#e1eef0', '#9cc3cc');
+    s += `<path d="M0 128Q100 118 200 126V150H0Z" fill="#a69a83"/>`;
+    const low = 'M30 98C40 128 120 136 168 104C150 112 60 112 30 98Z', top = 'M28 96C60 84 130 82 170 102C130 96 70 98 28 96Z';
+    s += `<path d="M30 98C34 118 70 134 120 130C150 128 168 114 170 102C140 116 70 116 30 98Z" fill="#8c7f86" stroke="#3d3540" stroke-width="1.1"/>`;
+    let l = ''; for (let k = 0; k < 7; k++) l += `<path d="M${36 + k * 4} ${100 + k * 3}C${70} ${118 + k * 1.5} ${130} ${118 + k} ${165 - k * 3} ${106 + k}" stroke="#5f5462" stroke-width=".7" fill="none"/>`;
+    s += l + `<path d="M24 96C60 80 132 78 172 101C132 92 70 94 24 96Z" fill="#b6ab9f" stroke="#3d3540" stroke-width="1.1"/>`;
+    for (let k = 0; k < 5; k++) s += `<path d="M${40 + k * 22} ${90 - k * .5}q8 -4 16 0" stroke="#7a6f68" stroke-width=".7" fill="none"/>`;
+    s += `<text x="120" y="70" font-size="7" fill="#1d2a30">valve droite (plate)</text><path d="M120 72L110 88" stroke="#1d2a30" stroke-width=".6"/><text x="60" y="146" font-size="7" fill="#1d2a30">valve gauche (creuse, fixée)</text>`;
+    return s + scaleBar(12, 18, 50, '5 cm');
+  },
+  lymnee(R, u) {
+    let s = bgWater(u, '#e3eedb', '#a6c08e');
+    s += `<path d="M0 120Q50 112 90 118T200 116V150H0Z" fill="#6c7d4b"/><path d="M20 125Q60 108 110 112Q140 114 160 125Q120 130 20 125Z" fill="#7d8573" stroke="#3e4436" stroke-width="1"/><path d="M152 118l18 -12M150 116l16 -16" stroke="#7d8573" stroke-width="3" stroke-linecap="round"/><circle cx="150" cy="113" r="1.5" fill="#111"/>`;
+    s += `<g transform="translate(95 74) rotate(28) scale(2.6)">${lymnaeaShell({ id: u + 'z', sh: '#b58c56', dk: '#4a331b', ap: '#6e5a3e', lw: .35 })}</g>`;
+    return s + scaleBar(12, 18, 52, '2 cm');
+  },
+  gardon(R, u) {
+    let s = bgWater(u, '#e0eef0', '#9fc0bf');
+    s += `<defs><linearGradient id="fb${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5e6f6a"/><stop offset=".45" stop-color="#cfd8d6"/><stop offset="1" stop-color="#f4f4ee"/></linearGradient></defs>`;
+    const body = 'M22 75C30 60 60 50 92 50C120 50 140 60 158 70L166 75L158 80C140 90 120 98 92 98C60 98 30 90 22 75Z';
+    s += `<path d="M160 75L190 52L184 75L190 98Z" fill="#c4583f" stroke="#5a2a1d"/><path d="M84 51L92 30L110 34L112 52Z" fill="#b14d39" stroke="#5a2a1d"/><path d="M84 97L88 116L104 112L100 96Z" fill="#c4583f" stroke="#5a2a1d"/><path d="M128 92L134 110L146 104L140 88Z" fill="#c4583f" stroke="#5a2a1d"/><path d="M52 86L44 104L62 98Z" fill="#c4583f" stroke="#5a2a1d"/>`;
+    s += `<path d="${body}" fill="url(#fb${u})" stroke="#2f3a38" stroke-width="1.1"/>`;
+    let sc = ''; for (let x = 52; x < 154; x += 6) for (let y = 58; y < 94; y += 5) sc += `M${x + (y % 10 ? 3 : 0)} ${y}a3 3 0 0 1 0 5`; s += `<path d="${sc}" stroke="#7d8b88" stroke-width=".5" fill="none" opacity=".7"/>`;
+    s += `<path d="M50 70Q100 74 160 74" stroke="#3f4b49" stroke-width=".8" stroke-dasharray="2 1.5" fill="none"/><path d="M48 58Q56 75 48 92" stroke="#2f3a38" stroke-width="1.2" fill="none"/><circle cx="34" cy="70" r="5.2" fill="#d4402b"/><circle cx="34" cy="70" r="2.6" fill="#111"/><path d="M22 76l7 1" stroke="#2f3a38"/>`;
+    s += `<text x="92" y="24" font-size="7" text-anchor="middle" fill="#1d2a30">une seule nageoire dorsale</text>`;
+    return s + scaleBar(12, 140, 48, '5 cm');
+  },
+  bar(R, u) {
+    let s = bgWater(u, '#dceaf2', '#6e9db8');
+    s += `<defs><linearGradient id="fb${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a5b66"/><stop offset=".5" stop-color="#c7d0d6"/><stop offset="1" stop-color="#f3f5f4"/></linearGradient></defs>`;
+    s += `<path d="M168 76L192 58L188 76L192 94Z" fill="#7f8f98" stroke="#2c363c"/>`;
+    s += `<path d="M64 54L68 30L72 50L77 28L80 49L86 30L88 50L94 33L96 51Z" fill="#8b98a0" stroke="#2c363c"/><path d="M108 52L114 38L136 42L140 56Z" fill="#8b98a0" stroke="#2c363c"/><path d="M122 96L126 110L144 106L140 94Z" fill="#8b98a0" stroke="#2c363c"/><path d="M62 92L56 108L74 100Z" fill="#8b98a0" stroke="#2c363c"/>`;
+    s += `<path d="M14 76C22 62 50 52 90 52C126 52 150 62 170 72L172 76L170 80C150 90 126 100 90 100C50 100 22 90 14 76Z" fill="url(#fb${u})" stroke="#2c363c" stroke-width="1.1"/>`;
+    let sc = ''; for (let x = 48; x < 166; x += 5) for (let y = 58; y < 96; y += 4.5) sc += `M${x + (Math.round(y) % 9 ? 2.5 : 0)} ${y}a2.5 2.5 0 0 1 0 4`; s += `<path d="${sc}" stroke="#6f7d86" stroke-width=".5" fill="none" opacity=".75"/>`;
+    s += `<path d="M44 66Q100 70 168 76" stroke="#333" stroke-width=".8" fill="none"/><path d="M44 56Q52 76 42 94L50 72Z" fill="#9aa7af" stroke="#2c363c"/><path d="M50 72l4 -2" stroke="#2c363c"/><circle cx="27" cy="70" r="5" fill="#e9e3c5"/><circle cx="27" cy="70" r="2.6" fill="#111"/><path d="M14 78l12 2M15 78l1 1.5l1.5 -1.5l1.5 1.5l1.5 -1.5" stroke="#2c363c" fill="none"/>`;
+    s += `<text x="80" y="22" font-size="7" text-anchor="middle" fill="#1d2a30">deux nageoires dorsales (1re épineuse)</text>`;
+    return s + scaleBar(12, 140, 30, '10 cm');
+  },
+  osmonde(R, u) {
+    let s = bgAir(u);
+    s += `<path d="M0 132Q60 124 120 130T200 128V150H0Z" fill="#7c6a4a"/>`;
+    const fr = (x0, y0, x1, y1, n, fert) => {
+      const C = quadPts([x0, y0], [(x0 + x1) / 2 + 10, (y0 + y1) / 2 + 8], [x1, y1], 60); let g = `<path d="${taper(C, 2.4, .8)}" fill="#5b7a2e"/>`;
+      for (let i = 4; i < 58; i += Math.floor(56 / n)) {
+        const p = C[i], q = C[Math.min(i + 1, 59)], a = Math.atan2(q[1] - p[1], q[0] - p[0]), t = i / 60;
+        for (const sg of [-1, 1]) {
+          const L = 22 * (1 - .55 * t), an = a + sg * 1.2, e = [p[0] + Math.cos(an) * L, p[1] + Math.sin(an) * L];
+          const isF = fert && t > .72;
+          g += `<path d="M${M(p)}L${M(e)}" stroke="#5b7a2e" stroke-width=".8"/>`;
+          for (let k = .12; k < .98; k += .14) { const m = lerpP(p, e, k), l = (isF ? 2.5 : 5.2) * (1 - k * .4); g += `<ellipse cx="${fx(m[0])}" cy="${fx(m[1])}" rx="${fx(l)}" ry="${fx(isF ? 1.6 : 1.7)}" transform="rotate(${fx((an + sg * 1.25) * 180 / Math.PI)} ${fx(m[0])} ${fx(m[1])})" fill="${isF ? '#9a6a32' : '#7da545'}" stroke="${isF ? '#5c3a12' : '#3f5a1b'}" stroke-width=".4"/>`; }
+        }
+      }
+      return g;
+    };
+    s += fr(100, 140, 60, 18, 9, true) + fr(104, 140, 160, 30, 8, false) + fr(98, 140, 20, 70, 6, false);
+    return s + scaleBar(150, 140, 40, '20 cm');
+  },
+  erable(R, u) {
+    let s = bgAir(u);
+    const base = [78, 86], lobes = [{ a: -90, L: 50, w: 30 }, { a: -35, L: 42, w: 28 }, { a: -145, L: 42, w: 28 }, { a: 15, L: 24, w: 26 }, { a: 165, L: 24, w: 26 }];
+    const L = acerLeaf({ base, lobes, sinus: 18, tooth: .4, period: 14 });
+    s += `<path d="${poly(L.P)}" fill="#6e9b3a" stroke="#355018" stroke-width="1"/>` + leafVeins(L, base, lobes, R, 1.3, '#cfe0a3', .5);
+    s += `<path d="M78 86Q74 110 70 128" stroke="#5b7a2e" stroke-width="1.8" fill="none"/>`;
+    s += `<g transform="translate(160 100)"><path d="M0 0C-4 -10 -18 -30 -30 -32C-26 -22 -10 -6 0 0Z" fill="#c9b36a" stroke="#6b5a24"/><path d="M0 0C4 -10 18 -30 30 -32C26 -22 10 -6 0 0Z" fill="#c9b36a" stroke="#6b5a24"/><circle r="3.4" fill="#9a7e3a"/><text y="14" font-size="6.5" text-anchor="middle" fill="#1d2a30">fruits ailés</text></g>`;
+    return s + scaleBar(12, 140, 40, '4 cm');
+  },
+  nautile(R, u) {
+    let s = bgWater(u, '#cfe3ee', '#3f6f92');
+    const W = 3.2, bb = Math.log(W) / TAU;
+    const sp = (c, R0, t) => { const r = R0 * Math.exp(bb * t); return [c[0] + r * Math.cos(t), c[1] + r * Math.sin(t)]; };
+    // vue externe
+    const c = [62, 80], R0 = 44, out = []; for (let t = -TAU; t <= 0; t += .04) out.push(sp(c, R0, t));
+    s += `<defs><clipPath id="nc${u}"><path d="${poly(out)}"/></clipPath><radialGradient id="ng${u}" cx=".45" cy=".4" r=".7"><stop offset="0" stop-color="#fbf6ea"/><stop offset="1" stop-color="#d9c9a6"/></radialGradient></defs>`;
+    s += `<path d="${poly(out)}" fill="url(#ng${u})" stroke="#3a2a1a" stroke-width="1.1"/>`;
+    let st = ''; for (let t = -TAU + .25; t < -2.2; t += .3) { const p0 = sp(c, R0 / W * 1.05, t + .2), p1 = sp(c, R0, t); st += `M${M(p0)}Q${M(lerpP(p0, p1, .5).map((v, k) => v + (k ? -3 : 3)))} ${M(p1)}`; }
+    s += `<path d="${st}" stroke="#b2552a" stroke-width="3.4" fill="none" stroke-linecap="round" clip-path="url(#nc${u})"/>`;
+    const a1 = sp(c, R0, 0), a0 = sp(c, R0, -TAU);
+    let ten = ''; for (let k = 0; k < 16; k++) { const y = lerp(a0[1] - 6, a1[1] - 4, k / 15); ten += `M${fx(a1[0] - 2)} ${fx(y)}q${fx(8 + (k % 3) * 3)} ${fx(3 + k * .4)} ${fx(16 + (k % 4) * 4)} ${fx(6 + k * .9)}`; }
+    s += `<path d="${ten}" stroke="#e1cdab" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M${M(a0)}C${fx(a0[0] + 14)} ${fx(a0[1] - 10)} ${fx(a1[0] + 12)} ${fx(a1[1] - 16)} ${M(a1)}Z" fill="#c4a378" stroke="#3a2a1a"/><circle cx="${fx(a1[0] + 2)}" cy="${fx((a0[1] + a1[1]) / 2 - 4)}" r="3" fill="#222"/>`;
+    // coupe
+    const c2 = [168, 104], R2 = 24; const o2 = []; for (let t = -TAU; t <= 0; t += .04) o2.push(sp(c2, R2, t));
+    s += `<g><path d="${poly(o2)}" fill="#f4ecdb" stroke="#3a2a1a" stroke-width=".9"/>`;
+    let sep = '', inner = []; for (let t = -3 * TAU; t <= -TAU; t += .04) inner.push(sp(c2, R2, t));
+    for (let t = -2.6 * TAU; t <= -.8; t += .42) { const p = sp(c2, R2, t), q = sp(c2, R2, t - TAU); sep += `M${M(p)}Q${M(lerpP(p, q, .5).map((v, k) => v + (k ? 1 : -1) * 3))} ${M(q)}`; }
+    const sip = []; for (let t = -2.6 * TAU; t <= -.8; t += .05) sip.push(lerpP(sp(c2, R2, t), sp(c2, R2, t - TAU), .5));
+    s += `<path d="${poly(inner, false)}" stroke="#3a2a1a" stroke-width=".8" fill="none"/><path d="${sep}" stroke="#7a5a32" stroke-width=".9" fill="none"/><path d="${smooth(sip, false)}" stroke="#a0522d" stroke-width="1.6" fill="none"/></g>`;
+    s += `<text x="150" y="142" font-size="6.5" text-anchor="middle" fill="#fff">coupe : loges, cloisons, siphon</text>`;
+    return s + scaleBar(10, 18, 40, '5 cm');
+  },
+  seiche(R, u) {
+    let s = bgWater(u, '#e3eff2', '#93bac6');
+    s += `<path d="M0 132Q100 124 200 132V150H0Z" fill="#d7c9a5"/>`;
+    s += `<g transform="translate(96 84) scale(.9)"><ellipse rx="52" ry="26" fill="#c69a6a" stroke="#4b3220" stroke-width="1"/><ellipse rx="44" ry="20" fill="#9a6c45"/>`;
+    let z = ''; for (let k = -38; k < 40; k += 6) z += `M${k} -18q3 18 0 36`; s += `<path d="${z}" stroke="#e7d4b4" stroke-width="2" fill="none" opacity=".75"/>`;
+    s += `<ellipse cx="-58" cy="0" rx="12" ry="14" fill="#b88a5c" stroke="#4b3220"/><circle cx="-60" cy="-8" r="3" fill="#222"/><circle cx="-60" cy="8" r="3" fill="#222"/>`;
+    let ar = ''; for (let k = -4; k <= 4; k++) ar += `M-68 ${k * 2.5}q-12 ${k * 3} -${22 + Math.abs(k) * 2} ${k * 6}`; s += `<path d="${ar}" stroke="#b07f50" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M-68 -2q-20 -10 -40 -6M-68 2q-20 10 -40 8" stroke="#b07f50" stroke-width="1.2" fill="none"/><circle cx="-108" cy="-8" r="2.4" fill="#b07f50"/><circle cx="-108" cy="10" r="2.4" fill="#b07f50"/></g>`;
+    s += `<g transform="translate(150 26)"><ellipse rx="28" ry="10" fill="#f7f4ec" stroke="#4b3220"/>`; let gl = ''; for (let k = 1; k < 7; k++) gl += `<path d="M${-28 + k * 4} -${10 - k} Q${-28 + k * 4 + 3} 0 ${-28 + k * 4} ${10 - k}" stroke="#b8ab8c" fill="none" stroke-width=".6"/>`;
+    s += gl + `<text y="20" font-size="6.5" text-anchor="middle" fill="#1d2a30">coquille interne (os de seiche)</text></g>`;
+    return s + scaleBar(12, 140, 40, '10 cm');
+  },
+  oursin(R, u) {
+    let s = bgWater(u, '#d8ecef', '#5f9fb4');
+    s += `<path d="M0 124Q60 114 120 122T200 118V150H0Z" fill="#b29a74"/>`;
+    const c = [100, 96]; let sp = '';
+    for (let k = 0; k < 15; k++) { const a = -Math.PI + .1 + k / 14 * (Math.PI - .2) + (R() - .5) * .1, L = 46 + R() * 10; const p = [c[0] + Math.cos(a) * 18, c[1] + Math.sin(a) * 14], e = [c[0] + Math.cos(a) * L, c[1] + Math.sin(a) * L * .9]; sp += `<path d="${taper([p, lerpP(p, e, .5), e], 5.4, 2.2)}" fill="#8a5a46" stroke="#3b2218" stroke-width=".6"/>`; let rg = ''; for (let q = .2; q < .95; q += .12) { const m = lerpP(p, e, q); rg += `<circle cx="${fx(m[0])}" cy="${fx(m[1])}" r=".6"/>`; } sp += `<g fill="#c49a7c">${rg}</g>`; }
+    s += `<ellipse cx="${c[0]}" cy="${c[1]}" rx="26" ry="18" fill="#7a3f4f" stroke="#2f1720"/>`;
+    for (let k = 0; k < 5; k++) { const a = -Math.PI + .3 + k * .65; s += `<path d="M${c[0]} ${c[1] - 2}L${fx(c[0] + Math.cos(a) * 25)} ${fx(c[1] + Math.sin(a) * 17)}" stroke="#d6a3ae" stroke-width="1.2"/>`; }
+    for (let k = 0; k < 12; k++) { const a = -Math.PI + .2 + k * .25, p = [c[0] + Math.cos(a) * 17, c[1] + Math.sin(a) * 11]; s += `<circle cx="${fx(p[0])}" cy="${fx(p[1])}" r="2" fill="#b06b7b" stroke="#2f1720" stroke-width=".4"/>`; }
+    s += sp;
+    return s + scaleBar(12, 18, 40, '4 cm');
+  },
+  characee(R, u) {
+    let s = bgWater(u, '#e6f0e2', '#9dbf9b');
+    s += `<path d="M0 136Q100 128 200 136V150H0Z" fill="#a8977a"/>`;
+    const stem = (x, y0, y1, nodes) => { let g = `<path d="M${x} ${y0}L${x + 6} ${y1}" stroke="#6f8f52" stroke-width="2.2"/>`; for (let k = 1; k <= nodes; k++) { const t = k / (nodes + 1), p = [lerp(x, x + 6, t), lerp(y0, y1, t)]; for (let q = 0; q < 7; q++) { const a = Math.PI + q / 6 * Math.PI + .1, l = 14 + (q % 2) * 4; g += `<path d="M${M(p)}q${fx(Math.cos(a) * l * .5)} ${fx(Math.sin(a) * l * .2 - 6)} ${fx(Math.cos(a) * l)} ${fx(Math.sin(a) * l * .4 - 4)}" stroke="#7ea25d" stroke-width="1.2" fill="none"/>`; } if (k % 2) g += `<ellipse cx="${fx(p[0] + 5)}" cy="${fx(p[1] - 3)}" rx="2.2" ry="3" fill="#d8722e" stroke="#7c3a10" stroke-width=".5"/><path d="M${fx(p[0] + 3)} ${fx(p[1] - 4.5)}l4 1M${fx(p[0] + 3)} ${fx(p[1] - 2.5)}l4 1" stroke="#7c3a10" stroke-width=".4"/>`; } return g; };
+    s += stem(60, 136, 20, 5) + stem(120, 136, 34, 4) + stem(160, 136, 60, 3);
+    s += `<g transform="translate(30 30)"><circle r="16" fill="#f7f3e6" stroke="#1d2a30"/><ellipse rx="7" ry="9" fill="#d8b17a" stroke="#6a4a22"/>`; let spl = ''; for (let k = -8; k < 9; k += 2) spl += `M-7 ${k + 1}L7 ${k - 1}`; s += `<path d="${spl}" stroke="#6a4a22" stroke-width=".6" clip-path="url(#ce${u})"/><defs><clipPath id="ce${u}"><ellipse rx="7" ry="9"/></clipPath></defs><text y="25" font-size="6" text-anchor="middle" fill="#1d2a30">oogone (≈ 0,8 mm)</text></g>`;
+    return s + scaleBar(150, 140, 40, '5 cm');
+  }
+};
+
+"use strict";
+/* =====================================================================
+   NOUVEAUX DESSINS : pecten, libellule, dent de requin (+ versions actuelles)
+   ===================================================================== */
+function pectenShape(id, c, o = {}) {
+  const A = o.A || [0, -29], C = [0, -1], r = 26, t0 = (o.t0 ?? -50) * Math.PI / 180, t1 = (o.t1 ?? 230) * Math.PI / 180, ears = o.ears !== false;
+  const B = t => [C[0] + r * Math.cos(t), C[1] + r * Math.sin(t)];
+  const arc = (a, b, n = 12) => { const P = []; for (let i = 0; i <= n; i++) P.push(B(lerp(a, b, i / n))); return P; };
+  const outline = [A, ...arc(t0, t1, 60)], d = poly(outline);
+  const earL = [A, [-13, -30.6], [-14.6, -26], [-7, -25]], earR = [A, [12, -30.4], [13.2, -26.6], [6.6, -25.4]];
+  let s = `<defs><clipPath id="pc${id}"><path d="${d}"/></clipPath><radialGradient id="pg${id}" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></radialGradient></defs>`;
+  s += `<g transform="translate(1.2 2.2)" fill="#000" opacity=".3"><path d="${d}"/>${ears ? `<path d="${poly(earL)}"/><path d="${poly(earR)}"/>` : ''}</g>`;
+  if (ears) s += `<path d="${poly(earL)}" fill="${c.a}" stroke="${c.line}" stroke-width=".5"/><path d="${poly(earR)}" fill="${c.a}" stroke="${c.line}" stroke-width=".5"/>` + `<path d="M-2 -28.6L-12.5 -29.4M-3 -27.6L-13.5 -27.4M-4.5 -26.4L-12.5 -25.8M2 -28.6L11.5 -29M3 -27.6L12.4 -27.4" stroke="${c.g}" stroke-width=".3"/>`;
+  s += `<path d="${d}" fill="${c.a}"/>`;
+  const N = o.N || 17, span = t1 - t0; let rib = '', crest = '';
+  for (let k = 0; k < N; k++) { const ta = t0 + k * span / N, tb = ta + span / N * .5; rib += poly([A, ...arc(ta, tb, 4)]); crest += `M${M(A)}L${M(B(ta + span / N * .75))}`; }
+  let gl = ''; for (let k = .2; k < .97; k += .085) gl += poly(scaleAbout(outline, A, k));
+  s += `<g clip-path="url(#pc${id})"><path d="${rib}" fill="${c.b}"/><path d="${crest}" stroke="#fff" stroke-opacity=".35" stroke-width=".5"/><path d="${gl}" fill="none" stroke="${c.g}" stroke-width=".28"/></g><path d="${d}" fill="url(#pg${id})" stroke="${c.line}" stroke-width=".6"/>`;
+  return s;
+}
+function drawPectenF(R, u) {
+  const w = 80, h = 76, S = slab(w, h, 'A', R, .45, u);
+  let b = S.body + `<g transform="translate(40 40)">${pectenShape(u, { a: '#e6dabf', b: '#c9b78e', line: '#6b5a3a', g: '#8a7651' })}</g>`;
+  const bb = blob(57, 61, 5, 3.5, R, .25, 26); b += `<path d="${bb.d}" fill="${ROCKS.A.base}"/><path d="${bb.d}" fill="#000" filter="url(#d${u})"/>`;
+  return { w, h, defs: S.defs, body: b, dims: '', geo: {} };
+}
+
+function dfWing(L, W, pw, c) {
+  const f = s => Math.pow(Math.max(0, Math.sin(Math.PI * Math.min(1, Math.pow(s, pw)))), .75);
+  const n = 40, lead = s => -W * .12 * Math.sin(Math.PI * s), trail = s => W * f(s);
+  const at = (s, q) => [s * L, lead(s) + q * (trail(s) - lead(s))];
+  const out = []; for (let i = 0; i <= n; i++) out.push(at(i / n, 0)); for (let i = n - 1; i > 0; i--) out.push(at(i / n, 1));
+  const Q = [0, .16, .34, .52, .72, 1]; let v = '', cv = '', k = 0;
+  for (const q of Q.slice(1, -1)) { const pts = []; for (let i = 1; i <= n - 2; i++) pts.push(at(i / n, q)); v += smooth(pts, false); }
+  for (let s = .05; s < .95; s += .026) { for (let j = 0; j < Q.length - 1; j++) { const s2 = s + ((k * 7 + j * 3) % 5 - 2) * .004; cv += `M${M(at(s, Q[j]))}L${M(at(s2, Q[j + 1]))}`; } k++; }
+  const pt = [at(.8, 0), at(.86, 0), at(.86, .14), at(.8, .14)];
+  return `<path d="${smooth(out)}" fill="${c.wing}" fill-opacity="${c.wingOp}" stroke="${c.vein}" stroke-width=".55"/><path d="${v}" stroke="${c.vein}" stroke-width=".32" fill="none"/><path d="${cv}" stroke="${c.vein}" stroke-width=".16" fill="none" opacity=".85"/><path d="${poly(pt)}" fill="${c.ptero}"/>`;
+}
+function dragonfly(c) {
+  const wing = (bx, by, ang, L, W, pw) => `<g transform="translate(${bx} ${by}) rotate(${ang})">${dfWing(L, W, pw, c)}</g>`;
+  const right = wing(3, -20, -5, 44, 9, .55) + wing(3, -14, 10, 42, 12, .4);
+  let s = `<g>${right}</g><g transform="scale(-1 1)">${right}</g>`;
+  for (let i = 0; i < 10; i++) { const y0 = -10 + i * 5.4, w0 = lerp(3.6, 2.4, i / 10); s += `<rect x="${fx(-w0 / 2)}" y="${fx(y0)}" width="${fx(w0)}" height="5.2" rx="1" fill="${c.body}" stroke="${c.line}" stroke-width=".35"/>`; }
+  s += `<ellipse cx="0" cy="-17" rx="5" ry="8" fill="${c.thorax}" stroke="${c.line}" stroke-width=".45"/><ellipse cx="0" cy="-28" rx="4.5" ry="3.6" fill="${c.body}" stroke="${c.line}" stroke-width=".4"/>`;
+  const er = c.eyeR || 3.3, ex = er > 2.5 ? 3.3 : 2.4;
+  if (c.antenna) s += `<path d="M-1.2 -31Q-4 -40 -8 -46M1.2 -31Q4 -40 8 -46" stroke="${c.line}" stroke-width=".7" fill="none"/><circle cx="-8" cy="-46" r="1.4" fill="${c.line}"/><circle cx="8" cy="-46" r="1.4" fill="${c.line}"/>`;
+  s += `<circle cx="${-ex}" cy="-29.5" r="${er}" fill="${c.eye}" stroke="${c.line}" stroke-width=".35"/><circle cx="${ex}" cy="-29.5" r="${er}" fill="${c.eye}" stroke="${c.line}" stroke-width=".35"/>`;
+  return s;
+}
+function drawLibelluleF(R, u) {
+  const w = 112, h = 104, S = slab(w, h, 'B', R, .6, u);
+  const c = { wing: '#6a5236', wingOp: .1, vein: '#4b3524', ptero: '#3b2a18', body: '#6b4e30', thorax: '#5d4329', eye: '#4a3420', line: '#3b2a18' };
+  return { w, h, defs: S.defs, body: S.body + `<g transform="translate(56 55) rotate(-4)" opacity=".9">${dragonfly(c)}</g>`, dims: '', geo: {} };
+}
+
+function sharkTooth(id, c) {
+  const crown = 'M0 -26C2.6 -15 8 -3 14 8Q0 5.6 -14 8C-8.5 -3 -2.6 -15 0 -26Z';
+  const neck = 'M-14 8Q0 5.6 14 8L15.4 11.2Q0 8.8 -15.4 11.2Z';
+  const root = 'M-16.5 10.5Q0 7.8 16.5 10.5L18 15.5Q12.5 22.5 6.5 17.5Q0 13.5 -6.5 17.5Q-12.5 22.5 -18 15.5Z';
+  return `<defs><linearGradient id="tg${id}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${c.c2}"/><stop offset=".4" stop-color="${c.c1}"/><stop offset=".55" stop-color="${c.hi}"/><stop offset=".7" stop-color="${c.c1}"/><stop offset="1" stop-color="${c.c2}"/></linearGradient></defs>` +
+    `<g transform="translate(1 2)" opacity=".35"><path d="${crown}"/><path d="${root}"/></g>` +
+    `<path d="${root}" fill="${c.root}" stroke="${c.line}" stroke-width=".5"/><path d="${neck}" fill="${c.neck}" stroke="${c.line}" stroke-width=".4"/><path d="${crown}" fill="url(#tg${id})" stroke="${c.line}" stroke-width=".55"/>` +
+    `<path d="M-1.2 -20C-3 -10 -5 -1 -7.5 5" stroke="#fff" stroke-opacity=".35" stroke-width="1.2" fill="none" stroke-linecap="round"/>`;
+}
+function drawDentF(R, u) {
+  const w = 64, h = 64, S = slab(w, h, 'D', R, .7, u);
+  return { w, h, defs: S.defs, body: S.body + `<g transform="translate(32 34) rotate(8)">${sharkTooth(u, { c1: '#55575d', c2: '#26272b', hi: '#9a9ea4', root: '#9c8460', neck: '#6f6450', line: '#1c1c1e' })}</g>`, dims: '', geo: {} };
+}
+
+Object.assign(ORG_DRAW, {
+  saintjacques(R, u) {
+    let s = bgWater(u, '#dcecf2', '#86b5c9') + `<path d="M0 118Q100 108 200 120V150H0Z" fill="#e2cf9f"/>`;
+    const col = { a: '#f2b07c', b: '#d77a46', line: '#7a3a1c', g: '#a85a33' };
+    s += `<g transform="translate(156 120) rotate(16) scale(.7)">${pectenShape(u + 'b', col)}</g><g transform="translate(88 80) scale(1.9)">${pectenShape(u + 'a', col)}</g>`;
+    s += `<text x="100" y="14" font-size="7.5" fill="#1d2a30">2 oreillettes</text><path d="M98 14L70 20" stroke="#1d2a30" stroke-width=".7"/>`;
+    return s + scaleBar(12, 140, 38, '4 cm');
+  },
+  libellule(R, u) {
+    let s = bgAir(u) + `<path d="M0 112Q100 104 200 112V150H0Z" fill="#8fb7c6"/>`;
+    let reeds = ''; for (let i = 0; i < 9; i++) { const x = 150 + i * 6; reeds += `M${x} 150Q${x + 3} 120 ${x - 2 + (i % 3) * 3} ${92 + (i % 4) * 6}`; }
+    s += `<path d="${reeds}" stroke="#5f8a3a" stroke-width="2" fill="none"/>`;
+    s += `<g transform="translate(100 52) scale(1.05)">${dragonfly({ wing: '#e6f4fb', wingOp: .55, vein: '#3d5563', ptero: '#2a3a44', body: '#2f7fd0', thorax: '#3a8f5a', eye: '#1f4f8a', line: '#163049' })}</g>`;
+    s += `<g transform="translate(40 132)"><ellipse rx="14" ry="4.5" fill="#6d6a3a" stroke="#2f2d18" stroke-width=".6"/><circle cx="-14" cy="0" r="4" fill="#6d6a3a" stroke="#2f2d18" stroke-width=".6"/><path d="M-6 3l-4 6M0 4l0 7M6 3l5 6M-6 -3l-4 -5M0 -4v-6M6 -3l5 -5" stroke="#2f2d18" stroke-width=".8"/></g><text x="60" y="146" font-size="7" fill="#10303c">larve (vit dans l’eau)</text>`;
+    return s + scaleBar(12, 18, 33, '3 cm');
+  },
+  requin(R, u) {
+    let s = bgWater(u, '#d6e9f2', '#3f7898');
+    s += `<path d="M12 78C30 62 70 54 110 56C135 57 155 62 168 66L188 40L182 72L190 104L166 80C140 88 100 96 60 94C38 93 22 88 12 78Z" fill="#7b8a96" stroke="#25313a" stroke-width="1.1"/>`;
+    s += `<path d="M12 78C22 88 38 93 60 94C100 96 140 88 166 80C130 82 90 84 60 84C40 84 24 82 12 78Z" fill="#f2f2ee"/>`;
+    s += `<path d="M86 56L98 30L114 57Z" fill="#6c7b86" stroke="#25313a"/><path d="M66 88L54 114L86 92Z" fill="#6c7b86" stroke="#25313a"/><path d="M52 70q2 8 0 16M57 70q2 8 0 16M62 70q2 8 0 16" stroke="#25313a" stroke-width=".8" fill="none"/><circle cx="34" cy="72" r="2.2" fill="#111"/>`;
+    s += `<path d="M18 84Q30 90 44 86" stroke="#25313a" stroke-width="1" fill="#b84a4a"/><path d="M22 85.5l2 2.5l2 -2.2l2 2.6l2 -2.4l2 2.6l2 -2.4l2 2.4l2 -2.6" stroke="#fff" stroke-width=".9" fill="none"/>`;
+    s += `<g transform="translate(150 118)"><circle r="20" fill="#f4f1e6" stroke="#1d2a30"/><g transform="scale(.55) translate(0 2)">${sharkTooth(u, { c1: '#f6f4ec', c2: '#d4cfbf', hi: '#ffffff', root: '#e8dcc0', neck: '#d2c6a6', line: '#6b6455' })}</g><text y="29" font-size="7" text-anchor="middle" fill="#fff">une dent</text></g>`;
+    return s + scaleBar(12, 18, 58, '1 m');
+  },
+  chene(R, u) {
+    let s = bgAir(u) + `<path d="M0 118Q100 110 200 120V150H0Z" fill="#8a9a5b"/>`;
+    s += `<path d="M44 124L48 70Q50 60 45 50L62 50Q56 62 58 70L63 124Z" fill="#6b4a2b" stroke="#3a2614"/><path d="M50 120l1 -40M56 118l-1 -36" stroke="#4a3018" stroke-width=".8"/>`;
+    const cr = [[54, 40, 24], [34, 46, 16], [76, 46, 17], [44, 24, 16], [66, 24, 16], [54, 14, 13]];
+    cr.forEach(([x, y, r], i) => { s += `<circle cx="${x}" cy="${y}" r="${r}" fill="${['#5f8f3a', '#6f9f45', '#4f7f30'][i % 3]}" stroke="#355a1f" stroke-width=".8"/>`; });
+    s += `<path d="M112 92H176A8 20 0 0 1 176 132H112Z" fill="#6b4a2b" stroke="#3a2614"/><ellipse cx="112" cy="112" rx="15" ry="20" fill="#e2b981" stroke="#3a2614"/>`;
+    let rings = ''; for (let k = 1; k <= 7; k++) rings += `<ellipse cx="112" cy="112" rx="${fx(15 * k / 7.6)}" ry="${fx(20 * k / 7.6)}" fill="none" stroke="#9a6a3a" stroke-width=".7"/>`;
+    s += rings + `<circle cx="112" cy="112" r="1.2" fill="#6b4a2b"/><text x="146" y="86" font-size="7" text-anchor="middle" fill="#1d2a30">tronc coupé : des cernes</text>`;
+    return s;
+  }
+});
+
+/* =====================================================================
+   ICÔNES
+   ===================================================================== */
+const ICON = {
+  loupe: `<svg viewBox="0 0 24 24" class="ic"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l6 6" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>`,
+  hammer: `<svg viewBox="0 0 24 24" class="ic"><path d="M6 21L15 9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M11 4l7 -1l3 5l-3 2l-2 -2l-3 2z" fill="currentColor"/></svg>`,
+  check: `<svg viewBox="0 0 24 24" class="ic"><path d="M4 12.5l5 5L20 6" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  book: `<svg viewBox="0 0 24 24" class="ic"><path d="M3 5c3-1.5 6-1.5 9 0v15c-3-1.5-6-1.5-9 0zM21 5c-3-1.5-6-1.5-9 0v15c3-1.5 6-1.5 9 0z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`,
+  list: `<svg viewBox="0 0 24 24" class="ic"><path d="M8 6h13M8 12h13M8 18h13" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="3.5" cy="6" r="1.7" fill="currentColor"/><circle cx="3.5" cy="12" r="1.7" fill="currentColor"/><circle cx="3.5" cy="18" r="1.7" fill="currentColor"/></svg>`,
+  reset: `<svg viewBox="0 0 24 24" class="ic"><path d="M4 12a8 8 0 1 0 2.5-5.8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M3 3v5h5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  print: `<svg viewBox="0 0 24 24" class="ic"><path d="M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`,
+  flask: `<svg viewBox="0 0 24 24" class="ic"><path d="M9 3h6M10 3v6L4 19a1.5 1.5 0 0 0 1.3 2h13.4a1.5 1.5 0 0 0 1.3-2L14 9V3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M7 15h10" stroke="currentColor" stroke-width="2"/></svg>`
+};
+const EICON = {
+  recif: `<svg viewBox="0 0 40 40" class="eic"><rect width="40" height="40" rx="8" fill="#3cb8d8"/><path d="M0 31h40v9H0z" fill="#f2dfa4"/><path d="M12 32v-10m0 5l-5 -5m5 2l5 -6M27 32v-13m0 5l5 -5m-5 9l-5 -4" stroke="#f0715a" stroke-width="2.8" stroke-linecap="round" fill="none"/><circle cx="33" cy="8" r="4.5" fill="#ffd34d"/></svg>`,
+  mer: `<svg viewBox="0 0 40 40" class="eic"><rect width="40" height="40" rx="8" fill="#1f5f9a"/><path d="M0 14q5 -4 10 0t10 0t10 0t10 0M0 23q5 -4 10 0t10 0t10 0t10 0M0 32q5 -4 10 0t10 0t10 0t10 0" stroke="#bfe3ff" stroke-width="2.4" fill="none"/></svg>`,
+  lac: `<svg viewBox="0 0 40 40" class="eic"><rect width="40" height="40" rx="8" fill="#8cc06a"/><ellipse cx="20" cy="25" rx="16" ry="9" fill="#5fb3d9"/><path d="M8 30q-1 -9 -3 -14M11 30q1 -10 3 -16M33 30q0 -8 3 -13" stroke="#3d6e25" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="33" cy="8" r="4" fill="#ffd34d"/></svg>`,
+  foret: `<svg viewBox="0 0 40 40" class="eic"><rect width="40" height="40" rx="8" fill="#d9ecc8"/><path d="M0 34h40v6H0z" fill="#7a9a4a"/><path d="M10 34v-8M28 34v-10M20 34v-6" stroke="#6b4a2b" stroke-width="2.6"/><circle cx="10" cy="20" r="7" fill="#3f7f2f"/><circle cx="28" cy="16" r="9" fill="#2f6f25"/><circle cx="20" cy="24" r="6" fill="#4f9a3a"/></svg>`,
+  desert: `<svg viewBox="0 0 40 40" class="eic"><rect width="40" height="40" rx="8" fill="#ffe6b0"/><path d="M0 30q10 -8 20 -2t20 -2v14H0z" fill="#e8b25c"/><circle cx="30" cy="10" r="5" fill="#f28c28"/><path d="M11 30V16m0 6h-3v-4m3 7h3v-5" stroke="#3d8a4a" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  montagne: `<svg viewBox="0 0 40 40" class="eic"><rect width="40" height="40" rx="8" fill="#cfe4f5"/><path d="M0 36L14 12L22 24L28 16L40 36Z" fill="#7d8b99"/><path d="M14 12L10 19l3 -1l2 2l2 -3zM28 16l-3 5l2 -1l2 1l1 -3z" fill="#fff"/></svg>`
+};
+
+/* =====================================================================
+   CARRIÈRES (page d'accueil)
+   ===================================================================== */
+const QPAL = {
+  A: { w: ['#ebe1c9', '#ded1b1', '#d0c09b'], ledge: '#f1e8d3', floor: '#e3d8bf', dark: '#9c8a66' },
+  B: { w: ['#e4d6b5', '#d5c49e', '#c3b28a'], ledge: '#ece0c4', floor: '#ddd0b2', dark: '#93805c' },
+  C: { w: ['#9d9386', '#887e71', '#73695e'], ledge: '#aea496', floor: '#a69c8e', dark: '#4f483f' },
+  D: { w: ['#adb4ae', '#9aa19b', '#848b85'], ledge: '#bec4be', floor: '#b5bab3', dark: '#5c625d' }
+};
+function limb(pts, col, w) { const d = poly(pts, false); return `<path d="${d}" stroke="#2b2118" stroke-width="${w + 1.8}" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" stroke="${col}" stroke-width="${w}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`; }
+function headHat(x, y, skin, hat) {
+  return `<circle cx="${x}" cy="${y}" r="5.6" fill="${skin}" stroke="#2b2118" stroke-width=".9"/>` +
+    `<path d="M${x - 5.6} ${y - 3}Q${x - 5.2} ${y - 10.5} ${x} ${y - 10.5}Q${x + 5.2} ${y - 10.5} ${x + 5.6} ${y - 3}Z" fill="${hat}" stroke="#2b2118" stroke-width=".8"/>` +
+    `<ellipse cx="${x}" cy="${y - 3.4}" rx="10.5" ry="2.4" fill="${hat}" stroke="#2b2118" stroke-width=".8"/><path d="M${x - 5.3} ${y - 5}H${x + 5.3}" stroke="#7a4f22" stroke-width="1.5"/><circle cx="${x + 2.6}" cy="${y + .6}" r=".8" fill="#2b2118"/>`;
+}
+function person(x, y, s, o) {
+  const { pose, skin, shirt, pants, hat = '#dcb766', flip } = o; let g = '';
+  const boot = bx => `<path d="M${bx - 3} 0h8l-1 -3.4h-6z" fill="#4a3424" stroke="#2b2118" stroke-width=".6"/>`;
+  if (pose === 'kneel') {
+    g += limb([[-3, -17], [-11, -4], [-21, -3]], pants, 5.5) + `<path d="M-26 0h6v-4h-5z" fill="#4a3424"/>`;
+    g += limb([[-1, -17], [9, -16], [10, -3]], pants, 5.5) + boot(11);
+    g += limb([[-2, -17], [4, -35]], shirt, 11) + headHat(7, -42, skin, hat);
+    g += `<path d="M18 -17L25 -8" stroke="#8a5a2b" stroke-width="1.8" stroke-linecap="round"/><path d="M23.5 -9.5l4 4.5l2.5 -2.2l-4 -4.5z" fill="#e8d7a8" stroke="#2b2118" stroke-width=".5"/>`;
+    g += limb([[4, -32], [11, -24], [17, -17]], shirt, 4) + `<circle cx="18" cy="-16.5" r="2.2" fill="${skin}" stroke="#2b2118" stroke-width=".6"/>`;
+  } else {
+    g += limb([[-3, -25], [-5, -12], [-6, -3]], pants, 5.5) + limb([[3, -25], [5, -12], [6, -3]], pants, 5.5) + boot(-6) + boot(7);
+    g += limb([[0, -26], [0, -44]], shirt, 12) + headHat(0, -51, skin, hat);
+    if (pose === 'pick') {
+      g += `<path d="M13 -66L-5 -38" stroke="#8a5a2b" stroke-width="2.3" stroke-linecap="round"/><path d="M4 -70Q14 -71 22 -61" stroke="#6b7076" stroke-width="2.8" fill="none" stroke-linecap="round"/>`;
+      g += limb([[-3, -42], [3, -51], [8, -58]], shirt, 4) + limb([[3, -42], [9, -50], [10, -60]], shirt, 4) + `<circle cx="9" cy="-58.5" r="2.3" fill="${skin}" stroke="#2b2118" stroke-width=".6"/>`;
+    } else if (pose === 'note') {
+      g += `<g transform="rotate(12 10 -36)"><rect x="5" y="-43" width="10" height="13" rx="1" fill="#fbf7ea" stroke="#2b2118" stroke-width=".7"/><path d="M7.5 -39h6M7.2 -36h6M7 -33h5" stroke="#7a8796" stroke-width=".6"/></g>`;
+      g += limb([[-3, -42], [1, -33], [7, -34]], shirt, 4) + limb([[3, -42], [8, -36], [12, -40]], shirt, 4);
+    } else {
+      g += limb([[-4, -41], [-8, -32], [-11, -28]], shirt, 4) + limb([[4, -41], [8, -32], [11, -28]], shirt, 4);
+      g += `<ellipse cx="0" cy="-27" rx="15" ry="4.5" fill="#c9a46a" stroke="#2b2118" stroke-width=".8"/><ellipse cx="0" cy="-27.6" rx="12.5" ry="3" fill="#8f8f8f" opacity=".6"/><path d="M-10 -27.5h20M-6 -29.5v4M0 -30v5M6 -29.5v4" stroke="#555" stroke-width=".35"/>`;
+    }
+  }
+  return `<g transform="translate(${fx(x)} ${fx(y)}) scale(${flip ? -s : s} ${s})">${g}</g>`;
+}
+function drawQuarry(s) {
+  const u = nuid(), P = QPAL[s], R = rng(hash('Q' + s)), mir = (s === 'B' || s === 'D'), X = x => mir ? 400 - x : x;
+  const rim = 118, step = 180, ledge = 190, base = 262;
+  const noisy = (y0, amp, n = 24) => { const Q = []; for (let i = 0; i <= n; i++) Q.push([-4 + i * 408 / n, y0 + (R() - .5) * amp]); return Q; };
+  const top = noisy(rim, 6), st1 = noisy(step, 4), led = noisy(ledge, 3), bas = noisy(base, 5);
+  const upper = poly(top.concat(st1.slice().reverse())), terr = poly(st1.concat(led.slice().reverse())), lower = poly(led.concat(bas.slice().reverse()));
+  const floorP = poly(bas.concat([[404, 404], [-4, 404]]));
+  let defs = texFilters(u, .055, ROCKS[s], R) + `<clipPath id="cu${u}"><path d="${upper}"/></clipPath><clipPath id="cl${u}"><path d="${lower}"/></clipPath>` +
+    `<linearGradient id="sky${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fc8e8"/><stop offset="1" stop-color="#e6f3f7"/></linearGradient>` +
+    `<linearGradient id="fl${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${P.floor}"/><stop offset="1" stop-color="${P.ledge}"/></linearGradient>` +
+    `<linearGradient id="sh${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset=".5" stop-color="#000" stop-opacity="0"/></linearGradient>`;
+  let b = `<rect width="400" height="400" fill="url(#sky${u})"/><circle cx="${X(345)}" cy="34" r="15" fill="#fff4b8"/>`;
+  [[70, 30], [210, 22], [300, 52]].forEach(([x, y]) => { x = X(x); b += `<g fill="#fff" opacity=".9"><ellipse cx="${x}" cy="${y}" rx="22" ry="8"/><ellipse cx="${x + 12}" cy="${y - 5}" rx="13" ry="8"/><ellipse cx="${x - 10}" cy="${y - 3}" rx="10" ry="6"/></g>`; });
+  b += `<path d="M0 98Q60 78 120 94T240 90T400 96V130H0Z" fill="#b3cc95"/><path d="M0 110Q80 98 160 108T400 106V130H0Z" fill="#94b676"/>`;
+  b += `<rect x="0" y="${rim - 9}" width="400" height="16" fill="#7fa65a"/>`;
+  for (let i = 0; i < 9; i++) { const x = 15 + i * 46 + R() * 20, y = rim - 8, r = 7 + R() * 6; if (Math.abs(x - X(300)) < 30 || Math.abs(x - X(40)) < 32) continue; b += `<path d="M${fx(x)} ${y}v-${fx(r)}" stroke="#6b4a2b" stroke-width="2.4"/><circle cx="${fx(x)}" cy="${fx(y - r - r * .6)}" r="${fx(r)}" fill="${['#5f8f3a', '#6f9f45', '#4f7f30'][i % 3]}"/>`; }
+  const strata = (y0, y1, clip) => {
+    let g = '', y = y0 - 8, k = 0;
+    while (y < y1 + 8) {
+      const hgt = (s === 'B' ? 3 : 6) + R() * (s === 'B' ? 4 : 9), ph = R() * 6, pts = [];
+      for (let x = -4; x <= 404; x += 20) pts.push([x, y + 1.5 * Math.sin(x / 37 + ph)]);
+      g += `<path d="${poly(pts.concat(pts.map(p => [p[0], p[1] + hgt]).reverse()))}" fill="${P.w[[0, 1, 0, 2][k % 4]]}"/><path d="${smooth(pts, false)}" stroke="${P.dark}" stroke-width=".6" fill="none" opacity=".5"/>`;
+      y += hgt; k++;
+    }
+    return `<g clip-path="url(#${clip})">${g}</g>`;
+  };
+  let cracks = ''; for (let i = 0; i < 6; i++) { let x = 20 + R() * 360, y = i < 3 ? rim + 4 : ledge + 4; const end = i < 3 ? step : base; const pts = []; while (y < end) { pts.push([x, y]); y += 6; x += (R() - .5) * 4; } cracks += poly(pts, false); }
+  b += `<path d="${upper}" fill="${P.w[0]}"/>${strata(rim, step, 'cu' + u)}<path d="${upper}" fill="#000" filter="url(#l${u})" opacity=".45"/><path d="${upper}" fill="#000" filter="url(#d${u})" opacity=".7"/>`;
+  b += `<path d="${terr}" fill="${P.ledge}" stroke="${P.dark}" stroke-width=".6"/>`;
+  b += `<path d="${lower}" fill="${P.w[1]}"/>${strata(ledge, base, 'cl' + u)}<path d="${lower}" fill="#000" filter="url(#l${u})" opacity=".45"/><path d="${lower}" fill="#000" filter="url(#d${u})" opacity=".7"/><path d="${lower}" fill="url(#sh${u})"/>`;
+  b += `<path d="${cracks}" stroke="${P.dark}" stroke-width="1" fill="none" opacity=".7"/>`;
+  b += `<path d="${floorP}" fill="url(#fl${u})"/>`;
+  let gr = ''; for (let i = 0; i < 150; i++) { const x = R() * 400, y = base + 6 + R() * 135; gr += `<ellipse cx="${fx(x)}" cy="${fx(y)}" rx="${fx(1 + R() * 2.2)}" ry="${fx(.7 + R() * 1.2)}"/>`; }
+  b += `<g fill="${P.dark}" opacity=".35">${gr}</g>`;
+  [[20, 268], [150, 266], [380, 270]].forEach(([x, y]) => { const bb = blob(X(x), y, 22, 9, R, .2, 30); b += `<path d="${bb.d}" fill="${P.w[2]}"/><path d="${bb.d}" fill="#000" filter="url(#d${u})" opacity=".6"/>`; });
+  // tente, panneau
+  const tx = X(40); b += `<path d="M${tx - 26} ${rim - 2}L${tx} ${rim - 32}L${tx + 26} ${rim - 2}Z" fill="#f4f1e8" stroke="#6b6b6b"/><path d="M${tx - 8} ${rim - 2}L${tx} ${rim - 32}L${tx + 8} ${rim - 2}Z" fill="#d9532c" opacity=".85"/>`;
+  const sx = X(300); b += `<rect x="${sx - 2}" y="${rim - 26}" width="4" height="26" fill="#6b4a2b"/><rect x="${sx - 24}" y="${rim - 42}" width="48" height="18" rx="2" fill="#f5e6c4" stroke="#5a3d22" stroke-width="1.6"/><text x="${sx}" y="${rim - 29}" font-size="11" font-weight="800" text-anchor="middle" fill="#3b2a10" font-family="Arial,sans-serif">SITE ${s}</text>`;
+  // quadrillage de fouille
+  const gx0 = mir ? 400 - 372 : 250, gx1 = mir ? 400 - 250 : 372, gy0 = 296, gy1 = 384;
+  const g4 = [[gx0 + 8, gy0], [gx1 - 8, gy0], [gx1, gy1], [gx0, gy1]]; let gl = '';
+  for (let i = 0; i <= 4; i++) { const t = i / 4; gl += `M${M(lerpP(g4[0], g4[1], t))}L${M(lerpP(g4[3], g4[2], t))}`; }
+  for (let i = 0; i <= 3; i++) { const t = i / 3; gl += `M${M(lerpP(g4[0], g4[3], t))}L${M(lerpP(g4[1], g4[2], t))}`; }
+  b += `<path d="${poly(g4)}" fill="${P.w[2]}" opacity=".35"/><path d="${gl}" stroke="#fff" stroke-width=".9" opacity=".9"/>` + g4.map(p => `<rect x="${fx(p[0] - 1.5)}" y="${fx(p[1] - 9)}" width="3" height="10" fill="#c8892f" stroke="#5a3d22" stroke-width=".5"/>`).join('');
+  // brouette, seaux
+  const bx = X(52), fl = mir ? -1 : 1;
+  b += `<g transform="translate(${bx} 340) scale(${fl} 1)"><path d="M-2 -18L34 -18L28 -4L6 -4Z" fill="#3f8f5a" stroke="#1f3a28" stroke-width="1"/><path d="M2 -19q10 -8 26 -1z" fill="${P.w[1]}" stroke="${P.dark}" stroke-width=".6"/><path d="M34 -18L48 -8" stroke="#5a3d22" stroke-width="2.4" stroke-linecap="round"/><path d="M12 -4L10 3M26 -4L30 3" stroke="#333" stroke-width="1.6"/><circle cx="2" cy="-2" r="6" fill="#333"/><circle cx="2" cy="-2" r="2.4" fill="#aaa"/></g>`;
+  [[100, 360, '#e0533a'], [118, 366, '#3a7ad9']].forEach(([x, y, c]) => { x = X(x); b += `<g transform="translate(${x} ${y})"><path d="M-7 -14h14l-2 14h-10z" fill="${c}" stroke="#222"/><ellipse cx="0" cy="-14" rx="7" ry="2" fill="#555"/><path d="M-7 -14q7 -9 14 0" stroke="#333" fill="none"/></g>`; });
+  // échelle
+  const l1 = [X(200), 272], l2 = [X(212), 186], dx = l2[0] - l1[0], dy = l2[1] - l1[1], L = Math.hypot(dx, dy), nx = -dy / L * 5, ny = dx / L * 5;
+  let lad = `M${fx(l1[0] - nx)} ${fx(l1[1] - ny)}L${fx(l2[0] - nx)} ${fx(l2[1] - ny)}M${fx(l1[0] + nx)} ${fx(l1[1] + ny)}L${fx(l2[0] + nx)} ${fx(l2[1] + ny)}`;
+  for (let t = .08; t < 1; t += .11) { const p = lerpP(l1, l2, t); lad += `M${fx(p[0] - nx)} ${fx(p[1] - ny)}L${fx(p[0] + nx)} ${fx(p[1] + ny)}`; }
+  b += `<path d="${lad}" stroke="#8a5a2b" stroke-width="2" stroke-linecap="round"/>`;
+  // fossiles cachés
+  const FL = [[64, 124, 56], [236, 196, 58], [284, 302, 62]];
+  FL.forEach(([x, y, sz], i) => {
+    const F = FBY2[s + (i + 1)], r = F.draw(rng(hash(F.id)), nuid()), id = 'e' + u + i, xx = mir ? 400 - x - sz : x;
+    const bl = blob(xx + sz / 2, y + sz / 2, sz * .5, sz * .46, R, .12, 40);
+    b += `<g class="fos" data-fossil="${F.id}" tabindex="0" role="button" aria-label="Rocher à examiner"><defs><clipPath id="${id}"><path d="${bl.d}"/></clipPath></defs><path d="${bl.d}" transform="translate(1 2)" fill="#000" opacity=".25"/><g clip-path="url(#${id})"><svg x="${xx}" y="${y}" width="${sz}" height="${sz}" viewBox="0 0 ${fx(r.w)} ${fx(r.h)}" preserveAspectRatio="xMidYMid slice"><defs>${r.defs}</defs>${r.body}</svg></g><path class="dust" d="${bl.d}" fill="${P.w[1]}" opacity=".55"/><path d="${bl.d}" fill="none" stroke="${P.dark}" stroke-width=".8" opacity=".6"/><path class="ring" d="${bl.d}" fill="none" stroke="#ffcf3d" stroke-width="3"/><g class="chk" transform="translate(${xx + sz - 6} ${y + 6})"><circle r="9" fill="#2f9a4a" stroke="#fff" stroke-width="1.6"/><path d="M-4 0l3 3l5 -6" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g></g>`;
+  });
+  // échantillon de roche
+  const rx = X(118), ry = 226, cav = blob(rx, ry, 11, 8, R, .2, 26);
+  b += `<g class="rk" data-rock="${s}" tabindex="0" role="button" aria-label="Prélever un échantillon de roche"><circle cx="${rx}" cy="${ry}" r="20" fill="#fff" fill-opacity=".001"/>` +
+    `<g class="before"><circle cx="${rx}" cy="${ry}" r="15" fill="#fff" fill-opacity=".25" stroke="#f26b1d" stroke-width="2.6" stroke-dasharray="5 3"/><g transform="translate(${rx - 8} ${ry - 8}) scale(.7)" color="#c4410f">${ICON.hammer.replace('class="ic"', 'width="24" height="24"')}</g></g>` +
+    `<g class="after"><path d="${cav.d}" fill="${P.dark}" opacity=".8"/><g transform="translate(${rx} ${ry + 52})"><path d="M-9 -2Q-11 -18 -4 -20L4 -20Q11 -18 9 -2Z" fill="#d8c49a" stroke="#5a4a2a" stroke-width=".9"/><path d="M-5 -20q5 -4 10 0" stroke="#5a4a2a" fill="none"/><rect x="-5" y="-14" width="10" height="7" fill="#fff" stroke="#5a4a2a" stroke-width=".5"/><text x="0" y="-8.7" font-size="5.5" text-anchor="middle" font-weight="800" fill="#c4410f" font-family="Arial">${s}</text></g><g transform="translate(${rx + 13} ${ry - 12})"><circle r="9" fill="#2f9a4a" stroke="#fff" stroke-width="1.6"/><path d="M-4 0l3 3l5 -6" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g></g>` +
+    `<circle class="ring" cx="${rx}" cy="${ry}" r="19" fill="none" stroke="#ffcf3d" stroke-width="3"/></g>`;
+  // paléontologues
+  const skins = { A: ['#f1c9a5', '#8d5a3b', '#c68a5f'], B: ['#c68a5f', '#f1c9a5', '#5e3b26'], C: ['#8d5a3b', '#e9b98f', '#f1c9a5'], D: ['#e9b98f', '#5e3b26', '#c68a5f'] }[s];
+  b += person(X(352), 190, .95, { pose: 'pick', skin: skins[0], shirt: '#2f6ea8', pants: '#5b4a3a', flip: !mir });
+  b += person(X(150), 374, 1, { pose: 'sieve', skin: skins[1], shirt: '#c0392b', pants: '#3a4a5b', hat: '#e8c97c' });
+  b += person(X(232), 388, 1, { pose: 'kneel', skin: skins[2], shirt: '#e3a33b', pants: '#4b5a3a', flip: mir });
+  return `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><defs>${defs}</defs>${b}</svg>`;
+}
+
+"use strict";
+/* =====================================================================
+   CRINOÏDES (fossile D3, lis de mer, comatule)
+   ===================================================================== */
+function crinoid(c, o) {
+  let s = '';
+  if (o.stalk) {
+    const L = o.stalkLen, P = t => [o.bend * Math.sin(t * 1.7) * t, 3 + t * L], pts = []; for (let i = 0; i <= 40; i++) pts.push(P(i / 40));
+    s += `<path d="${taper(pts, 4.4, 3.6)}" fill="${c.fill}" stroke="${c.line}" stroke-width=".45"/>`;
+    let seg = '', ci = ''; const n = Math.round(L / 1.5);
+    for (let i = 1; i < n; i++) { const t = i / n, p = P(t), q = P(t + .002), a = Math.atan2(q[1] - p[1], q[0] - p[0]) + Math.PI / 2, w = lerp(2.2, 1.8, t); seg += `M${M([p[0] - Math.cos(a) * w, p[1] - Math.sin(a) * w])}L${M([p[0] + Math.cos(a) * w, p[1] + Math.sin(a) * w])}`; if (o.cirri && i % 9 === 0) for (const sg of [-1, 1]) ci += `M${M(p)}q${fx(sg * 4)} 1 ${fx(sg * 6)} 5`; }
+    s += `<path d="${seg}" stroke="${c.line}" stroke-width=".3"/><path d="${ci}" stroke="${c.line}" stroke-width=".55" fill="none"/>`;
+  }
+  if (o.claws) { let cl = ''; for (let k = -4; k <= 4; k++) cl += `M${k * 1.2} 2q${fx(k * 1.6)} 4 ${fx(k * 2.4)} 7`; s += `<path d="${cl}" stroke="${c.line}" stroke-width=".9" fill="none" stroke-linecap="round"/>`; }
+  const n = 10; let arms = '', pin = '';
+  for (let k = 0; k < n; k++) {
+    const a = (k / (n - 1) - .5) * o.spread, L = o.armLen * (1 - .12 * Math.abs(k / (n - 1) - .5)), b = [Math.sin(a) * 3, -6];
+    const tip = [b[0] + Math.sin(a) * L * o.open, b[1] - Math.cos(a) * L * (o.droop ? .55 : 1)], ctl = [b[0] + Math.sin(a) * L * .7 * o.open, b[1] - Math.cos(a) * L * .85];
+    const C = quadPts(b, ctl, o.droop ? [tip[0] * 1.15, tip[1] + L * .35] : tip, 26);
+    arms += `<path d="${taper(C, 3, .9)}"/>`;
+    for (let i = 2; i < C.length - 1; i++) { const p = C[i], q = C[i + 1], d = Math.atan2(q[1] - p[1], q[0] - p[0]), sg = i % 2 ? 1 : -1, l = 3.6 * (1 - i / C.length * .5); pin += `M${M(p)}L${M([p[0] + Math.cos(d + sg * 1.05) * l, p[1] + Math.sin(d + sg * 1.05) * l])}`; }
+  }
+  s += `<path d="${pin}" stroke="${c.line}" stroke-width="${c.pw || .45}" fill="none"/><g fill="${c.arm || c.fill}" stroke="${c.line}" stroke-width=".35">${arms}</g>`;
+  s += `<path d="M-5 2Q-6.5 -5 -4 -8H4Q6.5 -5 5 2Z" fill="${c.fill}" stroke="${c.line}" stroke-width=".5"/><path d="M-4 -3H4M-4.6 0H4.6" stroke="${c.line}" stroke-width=".3"/>`;
+  return s;
+}
+function drawCrinoidF(R, u) {
+  const w = 96, h = 124, S = slab(w, h, 'D', R, .55, u);
+  return { w, h, defs: S.defs, body: S.body + `<g transform="translate(44 48) rotate(-12)" opacity=".95">${crinoid({ fill: '#d8cfba', arm: '#cdc3ab', line: '#4f4a40' }, { stalk: true, stalkLen: 62, bend: 6, cirri: false, spread: 2.1, open: 1, armLen: 36 })}</g>`, dims: '', geo: {} };
+}
+
+/* =====================================================================
+   NOUVEAUX ÊTRES VIVANTS ACTUELS (dont les pièges)
+   ===================================================================== */
+const DEEPBG = u => `<defs><linearGradient id="wa${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c4a74"/><stop offset="1" stop-color="#071a2e"/></linearGradient></defs><rect width="200" height="150" rx="6" fill="url(#wa${u})"/>`;
+Object.assign(ORG_DRAW, {
+  lisdemer(R, u) {
+    let s = DEEPBG(u) + `<path d="M0 132Q100 124 200 134V150H0Z" fill="#3d4a52"/>`;
+    for (let i = 0; i < 25; i++) s += `<circle cx="${fx(R() * 200)}" cy="${fx(R() * 120)}" r=".7" fill="#cfe8ff" opacity=".5"/>`;
+    s += `<g transform="translate(96 44) scale(1.3)">${crinoid({ fill: '#f0d488', arm: '#ecc86a', line: '#7a5a1a' }, { stalk: true, stalkLen: 60, bend: 5, cirri: true, spread: 2.2, open: 1, armLen: 32 })}</g>`;
+    s += `<text x="150" y="70" font-size="7" fill="#fff">longue tige</text><path d="M148 68L104 80" stroke="#fff" stroke-width=".6"/><text x="150" y="24" font-size="7" fill="#fff">bras ramifiés</text>`;
+    return s + `<g>${scaleBar(14, 18, 40, '10 cm').replace(/#1d2a30/g, '#fff')}</g>`;
+  },
+  comatule(R, u) {
+    let s = bgWater(u, '#d6eef2', '#6aaec4') + `<path d="M0 118Q50 96 100 112T200 106V150H0Z" fill="#8c8170"/>`;
+    s += `<g transform="translate(100 104) scale(1.05)">${crinoid({ fill: '#d9572f', arm: '#e8703f', line: '#6a2410' }, { stalk: false, claws: true, spread: 3, open: 1.05, armLen: 42, droop: true })}</g>`;
+    s += `<text x="12" y="140" font-size="7" fill="#1d2a30">pas de tige : s’accroche avec des crampons</text><path d="M96 136L98 110" stroke="#1d2a30" stroke-width=".6"/>`;
+    return s + scaleBar(14, 18, 40, '5 cm');
+  },
+  ruche(R, u) {
+    let s = bgAir(u) + `<rect x="20" y="12" width="160" height="6" rx="2" fill="#7a5a32"/>`;
+    const B = blob(100, 76, 70, 56, R, .05); s += `<defs><clipPath id="rc${u}"><path d="${B.d}"/></clipPath></defs><path d="${B.d}" fill="#e2b94a"/>`;
+    let c = ''; const sz = 6, dx = sz * Math.sqrt(3), dy = sz * 1.5;
+    for (let j = 0; j * dy < 150; j++) for (let i = 0; i * dx < 200; i++) { const cx = i * dx + (j & 1 ? dx / 2 : 0), cy = j * dy; if (!B.inside(cx, cy)) continue; const hx = []; for (let q = 0; q < 6; q++) { const a = Math.PI / 6 + q * Math.PI / 3; hx.push([cx + sz * Math.cos(a), cy + sz * Math.sin(a)]); } const full = R() < .35; c += `<path d="${poly(hx)}" fill="${full ? '#f3c94a' : '#c8902e'}" stroke="#f6e3a3" stroke-width="1.3"/>${full ? '' : `<path d="${poly(scaleAbout(hx, [cx, cy], .6))}" fill="#8a5a1a" opacity=".55"/>`}`; }
+    s += `<g clip-path="url(#rc${u})">${c}</g><path d="${B.d}" fill="none" stroke="#9a6a1e" stroke-width="1.2"/>`;
+    const bee = (x, y, a) => `<g transform="translate(${x} ${y}) rotate(${a})"><ellipse cx="-3" cy="-4" rx="4" ry="2.4" fill="#fff" opacity=".8" stroke="#555" stroke-width=".3"/><ellipse cx="3" cy="-4" rx="4" ry="2.4" fill="#fff" opacity=".8" stroke="#555" stroke-width=".3"/><ellipse rx="3.4" ry="5" fill="#f2b51c" stroke="#222" stroke-width=".5"/><path d="M-3.2 0h6.4M-2.8 2.6h5.6M-3 -2.6h6" stroke="#222" stroke-width="1"/><circle cy="-5.6" r="2" fill="#222"/></g>`;
+    s += bee(60, 60, 20) + bee(132, 92, -30) + bee(110, 46, 60) + `<text x="100" y="146" font-size="7" text-anchor="middle" fill="#1d2a30">rayon de cire fabriqué par les abeilles</text>`;
+    return s + scaleBar(150, 12, 30, '2 cm').replace('y - 4', 'y + 9');
+  },
+  coque(R, u) {
+    let s = bgWater(u, '#e6f0ee', '#a9c9c6') + `<path d="M0 106Q100 96 200 108V150H0Z" fill="#e2d2a6"/>`;
+    const col = { a: '#efe3c6', b: '#c9a876', line: '#6b4e24', g: '#9a7a4a' };
+    s += `<g transform="translate(150 118) rotate(-18) scale(.75)">${pectenShape(u + 'b', col, { ears: false, A: [0, -29.5], t0: -68, t1: 248, N: 24 })}</g><g transform="translate(86 74) scale(1.8)">${pectenShape(u + 'a', col, { ears: false, A: [0, -29.5], t0: -68, t1: 248, N: 24 })}</g>`;
+    s += `<text x="112" y="16" font-size="7" fill="#1d2a30">pas d’oreillettes</text><path d="M110 16L92 22" stroke="#1d2a30" stroke-width=".6"/>`;
+    return s + scaleBar(12, 140, 33, '2 cm');
+  },
+  oursinviolet(R, u) {
+    let s = bgWater(u, '#d8ecef', '#5f9fb4') + `<path d="M0 124Q60 110 120 120T200 116V150H0Z" fill="#7d7468"/>`;
+    const c = [100, 98]; let sp = '';
+    for (let k = 0; k < 60; k++) { const a = -Math.PI + .05 + R() * (Math.PI - .1), L = 26 + R() * 14; sp += `M${fx(c[0] + Math.cos(a) * 20)} ${fx(c[1] + Math.sin(a) * 13)}L${fx(c[0] + Math.cos(a) * (20 + L))} ${fx(c[1] + Math.sin(a) * (13 + L) * .9)}`; }
+    s += `<ellipse cx="${c[0]}" cy="${c[1]}" rx="25" ry="17" fill="#4a2350" stroke="#22102a"/><path d="${sp}" stroke="#5b2a63" stroke-width="1.3" stroke-linecap="round"/><path d="${sp}" stroke="#9c5aa8" stroke-width=".4"/>`;
+    let gr = ''; for (let k = 0; k < 60; k++) { const a = -Math.PI + R() * Math.PI, r = R(); gr += `<circle cx="${fx(c[0] + Math.cos(a) * 22 * r)}" cy="${fx(c[1] + Math.sin(a) * 15 * r)}" r=".7"/>`; }
+    s += `<g fill="#b98ac2">${gr}</g><text x="100" y="20" font-size="7" text-anchor="middle" fill="#1d2a30">très nombreux piquants fins</text>`;
+    return s + scaleBar(12, 140, 40, '4 cm');
+  },
+  truite(R, u) {
+    let s = bgWater(u, '#e3f1f4', '#8fbccb');
+    s += `<path d="M156 75L184 58L182 75L184 92Z" fill="#8a7a4a" stroke="#3a3420"/><path d="M80 52L86 32L104 36L106 53Z" fill="#8a7a4a" stroke="#3a3420"/><path d="M132 60q4 -8 10 -2l-2 5z" fill="#8a7a4a" stroke="#3a3420"/><path d="M84 97L88 114L102 110L98 96Z" fill="#8a7a4a" stroke="#3a3420"/><path d="M122 92L128 108L140 102L134 88Z" fill="#8a7a4a" stroke="#3a3420"/><path d="M50 88L42 104L60 98Z" fill="#8a7a4a" stroke="#3a3420"/>`;
+    s += `<defs><linearGradient id="tb${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6c6a3a"/><stop offset=".55" stop-color="#c7c08a"/><stop offset="1" stop-color="#f1ecd6"/></linearGradient></defs><path d="M18 75C26 62 56 54 92 54C122 54 142 62 158 70L164 75L158 80C142 88 122 96 92 96C56 96 26 88 18 75Z" fill="url(#tb${u})" stroke="#3a3420" stroke-width="1.1"/>`;
+    for (let k = 0; k < 34; k++) { const x = 46 + R() * 110, y = 60 + R() * 20; s += `<circle cx="${fx(x)}" cy="${fx(y)}" r="${fx(1 + R())}" fill="${R() < .3 ? '#c0392b' : '#2a2414'}"/>`; }
+    s += `<path d="M46 60Q54 75 46 90" stroke="#3a3420" stroke-width="1.1" fill="none"/><circle cx="30" cy="70" r="4.4" fill="#e8d9a0"/><circle cx="30" cy="70" r="2.3" fill="#111"/><path d="M18 77l13 1M19 77l1.2 1.6l1.2 -1.6l1.2 1.6l1.2 -1.6l1.2 1.6l1.2 -1.6" stroke="#3a3420" fill="none"/>`;
+    s += `<text x="150" y="44" font-size="7" text-anchor="middle" fill="#1d2a30">petite nageoire adipeuse</text><path d="M146 46L138 56" stroke="#1d2a30" stroke-width=".6"/><text x="30" y="112" font-size="7" fill="#1d2a30">mâchoires avec des dents</text>`;
+    return s + scaleBar(12, 140, 40, '10 cm');
+  },
+  bulot(R, u) {
+    let s = bgWater(u, '#e1eef2', '#91b9c7') + `<path d="M0 122Q100 112 200 124V150H0Z" fill="#cdbb92"/>`;
+    const sh = '#e7d2a8', dk = '#5a3f20';
+    s += `<g transform="translate(96 72) rotate(24) scale(2.6 2.9)"><path d="M-1 13Q2 23 4.5 24.5Q7.5 21 7.5 12Z" fill="${sh}" stroke="${dk}" stroke-width=".4"/>${lymnaeaShell({ id: u + 'z', sh, dk, ap: '#b9774a', lw: .4 })}<path d="M2.5 15Q3.5 20 4.6 23.6Q6.4 20 6.6 15Z" fill="#b9774a" stroke="${dk}" stroke-width=".35"/><path d="M-7.5 0Q0 2 7.8 -1M-8 6Q-2 8 4 7M-7 12Q-3 13 1 13" stroke="#a8743c" stroke-width="1" fill="none" opacity=".7"/></g>`;
+    s += `<text x="150" y="128" font-size="7" text-anchor="middle" fill="#1d2a30">canal (encoche)</text><path d="M140 124L118 120" stroke="#1d2a30" stroke-width=".6"/><text x="28" y="40" font-size="7" fill="#1d2a30">coquille épaisse</text>`;
+    return s + scaleBar(12, 18, 40, '4 cm');
+  },
+  fourmilion(R, u) {
+    let s = `<defs><linearGradient id="wa${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fdf3dc"/><stop offset="1" stop-color="#f0d9a6"/></linearGradient></defs><rect width="200" height="150" rx="6" fill="url(#wa${u})"/><path d="M0 116Q60 104 120 112T200 108V150H0Z" fill="#e3c27e"/>`;
+    s += `<g transform="translate(100 60) scale(1.05)">${dragonfly({ wing: '#fbf7ec', wingOp: .7, vein: '#5a4a35', ptero: '#7a5a35', body: '#5c4a3a', thorax: '#4a3a2c', eye: '#2a2018', line: '#2a2018', eyeR: 1.7, antenna: true })}</g>`;
+    s += `<path d="M30 134L44 118L58 134Z" fill="#c9a35f"/><text x="44" y="146" font-size="6.5" text-anchor="middle" fill="#1d2a30">piège de la larve</text>`;
+    s += `<text x="150" y="20" font-size="7" text-anchor="middle" fill="#1d2a30">longues antennes, petits yeux</text><path d="M142 22L110 12" stroke="#1d2a30" stroke-width=".6"/>`;
+    return s + scaleBar(12, 18, 33, '3 cm');
+  },
+  papayer(R, u) {
+    let s = bgAir(u).replace('#eef3e6', '#e6f5e0').replace('#d9e2c8', '#bfe0b0');
+    const base = [100, 100]; let lobes = '', ribs = '';
+    [-166, -138, -112, -90, -68, -42, -14].forEach((deg, k) => {
+      const a = deg * Math.PI / 180, L = [40, 52, 60, 64, 60, 52, 40][k], W = 4.2, Lf = [], Rt = [];
+      for (let i = 0; i <= 30; i++) { const t = i / 30, w = W * Math.pow(Math.sin(Math.PI * Math.min(t * 1.08, 1)), .7) * (1 + 1.3 * Math.max(0, Math.sin(t * 15))) * (t < .15 ? t / .15 : 1); const x = t * L; Lf.push([x, -w]); Rt.push([x, w]); }
+      const P = Lf.concat(Rt.reverse()).map(p => [base[0] + p[0] * Math.cos(a) - p[1] * Math.sin(a), base[1] + p[0] * Math.sin(a) + p[1] * Math.cos(a)]);
+      lobes += `<path d="${poly(P)}"/>`; ribs += `M${M(base)}L${M([base[0] + Math.cos(a) * L * .95, base[1] + Math.sin(a) * L * .95])}`;
+    });
+    s += `<g fill="#4f9a3a" stroke="#2c5a1a" stroke-width=".9">${lobes}</g><g fill="#4f9a3a">${lobes}</g><path d="${ribs}" stroke="#cfe8a8" stroke-width="1.3"/>`;
+    s += `<path d="M100 100Q104 124 112 148" stroke="#8fae5a" stroke-width="3" fill="none"/><text x="160" y="140" font-size="7" text-anchor="middle" fill="#1d2a30">feuille de 50 à 70 cm</text>`;
+    return s + scaleBar(12, 140, 34, '20 cm');
+  },
+  palmier(R, u) {
+    let s = bgAir(u).replace('#eef3e6', '#e9f6fb').replace('#d9e2c8', '#cfe9d0') + `<path d="M0 126Q100 118 200 128V150H0Z" fill="#e8d9a6"/>`;
+    const T = quadPts([60, 130], [52, 80], [66, 34], 30); s += `<path d="${taper(T, 9, 6)}" fill="#8a6a44" stroke="#4a3418"/>`;
+    let rg = ''; for (let i = 2; i < 30; i += 2) { const p = T[i]; rg += `M${fx(p[0] - 4)} ${fx(p[1])}q4 2 8 0`; } s += `<path d="${rg}" stroke="#4a3418" stroke-width=".8" fill="none"/>`;
+    const top = T[30];
+    for (let k = 0; k < 8; k++) { const a = -Math.PI + .2 + k * (Math.PI - .4) / 7, e = [top[0] + Math.cos(a) * 48, top[1] + Math.sin(a) * 26 + 24]; const C = quadPts(top, [top[0] + Math.cos(a) * 30, top[1] + Math.sin(a) * 30], e, 20); let lf = ''; for (let i = 2; i < 20; i++) { const p = C[i], q = C[i + 1] || p, d = Math.atan2(q[1] - p[1], q[0] - p[0]); for (const sg of [-1, 1]) lf += `M${M(p)}l${fx(Math.cos(d + sg * 1.1 + .4) * 7)} ${fx(Math.sin(d + sg * 1.1 + .4) * 7)}`; } s += `<path d="${lf}" stroke="#3f8a3a" stroke-width="1.1"/><path d="${smooth(C, false)}" stroke="#2f6a2a" stroke-width="1.2" fill="none"/>`; }
+    s += `<g transform="translate(150 92)"><circle r="26" fill="#f6efe0" stroke="#1d2a30"/><circle r="21" fill="#c9a36a" stroke="#6a4a22" stroke-width="2"/>`; let dots = ''; for (let k = 0; k < 110; k++) { const a = R() * TAU, r = Math.sqrt(R()) * 19; dots += `<circle cx="${fx(Math.cos(a) * r)}" cy="${fx(Math.sin(a) * r)}" r=".9"/>`; }
+    s += `<g fill="#5a3a18">${dots}</g><text y="36" font-size="7" text-anchor="middle" fill="#1d2a30">tronc coupé : pas de cernes</text></g>`;
+    return s;
+  },
+  fougerearbo(R, u) {
+    let s = bgAir(u).replace('#eef3e6', '#e2f2df').replace('#d9e2c8', '#b9dcb0') + `<path d="M0 130Q100 122 200 132V150H0Z" fill="#5d6e3a"/>`;
+    s += `<path d="M54 132L56 64L64 64L66 132Z" fill="#4a3826" stroke="#2a1e12"/>`; let tx = ''; for (let y = 70; y < 130; y += 5) tx += `M56 ${y}l4 3l4 -3`; s += `<path d="${tx}" stroke="#2a1e12" stroke-width=".7" fill="none"/>`;
+    for (let k = 0; k < 7; k++) { const a = -Math.PI + .15 + k * (Math.PI - .3) / 6, top = [60, 64], e = [60 + Math.cos(a) * 52, 64 + Math.sin(a) * 30 + 30], C = quadPts(top, [60 + Math.cos(a) * 34, 64 + Math.sin(a) * 34], e, 18); let lf = ''; for (let i = 2; i < 18; i++) { const p = C[i], q = C[i + 1] || p, d = Math.atan2(q[1] - p[1], q[0] - p[0]); for (const sg of [-1, 1]) { const l = 8 * (1 - i / 22), e2 = [p[0] + Math.cos(d + sg * 1.2) * l, p[1] + Math.sin(d + sg * 1.2) * l]; lf += `M${M(p)}L${M(e2)}`; for (let j = .3; j < 1; j += .25) { const m = lerpP(p, e2, j); lf += `M${M(m)}l${fx(Math.cos(d) * 1.6)} ${fx(Math.sin(d) * 1.6)}`; } } } s += `<path d="${lf}" stroke="#3f7a2a" stroke-width=".8"/><path d="${smooth(C, false)}" stroke="#2f5a1f" stroke-width="1.3" fill="none"/>`; }
+    s += `<g transform="translate(152 84)"><circle r="30" fill="#f6efe0" stroke="#1d2a30"/><path d="M-22 0H22" stroke="#3f7a2a" stroke-width="1.4"/>`; let pz = ''; for (let x = -18; x < 20; x += 5) for (const sg of [-1, 1]) { pz += `<path d="M${x} 0l${2} ${sg * 12}l2 ${-sg * 1}l1 ${sg * 2}l2 ${-sg * 13}z" fill="#5f9a3a" stroke="#2f5a1f" stroke-width=".4"/>`; } s += pz + `<text y="42" font-size="7" text-anchor="middle" fill="#1d2a30">foliole très découpée, dentée</text></g>`;
+    s += `<text x="60" y="146" font-size="7" text-anchor="middle" fill="#fff">tronc jusqu’à 10 m</text>`;
+    return s;
+  },
+  planorbe(R, u) {
+    let s = bgWater(u, '#e5f0dc', '#a2c08a');
+    s += `<path d="M20 120Q80 96 150 106Q180 112 190 126Q120 134 20 120Z" fill="#6f9a3a" stroke="#3f5a1f"/>`;
+    s += `<path d="M66 102Q90 96 120 100Q138 104 140 112L60 112Q56 106 66 102Z" fill="#4f4a44" stroke="#2a2622"/><path d="M134 104l14 -10M136 106l14 -4" stroke="#4f4a44" stroke-width="2" stroke-linecap="round"/>`;
+    const c = [96, 70], bb = Math.log(1.75) / TAU, R0 = 34, r = t => R0 * Math.exp(bb * t), pt = (rad, t) => [c[0] + rad * Math.cos(t), c[1] + rad * Math.sin(t) * .96];
+    const out = []; for (let t = -4 * TAU; t <= 0; t += .05) out.push(pt(r(t), t));
+    s += `<path d="${poly(out)}" fill="#a0683a" stroke="#4a2a12" stroke-width="1"/>`;
+    for (let k = 1; k <= 4; k++) { const ring = []; for (let t = -k * TAU; t <= -(k - 1) * TAU; t += .05) ring.push(pt(r(t), t)); s += `<path d="${poly(ring, false)}" stroke="#4a2a12" stroke-width="1" fill="none"/>`; }
+    let gl = ''; for (let t = -TAU * 1.3; t < -.2; t += .14) { const p = pt(r(t), t), q = pt(r(t - TAU) + 1, t); gl += `M${M(p)}L${M(q)}`; } s += `<path d="${gl}" stroke="#7a4a22" stroke-width=".4" opacity=".6"/>`;
+    s += `<text x="160" y="30" font-size="7" text-anchor="middle" fill="#1d2a30">coquille lisse, sans cloisons</text>`;
+    return s + scaleBar(12, 18, 40, '1 cm');
+  },
+  crocodile(R, u) {
+    let s = bgWater(u, '#e2efd6', '#7aa38a') + `<rect y="88" width="200" height="62" fill="#5f8f86" opacity=".65"/>`;
+    s += `<path d="M8 84Q20 78 40 80L70 76Q100 70 130 76Q160 82 196 92Q160 92 130 94Q100 98 70 94L40 92Q20 92 8 86Z" fill="#5a6a34" stroke="#2a3218" stroke-width="1"/>`;
+    let rid = ''; for (let x = 76; x < 186; x += 7) rid += `M${x} ${76 + (x - 76) * .12}l3 -4l3 4`; s += `<path d="${rid}" stroke="#2a3218" fill="#4a5a2a" stroke-width=".7"/>`;
+    s += `<circle cx="46" cy="78" r="2.6" fill="#d8c84a" stroke="#2a3218"/><path d="M10 85L40 87" stroke="#2a3218"/><path d="M14 85l2 2l2 -2l2 2l2 -2l2 2l2 -2l2 2l2 -2" stroke="#fff" fill="none" stroke-width=".8"/><path d="M80 94l-6 12h8M120 96l-4 12h8" stroke="#2a3218" stroke-width="2.4" fill="none"/>`;
+    s += `<g transform="translate(160 36)"><circle r="24" fill="#f4f1e6" stroke="#1d2a30"/><path d="M0 -18C4 -8 6 2 5.5 8L-5.5 8C-6 2 -4 -8 0 -18Z" fill="#f8f6ee" stroke="#6b6455"/><path d="M-5.5 8L5.5 8L3.5 18Q0 20 -3.5 18Z" fill="#e8dcc0" stroke="#6b6455"/><text y="33" font-size="6.5" text-anchor="middle" fill="#1d2a30">dent conique, 1 racine</text></g>`;
+    return s + scaleBar(12, 18, 40, '1 m');
+  }
+});
+
+Object.assign(EICON, {
+  cote: `<svg viewBox="0 0 40 40" class="eic"><rect width="40" height="40" rx="8" fill="#bfe6f2"/><path d="M0 18q5 -3 10 0t10 0t10 0t10 0V40H0z" fill="#4aa8c9"/><path d="M0 30L40 24V40H0z" fill="#ecd59a"/><path d="M28 22l4 -6l4 6z" fill="#7c776e"/><circle cx="8" cy="8" r="4" fill="#ffd34d"/></svg>`,
+  large: `<svg viewBox="0 0 40 40" class="eic"><defs><linearGradient id="eiL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f7cc0"/><stop offset="1" stop-color="#071a2e"/></linearGradient></defs><rect width="40" height="40" rx="8" fill="url(#eiL)"/><path d="M0 8q5 -3 10 0t10 0t10 0t10 0" stroke="#bfe3ff" stroke-width="2" fill="none"/><path d="M20 14v18m-4 -4l4 5l4 -5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`,
+  riviere: `<svg viewBox="0 0 40 40" class="eic"><rect width="40" height="40" rx="8" fill="#d8ecf7"/><path d="M0 26L12 6L22 20L30 10L40 24V40H0z" fill="#8a96a0"/><path d="M12 6l-4 6l3 -1l2 2zM30 10l-3 5l2 -1l2 1z" fill="#fff"/><path d="M20 22q-6 6 2 9t-4 9" stroke="#3a9ad9" stroke-width="4" fill="none"/></svg>`,
+  foretTemp: `<svg viewBox="0 0 40 40" class="eic"><rect width="40" height="40" rx="8" fill="#e3efd6"/><path d="M0 34h40v6H0z" fill="#7a9a4a"/><path d="M10 34v-8M28 34v-10M20 34v-6" stroke="#6b4a2b" stroke-width="2.6"/><circle cx="10" cy="20" r="7" fill="#d9822b"/><circle cx="28" cy="16" r="9" fill="#4f8a35"/><circle cx="20" cy="24" r="6" fill="#c9a12b"/></svg>`,
+  foretTrop: `<svg viewBox="0 0 40 40" class="eic"><rect width="40" height="40" rx="8" fill="#1f5a2a"/><path d="M14 40Q12 24 16 12M30 40q-2 -14 0 -24" stroke="#7a5a32" stroke-width="2.4" fill="none"/><path d="M16 12q-10 -2 -14 6M16 12q8 -6 16 0M16 12q-4 -8 -12 -8M30 16q6 -4 10 2M30 16q-6 -6 -12 0" stroke="#5fd06a" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M6 22q2 8 0 16M36 20q-2 8 0 14" stroke="#3fae4a" stroke-width="1.6" fill="none"/><circle cx="34" cy="6" r="3.5" fill="#ffd34d"/></svg>`
+});
+
+"use strict";
+/* Âges : roches et fossiles. Les intervalles sont simplifiés pour l’activité. */
+const SITES = {
+  A: { nom: 'Site A', lieu: 'Carrière de Montcorbel', roche: 'Calcaire blanc, dur', range: [170, 140] },
+  B: { nom: 'Site B', lieu: 'Carrière de Saint-Aubry', roche: 'Calcaire fin, en plaquettes', range: [40, 20] },
+  C: { nom: 'Site C', lieu: 'Carrière de la Rouvière', roche: 'Argile grise, tendre', range: [30, 5] },
+  D: { nom: 'Site D', lieu: 'Carrière de Bellefontaine', roche: 'Marne gris-bleu, tendre', range: [100, 60] }
+};
+const FOSSILS2 = [
+  { id: 'A1', site: 'A', draw: drawA1, taille: '≈ 14 cm', range: [201, 100], qui: 'ce type de corail',
+    obs: ['Bloc de calcaire couvert de petites loges à 5 ou 6 côtés, serrées comme un nid d’abeilles', 'Dans chaque loge : de fines lamelles disposées en étoile', 'Loges creusées dans un squelette dur, en pierre calcaire'] },
+  { id: 'A2', site: 'A', draw: drawPectenF, taille: '≈ 5 cm', range: [252, 0], qui: 'cette famille de coquillages',
+    obs: ['Coquille en forme d’éventail, assez plate', 'Côtes qui rayonnent à partir de la pointe', 'Deux petites « oreilles » de part et d’autre de la pointe'] },
+  { id: 'A3', site: 'A', draw: drawA3, taille: '≈ 4,5 cm (piquants : 2 à 3 cm)', range: [165, 145], qui: 'cette espèce d’oursin',
+    obs: ['Squelette arrondi formé de 5 parties qui se répètent', 'Peu de tubercules, mais très gros, percés au centre', 'Quelques piquants épais (2 à 3 mm de large), en forme de crayon'] },
+  { id: 'B1', site: 'B', draw: drawB1, taille: '≈ 12 cm', range: [50, 0], qui: 'cette famille de poissons',
+    obs: ['Squelette : crâne, colonne vertébrale et arêtes', 'Une seule nageoire sur le dos, et rien d’autre derrière elle', 'Mâchoires sans dents', 'Queue en forme de fourche'] },
+  { id: 'B2', site: 'B', draw: drawB2, taille: '≈ 3 cm', range: [45, 28], qui: 'cette espèce d’escargot',
+    obs: ['Coquille enroulée en spirale, pointue, et mince', 'Dernier tour très gros', 'Grande ouverture ovale, arrondie en bas, sans encoche'] },
+  { id: 'B3', site: 'B', draw: drawLibelluleF, taille: '≈ 9 cm d’une aile à l’autre', range: [250, 0], qui: 'ce groupe d’insectes',
+    obs: ['Corps long et fin, découpé en anneaux', '4 ailes allongées couvertes d’un fin réseau de nervures', 'Très gros yeux, antennes invisibles'] },
+  { id: 'C1', site: 'C', draw: drawC1, taille: '≈ 10 cm', range: [20, 3], qui: 'cette espèce d’érable',
+    obs: ['Empreinte de feuille de 10 cm, à 5 pointes (lobes)', 'Nervures qui partent toutes du même point', 'Bord finement dentelé, long pétiole'] },
+  { id: 'C2', site: 'C', draw: drawC2, taille: '≈ 12 cm', range: [130, 0], qui: 'ce type de bois (arbre à fleurs)',
+    obs: ['Morceau de pierre qui a l’aspect du bois', 'Coupé, il montre des cercles emboîtés : des cernes'] },
+  { id: 'C3', site: 'C', draw: drawC3, taille: '≈ 11 cm', range: [250, 0], qui: 'ce groupe de fougères',
+    obs: ['Morceau de feuille formé d’un axe et de folioles', 'Folioles allongées, à bord lisse, arrondies au bout', 'Folioles attachées directement sur l’axe central'] },
+  { id: 'D1', site: 'D', draw: drawD1, taille: '≈ 4,5 cm', range: [400, 66], qui: 'les ammonites',
+    obs: ['Coquille enroulée en spirale, dans un seul plan', 'Côtes sur la coquille', 'Lignes sinueuses : traces des cloisons qui séparaient des loges'] },
+  { id: 'D2', site: 'D', draw: drawDentF, taille: '≈ 4 cm', range: [125, 0], qui: 'ce groupe de poissons',
+    obs: ['Dent triangulaire, aplatie, aux bords tranchants', 'Couverte d’émail brillant', 'Racine en deux parties à la base'] },
+  { id: 'D3', site: 'D', draw: drawCrinoidF, taille: '≈ 12 cm', range: [480, 0], qui: 'ce groupe d’animaux',
+    obs: ['Longue tige faite de petits disques empilés', 'En haut : une petite coupe et 10 bras', 'Bras garnis de petites branches, comme des plumes'] }
+];
+const CATS = [['tous', 'Tous'], ['moll', 'Coquillages'], ['pois', 'Poissons et reptiles'], ['plant', 'Plantes'], ['autre', 'Autres animaux']];
+/* Êtres vivants actuels — ordre mélangé, pièges compris */
+const ORGS2 = [
+  { id: 'nautile', cat: 'moll', nom: 'Nautile', a: 'au nautile', traits: 'Coquille de 15 à 25 cm, enroulée en spirale, lisse, divisée en loges par des cloisons.', vit: 'En haute mer, loin des côtes (océans Indien et Pacifique), entre 100 et 500 m de profondeur.' },
+  { id: 'ruche', cat: 'autre', nom: 'Rayon de cire d’abeilles', a: 'au rayon de cire', traits: 'Cellules à 6 côtés, serrées, en cire molle ; cellules vides ou pleines de miel, sans lamelles.', vit: 'Fabriqué par les abeilles dans les troncs creux ou les ruches, en forêt et dans les prairies d’Europe.' },
+  { id: 'gardon', cat: 'pois', nom: 'Gardon', a: 'au gardon', traits: 'Poisson avec une seule nageoire sur le dos ; queue fourchue ; mâchoires sans dents.', vit: 'Eau douce et calme des lacs, des étangs et des rivières lentes.' },
+  { id: 'papayer', cat: 'plant', nom: 'Papayer (arbre)', a: 'au papayer', traits: 'Feuille géante (50 à 70 cm) à 7 à 11 lobes très profonds, eux-mêmes découpés.', vit: 'Régions tropicales : chaud et humide toute l’année (Amérique centrale, Afrique, Asie).' },
+  { id: 'corail', cat: 'autre', nom: 'Corail', a: 'au corail', traits: 'Colonie dure, en calcaire, formée de petites loges à 6 côtés avec des lamelles en étoile.', vit: 'Fixé sur les récifs des mers chaudes (25 à 29 °C), claires et peu profondes (0 à 30 m).' },
+  { id: 'coque', cat: 'moll', nom: 'Coque', a: 'à la coque', traits: 'Coquille bombée, ronde, avec des côtes rayonnantes ; pas d’oreillettes.', vit: 'Enfouie dans le sable des plages et des estuaires, en mer près des côtes (Manche, Atlantique).' },
+  { id: 'libellule', cat: 'autre', nom: 'Libellule', a: 'à la libellule', traits: 'Insecte au corps long en anneaux, 4 ailes à fines nervures, très gros yeux, antennes minuscules.', vit: 'Sa larve vit dans l’eau douce et calme des mares et des étangs ; l’adulte vole au bord de l’eau.' },
+  { id: 'bar', cat: 'pois', nom: 'Bar', a: 'au bar', traits: 'Poisson avec deux nageoires sur le dos (la première est épineuse) ; petites dents.', vit: 'En mer, près des côtes de l’Atlantique et de la Méditerranée (0 à 100 m).' },
+  { id: 'chene', cat: 'plant', nom: 'Chêne (arbre)', a: 'au chêne', traits: 'Arbre au tronc en bois ; coupé, le tronc montre des cernes (un cerne par année).', vit: 'Forêts des régions tempérées : 4 saisons, hivers froids, étés doux (Europe).' },
+  { id: 'saintjacques', cat: 'moll', nom: 'Coquille Saint-Jacques', a: 'à la coquille Saint-Jacques', traits: 'Coquille plate en éventail, avec des côtes rayonnantes et deux oreillettes.', vit: 'Posée sur les fonds de sable, en mer près des côtes (Manche, Atlantique), de 10 à 100 m, eau tempérée.' },
+  { id: 'oursinviolet', cat: 'autre', nom: 'Oursin violet', a: 'à l’oursin violet', traits: 'Squelette rond à 5 parties, couvert de très nombreux piquants fins et pointus ; petits tubercules.', vit: 'Sur les rochers, en mer près des côtes de Méditerranée et d’Atlantique (0 à 30 m), eau tempérée.' },
+  { id: 'lymnee', cat: 'moll', nom: 'Lymnée', a: 'à la lymnée', traits: 'Coquille spiralée pointue et mince ; dernier tour très gros ; grande ouverture ovale, sans encoche.', vit: 'Eau douce et calme des mares et des étangs, au milieu des plantes.' },
+  { id: 'palmier', cat: 'plant', nom: 'Palmier', a: 'au palmier', traits: 'Tronc sans branches ; coupé, il ne montre pas de cernes, seulement des petits points dispersés.', vit: 'Régions tropicales : chaud et humide toute l’année.' },
+  { id: 'requin', cat: 'pois', nom: 'Grand requin blanc', a: 'au grand requin blanc', traits: 'Grand poisson ; dents triangulaires, aplaties, tranchantes, couvertes d’émail, racine en 2 parties.', vit: 'Surtout en haute mer, loin des côtes, de la surface jusqu’à 1 000 m de profondeur.' },
+  { id: 'fourmilion', cat: 'autre', nom: 'Fourmilion', a: 'au fourmilion', traits: 'Insecte au corps long en anneaux, 4 ailes à fines nervures, petits yeux, longues antennes à bout renflé.', vit: 'Régions sèches et sableuses : sa larve creuse un piège en entonnoir dans le sable sec.' },
+  { id: 'osmonde', cat: 'plant', nom: 'Osmonde (fougère)', a: 'à l’osmonde', traits: 'Fougère de 1 à 2 m, sans tronc ; folioles allongées à bord lisse, attachées sur un axe.', vit: 'Sous-bois humides des forêts tempérées d’Europe (4 saisons, hivers froids).' },
+  { id: 'lisdemer', cat: 'autre', nom: 'Lis de mer', a: 'au lis de mer', traits: 'Animal fixé par une longue tige faite de disques empilés ; 10 bras garnis de petites branches.', vit: 'Fixé sur le fond de l’océan, loin des côtes, entre 200 et 6 000 m de profondeur.' },
+  { id: 'truite', cat: 'pois', nom: 'Truite', a: 'à la truite', traits: 'Poisson avec une nageoire sur le dos et une petite nageoire adipeuse derrière ; mâchoires avec dents.', vit: 'Rivières et torrents de montagne : eau froide (moins de 15 °C), rapide et très oxygénée.' },
+  { id: 'planorbe', cat: 'moll', nom: 'Planorbe (escargot aquatique)', a: 'à la planorbe', traits: 'Petite coquille de 1 à 3 cm, enroulée dans un seul plan, lisse, sans cloisons ni loges.', vit: 'Eau douce et calme des mares et des étangs, sur les plantes.' },
+  { id: 'erable', cat: 'plant', nom: 'Érable champêtre (arbre)', a: 'à l’érable champêtre', traits: 'Feuille de 5 à 10 cm à 5 lobes pointus ; nervures partant d’un même point ; bord denté.', vit: 'Forêts et haies des régions tempérées d’Europe (4 saisons, hivers froids).' },
+  { id: 'comatule', cat: 'autre', nom: 'Comatule', a: 'à la comatule', traits: '10 bras garnis de petites branches, comme des plumes ; pas de tige : s’accroche avec des crampons.', vit: 'Sur les rochers, en mer près des côtes (0 à 50 m).' },
+  { id: 'bulot', cat: 'moll', nom: 'Bulot', a: 'au bulot', traits: 'Coquille spiralée pointue et épaisse ; ouverture ovale prolongée en bas par un canal (encoche).', vit: 'Fonds de sable et de vase, en mer près des côtes (Manche, Atlantique), 0 à 100 m.' },
+  { id: 'oursin', cat: 'autre', nom: 'Oursin crayon', a: 'à l’oursin crayon', traits: 'Squelette rond à 5 parties ; peu de tubercules, très gros et percés ; piquants épais en forme de crayon.', vit: 'Sur les récifs de corail des mers chaudes (Caraïbes), de 0 à 50 m.' },
+  { id: 'crocodile', cat: 'pois', nom: 'Crocodile du Nil', a: 'au crocodile', traits: 'Reptile ; dents coniques (rondes en coupe), pointues, avec une seule racine.', vit: 'Fleuves, lacs et marais d’eau douce des régions chaudes d’Afrique.' },
+  { id: 'fougerearbo', cat: 'plant', nom: 'Fougère arborescente', a: 'à la fougère arborescente', traits: 'Fougère avec un tronc (jusqu’à 10 m) ; feuilles divisées plusieurs fois, petites folioles très découpées et dentées.', vit: 'Forêts tropicales humides : chaud et humide toute l’année.' }
+];
+const ENVS = [
+  { id: 'recif', nom: 'Mer chaude peu profonde (récif de corail)' },
+  { id: 'cote', nom: 'Mer tempérée, près des côtes (peu profonde)' },
+  { id: 'large', nom: 'Haute mer, loin des côtes (eaux profondes)' },
+  { id: 'lac', nom: 'Lac, étang ou mare (eau douce et calme)' },
+  { id: 'riviere', nom: 'Rivière froide de montagne' },
+  { id: 'foretTemp', nom: 'Forêt tempérée (4 saisons, hivers froids)' },
+  { id: 'foretTrop', nom: 'Forêt tropicale (chaude et humide toute l’année)' },
+  { id: 'desert', nom: 'Désert (sec et sableux)' }
+];
+ENVS.forEach(e => e.icon = EICON[e.id]);
+const ERAS = [['Paléozoïque', 300, 252, '#a7c79a'], ['Mésozoïque', 252, 66, '#7fcbd0'], ['Cénozoïque', 66, 0, '#f4ef7a']];
+const PERIODS = [
+  { id: 'permien', nom: 'Permien', from: 299, to: 252, col: '#ef7b62' },
+  { id: 'trias', nom: 'Trias', from: 252, to: 201, col: '#a46bb5' },
+  { id: 'jurassique', nom: 'Jurassique', from: 201, to: 145, col: '#4fbfd4' },
+  { id: 'cretace', nom: 'Crétacé', from: 145, to: 66, col: '#98d16a' },
+  { id: 'paleogene', nom: 'Paléogène', from: 66, to: 23, col: '#fdae6b' },
+  { id: 'neogene', nom: 'Néogène', from: 23, to: 2.6, col: '#ffe14d' },
+  { id: 'quaternaire', nom: 'Quaternaire', from: 2.6, to: 0, col: '#fff7a0' }
+];
+
+"use strict";
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const KEY = 'paleo_actualisme_4e_v2';
+FOSSILS2.forEach(f => f.code = f.site + '-' + f.id[1]);
+const FBY2 = Object.fromEntries(FOSSILS2.map(f => [f.id, f]));
+const OBY2 = Object.fromEntries(ORGS2.map(o => [o.id, o]));
+const EBY = Object.fromEntries(ENVS.map(e => [e.id, e]));
+const PBY = Object.fromEntries(PERIODS.map(p => [p.id, p]));
+
+/* ---------- état ---------- */
+const blank = () => ({ sites: Object.fromEntries('ABCD'.split('').map(s => [s, { found: [0, 0, 0], rock: 0, period: '', env: '', grid: {} }])), fos: {} });
+function load() { try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && v.sites && v.fos) return v; } catch (e) { } return blank(); }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(ST)); } catch (e) { } }
+let ST = load();
+const nFound = s => ST.sites[s].found.filter(Boolean).length;
+const collected = s => nFound(s) === 3 && !!ST.sites[s].rock;
+const identOk = id => !!(ST.fos[id] && ST.fos[id].org && ST.fos[id].env);
+const nIdent = s => FOSSILS2.filter(f => f.site === s && identOk(f.id)).length;
+const siteDone = s => collected(s) && nIdent(s) === 3 && !!ST.sites[s].period && !!ST.sites[s].env;
+
+/* ---------- rendus SVG ---------- */
+function fosSVG(id) { const F = FBY2[id], r = F.draw(rng(hash(F.id)), nuid()); return `<svg viewBox="0 0 ${fx(r.w)} ${fx(r.h)}" preserveAspectRatio="xMidYMid meet"><defs>${r.defs}</defs>${r.body}</svg>`; }
+function rockSVG(s) { const r = drawRock(s, rng(hash('R' + s)), nuid()); return `<svg viewBox="0 0 ${r.w} ${r.h}" preserveAspectRatio="xMidYMid meet"><defs>${r.defs}</defs>${r.body}</svg>`; }
+const ORGCACHE = {};
+const orgSVG = id => ORGCACHE[id] || (ORGCACHE[id] = `<svg viewBox="0 0 200 150" preserveAspectRatio="xMidYMid meet">${ORG_DRAW[id](rng(hash(id)), nuid())}</svg>`);
+const envTag = E => `<span class="etag">${E.icon}${esc(E.nom)}</span>`;
+
+function frise(markers) {
+  const W = 900, x = a => 20 + (300 - a) / 300 * (W - 40), top = 30, H = top + 82;
+  let s = `<svg class="frise" viewBox="0 0 ${W} ${H}" role="img" aria-label="Frise des temps géologiques">`;
+  ERAS.forEach(([n, a, b, c]) => { s += `<rect x="${fx(x(a))}" y="${top}" width="${fx(x(b) - x(a))}" height="18" fill="${c}" stroke="#fff"/><text x="${fx((x(a) + x(b)) / 2)}" y="${top + 13}" font-size="12" text-anchor="middle" font-weight="700" fill="#2a251f">${n}</text>`; });
+  PERIODS.forEach(p => { const x0 = x(p.from), w = x(p.to) - x0; s += `<rect x="${fx(x0)}" y="${top + 20}" width="${fx(w)}" height="34" fill="${p.col}" stroke="#fff"/>${w > 40 ? `<text x="${fx(x0 + w / 2)}" y="${top + 42}" font-size="${w > 70 ? 13 : 11}" text-anchor="middle" font-weight="600" fill="#2a251f">${p.nom}</text>` : ''}`; });
+  for (let a = 300; a >= 0; a -= 25) s += `<path d="M${fx(x(a))} ${top + 56}v6" stroke="#2a251f"/><text x="${fx(x(a))}" y="${top + 74}" font-size="11" text-anchor="middle" fill="#2a251f">${a}</text>`;
+  (markers || []).forEach(([k, age], i) => { const xx = x(age) + (i % 2 ? 7 : -7) * 0; s += `<path d="M${fx(xx)} ${top - 1}l-6 -10h12z" fill="#c4410f"/><text x="${fx(xx)}" y="${top - 14}" font-size="13" font-weight="800" text-anchor="middle" fill="#c4410f">${k}</text>`; });
+  return s + `</svg><div class="friseunit">en millions d’années avant aujourd’hui</div>`;
+}
+const overlap = (r, p) => r[0] > p.to && r[1] < p.from;
+const ageTxt = r => r[1] === 0 ? `de <b>${r[0]} millions d’années à aujourd’hui</b>` : `entre <b>${r[0]} et ${r[1]} millions d’années</b>`;
+
+/* ---------- accueil ---------- */
+function renderHome() {
+  $('#quarries').innerHTML = 'ABCD'.split('').map(s => `<article class="quarry" data-site="${s}"><div class="qh"><span class="plate">${SITES[s].nom}</span><span class="lieu">${esc(SITES[s].lieu)}</span><span class="state"></span></div><div class="scene">${drawQuarry(s)}</div><div class="qf" id="qf${s}"></div></article>`).join('');
+  'ABCD'.split('').forEach(updateQuarry); updateHeader();
+}
+function updateQuarry(s) {
+  const q = $(`.quarry[data-site="${s}"]`), st = ST.sites[s];
+  st.found.forEach((v, i) => q.querySelector(`[data-fossil="${s}${i + 1}"]`).classList.toggle('found', !!v));
+  q.querySelector('[data-rock]').classList.toggle('done', !!st.rock);
+  const nf = nFound(s), c = collected(s), d = siteDone(s);
+  q.classList.toggle('complete', c); q.classList.toggle('done', d);
+  q.querySelector('.state').innerHTML = d ? `${ICON.check} Terminé` : c ? 'Collecte finie' : '';
+  $('#qf' + s).innerHTML = `<span class="chip ${nf === 3 ? 'ok' : ''}">${ICON.loupe} Fossiles ${nf}/3</span><span class="chip ${st.rock ? 'ok' : ''}">${ICON.hammer} Roche ${st.rock ? 1 : 0}/1</span>` +
+    (c ? `<button class="primary open" data-open="${s}">${ICON.flask} ${d ? 'Revoir le labo' : 'Ouvrir le labo'}</button>` : '');
+}
+function updateHeader() { const n = 'ABCD'.split('').filter(siteDone).length; $('#prog').innerHTML = `Sites terminés : <b>${n}/4</b>`; $('#btnBilan').classList.toggle('glow', n === 4); }
+
+let tT; function toast(html, ok) { const t = $('#toast'); t.innerHTML = html; t.className = 'show' + (ok ? ' ok' : ''); clearTimeout(tT); tT = setTimeout(() => t.className = '', 2800); }
+function progressMsg(s, title) {
+  const nf = nFound(s), r = ST.sites[s].rock;
+  if (collected(s)) { toast(`<b>Bravo !</b> Collecte du ${SITES[s].nom} terminée.<br>Direction le laboratoire…`, true); setTimeout(() => openSite(s), 1300); return; }
+  const rest = []; if (nf < 3) rest.push(`${3 - nf} fossile${3 - nf > 1 ? 's' : ''}`); if (!r) rest.push('l’échantillon de roche');
+  toast(`<b>${title}</b><br>${SITES[s].nom} : il reste ${rest.join(' et ')}.`, true);
+}
+function find(id, el) {
+  const s = id[0], i = +id[1] - 1, st = ST.sites[s];
+  if (st.found[i]) { toast('Tu as déjà trouvé ce fossile.'); return; }
+  st.found[i] = 1; save(); el.classList.add('pop'); setTimeout(() => el.classList.remove('pop'), 600);
+  updateQuarry(s); progressMsg(s, `Fossile trouvé ! (${nFound(s)}/3)`);
+}
+function takeRock(s) {
+  const st = ST.sites[s]; if (st.rock) { toast('L’échantillon de roche est déjà prélevé.'); return; }
+  st.rock = 1; save(); updateQuarry(s); progressMsg(s, 'Échantillon de roche prélevé !');
+}
+function homeAct(e) {
+  const f = e.target.closest('[data-fossil]'); if (f) return find(f.dataset.fossil, f);
+  const r = e.target.closest('[data-rock]'); if (r) return takeRock(r.dataset.rock);
+  const o = e.target.closest('[data-open]'); if (o) return openSite(o.dataset.open);
+}
+
+/* ---------- laboratoire du site ---------- */
+let curSite = null;
+function openSite(s) { curSite = s; renderSite(); show('#mSite'); $('#mSite .mb').scrollTop = 0; }
+function renderSite() {
+  const s = curSite, st = ST.sites[s], ni = nIdent(s);
+  $('#siteTitle').textContent = `Laboratoire du ${SITES[s].nom} — ${SITES[s].lieu}`;
+  let h = `<div class="step"><span class="num">1</span><div><b>Identifie le milieu de vie de chaque fossile</b> grâce au principe d’actualisme. <span class="cnt">${ni}/3</span></div></div><div class="fos3">`;
+  FOSSILS2.filter(f => f.site === s).forEach(F => {
+    const a = ST.fos[F.id] || {}, O = OBY2[a.org], E = EBY[a.env], ok = !!(O && E);
+    h += `<div class="fcard ${ok ? 'ok' : ''}"><div class="pic">${fosSVG(F.id)}</div><div class="fb"><h4>Fossile ${F.code} <small>${F.taille}</small></h4>
+      <dl><dt>Ressemble à</dt><dd>${O ? esc(O.nom) : '<span class="todo">à trouver</span>'}</dd><dt>Milieu de vie</dt><dd>${E ? envTag(E) : '<span class="todo">à trouver</span>'}</dd></dl>
+      <button class="${ok ? 'ghost' : 'primary'} wide" data-ident="${F.id}">${ok ? 'Modifier mon identification' : `${ICON.loupe} Identifier le mode de vie du fossile grâce au principe d’actualisme`}</button></div></div>`;
+  });
+  h += `</div><div class="step"><span class="num">2</span><div><b>Date le site.</b> Pour la roche et pour chaque fossile, lis son âge et <b>coche toutes les périodes</b> qui correspondent. La période du site est celle qui est cochée sur les 4 lignes.</div></div>${datingGrid(s)}
+    <div class="step"><span class="num">3</span><div><b>Conclus :</b> quel était l’environnement du ${SITES[s].nom} à cette époque ?${ni < 3 ? ' <span class="todo">Identifie d’abord les 3 fossiles.</span>' : ''}</div></div>
+    <div class="envs big ${ni < 3 ? 'off' : ''}">${ENVS.map(E => `<button class="env ${st.env === E.id ? 'on' : ''}" data-senv="${E.id}" ${ni < 3 ? 'disabled' : ''}>${E.icon}<span>${esc(E.nom)}</span></button>`).join('')}</div><div id="siteSentence"></div>`;
+  $('#siteBody').innerHTML = h; renderSentence();
+}
+function renderSentence() {
+  const s = curSite, st = ST.sites[s], P = PBY[st.period];
+  $('#siteSentence').innerHTML = (P && st.env && nIdent(s) === 3) ? `<div class="sentence">${ICON.check}<div>Au <b>${P.nom}</b> (entre ${P.from} et ${String(P.to).replace('.', ',')} millions d’années), à l’emplacement du ${SITES[s].nom}, il y avait : <b>${esc(EBY[st.env].nom)}</b>.</div></div>` : '';
+}
+function datingGrid(s) {
+  const st = ST.sites[s], g = st.grid || (st.grid = {});
+  const rows = [{ k: 'R', pic: rockSVG(s), lab: 'Échantillon de roche', txt: `Datation au laboratoire : roche formée ${ageTxt(SITES[s].range)}.` }]
+    .concat(FOSSILS2.filter(f => f.site === s).map(F => ({ k: F.id, pic: fosSVG(F.id), lab: `Fossile ${F.code}`, txt: `On trouve ce fossile dans les roches âgées ${ageTxt(F.range).replace('entre', 'de').replace(' et ', ' à ')}.` })));
+  let h = `<div class="dtwrap"><table class="dt"><thead><tr><th class="corner" rowspan="2">Ma = millions d’années</th>${ERAS.map(([n, a, b, c]) => `<th class="era" colspan="${PERIODS.filter(p => p.from <= a && p.to >= b).length}" style="background:${c}">${n}</th>`).join('')}</tr><tr>${PERIODS.map(p => `<th class="ph" style="background:${p.col}">${p.nom}<small>${p.from} à ${String(p.to).replace('.', ',')} Ma</small></th>`).join('')}</tr></thead><tbody>`;
+  rows.forEach(r => { const v = g[r.k] || []; h += `<tr><th class="rh"><div class="rhi"><div class="rp">${r.pic}</div><div><b>${r.lab}</b><div class="rt">${r.txt}</div></div></div></th>${PERIODS.map((p, j) => `<td><button class="cell ${v[j] ? 'on' : ''}" data-cell="${r.k}:${j}" aria-label="${r.lab} : ${p.nom}" aria-pressed="${!!v[j]}"></button></td>`).join('')}</tr>`; });
+  h += `<tr class="final"><th class="rh"><div><b>➜ Période du site</b><div class="rt">Clique sur la période cochée sur les 4 lignes.</div></div></th>${PERIODS.map(p => `<td><button class="pcell ${st.period === p.id ? 'on' : ''}" data-period="${p.id}" aria-label="Période du site : ${p.nom}">${p.nom}</button></td>`).join('')}</tr></tbody></table></div>`;
+  return h;
+}
+function siteAct(e) {
+  const i = e.target.closest('[data-ident]'); if (i) return openIdent(i.dataset.ident);
+  const st = ST.sites[curSite];
+  const c = e.target.closest('[data-cell]'); if (c) { const [k, j] = c.dataset.cell.split(':'); const v = st.grid[k] || (st.grid[k] = [0, 0, 0, 0, 0, 0, 0]); v[+j] = v[+j] ? 0 : 1; save(); c.classList.toggle('on', !!v[+j]); c.setAttribute('aria-pressed', !!v[+j]); return; }
+  const p = e.target.closest('[data-period]'); if (p) { st.period = p.dataset.period; save(); $$('#siteBody .pcell').forEach(b => b.classList.toggle('on', b.dataset.period === st.period)); afterSiteChange(); return; }
+  const v = e.target.closest('[data-senv]'); if (v && !v.disabled) { st.env = v.dataset.senv; save(); $$('#siteBody [data-senv]').forEach(b => b.classList.toggle('on', b.dataset.senv === st.env)); afterSiteChange(); }
+}
+function afterSiteChange() {
+  renderSentence(); updateQuarry(curSite); updateHeader();
+  if (siteDone(curSite)) toast(`<b>${SITES[curSite].nom} terminé !</b><br>${'ABCD'.split('').filter(siteDone).length}/4 sites terminés.`, true);
+}
+
+/* ---------- identification par actualisme ---------- */
+let curF = null, tmp = { org: '', env: '' };
+function openIdent(fid) {
+  curF = fid; const a = ST.fos[fid] || {}; tmp = { org: a.org || '', env: a.env || '' };
+  const F = FBY2[fid];
+  $('#identTitle').textContent = `Fossile ${F.code} : identifier son mode de vie grâce au principe d’actualisme`;
+  $('#identLeft').innerHTML = `<div class="fpic">${fosSVG(fid)}</div><h4>Fossile ${F.code} · ${SITES[F.site].nom}</h4><div class="small">Taille : ${F.taille}</div><b class="obs-t">Ce que l’on observe :</b><ul>${F.obs.map(o => `<li>${esc(o)}</li>`).join('')}</ul>`;
+  $('#identCats').innerHTML = CATS.map(([k, n]) => `<button class="${k === 'tous' ? 'on' : ''}" data-cat="${k}">${n}</button>`).join('');
+  $('#identList').innerHTML = ORGS2.map(O => `<div class="orow" data-org="${O.id}" data-c="${O.cat}"><div class="oimg">${orgSVG(O.id)}</div><div class="oinfo"><h4>${esc(O.nom)}</h4><p><b>À quoi il ressemble :</b> ${esc(O.traits)}</p><p><b>Où vit-il ?</b> ${esc(O.vit)}</p></div><div class="oact"></div></div>`).join('');
+  updateRows(); show('#mIdent'); $('#identList').scrollTop = 0;
+  if (tmp.org) setTimeout(() => { const r = $(`#identList .orow[data-org="${tmp.org}"]`); if (r) r.scrollIntoView({ block: 'center' }); }, 50);
+}
+function updateRows() {
+  $$('#identList .orow').forEach(r => {
+    const id = r.dataset.org, sel = tmp.org === id;
+    r.classList.toggle('sel', sel); r.classList.toggle('dim', !!tmp.org && !sel);
+    r.querySelector('.oact').innerHTML = sel
+      ? `<div class="ep"><div class="ept">${ICON.check} Il ressemble à mon fossile.<br><b>Où vit-il ? Choisis son milieu de vie :</b></div><div class="envs">${ENVS.map(E => `<button class="env ${tmp.env === E.id ? 'on' : ''}" data-env="${E.id}">${E.icon}<span>${esc(E.nom)}</span></button>`).join('')}</div><button class="link" data-unpick>Changer d’être vivant</button></div>`
+      : `<button class="primary" data-pick="${id}">${ICON.check} Il ressemble à mon fossile</button>`;
+  });
+  const F = FBY2[curF], O = OBY2[tmp.org], E = EBY[tmp.env]; let h;
+  if (O && E) h = `<b>Conclusion :</b> le fossile ${F.code} ressemble ${esc(O.a)}, qui vit aujourd’hui dans : <b>${esc(E.nom)}</b>.<br>D’après le principe d’actualisme, ce fossile vivait donc probablement dans : <b>${esc(E.nom)}</b>.`;
+  else if (O) h = `Tu as choisi : <b>${esc(O.nom)}</b>. Lis « Où vit-il ? » et choisis son milieu de vie, sur la même ligne.`;
+  else h = `Fais défiler les êtres vivants actuels et trouve celui qui ressemble le plus à ton fossile.`;
+  $('#identFoot').innerHTML = `<div class="ctext">${h}</div><button class="ghost" data-close>Annuler</button><button class="primary big" id="identOk" ${O && E ? '' : 'disabled'}>Valider</button>`;
+}
+function identAct(e) {
+  const ct = e.target.closest('[data-cat]'); if (ct) { const k = ct.dataset.cat; $$('#identCats button').forEach(b => b.classList.toggle('on', b === ct)); $$('#identList .orow').forEach(r => r.hidden = !(k === 'tous' || r.dataset.c === k || r.dataset.org === tmp.org)); $('#identList').scrollTop = 0; return; }
+  const p = e.target.closest('[data-pick]'); if (p) { tmp = { org: p.dataset.pick, env: '' }; updateRows(); const r = $(`#identList .orow[data-org="${tmp.org}"]`); r.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
+  const v = e.target.closest('[data-env]'); if (v) { tmp.env = v.dataset.env; updateRows(); return; }
+  if (e.target.closest('[data-unpick]')) { tmp = { org: '', env: '' }; updateRows(); return; }
+  if (e.target.closest('#identOk')) { ST.fos[curF] = { org: tmp.org, env: tmp.env }; save(); hide('#mIdent'); renderSite(); updateQuarry(curSite); updateHeader(); toast(`Fossile ${FBY2[curF].code} identifié (${nIdent(curSite)}/3).`, true); }
+}
+
+/* ---------- bilan ---------- */
+function openBilan() {
+  let h = `<p class="hint">Recopie ces résultats sur ta fiche d’activité.</p><div class="bil4">`;
+  for (const s of 'ABCD') {
+    const st = ST.sites[s];
+    h += `<section class="${siteDone(s) ? 'ok' : ''}"><h3>${SITES[s].nom} <small>${esc(SITES[s].lieu)}</small></h3><table><thead><tr><th>Fossile</th><th>Ressemble à</th><th>Milieu de vie</th></tr></thead><tbody>`;
+    FOSSILS2.filter(f => f.site === s).forEach(F => { const a = ST.fos[F.id] || {}; h += `<tr><td>${F.code}</td><td>${OBY2[a.org] ? esc(OBY2[a.org].nom) : '—'}</td><td>${EBY[a.env] ? esc(EBY[a.env].nom) : '—'}</td></tr>`; });
+    h += `</tbody></table><p><b>Roche datée</b> ${ageTxt(SITES[s].range)} — <b>période du site :</b> ${st.period ? PBY[st.period].nom : '—'}</p><p><b>Environnement :</b> ${EBY[st.env] ? esc(EBY[st.env].nom) : '—'}</p></section>`;
+  }
+  h += `</div><h3 class="fh">Les quatre sites sur la frise des temps géologiques</h3>${frise('ABCD'.split('').filter(k => ST.sites[k].period).map(k => { const P = PBY[ST.sites[k].period]; return [k, (P.from + P.to) / 2]; }))}`;
+  $('#bilanBody').innerHTML = h; show('#mBilan');
+}
+
+/* ---------- fenêtres ---------- */
+const ORDER = ['#mIdent', '#mHelp', '#mBilan', '#mSite'];
+function show(id) { $(id).classList.add('show'); document.body.classList.add('modal-open'); }
+function hide(id) { $(id).classList.remove('show'); if (!$('.modal.show')) document.body.classList.remove('modal-open'); if (id === '#mSite') { updateQuarry(curSite); updateHeader(); } }
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-close]'); if (c) { hide('#' + c.closest('.modal').id); return; }
+  if (e.target.classList && e.target.classList.contains('modal')) hide('#' + e.target.id);
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { const m = ORDER.find(id => $(id).classList.contains('show')); if (m) hide(m); return; }
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-fossil],[data-rock],[data-period]')) { e.preventDefault(); e.target.dispatchEvent(new MouseEvent('click', { bubbles: true })); }
+});
+$('#quarries').addEventListener('click', homeAct);
+$('#siteBody').addEventListener('click', siteAct);
+$('#mIdent').addEventListener('click', identAct);
+$('#btnHelp').addEventListener('click', () => show('#mHelp'));
+$('#btnBilan').addEventListener('click', openBilan);
+$('#btnPrint').addEventListener('click', () => window.print());
+$('#btnReset').addEventListener('click', () => { if (confirm('Tout recommencer ? Toutes tes réponses seront effacées.')) { ST = blank(); save(); renderHome(); toast('Nouvelle partie : bonne chasse aux fossiles !', true); } });
+renderHome();
+</script>
+</body>
+</html>
