@@ -30,7 +30,10 @@ h1,h2,h3{margin:0;text-wrap:balance}
 .modes{display:flex;gap:4px;background:#d3dfe8;border-radius:10px;padding:3px;margin-right:auto;margin-left:14px}
 .modes button{border:0;background:transparent;border-radius:8px;padding:7px 14px;font-weight:700;font-size:14px;cursor:pointer;color:var(--metal-2)}
 .modes button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.15)}
-.dishwrap{position:relative;width:min(100%,calc(100vh - 150px));min-width:260px;aspect-ratio:1;border-radius:14px;overflow:hidden;touch-action:none;cursor:crosshair;box-shadow:0 8px 22px rgba(10,20,30,.2)}
+.lp-bar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.lp-title{display:flex;gap:8px;align-items:center;font-size:13.5px;line-height:1.3}
+#lmags{grid-template-columns:repeat(4,auto)!important}
+.dishwrap{align-self:center;position:relative;width:min(100%,calc((100vh - 185px)*1.5));min-width:260px;aspect-ratio:3/2;border-radius:14px;overflow:hidden;touch-action:none;cursor:crosshair;box-shadow:0 8px 22px rgba(10,20,30,.2)}
 .dishwrap.lens{cursor:none}
 .dishwrap canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 #lmags{grid-template-columns:1fr 1fr}
@@ -246,14 +249,12 @@ input[type=range]{flex:1;accent-color:var(--accent);min-width:0;height:26px}
       </div>
     </div>
     <div class="view" id="vLoupe" hidden>
-      <div class="scope">
-        <div class="eye-col"><div class="dishwrap" id="dishWrap"><canvas id="dish" aria-label="Boîte de Petri avec les animaux du sol"></canvas></div><div class="eye-status" id="dishStatus"></div></div>
-        <div class="ctrls">
-          <div class="scope-head"><svg width="56" height="56" viewBox="0 0 56 56" aria-hidden="true"><circle cx="22" cy="22" r="16" fill="rgba(200,225,240,.6)" stroke="#3b4650" stroke-width="5"/><path d="M34 34l16 16" stroke="#3b4650" stroke-width="7" stroke-linecap="round"/><path d="M14 16q4-6 10-6" stroke="#fff" stroke-width="2.5" fill="none"/></svg><div><b id="lpName"></b><br><span class="muted">Gros animaux triés à la main + petits extraits avec l’appareil de Berlèse</span></div></div>
-          <div class="ctrl"><div class="ctrl-label">Instrument</div><div class="objs" id="lmags"></div></div>
-          <div class="ctrl" style="font-size:13.5px"><div class="ctrl-label">Comment faire</div>Passe la loupe au-dessus de la boîte. Clique sur un animal : la pince fine le prélève et sa fiche apparaît à droite. Les plus petits demandent la loupe binoculaire.</div>
-        </div>
+      <div class="lp-bar">
+        <div class="lp-title"><svg width="34" height="34" viewBox="0 0 56 56" aria-hidden="true"><circle cx="22" cy="22" r="16" fill="rgba(200,225,240,.6)" stroke="#3b4650" stroke-width="5"/><path d="M34 34l16 16" stroke="#3b4650" stroke-width="7" stroke-linecap="round"/></svg><div><b id="lpName"></b><br><span class="muted">Gros animaux triés à la main + petits extraits avec l’appareil de Berlèse</span></div></div>
+        <div class="objs" id="lmags"></div>
       </div>
+      <div class="dishwrap" id="dishWrap"><canvas id="dish" aria-label="Bac d’observation avec les animaux du sol"></canvas></div>
+      <div class="eye-status" id="dishStatus"></div>
     </div>
   </section>
 
@@ -902,7 +903,7 @@ function renderInfo(){const el=$('#info');portrait.cv=null;const P=S.pick;
      <div class="muted" style="font-size:13px">Observé dans : ${SM[P.w].name}, ${P.how||'au grossissement ×'+P.mag}.</div>${listHere()}`;
     portrait.cv=el.querySelector('canvas');portrait.cv._k=0;portrait.sp=P.sp;drawPortrait(portrait.cv,P.sp,T);return}
   if((S.view==='scope'||S.view==='loupe')&&P&&P.nl){const n=NL[P.nl];el.innerHTML=`<div><span class="chip" style="background:#7d8a95">Non vivant</span></div><h2>${n.name}</h2><div class="nl">${n.txt}</div>${listHere()}`;return}
-  if(S.view==='scope'||S.view==='loupe'){el.innerHTML=`${P&&P.msg?`<div class="hint">${P.msg}</div>`:S.view==='loupe'?'<p style="margin:0;font-size:14px">Passe la loupe au-dessus de la boîte et clique sur un animal pour le prélever avec la pince et l’identifier.</p>':'<p style="margin:0;font-size:14px">Clique sur un élément dans l’oculaire pour l’identifier. Fais d’abord la mise au point, et augmente le grossissement pour les plus petits.</p>'}${listHere()}`;return}
+  if(S.view==='scope'||S.view==='loupe'){el.innerHTML=`${P&&P.msg?`<div class="hint">${P.msg}</div>`:S.view==='loupe'?'<p style="margin:0;font-size:14px">Passe la loupe au-dessus du bac et clique sur un animal pour le prélever avec la pince et l’identifier.</p>':'<p style="margin:0;font-size:14px">Clique sur un élément dans l’oculaire pour l’identifier. Fais d’abord la mise au point, et augmente le grossissement pour les plus petits.</p>'}${listHere()}`;return}
   if(S.view==='sample'||S.view==='prep'){el.innerHTML=`<p style="margin:0;font-size:14px">${S.view==='prep'?'Préparation en cours…':'Prépare l’observation pour découvrir les êtres vivants de cet échantillon.'}</p>${listHere(S.sel)}`;return}
   el.innerHTML='<p style="margin:0;font-size:14px">Choisis un échantillon à gauche. Chaque être vivant que tu identifies au microscope rejoint ta collection.</p>'}
 function listHere(id=S.cur){if(!id)return'';const s=SM[id],n=s.sp.filter(k=>found[k]&&found[k].includes(id)).length;
@@ -981,9 +982,9 @@ Object.assign(SP,{
 Object.assign(NL,{miette:{name:'Miette de terre',txt:'Petit agrégat de terre et d’humus tombé avec les animaux. Ce n’est pas un être vivant.'},feuille:{name:'Débris de feuille morte',txt:'Morceau de feuille en décomposition : on voit encore les nervures. Ce n’est plus vivant.'},paille:{name:'Débris de paille',txt:'Fragment de tige sèche venant des cultures. Ce n’est plus vivant.'}});
 const MSAMPLES=[
  {id:'berl_foret',name:'Litière forestière',milieu:'Sol de forêt',soil:'#4a3320',desc:'Feuilles mortes et terre de surface prélevées sous les arbres.',prep:'Tri à la main des gros animaux, puis extraction des petits avec l’appareil de Berlèse',
-  counts:{collembole:14,acarien:18,pseudo:2,araignee:2,cloporte:3,iule:2,lithobie:2,geophile:1,fourmi:2,staphylin:2,larve:1,enchytree:4,lombric:1,escargot:1,limace:1,asticot:2,carabe:1,forficule:1,opilion:1,glomeris:2,tipule:1}},
+  counts:{collembole:30,acarien:35,pseudo:3,araignee:3,cloporte:5,iule:3,lithobie:2,geophile:2,fourmi:4,staphylin:3,larve:2,enchytree:8,lombric:2,escargot:2,limace:1,asticot:3,carabe:1,forficule:2,opilion:2,glomeris:3,tipule:1}},
  {id:'berl_agri',name:'Terre de champ',milieu:'Sol agricole',soil:'#7d5c3b',desc:'Terre de surface d’un champ cultivé.',prep:'Tri à la main des gros animaux, puis extraction des petits avec l’appareil de Berlèse',
-  counts:{collembole:8,acarien:6,araignee:1,cloporte:1,lithobie:1,geophile:1,fourmi:4,staphylin:1,larve:3,enchytree:5,lombric:2,limace:1,asticot:1,verblanc:1,carabe:1,grillon:1,courtiliere:1,tipule:1,forficule:1,opilion:1}}];
+  counts:{collembole:12,acarien:8,araignee:2,geophile:1,fourmi:6,staphylin:1,larve:3,enchytree:6,lombric:2,limace:1,verblanc:2,carabe:1,tipule:2,courtiliere:1,grillon:1}}];
 MSAMPLES.forEach(m=>{m.sp=Object.keys(m.counts);SM[m.id]=m});
 const ALLS=SAMPLES.concat(MSAMPLES);
 const funnelIcon=col=>`<svg viewBox="0 0 120 100" aria-hidden="true"><path d="M48 6h24l8 14H40z" fill="#2f5d4a"/><ellipse cx="60" cy="22" rx="8" ry="3" fill="#ffe7a0"/><path d="M22 34h76L66 70v18H54V70z" fill="rgba(225,238,246,.85)" stroke="#8fb0c2" stroke-width="2"/><path d="M28 36q12-14 32-10q20-6 32 10z" fill="${col}"/><path d="M38 30q8-7 14-1M66 27q9-5 13 2" stroke="#7d8f3b" stroke-width="3" fill="none"/><rect x="48" y="86" width="24" height="10" rx="2" fill="rgba(225,238,246,.85)" stroke="#8fb0c2" stroke-width="1.5"/></svg>`;
@@ -1204,50 +1205,53 @@ const DM={
  paille(c,o,s){c.save();c.translate(o.x,o.y);c.rotate(o.a);c.fillStyle='#d8bd6a';c.fillRect(-o.L/2,-o.W/2,o.L,o.W);if(s>8){c.strokeStyle='rgba(150,120,40,.6)';c.lineWidth=1/s;c.beginPath();for(let k=-2;k<=2;k++){c.moveTo(-o.L/2,k*o.W*.18);c.lineTo(o.L/2,k*o.W*.18)}c.stroke()}c.restore()}};
 const DISHES={};
 function getDish(id){if(DISHES[id])return DISHES[id];const m=SM[id],r=mulberry32(hash(id.length,id.charCodeAt(5),77)),w={id,animals:[],deb:[],fib:[]};
-  const pos=()=>{const a=r()*TAU,d=Math.sqrt(r())*36;return[Math.cos(a)*d,Math.sin(a)*d]};
-  for(const k in m.counts)for(let i=0;i<m.counts[k];i++){const[x,y]=pos(),o=MA(k,r,x,y);if(o.trail){o.a=Math.atan2(y,x)+(r()-.5)*.8;initTrail(o)}else{const lim=Math.max(18,40-o.L*.45),d=Math.hypot(x,y);if(d>lim){o.x=x*lim/d;o.y=y*lim/d}}w.animals.push(o)}
+  const pos=()=>[(r()-.5)*(2*HX-30),(r()-.5)*(2*HY-30)];
+  for(const k in m.counts)for(let i=0;i<m.counts[k];i++){const[x,y]=pos(),o=MA(k,r,x,y);if(o.trail){o.a=Math.atan2(y,x)+(r()-.5)*.8;initTrail(o)}else{o.x=clamp(x,-HX+8+o.L*.45,HX-8-o.L*.45);o.y=clamp(y,-HY+8+o.L*.45,HY-8-o.L*.45)}w.animals.push(o)}
   const forest=id==='berl_foret';
-  for(let i=0;i<(forest?55:80);i++){const[x,y]=pos(),rad=.25+Math.pow(r(),2)*1.6;w.deb.push({t:'miette',nl:'miette',x,y,R:rad,pts:blobPts(r,rad,8,.5),f:`rgb(${(forest?60:105)+r()*30|0},${(forest?42:78)+r()*20|0},${(forest?25:48)+r()*15|0})`})}
-  for(let i=0;i<(forest?9:2);i++){const[x,y]=pos();w.deb.push({t:'feuille',nl:'feuille',x,y,a:r()*TAU,L:4+r()*5,W:2+r()*2,R:4,f:['#8a5a2a','#6e4520','#9a6a35'][i%3]})}
-  for(let i=0;i<(forest?1:6);i++){const[x,y]=pos();w.deb.push({t:'paille',nl:'paille',x,y,a:r()*TAU,L:5+r()*8,W:.7+r()*.4,R:5})}
-  for(let i=0;i<260;i++){const[x,y]=pos();w.fib.push([x,y,r()*TAU,1+r()*3])}
+  for(let i=0;i<(forest?260:380);i++){const[x,y]=pos(),rad=.25+Math.pow(r(),2)*1.6;w.deb.push({t:'miette',nl:'miette',x,y,R:rad,pts:blobPts(r,rad,8,.5),f:`rgb(${(forest?60:105)+r()*30|0},${(forest?42:78)+r()*20|0},${(forest?25:48)+r()*15|0})`})}
+  for(let i=0;i<(forest?45:8);i++){const[x,y]=pos();w.deb.push({t:'feuille',nl:'feuille',x,y,a:r()*TAU,L:4+r()*5,W:2+r()*2,R:4,f:['#8a5a2a','#6e4520','#9a6a35'][i%3]})}
+  for(let i=0;i<(forest?4:28);i++){const[x,y]=pos();w.deb.push({t:'paille',nl:'paille',x,y,a:r()*TAU,L:5+r()*8,W:.7+r()*.4,R:5})}
+  for(let i=0;i<900;i++){const[x,y]=pos();w.fib.push([x,y,r()*TAU,1+r()*3])}
   return DISHES[id]=w}
 const LP={c:null,cv:null,w:null,mag:1,ptr:null,pince:null};
+const HX=150,HY=100,LW=870,LH=580;
+function rrect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
 function angD(a,b){return Math.atan2(Math.sin(a-b),Math.cos(a-b))}
 function updM(m,dt){const sp=MSPEC[m.sp],R=Math.random;if(m.held>0){m.held-=dt;m.mv=0;return}
   m.timer-=dt;if(m.timer<=0){m.mv=m.mv?0:1;const g=m.mv?sp.go:sp.stop;m.timer=g[0]+R()*(g[1]-g[0]);if(m.mv)m.a+=(R()-.5)*1.4}
   if(m.jump){m.jump.k+=dt/.2;const k=Math.min(1,m.jump.k);m.x=m.jump.sx+(m.jump.ex-m.jump.sx)*k;m.y=m.jump.sy+(m.jump.ey-m.jump.sy)*k;if(m.jump.k>=1){m.jump=null;m.a=R()*TAU}return}
-  if(sp.jump&&R()<dt*sp.jump){const a=R()*TAU,d=6+R()*12;let ex=m.x+Math.cos(a)*d,ey=m.y+Math.sin(a)*d;const dd=Math.hypot(ex,ey);if(dd>40){ex*=40/dd;ey*=40/dd}m.jump={k:0,sx:m.x,sy:m.y,ex,ey};return}
-  if(!m.mv)return;m.turn=clamp(m.turn*.95+(R()-.5)*dt*5,-1.5,1.5);m.a+=m.turn*dt;const d=Math.hypot(m.x,m.y);if(d>40-m.L*.3)m.a+=angD(Math.atan2(-m.y,-m.x),m.a)*Math.min(1,dt*3);
-  m.x+=Math.cos(m.a)*m.v*dt;m.y+=Math.sin(m.a)*m.v*dt;const lim=m.trail?42:Math.max(18,42-m.L*.45),d2=Math.hypot(m.x,m.y);if(d2>lim){m.x*=lim/d2;m.y*=lim/d2}
+  if(sp.jump&&R()<dt*sp.jump){const a=R()*TAU,d=6+R()*12;let ex=m.x+Math.cos(a)*d,ey=m.y+Math.sin(a)*d;ex=clamp(ex,-HX+6,HX-6);ey=clamp(ey,-HY+6,HY-6);m.jump={k:0,sx:m.x,sy:m.y,ex,ey};return}
+  if(!m.mv)return;m.turn=clamp(m.turn*.95+(R()-.5)*dt*5,-1.5,1.5);m.a+=m.turn*dt;if(Math.abs(m.x)>HX-12-m.L*.3||Math.abs(m.y)>HY-12-m.L*.3)m.a+=angD(Math.atan2(-m.y,-m.x),m.a)*Math.min(1,dt*3);
+  m.x+=Math.cos(m.a)*m.v*dt;m.y+=Math.sin(m.a)*m.v*dt;const mx=m.trail?HX-4:HX-6-m.L*.45,my=m.trail?HY-4:HY-6-m.L*.45;m.x=clamp(m.x,-mx,mx);m.y=clamp(m.y,-my,my);
   if(m.trail){const h=m.trail[0];if(!h||Math.hypot(m.x-h[0],m.y-h[1])>m.L/30){m.trail.unshift([m.x,m.y]);if(m.trail.length>48)m.trail.pop()}}}
-function drawDish(c,s,t){const w=LP.w;c.beginPath();c.arc(0,0,45,0,TAU);c.fillStyle='#e3eaee';c.fill();
-  const g=c.createRadialGradient(-10,-12,2,0,0,44);g.addColorStop(0,'#fbf8f0');g.addColorStop(1,'#e6dcc8');c.beginPath();c.arc(0,0,43.6,0,TAU);c.fillStyle=g;c.fill();
-  if(s>9){c.strokeStyle='rgba(170,155,125,.22)';c.lineWidth=.6/s*2;c.beginPath();for(const[x,y,a,l]of w.fib){c.moveTo(x,y);c.lineTo(x+Math.cos(a)*l,y+Math.sin(a)*l)}c.stroke()}
+function drawDish(c,s,t){const w=LP.w;rrect(c,-HX-7,-HY-7,2*HX+14,2*HY+14,14);c.fillStyle='#eef2f4';c.fill();c.strokeStyle='rgba(150,170,185,.9)';c.lineWidth=1.2;c.stroke();
+  const g=c.createRadialGradient(-HX*.35,-HY*.45,10,0,0,HX*1.15);g.addColorStop(0,'#fdfbf6');g.addColorStop(1,'#e9e1cf');rrect(c,-HX,-HY,2*HX,2*HY,10);c.fillStyle=g;c.fill();
+  if(s>9){c.strokeStyle='rgba(170,155,125,.22)';c.lineWidth=1.2/s;c.beginPath();for(const[x,y,a,l]of w.fib){c.moveTo(x,y);c.lineTo(x+Math.cos(a)*l,y+Math.sin(a)*l)}c.stroke()}
   for(const d of w.deb)DM[d.t](c,d,s);for(const a of w.animals)D[a.t](c,a,s,t);
-  c.lineWidth=1.6;c.strokeStyle='rgba(140,165,180,.9)';c.beginPath();c.arc(0,0,44.4,0,TAU);c.stroke();c.lineWidth=.8;c.strokeStyle='rgba(255,255,255,.9)';c.beginPath();c.arc(0,0,43.9,3.6,5);c.stroke();
+  rrect(c,-HX+2,-HY+2,2*HX-4,2*HY-4,9);c.strokeStyle='rgba(255,255,255,.8)';c.lineWidth=1.5;c.stroke();
   const P=S.pick;if(P&&P.o&&P.w===w.id&&P.o.sp){const o=P.o,r=Math.max(o.L*.6,12/s);c.strokeStyle='#f0b429';c.lineWidth=2.4/s;c.setLineDash([6/s,4/s]);c.beginPath();c.arc(o.x,o.y,r,0,TAU);c.stroke();c.setLineDash([])}
   if(LP.pince){const e=(t-LP.pince.t0)/.9;if(e>1)LP.pince=null;else{const{x,y}=LP.pince,gap=(1-Math.min(1,e*2.5))*9/s,lift=e>.6?(e-.6)*30/s:0;c.strokeStyle='#8b979f';c.lineWidth=3/s;c.lineCap='round';c.beginPath();c.moveTo(x+28/s,y-90/s-lift);c.lineTo(x-gap,y-lift);c.moveTo(x+34/s,y-88/s-lift);c.lineTo(x+gap,y-lift);c.stroke()}}}
-function drawLoupe(t){const c=LP.c,E=EYE,k=E/96;c.setTransform(DPR,0,0,DPR,0,0);const bg=c.createLinearGradient(0,0,E,E);bg.addColorStop(0,'#d7e0e6');bg.addColorStop(1,'#c3cfd8');c.fillStyle=bg;c.fillRect(0,0,E,E);
-  c.setTransform(DPR*k,0,0,DPR*k,DPR*E/2,DPR*E/2);c.fillStyle='rgba(30,50,70,.18)';c.beginPath();c.ellipse(1.5,2.2,46,46,0,0,TAU);c.fill();drawDish(c,k,t);
-  if(LP.ptr&&LP.mag>1){const R=LP.mag>=10?150:108,px=LP.ptr.x,py=LP.ptr.y,wx=(px-E/2)/k,wy=(py-E/2)/k,s2=k*LP.mag;
+
+function drawLoupe(t){const c=LP.c,k=LW/310;c.setTransform(DPR,0,0,DPR,0,0);const bg=c.createLinearGradient(0,0,LW,LH);bg.addColorStop(0,'#d7e0e6');bg.addColorStop(1,'#c3cfd8');c.fillStyle=bg;c.fillRect(0,0,LW,LH);
+  c.setTransform(DPR*k,0,0,DPR*k,DPR*LW/2,DPR*LH/2);c.fillStyle='rgba(30,50,70,.16)';rrect(c,-HX-4,-HY-2,2*HX+16,2*HY+14,14);c.fill();drawDish(c,k,t);
+  if(LP.ptr&&LP.mag>1){const R=LP.mag>=10?170:120,px=LP.ptr.x,py=LP.ptr.y,wx=(px-LW/2)/k,wy=(py-LH/2)/k,s2=k*LP.mag;
     c.save();c.setTransform(DPR,0,0,DPR,0,0);c.beginPath();c.arc(px,py,R,0,TAU);c.clip();c.fillStyle='#cdd7de';c.fillRect(px-R,py-R,2*R,2*R);
     c.setTransform(DPR*s2,0,0,DPR*s2,DPR*(px-wx*s2),DPR*(py-wy*s2));drawDish(c,s2,t);
     c.setTransform(DPR,0,0,DPR,0,0);const g=c.createRadialGradient(px,py,R*.55,px,py,R);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.3)');c.fillStyle=g;c.fillRect(px-R,py-R,2*R,2*R);c.restore();
-    c.setTransform(DPR,0,0,DPR,0,0);const bino=LP.mag>=10;if(!bino){c.strokeStyle='#3b4650';c.lineWidth=16;c.lineCap='round';c.beginPath();c.moveTo(px+R*.72+6,py+R*.72+6);c.lineTo(px+R*.72+70,py+R*.72+70);c.stroke()}
+    c.setTransform(DPR,0,0,DPR,0,0);const bino=LP.mag>=10;if(!bino){c.strokeStyle='#3b4650';c.lineWidth=18;c.lineCap='round';c.beginPath();c.moveTo(px+R*.72+6,py+R*.72+6);c.lineTo(px+R*.72+80,py+R*.72+80);c.stroke()}
     c.lineWidth=bino?16:10;c.strokeStyle=bino?'#1a1f24':'#3b4650';c.beginPath();c.arc(px,py,R+c.lineWidth/2,0,TAU);c.stroke();c.lineWidth=3;c.strokeStyle='rgba(255,255,255,.55)';c.beginPath();c.arc(px,py,R-7,3.7,4.6);c.stroke();
     c.font='700 12px ui-monospace,monospace';c.textAlign='center';c.fillStyle='rgba(255,255,255,.9)';c.fillRect(px-22,py+R-26,44,17);c.fillStyle='#14202a';c.fillText('×'+LP.mag,px,py+R-13);c.textAlign='left'}}
-function lpStatus(){const n={1:'œil nu',3:'loupe à main ×3',10:'loupe binoculaire ×10',20:'loupe binoculaire ×20'}[LP.mag];$('#dishStatus').innerHTML=`Boîte de Petri de 9 cm · <b>${n}</b> · <b>clique sur un animal pour le prélever avec la pince et l’identifier</b>`;
+function lpStatus(){const n={1:'œil nu',3:'loupe à main ×3',10:'loupe binoculaire ×10',20:'loupe binoculaire ×20'}[LP.mag];$('#dishStatus').innerHTML=`Bac d’observation de 30 × 20 cm · <b>${n}</b> · <b>clique sur un animal pour le prélever avec la pince et l’identifier</b>`;
   $$('#lmags button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.m===LP.mag));$('#dishWrap').classList.toggle('lens',LP.mag>1)}
 function startLoupe(id){S.cur=id;LP.w=getDish(id);LP.mag=1;S.pick=null;$('#lpName').textContent=SM[id].name;setView('loupe');lpStatus();
   setTimeout(()=>tip('lens',$('#lmags'),'À l’œil nu, les plus petits animaux ne sont que des points qui bougent : prends une loupe.'),500)}
-(function(){const cv=$('#dish');cv.width=cv.height=EYE*DPR;LP.cv=cv;LP.c=cv.getContext('2d');
+(function(){const cv=$('#dish');cv.width=LW*DPR;cv.height=LH*DPR;LP.cv=cv;LP.c=cv.getContext('2d');
   $('#lmags').innerHTML=[[1,'Œil nu'],[3,'Loupe ×3'],[10,'Bino ×10'],[20,'Bino ×20']].map(([m,l])=>`<button data-m="${m}" aria-pressed="false">${l}</button>`).join('');
   $('#lmags').addEventListener('click',e=>{const b=e.target.closest('button');if(b){LP.mag=+b.dataset.m;lpStatus()}});
-  const pos=e=>{const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*EYE/r.width,y:(e.clientY-r.top)*EYE/r.height}};
+  const pos=e=>{const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*LW/r.width,y:(e.clientY-r.top)*LH/r.height}};
   cv.addEventListener('pointermove',e=>LP.ptr=pos(e));cv.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse')LP.ptr=null});
   cv.addEventListener('pointerdown',e=>{LP.ptr=pos(e);LP.down=LP.ptr});cv.addEventListener('pointerup',e=>{const p=pos(e);if(LP.down&&Math.hypot(p.x-LP.down.x,p.y-LP.down.y)<12)loupeClick(p.x,p.y);LP.down=null})})();
-function loupeClick(px,py){if(!LP.w)return;const k=EYE/96,wx=(px-EYE/2)/k,wy=(py-EYE/2)/k,se=k*LP.mag,tol=10/se;let best=null,bs=1e9;
+function loupeClick(px,py){if(!LP.w)return;const k=LW/310,wx=(px-LW/2)/k,wy=(py-LH/2)/k,se=k*LP.mag,tol=10/se;let best=null,bs=1e9;
   for(const a of LP.w.animals){let sc;if(a.trail){const pd=polyD(trailPts(a,16),wx,wy);sc=pd-a.W/2<tol?pd+a.L*.005:null}
     else{const dx=wx-a.x,dy=wy-a.y,ca=Math.cos(a.a),sa=Math.sin(a.a),lx=dx*ca+dy*sa,ly=-dx*sa+dy*ca,hl=a.L*.55+tol,hw=Math.max(a.W*.6,a.L*.35)+tol,v=Math.hypot(lx/hl,ly/hw);sc=v<1?Math.hypot(dx,dy)*.5+a.L*.005:null}
     if(sc!==null&&sc<bs){bs=sc;best=a}}
@@ -1290,7 +1294,7 @@ function berlSVG(id){const soil=SM[id].soil,forest=id==='berl_foret',r=mulberry3
   <g><rect x="40" y="40" width="150" height="48" rx="10" fill="#262e36"/><text x="58" y="60" font-size="11" fill="#b9c6cf">durée</text><text id="bTime" x="115" y="80" font-size="22" fill="#fff" text-anchor="middle" font-family="ui-monospace,monospace">0 h</text></g>
   </svg>`}
 async function runBerlese(id){if(prepRunning)return;prepRunning=true;setView('prep');S.pick=null;renderInfo();$('#sceneWrap').innerHTML=berlSVG(id);const g=k=>document.getElementById(k);
-  const steps=['Trier à la main les gros animaux (vers de terre, escargots, limaces, grosses larves, carabes, grillons…), puis déposer la terre sur la grille de l’entonnoir','Allumer la lampe : la chaleur et la lumière assèchent le sol par le haut','Fuyant la chaleur et la sécheresse, les petits animaux descendent et tombent dans le flacon','Réunir dans une boîte de Petri les animaux du flacon et ceux triés à la main, pour les observer à la loupe'];
+  const steps=['Trier à la main les gros animaux (vers de terre, escargots, limaces, grosses larves, carabes, grillons…), puis déposer la terre sur la grille de l’entonnoir','Allumer la lampe : la chaleur et la lumière assèchent le sol par le haut','Fuyant la chaleur et la sécheresse, les petits animaux descendent et tombent dans le flacon','Réunir dans un bac blanc les animaux du flacon et ceux triés à la main, pour les observer à l’œil nu et à la loupe'];
   $('#capDots').innerHTML=steps.map(()=>'<i></i>').join('');const cap=i=>{$('#capNum').textContent=`Étape ${i+1} / ${steps.length}`;$('#capTxt').textContent=steps[i];$$('#capDots i').forEach((d,k)=>d.classList.toggle('on',k<=i))};
   let tm=null;
   try{cap(0);await A(g('bTri'),[{opacity:0},{opacity:1}],700);await A(g('bSoil'),[{opacity:0,transform:'translateY(-110px)'},{opacity:1,transform:'translateY(0)'}],1300,'ease-in');
