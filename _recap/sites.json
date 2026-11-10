@@ -171,6 +171,14 @@
    "artifact": "https://claude.ai/artifact/BKkpaDmtVjGjQb3wuxZrLu",
    "version": "1794306807-2099",
    "verifie": "2026-11-10"
+  },
+  {
+   "titre": "Laboratoire des microorganismes",
+   "theme": "Le sol",
+   "fichier": "laboratoire-microorganismes.html",
+   "artifact": "https://claude.ai/artifact/Wa3p5qXtATScybZSVU62j1",
+   "version": "1794307725-8a97",
+   "verifie": "2026-11-10"
   }
  ],
  "ignores": [
@@ -182,10 +190,5 @@
   "https://claude.ai/artifact/Q819rD8JpgV5C3CkhFa7fc",
   "https://claude.ai/artifact/BKgJeE9qovNYfSuwcRjjFF"
  ],
- "en_attente": [
-  {
-   "titre": "Laboratoire des microorganismes",
-   "url": "https://claude.ai/artifact/Wa3p5qXtATScybZSVU62j1"
-  }
- ]
+ "en_attente": []
 }
