@@ -249,7 +249,7 @@ input[type=range]{flex:1;accent-color:var(--accent);min-width:0;height:26px}
       <div class="scope">
         <div class="eye-col"><div class="dishwrap" id="dishWrap"><canvas id="dish" aria-label="Boîte de Petri avec les animaux du sol"></canvas></div><div class="eye-status" id="dishStatus"></div></div>
         <div class="ctrls">
-          <div class="scope-head"><svg width="56" height="56" viewBox="0 0 56 56" aria-hidden="true"><circle cx="22" cy="22" r="16" fill="rgba(200,225,240,.6)" stroke="#3b4650" stroke-width="5"/><path d="M34 34l16 16" stroke="#3b4650" stroke-width="7" stroke-linecap="round"/><path d="M14 16q4-6 10-6" stroke="#fff" stroke-width="2.5" fill="none"/></svg><div><b id="lpName"></b><br><span class="muted">Animaux extraits avec l’appareil de Berlèse</span></div></div>
+          <div class="scope-head"><svg width="56" height="56" viewBox="0 0 56 56" aria-hidden="true"><circle cx="22" cy="22" r="16" fill="rgba(200,225,240,.6)" stroke="#3b4650" stroke-width="5"/><path d="M34 34l16 16" stroke="#3b4650" stroke-width="7" stroke-linecap="round"/><path d="M14 16q4-6 10-6" stroke="#fff" stroke-width="2.5" fill="none"/></svg><div><b id="lpName"></b><br><span class="muted">Gros animaux triés à la main + petits extraits avec l’appareil de Berlèse</span></div></div>
           <div class="ctrl"><div class="ctrl-label">Instrument</div><div class="objs" id="lmags"></div></div>
           <div class="ctrl" style="font-size:13.5px"><div class="ctrl-label">Comment faire</div>Passe la loupe au-dessus de la boîte. Clique sur un animal : la pince fine le prélève et sa fiche apparaît à droite. Les plus petits demandent la loupe binoculaire.</div>
         </div>
@@ -925,8 +925,8 @@ $('#filters').addEventListener('click',e=>{const b=e.target.closest('[data-f]');
 
 /* ================= LOUPE : faune du sol (appareil de Berlèse) — unités : mm ================= */
 S.mode='micro';
-Object.assign(GROUPS,{hexa:{n:'Collembole',c:'#5a6e2a'},insecte:{n:'Insecte',c:'#c07a12'},arach:{n:'Arachnide',c:'#8c2f5a'},crust:{n:'Crustacé',c:'#3f7489'},myria:{n:'Myriapode',c:'#7a4b2a'},annel:{n:'Annélide',c:'#c4566c'}});
-const PL={bact:'Bactéries',champ:'Champignons',uni:'Êtres unicellulaires',algue:'Algues',animal:'Animaux microscopiques',hexa:'Collemboles',insecte:'Insectes',arach:'Arachnides',crust:'Crustacés',myria:'Myriapodes (mille-pattes)',annel:'Annélides (vers)'};
+Object.assign(GROUPS,{hexa:{n:'Collembole',c:'#5a6e2a'},insecte:{n:'Insecte',c:'#c07a12'},arach:{n:'Arachnide',c:'#8c2f5a'},crust:{n:'Crustacé',c:'#3f7489'},myria:{n:'Myriapode',c:'#7a4b2a'},annel:{n:'Annélide',c:'#c4566c'},moll:{n:'Mollusque',c:'#5b6f9a'}});
+const PL={bact:'Bactéries',champ:'Champignons',uni:'Êtres unicellulaires',algue:'Algues',animal:'Animaux microscopiques',hexa:'Collemboles',insecte:'Insectes',arach:'Arachnides',crust:'Crustacés',myria:'Myriapodes (mille-pattes)',annel:'Annélides (vers)',moll:'Mollusques'};
 for(const k in GROUPS)GROUPS[k].pl=PL[k];
 Object.assign(SP,{
  collembole:{name:'Collembole',sci:'par exemple Isotoma',g:'hexa',size:'1 à 3 mm',um:1500,lres:10,pattes:'6 pattes',
@@ -951,15 +951,25 @@ Object.assign(SP,{
   def:'Coléoptère (insecte) allongé aux ailes de protection très courtes : son abdomen reste visible. Il relève souvent le bout de l’abdomen.',hab:'Litière, compost, sous les pierres.',role:'Prédateur rapide des petits animaux du sol.'},
  larve:{name:'Larve de taupin',sci:'larve de coléoptère, « ver fil de fer »',g:'insecte',size:'1 à 2,5 cm',um:15000,lres:3,pattes:'6 petites pattes à l’avant',
   def:'Larve d’insecte au corps allongé, dur et jaune orangé, avec trois paires de petites pattes près de la tête. Adulte, elle deviendra un coléoptère.',hab:'Dans le sol des prairies et des champs.',role:'Elle se nourrit de racines et de débris végétaux ; elle peut abîmer certaines cultures.'},
+ lombric:{name:'Ver de terre',sci:'lombric, par exemple Lumbricus',g:'annel',size:'5 à 30 cm (adulte) ; ici un jeune',um:45000,lres:1,pattes:'aucune patte (petites soies)',
+  def:'Ver formé de nombreux anneaux, sans pattes. Il avance en s’allongeant et en se contractant, aidé par de petites soies. L’anneau plus épais et plus clair (le clitellum) sert à la reproduction.',hab:'Dans le sol, où il creuse des galeries ; il remonte à la surface la nuit.',role:'Il mange la terre et les feuilles mortes, mélange le sol et creuse des galeries qui laissent passer l’air et l’eau : il rend le sol fertile.'},
+ asticot:{name:'Asticot (larve de mouche)',sci:'larve de diptère',g:'insecte',size:'5 à 15 mm',um:8000,lres:1,pattes:'aucune patte',
+  def:'Larve de mouche, blanche, sans pattes et sans tête visible : l’avant est pointu avec deux petits crochets noirs, l’arrière est coupé net avec deux points sombres pour respirer. Adulte, ce sera une mouche.',hab:'Matière organique en décomposition, litière humide, compost.',role:'Il se nourrit de matière en décomposition : c’est un décomposeur.'},
+ verblanc:{name:'Ver blanc (larve de hanneton)',sci:'larve de coléoptère',g:'insecte',size:'2 à 4 cm',um:25000,lres:1,pattes:'6 pattes près de la tête',
+  def:'Grosse larve blanche, courbée en forme de C, avec une tête brun-orange, six pattes près de la tête et un arrière sombre et gonflé. Ce n’est pas un ver : c’est la larve d’un insecte, le hanneton.',hab:'Dans le sol des prairies, des jardins et des champs.',role:'Elle mange les racines ; en grand nombre, elle peut abîmer les cultures et les pelouses.'},
+ escargot:{name:'Escargot',sci:'par exemple un jeune Cepaea',g:'moll',size:'coquille de 0,5 à 3 cm',um:18000,lres:1,pattes:'aucune patte (un pied qui rampe)',
+  def:'Mollusque au corps mou protégé par une coquille enroulée en spirale. Il rampe sur un pied musclé et porte quatre tentacules ; les yeux sont au bout des deux grands.',hab:'Litière, mousses, sous les feuilles, quand il fait humide.',role:'Il mange des végétaux frais ou en décomposition et des champignons ; il est mangé par les oiseaux, les hérissons et les carabes.'},
+ limace:{name:'Limace',sci:'par exemple Arion',g:'moll',size:'2 à 15 cm',um:24000,lres:1,pattes:'aucune patte (un pied qui rampe)',
+  def:'Mollusque au corps mou, sans coquille visible. À l’avant, une sorte de bouclier (le manteau) porte un petit trou pour respirer. Elle a quatre tentacules.',hab:'Sol et litière humides, sous les pierres et les feuilles.',role:'Elle mange des plantes et des débris végétaux ; certaines abîment les cultures.'},
  enchytree:{name:'Enchytrée',sci:'petit ver blanc',g:'annel',size:'0,5 à 3 cm',um:12000,lres:3,pattes:'aucune patte',
   def:'Petit ver blanc translucide, de la même famille que le ver de terre (annélides). Son corps est formé d’anneaux.',hab:'Litière et sol humides, compost.',role:'Il mange les débris végétaux et les microorganismes, et participe à la formation de l’humus.'}
 });
 Object.assign(NL,{miette:{name:'Miette de terre',txt:'Petit agrégat de terre et d’humus tombé avec les animaux. Ce n’est pas un être vivant.'},feuille:{name:'Débris de feuille morte',txt:'Morceau de feuille en décomposition : on voit encore les nervures. Ce n’est plus vivant.'},paille:{name:'Débris de paille',txt:'Fragment de tige sèche venant des cultures. Ce n’est plus vivant.'}});
 const MSAMPLES=[
- {id:'berl_foret',name:'Litière forestière',milieu:'Sol de forêt',soil:'#4a3320',desc:'Feuilles mortes et terre de surface prélevées sous les arbres.',prep:'Extraction des petits animaux avec l’appareil de Berlèse',
-  counts:{collembole:14,acarien:18,pseudo:2,araignee:2,cloporte:3,iule:2,lithobie:2,geophile:1,fourmi:2,staphylin:2,larve:1,enchytree:4}},
- {id:'berl_agri',name:'Terre de champ',milieu:'Sol agricole',soil:'#7d5c3b',desc:'Terre de surface d’un champ cultivé.',prep:'Extraction des petits animaux avec l’appareil de Berlèse',
-  counts:{collembole:8,acarien:6,araignee:1,cloporte:1,lithobie:1,geophile:1,fourmi:4,staphylin:1,larve:3,enchytree:5}}];
+ {id:'berl_foret',name:'Litière forestière',milieu:'Sol de forêt',soil:'#4a3320',desc:'Feuilles mortes et terre de surface prélevées sous les arbres.',prep:'Tri à la main des gros animaux, puis extraction des petits avec l’appareil de Berlèse',
+  counts:{collembole:14,acarien:18,pseudo:2,araignee:2,cloporte:3,iule:2,lithobie:2,geophile:1,fourmi:2,staphylin:2,larve:1,enchytree:4,lombric:1,escargot:1,limace:1,asticot:2}},
+ {id:'berl_agri',name:'Terre de champ',milieu:'Sol agricole',soil:'#7d5c3b',desc:'Terre de surface d’un champ cultivé.',prep:'Tri à la main des gros animaux, puis extraction des petits avec l’appareil de Berlèse',
+  counts:{collembole:8,acarien:6,araignee:1,cloporte:1,lithobie:1,geophile:1,fourmi:4,staphylin:1,larve:3,enchytree:5,lombric:2,limace:1,asticot:1,verblanc:1}}];
 MSAMPLES.forEach(m=>{m.sp=Object.keys(m.counts);SM[m.id]=m});
 const ALLS=SAMPLES.concat(MSAMPLES);
 const funnelIcon=col=>`<svg viewBox="0 0 120 100" aria-hidden="true"><path d="M48 6h24l8 14H40z" fill="#2f5d4a"/><ellipse cx="60" cy="22" rx="8" ry="3" fill="#ffe7a0"/><path d="M22 34h76L66 70v18H54V70z" fill="rgba(225,238,246,.85)" stroke="#8fb0c2" stroke-width="2"/><path d="M28 36q12-14 32-10q20-6 32 10z" fill="${col}"/><path d="M38 30q8-7 14-1M66 27q9-5 13 2" stroke="#7d8f3b" stroke-width="3" fill="none"/><rect x="48" y="86" width="24" height="10" rx="2" fill="rgba(225,238,246,.85)" stroke="#8fb0c2" stroke-width="1.5"/></svg>`;
@@ -977,7 +987,8 @@ const MSPEC={
  fourmi:{L:5,W:1.4,v:8,go:[1,3],stop:[.2,.8],ps:32},
  staphylin:{L:7,W:1.6,v:9,go:[.4,1.5],stop:[1,3],ps:28},
  larve:{L:12,W:1.6,v:.8,go:[2,6],stop:[1,3],trail:1,ps:17},
- enchytree:{L:12,W:.55,v:.6,go:[2,6],stop:[.5,2],trail:1,ps:17}};
+ enchytree:{L:12,W:.55,v:.6,go:[2,6],stop:[.5,2],trail:1,ps:17},
+ lombric:{L:45,W:3.2,v:2,go:[3,8],stop:[1,3],trail:1,ps:5.2},asticot:{L:8,W:2.2,v:1.5,go:[2,5],stop:[1,2],trail:1,ps:26},verblanc:{L:16,W:12,v:.15,go:[1,2],stop:[3,6],ps:11},escargot:{L:18,W:10,v:.8,go:[4,9],stop:[2,5],ps:11},limace:{L:24,W:5,v:1.2,go:[4,9],stop:[2,4],trail:1,ps:9}};
 function MA(k,r,x,y){const sp=MSPEC[k],sc=.8+r()*.4,o={t:'M'+k,sp:k,x,y,a:r()*TAU,L:sp.L*sc,W:sp.W*sc,v:sp.v*sc,mv:0,timer:r()*2,turn:0,ph:r()*10,seed:r()*1e6|0,held:0};
   if(sp.trail)initTrail(o);return o}
 function initTrail(o){o.trail=[];for(let i=1;i<=40;i++){const d=i*o.L/30,w=Math.sin(i*.25+o.ph)*o.L*.05;o.trail.push([o.x-Math.cos(o.a)*d-Math.sin(o.a)*w,o.y-Math.sin(o.a)*d+Math.cos(o.a)*w])}}
@@ -1080,6 +1091,44 @@ D.Menchytree=(c,o,s,t)=>{const N=30,W=o.W,tb=tube(trailPts(o,N),u=>W/2*Math.min(
   tubePath(c,tb);c.fillStyle='rgba(246,242,232,.94)';c.fill();c.strokeStyle='rgba(170,160,140,.85)';c.lineWidth=W*.08;c.stroke();
   c.strokeStyle='rgba(200,175,130,.55)';c.lineWidth=W*.3;c.beginPath();for(let i=4;i<N-2;i++)i>4?c.lineTo(tb.pts[i][0],tb.pts[i][1]):c.moveTo(tb.pts[i][0],tb.pts[i][1]);c.stroke();
   if(W*s>4){c.strokeStyle='rgba(170,160,140,.4)';c.lineWidth=W*.04;c.beginPath();for(let i=1;i<N;i++){c.moveTo(tb.L[i][0],tb.L[i][1]);c.lineTo(tb.R[i][0],tb.R[i][1])}c.stroke()}};
+D.Mlombric=(c,o,s,t)=>{const N=50,W=o.W,cl0=Math.round(N*.26),cl1=Math.round(N*.36);
+  const tb=tube(trailPts(o,N),u=>W/2*Math.min(1,.45+u/.06,(1-u)/.12+.35)*(1+.12*Math.sin(u*25-t*3)*o.mv)*(u>.26&&u<.36?1.15:1));
+  if(W*s<1.5){c.strokeStyle='#c27066';c.lineWidth=W;c.lineCap='round';c.beginPath();tb.pts.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.stroke();return}
+  tubePath(c,tb);c.fillStyle='#c4746a';c.fill();c.strokeStyle='rgba(120,50,45,.7)';c.lineWidth=W*.05;c.stroke();
+  c.beginPath();for(let i=cl0;i<=cl1;i++)i===cl0?c.moveTo(tb.L[i][0],tb.L[i][1]):c.lineTo(tb.L[i][0],tb.L[i][1]);for(let i=cl1;i>=cl0;i--)c.lineTo(tb.R[i][0],tb.R[i][1]);c.closePath();c.fillStyle='#dc9070';c.fill();
+  c.strokeStyle='rgba(120,50,45,.35)';c.lineWidth=W*.04;c.beginPath();for(let i=1;i<N;i++){c.moveTo(tb.L[i][0],tb.L[i][1]);c.lineTo(tb.R[i][0],tb.R[i][1])}c.stroke();
+  c.strokeStyle='rgba(140,40,50,.35)';c.lineWidth=W*.12;c.beginPath();tb.pts.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.stroke();
+  c.strokeStyle='rgba(255,232,226,.5)';c.lineWidth=W*.14;c.beginPath();for(let i=2;i<N-2;i++){const x=tb.L[i][0]*.55+tb.pts[i][0]*.45,y=tb.L[i][1]*.55+tb.pts[i][1]*.45;i>2?c.lineTo(x,y):c.moveTo(x,y)}c.stroke()};
+D.Masticot=(c,o,s,t)=>{const N=12,W=o.W,tb=tube(trailPts(o,N),u=>W/2*Math.min(1,.2+u*2.4,(1-u)/.05+.75)*(1+.08*Math.sin(u*12-t*5)*o.mv));
+  tubePath(c,tb);c.fillStyle='#f1e8d2';c.fill();c.strokeStyle='#c4b690';c.lineWidth=W*.05;c.stroke();
+  c.strokeStyle='rgba(170,150,110,.5)';c.lineWidth=W*.04;c.beginPath();for(let i=1;i<N;i++){c.moveTo(tb.L[i][0],tb.L[i][1]);c.lineTo(tb.R[i][0],tb.R[i][1])}c.stroke();
+  c.strokeStyle='rgba(255,255,250,.7)';c.lineWidth=W*.15;c.beginPath();for(let i=1;i<N;i++){const x=tb.L[i][0]*.5+tb.pts[i][0]*.5,y=tb.L[i][1]*.5+tb.pts[i][1]*.5;i>1?c.lineTo(x,y):c.moveTo(x,y)}c.stroke();
+  const h=tb.pts[0],a=headA(tb);c.strokeStyle='#2a1a10';c.lineWidth=W*.08;c.beginPath();for(const sd of[-1,1]){c.moveTo(h[0]-Math.cos(a)*W*.3,h[1]-Math.sin(a)*W*.3);c.lineTo(h[0]+Math.cos(a+sd*.4)*W*.15,h[1]+Math.sin(a+sd*.4)*W*.15)}c.stroke();
+  const e=tb.pts[N],e1=tb.pts[N-1],b=Math.atan2(e[1]-e1[1],e[0]-e1[0]);c.fillStyle='#5a3a1a';for(const sd of[-1,1]){c.beginPath();c.arc(e[0]-Math.cos(b)*W*.15+Math.cos(b+Math.PI/2)*sd*W*.18,e[1]-Math.sin(b)*W*.15+Math.sin(b+Math.PI/2)*sd*W*.18,W*.09,0,TAU);c.fill()}};
+D.Mverblanc=(c,o,s,t)=>{const Rc=o.L*.3,bw=o.L*.32,N=24,a0=-.25*Math.PI,a1=1.15*Math.PI+.06*Math.sin(t*.8+o.ph);c.save();c.translate(o.x,o.y);c.rotate(o.a);
+  const pts=[];for(let i=0;i<=N;i++){const ang=a0+(a1-a0)*i/N;pts.push([Math.cos(ang)*Rc,Math.sin(ang)*Rc])}
+  const tb=tube(pts,u=>bw/2*Math.min(1,.55+u/.15,u>.75?1.15:1));
+  c.strokeStyle='#b98a5a';c.lineWidth=bw*.08;c.lineCap='round';c.beginPath();for(const u of[.1,.16,.22]){const i=Math.round(u*N),p=tb.L[i],n=tb.nm[i],sw=Math.sin(t*4+u*20)*.35*o.mv,ang=Math.atan2(n[1],n[0])+sw;c.moveTo(p[0],p[1]);c.lineTo(p[0]+Math.cos(ang)*bw*.45,p[1]+Math.sin(ang)*bw*.45);c.lineTo(p[0]+Math.cos(ang+.6)*bw*.7,p[1]+Math.sin(ang+.6)*bw*.7)}c.stroke();
+  tubePath(c,tb);c.fillStyle='#efe6d0';c.fill();c.strokeStyle='#c4b490';c.lineWidth=bw*.04;c.stroke();
+  const i0=Math.round(.72*N);c.beginPath();for(let i=i0;i<=N;i++)i===i0?c.moveTo(tb.L[i][0],tb.L[i][1]):c.lineTo(tb.L[i][0],tb.L[i][1]);for(let i=N;i>=i0;i--)c.lineTo(tb.R[i][0],tb.R[i][1]);c.closePath();c.fillStyle='rgba(85,70,55,.5)';c.fill();
+  c.strokeStyle='rgba(170,150,110,.45)';c.lineWidth=bw*.03;c.beginPath();for(let i=2;i<N;i++){c.moveTo(tb.L[i][0],tb.L[i][1]);c.lineTo(tb.R[i][0],tb.R[i][1])}c.stroke();
+  const h=pts[0];c.fillStyle='#b5642a';c.beginPath();c.ellipse(h[0],h[1]-bw*.15,bw*.38,bw*.32,0,0,TAU);c.fill();c.fillStyle='#3a1a08';c.beginPath();c.ellipse(h[0]+bw*.1,h[1]-bw*.45,bw*.12,bw*.07,.5,0,TAU);c.fill();c.restore()};
+D.Mescargot=(c,o,s,t)=>{const L=o.L,W=o.W,held=o.held>0;c.save();c.translate(o.x,o.y);c.rotate(o.a);
+  const g=c.createLinearGradient(0,-W*.3,0,W*.3);g.addColorStop(0,'#a8987c');g.addColorStop(.5,'#c9bba0');g.addColorStop(1,'#9a8a70');c.fillStyle=g;c.beginPath();c.ellipse(L*(held?.12:.18),0,L*(held?.22:.34),W*.26,0,0,TAU);c.fill();
+  if(!held){c.strokeStyle='#8a7a62';c.lineCap='round';c.lineWidth=L*.03;c.beginPath();for(const sd of[-1,1]){const w=Math.sin(t*1.2+o.ph+sd)*.05;c.moveTo(L*.48,sd*W*.06);c.lineTo(L*.66,sd*W*(.24+w));c.moveTo(L*.5,sd*W*.04);c.lineTo(L*.57,sd*W*.1)}c.stroke();
+    c.fillStyle='#2a221a';for(const sd of[-1,1]){const w=Math.sin(t*1.2+o.ph+sd)*.05;c.beginPath();c.arc(L*.66,sd*W*(.24+w),L*.022,0,TAU);c.fill()}}
+  if(s*L>25){c.fillStyle='rgba(90,75,55,.25)';const r=mulberry32(o.seed);for(let i=0;i<20;i++){c.beginPath();c.arc(L*(r()*.45),(r()-.5)*W*.35,L*.008,0,TAU);c.fill()}}
+  const R=L*.3,cx=-L*.06;const gs=c.createRadialGradient(cx-R*.3,-R*.3,R*.1,cx,0,R);gs.addColorStop(0,'#d9a866');gs.addColorStop(.6,'#a8723a');gs.addColorStop(1,'#6e4520');c.fillStyle=gs;c.beginPath();c.arc(cx,0,R,0,TAU);c.fill();
+  c.strokeStyle='rgba(60,35,15,.8)';c.lineWidth=L*.02;c.beginPath();for(let i=0;i<=80;i++){const th=i/80*TAU*2.6,r=R*(.06+.94*th/(TAU*2.6));const x=cx+Math.cos(th)*r*.95,y=Math.sin(th)*r*.95;i?c.lineTo(x,y):c.moveTo(x,y)}c.stroke();
+  c.strokeStyle='rgba(80,45,20,.45)';c.lineWidth=L*.035;c.beginPath();c.arc(cx,0,R*.72,0,TAU);c.stroke();c.fillStyle='rgba(255,240,210,.35)';c.beginPath();c.ellipse(cx-R*.35,-R*.4,R*.25,R*.1,-.6,0,TAU);c.fill();c.restore()};
+D.Mlimace=(c,o,s,t)=>{const N=14,W=o.W,held=o.held>0,tb=tube(trailPts(o,N),u=>W/2*Math.min(1,.55+u/.08,(1-u)/.25+.2)*(held?1.15:1)),h=tb.pts[0],a=headA(tb);
+  if(!held){c.strokeStyle='#5a4a3a';c.lineCap='round';c.lineWidth=W*.08;c.beginPath();for(const sd of[-1,1]){const w=Math.sin(t*1.3+o.ph+sd)*.1;c.moveTo(h[0],h[1]);c.lineTo(h[0]+Math.cos(a+sd*(.4+w))*W*.9,h[1]+Math.sin(a+sd*(.4+w))*W*.9);c.moveTo(h[0],h[1]);c.lineTo(h[0]+Math.cos(a+sd*.9)*W*.35,h[1]+Math.sin(a+sd*.9)*W*.35)}c.stroke();
+    c.fillStyle='#1e1812';for(const sd of[-1,1]){const w=Math.sin(t*1.3+o.ph+sd)*.1;c.beginPath();c.arc(h[0]+Math.cos(a+sd*(.4+w))*W*.9,h[1]+Math.sin(a+sd*(.4+w))*W*.9,W*.07,0,TAU);c.fill()}}
+  tubePath(c,tb);c.fillStyle='#86725c';c.fill();c.strokeStyle='rgba(60,45,30,.7)';c.lineWidth=W*.05;c.stroke();
+  if(W*s>8){const r=mulberry32(o.seed);c.fillStyle='rgba(60,45,30,.35)';for(let i=0;i<60;i++){const k=1+(r()*(N-2)|0),f=r();const p=[tb.L[k][0]*f+tb.R[k][0]*(1-f),tb.L[k][1]*f+tb.R[k][1]*(1-f)];c.beginPath();c.arc(p[0],p[1],W*.04,0,TAU);c.fill()}}
+  const m=tb.pts[3];c.save();c.translate(m[0],m[1]);c.rotate(a);c.fillStyle='#735f4a';c.beginPath();c.ellipse(0,0,o.L*.17,W*.42,0,0,TAU);c.fill();c.strokeStyle='rgba(50,38,25,.5)';c.lineWidth=W*.04;c.stroke();
+  c.fillStyle='#2a1e14';c.beginPath();c.arc(-o.L*.03,W*.3,W*.07,0,TAU);c.fill();c.restore();
+  c.strokeStyle='rgba(255,245,230,.3)';c.lineWidth=W*.12;c.beginPath();for(let i=4;i<N-1;i++)i>4?c.lineTo(tb.pts[i][0],tb.pts[i][1]):c.moveTo(tb.pts[i][0],tb.pts[i][1]);c.stroke()};
 /* débris dans la boîte */
 const DM={
  miette(c,o,s){c.save();c.translate(o.x,o.y);pathPts(c,o.pts,true);c.fillStyle=o.f;c.fill();if(s>12){c.strokeStyle='rgba(30,20,10,.5)';c.lineWidth=1/s;c.stroke();c.fillStyle='rgba(255,240,210,.18)';c.beginPath();c.arc(-o.R*.25,-o.R*.25,o.R*.25,0,TAU);c.fill()}c.restore()},
@@ -1168,22 +1217,23 @@ function berlSVG(id){const soil=SM[id].soil,forest=id==='berl_foret',r=mulberry3
    ${forest?'<path d="M340 124q14-14 30-4q-14 10-30 4z" fill="#8a5a2a"/><path d="M400 112q16-10 26 2q-14 8-26-2z" fill="#a8702f"/><path d="M430 126q12-10 22 0q-12 6-22 0z" fill="#7d8f3b"/><path d="M360 138l40-10" stroke="#3e2914" stroke-width="2.5" stroke-linecap="round"/>':'<path d="M345 132l30-8M410 120l26 6M380 140l24-4" stroke="#e2c46a" stroke-width="2.5" stroke-linecap="round"/>'}</g>
   ${an}
   ${sh(400,40)}<g class="t" id="bJar"><path d="M370 292h60v34q0 5-5 5h-50q-5 0-5-5z" fill="url(#gGlass)" stroke="#8fb0c2" stroke-width="2"/><rect x="373" y="316" width="54" height="13" rx="3" fill="#a9bf93" opacity=".75"/><path d="M376 298v26" stroke="rgba(255,255,255,.8)" stroke-width="3" stroke-linecap="round"/></g>
+  <g id="bTri" opacity="0">${sh(150,62)}<ellipse cx="150" cy="322" rx="60" ry="10" fill="#e7edf1" stroke="#9fb5c4" stroke-width="2"/><path d="M112 320q10-10 22-2t22 0t18-4" stroke="#c4746a" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="182" cy="316" r="7" fill="#a8723a"/><path d="M178 316a4 4 0 1 1 6 2" stroke="#5a3a1a" stroke-width="1.5" fill="none"/><path d="M128 326q12-3 22 1" stroke="#86725c" stroke-width="5" fill="none" stroke-linecap="round"/><text x="150" y="350" font-size="12" text-anchor="middle" fill="#456">tri à la main</text></g>
   <g class="t" id="bPetri" opacity="0">${sh(150,74)}<ellipse cx="150" cy="320" rx="72" ry="13" fill="url(#gGlass)" stroke="#8fb0c2" stroke-width="2"/><ellipse cx="150" cy="318" rx="66" ry="9" fill="#f1ebdd"/>${[...Array(14)].map((_,i)=>`<ellipse cx="${100+(i*37)%100}" cy="${314+(i*13)%9}" rx="2" ry="1" fill="${['#3a2a20','#6d7277','#5f656d','#7a3d1c'][i%4]}"/>`).join('')}</g>
   <g font-size="12" fill="#456"><text x="470" y="70">lampe</text><text x="512" y="196">entonnoir</text><text x="230" y="158">grille</text><path d="M268 154h48" stroke="#8a9aa6"/><text x="450" y="318">flacon (fond humide)</text></g>
   <g><rect x="40" y="40" width="150" height="48" rx="10" fill="#262e36"/><text x="58" y="60" font-size="11" fill="#b9c6cf">durée</text><text id="bTime" x="115" y="80" font-size="22" fill="#fff" text-anchor="middle" font-family="ui-monospace,monospace">0 h</text></g>
   </svg>`}
 async function runBerlese(id){if(prepRunning)return;prepRunning=true;setView('prep');S.pick=null;renderInfo();$('#sceneWrap').innerHTML=berlSVG(id);const g=k=>document.getElementById(k);
-  const steps=['Déposer la litière et la terre sur la grille de l’entonnoir','Allumer la lampe : la chaleur et la lumière assèchent le sol par le haut','Fuyant la chaleur et la sécheresse, les petits animaux descendent et tombent dans le flacon','Verser le contenu du flacon dans une boîte de Petri pour l’observer à la loupe'];
+  const steps=['Trier à la main les gros animaux (vers de terre, escargots, limaces, grosses larves), puis déposer la terre sur la grille de l’entonnoir','Allumer la lampe : la chaleur et la lumière assèchent le sol par le haut','Fuyant la chaleur et la sécheresse, les petits animaux descendent et tombent dans le flacon','Réunir dans une boîte de Petri les animaux du flacon et ceux triés à la main, pour les observer à la loupe'];
   $('#capDots').innerHTML=steps.map(()=>'<i></i>').join('');const cap=i=>{$('#capNum').textContent=`Étape ${i+1} / ${steps.length}`;$('#capTxt').textContent=steps[i];$$('#capDots i').forEach((d,k)=>d.classList.toggle('on',k<=i))};
   let tm=null;
-  try{cap(0);await A(g('bSoil'),[{opacity:0,transform:'translateY(-110px)'},{opacity:1,transform:'translateY(0)'}],1300,'ease-in');
+  try{cap(0);await A(g('bTri'),[{opacity:0},{opacity:1}],700);await A(g('bSoil'),[{opacity:0,transform:'translateY(-110px)'},{opacity:1,transform:'translateY(0)'}],1300,'ease-in');
    cap(1);g('bBulb').setAttribute('fill','#fff3b0');await A(g('bGlow'),[{opacity:0},{opacity:1}],700);g('bHeat').style.opacity=1;let h=0;tm=setInterval(()=>{h=Math.min(48,h+1);g('bTime').textContent=h+' h'},95);
    await A(g('bDry'),[{opacity:0},{opacity:.8}],2200);
    cap(2);const an=$$('#scene .ban');for(let i=0;i<an.length;i++){const el=an[i],x0=+el.dataset.x,y0=+el.dataset.y;A(el,[{transform:'translate(0,0)'},{transform:`translate(${(400-x0)*.5}px,${172-y0}px)`},{transform:`translate(${400-x0+(i%5-2)*4}px,${248-y0}px)`},{transform:`translate(${400-x0+(i%7-3)*6}px,${318-y0+(i%3)*3}px)`}],1500,'ease-in');await wait(180)}
    await wait(1700);clearInterval(tm);g('bTime').textContent='48 h';
    cap(3);g('bHeat').style.opacity=0;g('bBulb').setAttribute('fill','#d9d4bd');await A(g('bGlow'),[{opacity:1},{opacity:0}],400);an.forEach(e=>e.style.visibility='hidden');
    const jar=g('bJar');jar.style.transformOrigin='center';await A(jar,[{transform:'translate(0,0) rotate(0)'},{transform:'translate(-150px,-70px) rotate(0)'},{transform:'translate(-180px,-60px) rotate(-80deg)'}],1500);
-   await A(g('bPetri'),[{opacity:0},{opacity:1}],600);await wait(500);const sc=$('#scene');sc.style.transformOrigin='19% 80%';sc.style.transform='scale(5)';sc.style.opacity=0;await wait(1100)}catch(e){console.error(e)}
+   await A(g('bTri'),[{opacity:1},{opacity:0}],400);await A(g('bPetri'),[{opacity:0},{opacity:1}],600);await wait(500);const sc=$('#scene');sc.style.transformOrigin='19% 80%';sc.style.transform='scale(5)';sc.style.opacity=0;await wait(1100)}catch(e){console.error(e)}
   clearInterval(tm);prepRunning=false;startLoupe(id)}
 $('#modes').addEventListener('click',e=>{const b=e.target.closest('[data-mode]');if(!b||prepRunning)return;S.mode=b.dataset.mode;$$('#modes button').forEach(x=>x.setAttribute('aria-pressed',x===b));
   if(S.view==='coll')closeColl();S.sel=null;S.cur=null;S.pick=null;
