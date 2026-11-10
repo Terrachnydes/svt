@@ -1,0 +1,806 @@
+<!doctype html><html lang="fr"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Où passe notre eau douce ?</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Mise en page : un grand schéma de territoire à gauche, un panneau de 2 graphiques à droite qui change au clic */
+:root{
+  --bg:#EAF2F6; --surface:#FFFFFF; --surface-2:#F3F7F9; --ink:#0F2F3D; --muted:#4C6877; --line:#CFDFE7; --track:#E3ECF1;
+  --water:#1A7DC0; --water-2:#7CC2E9; --water-soft:#DBEEF9; --water-deep:#0B5687;
+  --agri:#D99A1E; --elev:#A8603A; --green:#46923A; --green-2:#8EC768; --plain:#B7DB8E; --indus:#D9672A; --grey:#8A979F; --home:#CF4058; --num:#7A55C7; --trans:#1F8F86;
+  --sky1:#BCE1F3; --sky2:#EFF8FC; --mount:#A3C6D8; --soil:#C0905F; --soil-2:#9B6D43; --rock:#8D8178;
+  --wall:#F8F0E5; --wall-2:#E4D4BF; --roof:#BC553C; --win:#C3E5F6; --metal:#B3C1CA; --cow:#FFFFFF; --pig:#F2A8B5; --snow:#FFFFFF; --ice:#D6EEFA;
+  --f-display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1A21; --surface:#14252E; --surface-2:#18303B; --ink:#E3EFF4; --muted:#95B0BD; --line:#294350; --track:#1F3842;
+  --water:#47ABE6; --water-2:#2C79A9; --water-soft:#163447; --water-deep:#8DD0F5;
+  --agri:#EDB947; --elev:#D98C5F; --green:#66B352; --green-2:#3F7F33; --plain:#3C6531; --indus:#F08A4A; --grey:#93A3AD; --home:#EE6A80; --num:#A98BF0; --trans:#4CC3B3;
+  --sky1:#183749; --sky2:#10212B; --mount:#21404F; --soil:#6E4E32; --soil-2:#56391F; --rock:#3E3631;
+  --wall:#2E3C45; --wall-2:#25323A; --roof:#8C3E2E; --win:#F0C860; --metal:#56666F; --cow:#E6E6E6; --pig:#C78491; --snow:#CFE1E9; --ice:#9CCBE3; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1A21; --surface:#14252E; --surface-2:#18303B; --ink:#E3EFF4; --muted:#95B0BD; --line:#294350; --track:#1F3842;
+  --water:#47ABE6; --water-2:#2C79A9; --water-soft:#163447; --water-deep:#8DD0F5;
+  --agri:#EDB947; --elev:#D98C5F; --green:#66B352; --green-2:#3F7F33; --plain:#3C6531; --indus:#F08A4A; --grey:#93A3AD; --home:#EE6A80; --num:#A98BF0; --trans:#4CC3B3;
+  --sky1:#183749; --sky2:#10212B; --mount:#21404F; --soil:#6E4E32; --soil-2:#56391F; --rock:#3E3631;
+  --wall:#2E3C45; --wall-2:#25323A; --roof:#8C3E2E; --win:#F0C860; --metal:#56666F; --cow:#E6E6E6; --pig:#C78491; --snow:#CFE1E9; --ice:#9CCBE3; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:17px/1.5 var(--f-body)}
+h1,h2,h3{font-family:var(--f-display);line-height:1.1;text-wrap:balance;margin:0}
+p{margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--water);outline-offset:2px}
+.ico{width:22px;height:22px;flex:none;vertical-align:middle}
+
+main{max-width:1600px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+.head{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+.head h1{font-size:clamp(1.9rem,4vw,2.9rem);font-weight:800;letter-spacing:-.02em;display:flex;gap:12px;align-items:center}
+.head h1 svg{width:.9em;height:1.1em;color:var(--water)}
+.head p{color:var(--muted);font-size:1.08rem}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;border:2px solid var(--line);background:var(--surface);font-weight:700;cursor:pointer;font-size:.95rem}
+.btn:hover{border-color:var(--water)}
+.btn .ico{width:18px;height:18px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px}
+.legend span{display:inline-flex;gap:6px;align-items:center;font-weight:700;font-size:.9rem}
+.sw{width:13px;height:13px;border-radius:4px;display:inline-block;flex:none}
+
+.explorer{display:grid;grid-template-columns:minmax(0,1fr) 410px;gap:18px;align-items:start}
+.explorer>*{min-width:0}
+@media (max-width:1000px){.explorer{grid-template-columns:1fr}}
+.plate{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;position:sticky;top:12px}
+@media (max-width:1000px){.plate{position:static}}
+.plate svg{display:block;width:100%;height:auto}
+.plate-foot{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--line);background:var(--surface-2);font-size:.9rem;color:var(--muted)}
+
+/* schéma */
+.hot{cursor:pointer;transition:filter .2s,opacity .25s}
+.hot:hover,.hot:focus-visible{filter:drop-shadow(0 0 5px var(--water)) drop-shadow(0 0 2px var(--water));outline:none}
+.hot.sel{filter:drop-shadow(0 0 4px var(--ink)) drop-shadow(0 0 9px var(--water))}
+.tags{pointer-events:none;transition:opacity .25s}
+.tags.off{opacity:0}
+.tag rect{fill:var(--surface);stroke-width:3}
+.tag text{font:700 17px var(--f-body);fill:var(--ink)}
+.tag.sel rect{fill:var(--ink)} .tag.sel text{fill:var(--surface)}
+.c-w{fill:var(--water)} .c-w2{fill:var(--water-2)} .c-ws{fill:var(--water-soft)} .c-p{fill:var(--plain)} .c-s{fill:var(--soil)} .c-s2{fill:var(--soil-2)}
+.c-r{fill:var(--rock)} .c-m{fill:var(--mount)} .c-wall{fill:var(--wall)} .c-wall2{fill:var(--wall-2)} .c-roof{fill:var(--roof)} .c-win{fill:var(--win)}
+.c-metal{fill:var(--metal)} .c-g{fill:var(--green)} .c-g2{fill:var(--green-2)} .c-a{fill:var(--agri)} .c-i{fill:var(--indus)} .c-gr{fill:var(--grey)}
+.c-h{fill:var(--home)} .c-k{fill:var(--ink)} .c-snow{fill:var(--snow)} .c-ice{fill:var(--ice)} .c-cow{fill:var(--cow)} .c-pig{fill:var(--pig)} .c-surf{fill:var(--surface)}
+.lbl-s{font:400 15px var(--f-body);fill:var(--muted)}
+.flow{stroke-dasharray:8 12;animation:flow 1.2s linear infinite}
+.flow-slow{stroke-dasharray:12 18;animation:flow 2.6s linear infinite}
+.flow-up{stroke-dasharray:8 12;animation:flow 1.2s linear infinite reverse}
+@keyframes flow{to{stroke-dashoffset:-40}}
+.steam{animation:steam 4s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes steam{0%{opacity:0;transform:translateY(10px) scale(.6)}30%{opacity:.9}100%{opacity:0;transform:translateY(-46px) scale(1.5)}}
+.fall{animation:fall 1s linear infinite}
+@keyframes fall{0%{transform:translateY(-6px);opacity:0}20%{opacity:1}100%{transform:translateY(24px);opacity:0}}
+.bob{animation:bob 3s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes bob{50%{transform:translateY(-4px)}}
+@media (prefers-reduced-motion: reduce){.flow,.flow-slow,.flow-up,.steam,.fall,.bob{animation:none!important}}
+
+/* panneau */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:13px;min-height:640px}
+@media (max-width:1000px){.panel{position:static;min-height:0}}
+.p-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.kicker{display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:999px;font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);background:var(--surface-2);border:2px solid}
+.p-title{display:flex;gap:10px;align-items:center;font-size:1.55rem;font-weight:800;margin-top:8px}
+.p-title .ico{width:32px;height:32px}
+.back{border:0;background:var(--surface-2);border-radius:10px;padding:6px 10px;font-size:.85rem;font-weight:700;cursor:pointer;color:var(--muted);white-space:nowrap;display:inline-flex;gap:6px;align-items:center}
+.back:hover{color:var(--ink)}
+.back .ico{width:16px;height:16px}
+.kpi{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:14px;background:var(--surface-2)}
+.kpi .n{font:800 1.9rem/1.05 var(--f-display);font-variant-numeric:tabular-nums}
+.kpi .u{color:var(--muted);font-size:.95rem}
+.kpi .x{font-size:.92rem;margin-top:4px}
+.chart{display:flex;flex-direction:column;gap:10px}
+.chart h3{font-size:1.05rem;font-weight:600;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.chart h3 .num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--surface);font:700 .78rem var(--f-body);flex:none;align-self:center}
+.unit{font:700 .78rem var(--f-body);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.bars{display:flex;flex-direction:column;gap:8px}
+.br{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;align-items:center}
+.br .bl{display:flex;gap:6px;align-items:center;font-size:.9rem;font-weight:700;min-width:0}
+.br .bl .ico{width:18px;height:18px}
+.br .bv{font-variant-numeric:tabular-nums;font-weight:700;font-size:.9rem;white-space:nowrap;text-align:right}
+.br .bt{grid-column:1/-1;height:16px;background:var(--track);border-radius:6px;overflow:hidden;display:flex}
+.br .bt i{display:block;height:100%;width:0;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.bars.has-hl .br:not(.hl){opacity:.42}
+.bars.has-hl .br.hl .bt{height:20px;box-shadow:0 0 0 2px var(--ink)}
+.br.hl .bl{font-size:.97rem}
+.parts{display:flex;flex-direction:column;gap:10px}
+.pr{display:flex;flex-direction:column;gap:4px}
+.pr .pl{display:flex;justify-content:space-between;gap:10px;font-size:.9rem}
+.pr .pl b{font-variant-numeric:tabular-nums;font-size:1.05rem;white-space:nowrap}
+.pr .pt{height:22px;background:var(--track);border-radius:7px;overflow:hidden;position:relative}
+.pr .pt i{position:absolute;inset:0 auto 0 0;width:0;border-radius:7px 0 0 7px;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.pr .pt::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 1px),var(--surface) calc(10% - 1px) 10%);opacity:.6;pointer-events:none}
+.drops{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;max-width:250px}
+.drops svg{width:100%;height:auto;aspect-ratio:3/4;opacity:0;transform:translateY(-6px);transition:opacity .3s,transform .3s}
+.drops.show svg{opacity:1;transform:none}
+.expl{font-size:.97rem}
+.src{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+.mini-leg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.8rem;color:var(--muted)}
+.mini-leg span{display:inline-flex;gap:5px;align-items:center}
+.mini-leg .sw{width:10px;height:10px}
+.def{font-size:.8rem;color:var(--muted)}
+
+/* bas de page */
+.words{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:10px}
+.words div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;font-size:.92rem}
+.words b{font-family:var(--f-display);font-size:1.05rem;color:var(--water-deep)}
+details.sources{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+details.sources summary{cursor:pointer;font-weight:700}
+details.sources ul{margin:10px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:.9rem;max-width:110ch}
+details.sources a{color:var(--water-deep);font-weight:700}
+
+/* onglets + gestes */
+.tabs-nav{display:flex;gap:6px;flex-wrap:wrap}
+.tabn{display:inline-flex;gap:8px;align-items:center;padding:9px 18px;border-radius:999px;border:2px solid var(--line);background:var(--surface);font-weight:700;text-decoration:none;color:var(--ink)}
+.tabn:hover{border-color:var(--water)}
+.tabn[aria-current="page"]{background:var(--water-soft);border-color:var(--water);color:var(--water-deep)}
+.tabn .ico{width:20px;height:20px}
+.view{display:flex;flex-direction:column;gap:18px}
+.g-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:16px}
+.g-box{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+.g-box h2{font-size:1.35rem;display:flex;gap:10px;align-items:center}
+.g-box h2 .ico{width:28px;height:28px}
+.ab{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:10px;align-items:center}
+.ab .w{justify-self:start}
+.ab .t{height:30px;background:var(--track);border-radius:8px;overflow:hidden}
+.ab .t i{display:block;height:100%;width:0;border-radius:8px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.ab b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.w{font-weight:700;font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:6px;text-align:center}
+.w.av{background:var(--track);color:var(--muted)} .w.ap{background:var(--green);color:var(--surface)}
+.save-big{display:flex;gap:4px 12px;align-items:baseline;flex-wrap:wrap;padding:10px 14px;border-radius:12px;background:var(--surface-2)}
+.save-big .n{font:800 2rem var(--f-display);color:var(--green);font-variant-numeric:tabular-nums}
+.g-sec{display:flex;gap:10px;align-items:center;font-size:1.5rem;margin-top:8px}
+.g-sec .ico{width:30px;height:30px}
+.g-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,370px),1fr));gap:14px}
+.g-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.g-card header{display:flex;gap:10px;align-items:center}
+.g-card h3{font-size:1.1rem;flex:1;min-width:0}
+.g-card header .ico{width:30px;height:30px}
+.g-badge{font-weight:800;color:var(--green);white-space:nowrap;font-variant-numeric:tabular-nums;font-size:1.05rem}
+.g-badge.zero{color:var(--muted)}
+.g-sl{display:grid;grid-template-columns:62px minmax(0,1fr) 140px;gap:8px;align-items:center;font-size:.9rem}
+.g-sl output{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.g-sl input{width:100%;accent-color:var(--water);height:24px}
+.g-fixed{display:grid;grid-template-columns:62px minmax(0,1fr);gap:6px 8px;align-items:center;font-size:.92rem}
+.g-chk{display:flex;gap:8px;align-items:center;font-weight:700;cursor:pointer;font-size:.92rem}
+.g-chk input{width:20px;height:20px;accent-color:var(--green);flex:none}
+.g-card .ab{grid-template-columns:62px minmax(0,1fr) auto}
+.g-card .ab .t{height:16px}
+.g-txt{font-size:.85rem;color:var(--muted)}
+
+.gc-top{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between;align-items:flex-end}
+.gc-top h2{font-size:1.45rem}
+.gc-legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.9rem;font-weight:700}
+.gc-legend span{display:inline-flex;gap:6px;align-items:center}
+.gc-legend i{width:28px;height:14px;border-radius:4px;display:inline-block}
+.sw-n{background:var(--grey);opacity:.35}
+.sw-e{background:var(--grey)}
+.sw-s{background:repeating-linear-gradient(135deg,var(--grey) 0 3px,transparent 3px 7px);opacity:.7;box-shadow:inset 0 0 0 2px var(--grey)}
+.gc{display:flex;flex-direction:column;gap:6px}
+.gc-grp{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px 14px;margin-top:12px;padding:8px 0 6px;border-bottom:2px solid var(--line)}
+.gc-grp h3{font-size:1.2rem;display:flex;gap:8px;align-items:center}
+.gc-grp .tot{font-size:.95rem;font-variant-numeric:tabular-nums}
+.gc-grp .tot b{color:var(--green)}
+.gr{display:grid;grid-template-columns:minmax(150px,250px) minmax(0,1fr) 220px;gap:6px 14px;align-items:center;padding:5px 0}
+.gr .gl{display:flex;gap:8px;align-items:center;font-weight:700;font-size:.95rem;min-width:0}
+.gr .gl .ico{width:22px;height:22px}
+.gt{position:relative;height:34px;background:var(--track);border-radius:8px;overflow:hidden}
+.gt i{position:absolute;inset:0 auto 0 0;width:0;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.gt .ga{background:repeating-linear-gradient(135deg,var(--c) 0 4px,transparent 4px 9px);opacity:.55;border-radius:8px}
+.gt .gb{background:var(--c);border-radius:8px 0 0 8px}
+.gv{font-variant-numeric:tabular-nums;font-size:.92rem;display:flex;flex-wrap:wrap;gap:0 8px;align-items:baseline;justify-content:flex-end;text-align:right}
+.gv .n0{color:var(--muted)} .gv b{font-size:1.02rem} .gv em{font-style:normal;font-weight:800;color:var(--green);flex-basis:100%}
+@media (max-width:700px){.gr{grid-template-columns:1fr auto}.gr .gt{grid-column:1/-1;grid-row:2}.gv em{flex-basis:auto}}
+.g-sl,.g-fixed{grid-template-columns:78px minmax(0,1fr) 140px}
+.g-fixed{grid-template-columns:78px minmax(0,1fr)}
+
+.gl .qm{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--c);background:var(--surface);color:var(--ink);font:800 .85rem var(--f-body);cursor:pointer;display:inline-grid;place-items:center;padding:0;margin-left:2px}
+.gl .qm:hover,.gl .qm[aria-expanded="true"]{background:var(--c);color:var(--surface)}
+.gx{grid-column:1/-1;background:var(--surface-2);border-left:4px solid var(--c);border-radius:0 10px 10px 0;padding:10px 14px;font-size:.92rem;display:flex;flex-direction:column;gap:4px}
+.gx b.k{font-family:var(--f-display);font-size:1.05rem;line-height:1.3}
+.gx .s{font-size:.8rem;color:var(--muted)}
+.gc-grp .sub{font-size:.85rem;color:var(--muted);flex-basis:100%}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-drop" viewBox="0 0 24 32"><path d="M12 1C12 1 2 13 2 20a10 10 0 0 0 20 0C22 13 12 1 12 1z" fill="currentColor"/></symbol>
+  <symbol id="i-tractor" viewBox="0 0 24 24"><path d="M3 15V9h7l2 5h6v-4h2v6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><rect x="5" y="5" width="4" height="4" fill="currentColor"/><circle cx="7" cy="17" r="3.6" fill="currentColor"/><circle cx="18.5" cy="18.5" r="2.4" fill="currentColor"/></symbol>
+  <symbol id="i-factory" viewBox="0 0 24 24"><path d="M2 21V11l5 3v-3l5 3v-3l5 3V3h4v18Z" fill="currentColor"/></symbol>
+  <symbol id="i-house" viewBox="0 0 24 24"><path d="M2.5 11.5 12 3.5l9.5 8V21H15v-6H9v6H2.5Z" fill="currentColor"/></symbol>
+  <symbol id="i-city" viewBox="0 0 24 24"><path d="M2 22V10h6V3h8v8h6v11Z" fill="currentColor"/><g fill="var(--surface)"><rect x="10" y="6" width="2" height="2"/><rect x="13" y="6" width="2" height="2"/><rect x="10" y="10" width="2" height="2"/><rect x="13" y="10" width="2" height="2"/><rect x="4" y="13" width="2" height="2"/><rect x="18" y="14" width="2" height="2"/></g></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-shower" viewBox="0 0 24 24"><path d="M4 22V7a4 4 0 0 1 8 0v1" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 9h8l-1 3H9Z" fill="currentColor"/><g fill="currentColor"><circle cx="10" cy="15" r="1"/><circle cx="13" cy="15" r="1"/><circle cx="11.5" cy="18" r="1"/><circle cx="14.5" cy="18" r="1"/><circle cx="12" cy="21" r="1"/></g></symbol>
+  <symbol id="i-wc" viewBox="0 0 24 24"><rect x="4" y="2" width="9" height="7" rx="1.5" fill="currentColor"/><path d="M3 11h17a7 7 0 0 1-7 7h-2l1 4H6l1-4.5A6 6 0 0 1 3 11Z" fill="currentColor"/></symbol>
+  <symbol id="i-tap" viewBox="0 0 24 24"><path d="M3 9h10a4 4 0 0 1 4 4v1h-3v-1a1 1 0 0 0-1-1H3Z" fill="currentColor"/><rect x="6" y="5" width="3" height="4" fill="currentColor"/><rect x="4" y="3" width="7" height="2.4" rx="1" fill="currentColor"/><path d="M15.5 17c0 1-1.5 3-1.5 3s-1.5-2-1.5-3a1.5 1.5 0 0 1 3 0Z" fill="currentColor"/></symbol>
+  <symbol id="i-washer" viewBox="0 0 24 24"><rect x="3" y="2" width="18" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="13" r="5" fill="currentColor"/><circle cx="7" cy="5.5" r="1.1" fill="currentColor"/><circle cx="10.5" cy="5.5" r="1.1" fill="currentColor"/></symbol>
+  <symbol id="i-dish" viewBox="0 0 24 24"><rect x="3" y="2" width="18" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 7h18" stroke="currentColor" stroke-width="2"/><g fill="currentColor"><circle cx="8" cy="14" r="3"/><circle cx="16" cy="14" r="3"/></g></symbol>
+  <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 22V11" stroke="currentColor" stroke-width="2.2"/><path d="M12 12C12 7 8 4 3 4c0 5 4 8 9 8ZM12 14c0-4 3-7 9-7 0 4-3 7-9 7Z" fill="currentColor"/></symbol>
+  <symbol id="i-glass" viewBox="0 0 24 24"><path d="M5 3h14l-2 18H7Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6.4 10h11.2L16 20H8Z" fill="currentColor"/></symbol>
+  <symbol id="i-pot" viewBox="0 0 24 24"><path d="M3 9h18M4 9v8a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 5c0-2 2-2 2-4M13 5c0-2 2-2 2-4" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+  <symbol id="i-dots" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="5" cy="12" r="2.4"/><circle cx="12" cy="12" r="2.4"/><circle cx="19" cy="12" r="2.4"/></g></symbol>
+  <symbol id="i-cow" viewBox="0 0 24 24"><path d="M3 9h13l3-2h3v5l-3 1v4h-2v4h-2v-4H8v4H6v-4H4v-3l-1 1Z" fill="currentColor"/></symbol>
+  <symbol id="i-pig" viewBox="0 0 24 24"><ellipse cx="11" cy="13" rx="8" ry="5.5" fill="currentColor"/><rect x="18" y="11" width="4" height="4" rx="1.5" fill="currentColor"/><path d="M6 17v4M15 17v4" stroke="currentColor" stroke-width="2.4"/><path d="M14 8l2-3 1 4" fill="currentColor"/></symbol>
+  <symbol id="i-hen" viewBox="0 0 24 24"><path d="M5 10c0 6 4 9 9 9s7-4 7-8l-5 2c0-3-1-6-4-6-2-3-6-2-6 1Z" fill="currentColor"/><path d="M6 6.5 3 8l3 1" fill="currentColor"/><path d="M11 19v3M14 19v3" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-sheep" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="7" cy="11" r="3.5"/><circle cx="11" cy="9" r="3.5"/><circle cx="15" cy="11" r="3.5"/><circle cx="11" cy="13" r="3.5"/><ellipse cx="19.5" cy="10" rx="2.6" ry="2"/></g><path d="M8 16v5M14 16v5" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-egg" viewBox="0 0 24 24"><path d="M12 2c4 0 7 7 7 12a7 7 0 0 1-14 0c0-5 3-12 7-12Z" fill="currentColor"/></symbol>
+  <symbol id="i-milk" viewBox="0 0 24 24"><path d="M8 2h8v3l2 3v14H6V8l2-3Z" fill="currentColor"/><path d="M6 12h12" stroke="var(--surface)" stroke-width="2"/></symbol>
+  <symbol id="i-wheat" viewBox="0 0 24 24"><path d="M12 22V6" stroke="currentColor" stroke-width="2"/><g fill="currentColor"><ellipse cx="9.5" cy="8" rx="2" ry="3" transform="rotate(-30 9.5 8)"/><ellipse cx="14.5" cy="8" rx="2" ry="3" transform="rotate(30 14.5 8)"/><ellipse cx="9.5" cy="13" rx="2" ry="3" transform="rotate(-30 9.5 13)"/><ellipse cx="14.5" cy="13" rx="2" ry="3" transform="rotate(30 14.5 13)"/><ellipse cx="12" cy="3.5" rx="1.6" ry="2.6"/></g></symbol>
+  <symbol id="i-bowl" viewBox="0 0 24 24"><path d="M2 11h20a10 9 0 0 1-20 0Z" fill="currentColor"/><g fill="currentColor"><ellipse cx="8" cy="9" rx="1.6" ry=".9"/><ellipse cx="12" cy="8" rx="1.6" ry=".9"/><ellipse cx="16" cy="9" rx="1.6" ry=".9"/></g></symbol>
+  <symbol id="i-apple" viewBox="0 0 24 24"><path d="M12 7c-3-2-8-1-8 5 0 5 3 10 6 10 1 0 1.5-.5 2-.5s1 .5 2 .5c3 0 6-5 6-10 0-6-5-7-8-5Z" fill="currentColor"/><path d="M12 7c0-2 1-4 3-5" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+  <symbol id="i-potato" viewBox="0 0 24 24"><path d="M5 9c2-5 10-6 14-3s2 11-4 13-12-4-10-10Z" fill="currentColor"/><g fill="var(--surface)"><circle cx="10" cy="10" r="1"/><circle cx="15" cy="13" r="1"/></g></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M4 20C4 9 11 4 21 4c0 10-5 17-16 17" fill="currentColor"/></symbol>
+  <symbol id="i-tomato" viewBox="0 0 24 24"><circle cx="12" cy="14" r="8" fill="currentColor"/><path d="M8 6l4 2 4-2-2 3h-4Z" fill="var(--green)"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-2 8 9-12h-7Z" fill="currentColor"/></symbol>
+  <symbol id="i-boat" viewBox="0 0 24 24"><path d="M2 14h20l-3 6H5Z" fill="currentColor"/><rect x="13" y="8" width="6" height="5" fill="currentColor"/><path d="M1 22c2-1 4 1 6 0s4 1 6 0 4 1 6 0 3 1 4 0" stroke="currentColor" stroke-width="1.5" fill="none"/></symbol>
+  <symbol id="i-tower" viewBox="0 0 24 24"><path d="M5 3h14l-2 7H7Z" fill="currentColor"/><path d="M10 10h4v12h-4Z" fill="currentColor"/></symbol>
+  <symbol id="i-recycle" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-13.6 5.7M4 12a8 8 0 0 1 13.6-5.7" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M18 2v5h-5M6 22v-5h5" fill="none" stroke="currentColor" stroke-width="2.4"/></symbol>
+  <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 2v20M3.3 7l17.4 10M3.3 17 20.7 7" stroke="currentColor" stroke-width="2.2"/><path d="M9 4l3 2 3-2M9 20l3-2 3 2" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+  <symbol id="i-wave" viewBox="0 0 24 24"><path d="M2 8c3-3 5 3 8 0s5 3 8 0 3 0 4 0M2 15c3-3 5 3 8 0s5 3 8 0 3 0 4 0" stroke="currentColor" stroke-width="2.4" fill="none"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="M2 6h20v4H2Z" fill="currentColor" opacity=".5"/><path d="M2 12h20v5H2Z" fill="currentColor"/><g fill="var(--surface)"><circle cx="6" cy="14.5" r="1.2"/><circle cx="12" cy="14.5" r="1.2"/><circle cx="18" cy="14.5" r="1.2"/></g><path d="M2 19h20v3H2Z" fill="currentColor" opacity=".7"/></symbol>
+  <symbol id="i-shirt" viewBox="0 0 24 24"><path d="M8 3 2 6l2 5 3-1v11h10V10l3 1 2-5-6-3c0 2-2 3-4 3S8 5 8 3Z" fill="currentColor"/></symbol>
+  <symbol id="i-jean" viewBox="0 0 24 24"><path d="M6 2h12l1 20h-5l-2-12-2 12H5Z" fill="currentColor"/></symbol>
+  <symbol id="i-paper" viewBox="0 0 24 24"><path d="M5 2h10l4 4v16H5Z" fill="currentColor"/><path d="M8 10h8M8 14h8M8 18h5" stroke="var(--surface)" stroke-width="1.6"/></symbol>
+  <symbol id="i-coffee" viewBox="0 0 24 24"><path d="M3 8h14v6a6 6 0 0 1-6 6H9a6 6 0 0 1-6-6Z" fill="currentColor"/><path d="M17 10h2a2.5 2.5 0 0 1 0 5h-2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M7 2c0 2 2 2 2 4M11 2c0 2 2 2 2 4" stroke="currentColor" stroke-width="1.6" fill="none"/></symbol>
+  <symbol id="i-bread" viewBox="0 0 24 24"><path d="M3 10a5 4 0 0 1 5-5h8a5 4 0 0 1 5 5c0 2-2 2-2 3v7H5v-7c0-1-2-1-2-3Z" fill="currentColor"/></symbol>
+  <symbol id="i-choc" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2" fill="currentColor"/><path d="M4 9h16M4 15h16M12 3v18" stroke="var(--surface)" stroke-width="1.4"/></symbol>
+  <symbol id="i-beer" viewBox="0 0 24 24"><path d="M5 6h11v15H5Z" fill="currentColor"/><path d="M16 9h2a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M5 6a3 3 0 0 1 5-2 3 3 0 0 1 6 2" fill="currentColor"/></symbol>
+  <symbol id="i-car" viewBox="0 0 24 24"><path d="M3 16v-4l2.5-5h13L21 12v4Z" fill="currentColor"/><circle cx="7" cy="17" r="2.5" fill="currentColor"/><circle cx="17" cy="17" r="2.5" fill="currentColor"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.5-5.8" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M3 3v6h6" fill="none" stroke="currentColor" stroke-width="2.4"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 3h9l9 9-9 9-9-9Z" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="8" cy="8" r="1.8" fill="currentColor"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 24 24"><path d="M9 11V4a1.5 1.5 0 0 1 3 0v6l5 1a2 2 0 0 1 1.5 2.3L17 21H9l-4-6a1.5 1.5 0 0 1 2.4-1.8Z" fill="currentColor"/></symbol>
+</svg>
+
+<main>
+  <nav class="tabs-nav" aria-label="Onglets">
+    <a class="tabn" href="#territoire" data-v="territoire"><svg class="ico"><use href="#i-globe"/></svg>Le territoire</a>
+    <a class="tabn" href="#gestes" data-v="gestes"><svg class="ico"><use href="#i-leaf"/></svg>Mes gestes</a>
+  </nav>
+<section class="view" id="v-territoire">
+  <header class="head">
+    <div>
+      <h1><svg aria-hidden="true"><use href="#i-drop"/></svg>Où passe notre eau douce ?</h1>
+      <p>Clique sur un élément du territoire : les graphiques à droite montrent l’eau qu’il utilise.</p>
+    </div>
+    <div class="tools">
+      <button class="btn" id="tagBtn" aria-pressed="true"><svg class="ico"><use href="#i-tag"/></svg><span>Masquer les noms</span></button>
+      <button class="btn" id="resetBtn"><svg class="ico"><use href="#i-globe"/></svg>Vue générale</button>
+    </div>
+  </header>
+
+  <div class="explorer">
+    <figure class="plate">
+      <svg id="scene" viewBox="0 0 1400 830" role="img" aria-label="Territoire : montagne et glacier, lac, rivière, canal, champs, verger, serre, élevages, centrale électrique, usines, ville, maison en coupe, usine d’eau potable, château d’eau, station d’épuration et nappe phréatique"></svg>
+      <figcaption class="plate-foot">
+        <div class="legend">
+          <span><i class="sw" style="background:var(--water)"></i>Ressources en eau</span>
+          <span><i class="sw" style="background:var(--home)"></i>Maisons et ville</span>
+          <span><i class="sw" style="background:var(--agri)"></i>Agriculture</span>
+          <span><i class="sw" style="background:var(--elev)"></i>Élevage</span>
+          <span><i class="sw" style="background:var(--indus)"></i>Industrie et énergie</span>
+        </div>
+        <span>Clique dans le ciel pour revenir à la vue générale.</span>
+      </figcaption>
+    </figure>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </div>
+
+  <div class="words">
+    <div><b>Eau prélevée</b><span>Eau retirée d’une rivière, d’un lac ou d’une nappe.</span></div>
+    <div><b>Eau consommée</b><span>Part de l’eau prélevée qui ne revient pas à la nature (évaporée, absorbée par les plantes, mise dans un produit).</span></div>
+    <div><b>Empreinte eau</b><span>Toute l’eau utilisée pour fabriquer un produit, y compris la pluie tombée sur les champs.</span></div>
+    <div><b>Eau douce ≠ eau potable</b><span>L’eau douce est peu salée. Elle n’est potable qu’après avoir été traitée et contrôlée.</span></div>
+  </div>
+
+  <details class="sources">
+    <summary>Sources et méthode</summary>
+    <ul>
+      <li><a href="https://www.fao.org/aquastat/fr/" target="_blank" rel="noopener">FAO – AQUASTAT</a> : prélèvements mondiaux ≈ 4 000 km³ par an, dont ≈ 70 % agriculture, 20 % industrie et énergie, 10 % villes et foyers. Par personne : ≈ 4 000 km³ ÷ 8 milliards d’habitants ÷ 365 jours ≈ 1 400 L par jour (arrondi).</li>
+      <li><a href="https://www.statistiques.developpement-durable.gouv.fr/leau-en-france-ressource-et-utilisation-synthese-des-connaissances-en-2023" target="_blank" rel="noopener">SDES – L’eau en France : ressource et utilisation</a> (moyenne 2010-2019, hors hydroélectricité) : 32,8 milliards de m³ prélevés par an (énergie 16,8 ; eau potable 5,3 ; canaux 5,2 ; agriculture 2,9 ; industrie 2,6) et 4,1 milliards de m³ consommés (agriculture 58 %, eau potable 26 %, énergie 12 %, industrie 4 %). Valeurs par personne calculées avec 66 millions d’habitants.</li>
+      <li><a href="https://www.cieau.com/" target="_blank" rel="noopener">Centre d’information sur l’eau (CIEau)</a> : environ 148 L d’eau du robinet par personne et par jour à la maison ; répartition : bains et douches 39 %, WC 20 %, linge 12 %, vaisselle 10 %, cuisine 6 %, jardin et voiture 6 %, divers 6 %, boisson 1 %.</li>
+      <li><a href="https://www.waterfootprint.org/" target="_blank" rel="noopener">Water Footprint Network</a> (Mekonnen et Hoekstra, 2011 et 2012) : empreintes eau moyennes mondiales des cultures et des produits animaux, avec eau verte, bleue et grise ; aliments transformés par portion.</li>
+      <li><a href="https://www.levistrauss.com/2015/03/26/3-surprising-insights-about-those-501-jeans/" target="_blank" rel="noopener">Levi Strauss & Co (2015)</a> : analyse de cycle de vie d’un jean 501 : ≈ 3 781 L d’eau, de la culture du coton aux lavages à la maison.</li>
+      <li><a href="https://www.edf.fr/l-eau-a-la-centrale-nucleaire-de-belleville-sur-loire" target="_blank" rel="noopener">EDF</a> : une centrale à tours de refroidissement prélève environ 10 L d’eau par kWh produit et en rend 77 % au fleuve (étude ACV 2022).</li>
+      <li>USGS, d’après Gleick (1996) : répartition de l’eau sur Terre (97,5 % salée ; eau douce : 68,7 % glaces, 30,1 % souterraine, 1,2 % surface et autres). FAO : 20 % des terres cultivées sont irriguées et fournissent 40 % de la nourriture ; efficacité typique des méthodes d’irrigation (FAO, Brouwer et al.). Agreste, recensement agricole 2020 : ≈ 7 % de la surface agricole française irriguée. Observatoire SISPEA (OFB) : environ 1 L sur 5 perdu en fuites dans les réseaux d’eau potable.</li>
+      <li>Tous les chiffres sont des ordres de grandeur arrondis. Ceux marqués « estimation » sont calculés à partir des sources ci-dessus.</li>
+    </ul>
+  </details>
+</section>
+
+<section class="view" id="v-gestes" hidden>
+  <header class="head">
+    <div>
+      <h1><svg aria-hidden="true" style="color:var(--green)"><use href="#i-leaf"/></svg>Mes gestes pour économiser l’eau</h1>
+      <p>Pour chaque geste : l’eau utilisée normalement, et avec des économies. Clique sur <b>?</b> pour savoir combien tu peux économiser.</p>
+    </div>
+  </header>
+  <div class="g-box">
+    <div class="gc-top">
+      <div><h2>Ma consommation d’eau : normale et avec économies</h2><span class="unit">litres par jour</span></div>
+      <div class="gc-legend">
+        <span><i class="sw-n"></i>Consommation normale</span><span><i class="sw-e"></i>Avec économies</span><span><i class="sw-s"></i>Eau économisée</span>
+      </div>
+    </div>
+    <div class="legend" id="gCats"></div>
+    <div class="gc" id="gChart"></div>
+    <p class="g-txt">Tous les gestes sont sur la même échelle, pour comparer les vrais ordres de grandeur. On n’additionne pas les groupes : l’eau du robinet est de l’eau potable prélevée, alors que l’eau cachée compte toute l’eau utilisée pour produire un objet ou un aliment (surtout de la pluie pour les aliments et les vêtements). Mais dans tous les cas, moins on en utilise, moins on prélève dans les rivières et les nappes.</p>
+  </div>
+  <p class="g-txt">Sources : Centre d’information sur l’eau et UFC-Que Choisir (eau du robinet, fuites) ; Water Footprint Network (aliments, coton) ; Levi Strauss & Co 2015 (jean) ; Friends of the Earth et Trucost 2015 (smartphone, estimation) ; Ercin et al. 2011 (soda) ; Pacific Institute 2007 (eau en bouteille) ; Argonne National Laboratory (≈ 6 L d’eau par litre d’essence) ; Obringer et al., Purdue University 2021 (streaming et visioconférence : 2 à 12 L par heure) ; Li et al., université de Californie 2023 (IA : ≈ 0,5 L pour 20 à 50 questions) ; EDF 2022 (≈ 2,3 L d’eau évaporée par kWh dans une centrale à tours). Les situations « normale » et « économe » sont des exemples.</p>
+</section>
+</main>
+
+<script>
+"use strict";
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const ico=id=>`<svg class="ico" aria-hidden="true"><use href="#i-${id}"/></svg>`;
+const nf=new Intl.NumberFormat("fr-FR");
+const fmt=n=>nf.format(n>=100?Math.round(n):Math.round(n*10)/10);
+const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const raf2=f=>requestAnimationFrame(()=>requestAnimationFrame(f));
+const SEC={
+  res:{n:"Ressource en eau",c:"var(--water)"},
+  home:{n:"Maisons et ville",c:"var(--home)"},
+  agri:{n:"Agriculture",c:"var(--agri)"},
+  elev:{n:"Élevage",c:"var(--elev)"},
+  indus:{n:"Industrie et énergie",c:"var(--indus)"}
+};
+
+/* ============ SCHÉMA ============ */
+const R=[]; const add=s=>R.push(s);
+const hot=(k,label,inner)=>`<g class="hot" data-k="${k}" tabindex="0" role="button" aria-label="${label}">${inner}</g>`;
+const cloud=(x,y,s=1)=>`<g class="c-snow" opacity=".92"><ellipse cx="${x}" cy="${y}" rx="${46*s}" ry="${15*s}"/><ellipse cx="${x+20*s}" cy="${y-10*s}" rx="${28*s}" ry="${16*s}"/><ellipse cx="${x-18*s}" cy="${y-6*s}" rx="${22*s}" ry="${12*s}"/></g>`;
+const tree=(x,y)=>`<rect x="${x-2.5}" y="${y+8}" width="5" height="14" class="c-s2"/><circle cx="${x}" cy="${y}" r="14" class="c-g"/><circle cx="${x+5}" cy="${y-4}" r="3" class="c-h"/><circle cx="${x-6}" cy="${y+4}" r="3" class="c-h"/>`;
+const cow=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})"><path d="M-14 8v11M12 8v11" stroke="var(--ink)" stroke-width="3"/><ellipse cx="0" cy="0" rx="20" ry="12" class="c-cow" stroke="var(--ink)" stroke-width="2"/><circle cx="-6" cy="-3" r="5" class="c-k"/><circle cx="7" cy="4" r="3.5" class="c-k"/><rect x="16" y="-16" width="13" height="13" rx="4" class="c-cow" stroke="var(--ink)" stroke-width="2"/></g>`;
+const pig=(x,y)=>`<g transform="translate(${x} ${y})"><path d="M-8 6v7M7 6v7" stroke="var(--ink)" stroke-width="2.5"/><ellipse rx="15" ry="9" class="c-pig"/><rect x="11" y="-6" width="9" height="9" rx="3.5" class="c-pig"/></g>`;
+const hen=(x,y)=>`<g transform="translate(${x} ${y})"><path d="M-2 6v6M3 6v6" stroke="var(--agri)" stroke-width="2"/><ellipse rx="9" ry="7" class="c-snow" stroke="var(--grey)" stroke-width="1.5"/><circle cx="7" cy="-7" r="4" class="c-snow" stroke="var(--grey)" stroke-width="1.5"/><path d="M6 -12l2-3 2 3Z" class="c-h"/></g>`;
+const sheep=(x,y)=>`<g transform="translate(${x} ${y})"><path d="M-6 7v8M6 7v8" stroke="var(--ink)" stroke-width="2.5"/><g class="c-snow" stroke="var(--grey)" stroke-width="1"><circle cx="-7" r="7"/><circle cx="0" cy="-3" r="7"/><circle cx="7" r="7"/><circle cx="0" cy="4" r="7"/></g><ellipse cx="13" cy="-4" rx="5" ry="4" class="c-k"/></g>`;
+const tower=(x,w,top,bot)=>`<path d="M${x} ${bot} C ${x+14} ${bot-45}, ${x+14} ${top+70}, ${x+7} ${top} L ${x+w-7} ${top} C ${x+w-14} ${top+70}, ${x+w-14} ${bot-45}, ${x+w} ${bot} Z" class="c-wall2" stroke="var(--grey)" stroke-width="2"/>`;
+const steam=(x,y,r,d)=>`<circle class="steam" cx="${x}" cy="${y}" r="${r}" style="animation-delay:${d}s"/>`;
+const wins=(x,y,w,h,dx=14,dy=18,ww=7,wh=9)=>{let s="";for(let yy=y+10;yy<y+h-12;yy+=dy)for(let xx=x+7;xx<x+w-8;xx+=dx)s+=`<rect x="${xx}" y="${yy}" width="${ww}" height="${wh}" class="c-win"/>`;return s;};
+
+add(`<defs>
+  <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--sky1)"/><stop offset="1" style="stop-color:var(--sky2)"/></linearGradient>
+  <pattern id="pAq" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" class="c-s2"/><circle cx="4" cy="4" r="3.6" class="c-w"/><circle cx="12" cy="11" r="3" class="c-w2"/></pattern>
+</defs>`);
+// ciel
+add(`<rect id="sky" width="1400" height="262" fill="url(#gSky)"/>`);
+add(`<circle cx="1335" cy="58" r="30" class="c-a" opacity=".9"/>`);
+add(cloud(640,70,1)+cloud(980,52,.8)+cloud(1180,90,.7));
+// nuage de pluie sur la montagne
+let rain="";for(let i=0;i<14;i++)rain+=`<rect x="${420+i*9}" y="${88+(i%3)*12}" width="2.5" height="12" rx="1" class="fall" style="animation-delay:${(i*.23)%1}s"/>`;
+add(`<g class="c-w2">${rain}</g>`+`<g class="c-gr" opacity=".75"><ellipse cx="480" cy="72" rx="62" ry="20"/><ellipse cx="500" cy="58" rx="36" ry="20"/><ellipse cx="458" cy="62" rx="28" ry="16"/></g>`);
+// montagnes
+add(`<path class="c-m" d="M0 258 L70 122 L150 176 L280 32 L400 150 L470 110 L560 196 L650 258Z"/>`);
+add(`<path class="c-snow" d="M70 122 L56 148 L68 142 L76 150 L86 140Z M470 110 L455 132 L466 128 L474 136 L486 126Z"/>`);
+// glacier
+add(hot("glacier","Glacier",`<path class="c-snow" d="M280 32 L246 80 L262 74 L272 88 L286 72 L300 86 L314 76 Z"/>
+  <path class="c-ice" d="M268 82 Q 286 140 292 206 L 314 206 Q 306 140 300 80 Z" stroke="var(--water-2)" stroke-width="2"/>
+  <path d="M282 110 l14 4 M286 140 l16 3 M290 170 l16 2" stroke="var(--water-2)" stroke-width="2"/>`));
+// sol de surface
+add(`<rect y="246" width="1400" height="410" class="c-p"/>`);
+// coupe du sol
+add(`<rect y="652" width="1400" height="178" class="c-s"/><rect y="652" width="1400" height="22" class="c-s2"/>`);
+add(hot("nappe","Nappe phréatique",`<rect y="704" width="1400" height="70" fill="url(#pAq)"/>`));
+add(`<rect y="774" width="1400" height="56" class="c-r"/><text x="1388" y="812" text-anchor="end" class="lbl-s" style="fill:var(--surface)">coupe du sol</text>`);
+add(`<g stroke="var(--water-2)" stroke-width="3" fill="none" class="flow">${[70,560,640,1110].map(x=>`<path d="M${x} 676 V 700"/>`).join("")}</g>`);
+// torrent glacier -> lac
+add(`<path d="M303 204 C 300 232, 286 246, 262 256" stroke="var(--water)" stroke-width="7" fill="none"/><path d="M303 204 C 300 232, 286 246, 262 256" stroke="var(--water-2)" stroke-width="2.5" fill="none" class="flow"/>`);
+// lac
+add(hot("lac","Lac",`<ellipse cx="190" cy="284" rx="168" ry="34" class="c-w"/><ellipse cx="170" cy="278" rx="96" ry="10" class="c-w2" opacity=".55"/>`));
+// rivière
+const RIV="M350 290 C 470 296, 540 346, 690 350 S 950 332, 1080 348 S 1290 372, 1400 362";
+add(hot("riviere","Rivière",`<path d="${RIV}" stroke="var(--water)" stroke-width="28" fill="none" stroke-linecap="round"/><path d="${RIV}" stroke="var(--water-2)" stroke-width="4" fill="none" class="flow-slow"/>`));
+// moutons sur la colline
+add(hot("moutons","Élevage de moutons",`<path d="M418 290 Q 508 224 604 302 Z" class="c-g2"/>${sheep(460,268)}${sheep(505,256)}${sheep(548,266)}${sheep(578,283)}`));
+// centrale électrique
+add(hot("centrale","Centrale électrique",`${tower(622,66,170,334)}${tower(698,66,170,334)}
+  <rect x="772" y="282" width="46" height="52" class="c-metal"/><path d="M772 284 a23 23 0 0 1 46 0Z" class="c-wall2" stroke="var(--grey)" stroke-width="2"/>
+  <path d="M796 298 l-7 13 h7 l-4 12 l11 -16 h-7 l4 -9Z" class="c-a"/>
+  <g class="c-snow">${steam(655,156,20,0)}${steam(640,146,16,1.4)}${steam(731,156,20,.7)}${steam(746,146,16,2.1)}${steam(665,150,14,2.8)}</g>
+  <path d="M760 334 V 352" stroke="var(--water)" stroke-width="6"/><path d="M760 352 V 334" stroke="var(--water-2)" stroke-width="2" class="flow"/>`));
+// usine de fabrication
+add(hot("usine","Usine de fabrication",`<rect x="832" y="268" width="120" height="66" class="c-metal"/>
+  <path d="M832 268 l24 -20 v20 l24 -20 v20 l24 -20 v20 l24 -20 v20 l24 -20 v20Z" class="c-gr"/>
+  <rect x="922" y="188" width="16" height="64" class="c-i"/>
+  <g class="c-metal">${steam(930,178,10,0)}${steam(936,170,12,1.6)}</g>
+  ${[842,866,890].map(x=>`<rect x="${x}" y="286" width="16" height="13" class="c-win"/>`).join("")}<rect x="912" y="300" width="24" height="34" class="c-i"/>
+  <path d="M892 334 V 342" stroke="var(--water)" stroke-width="6"/>`));
+// industrie alimentaire
+add(hot("agro","Industrie alimentaire",`<rect x="966" y="282" width="104" height="52" class="c-wall"/><rect x="966" y="276" width="104" height="9" class="c-a"/>
+  <rect x="976" y="212" width="26" height="66" rx="12" class="c-metal"/><rect x="1008" y="226" width="26" height="52" rx="12" class="c-metal"/>
+  <circle cx="990" cy="306" r="11" class="c-a"/><path d="M984 306 h12 M990 300 v12" stroke="var(--surface)" stroke-width="3"/>
+  <rect x="1012" y="296" width="44" height="18" class="c-win"/>
+  <path d="M1040 334 V 345" stroke="var(--water)" stroke-width="6"/>`));
+// ville
+const BLD=[[1088,200,50,136],[1142,150,56,186],[1203,214,42,122],[1250,118,62,218],[1316,178,40,158],[1360,228,38,108]];
+add(hot("ville","Ville et immeubles",BLD.map(([x,y,w,h],i)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" class="${i%2?"c-wall2":"c-metal"}"/>`+wins(x,y,w,h)).join("")));
+// champ de blé
+let ws="";for(let x=24;x<204;x+=13)ws+=`<line x1="${x}" y1="398" x2="${x-8}" y2="636" stroke="var(--soil-2)" stroke-width="2.4" opacity=".35"/>`;
+add(hot("ble","Champ de blé",`<polygon points="16,392 206,392 202,642 6,642" class="c-a"/>${ws}`));
+// champ de maïs
+let ms="";for(let x=234;x<414;x+=17)for(let y=404;y<636;y+=20)ms+=`<path d="M${x} ${y+13} l3.5 -16 l3.5 16Z" class="c-g2"/>`;
+add(hot("mais","Champ de maïs",`<polygon points="220,392 420,392 424,642 216,642" class="c-g"/>${ms}`));
+// pivot d'irrigation
+let sp="";for(let x=236;x<412;x+=14)sp+=`<rect x="${x}" y="${458+(x%3)*3}" width="3" height="9" rx="1.5" class="fall" style="animation-delay:${((x*7)%10)/10}s"/>`;
+add(hot("pivot","Pivot d’irrigation et forage",`<line x1="232" y1="452" x2="412" y2="452" stroke="var(--metal)" stroke-width="7"/>
+  ${[262,321,380].map(x=>`<path d="M${x} 452 l-10 30 h20Z" class="c-metal"/>`).join("")}
+  <g class="c-w">${sp}</g>
+  <line x1="321" y1="482" x2="321" y2="626" stroke="var(--water)" stroke-width="5"/>
+  <rect x="309" y="622" width="24" height="20" class="c-gr"/>
+  <line x1="321" y1="642" x2="321" y2="736" stroke="var(--water)" stroke-width="6"/><line x1="321" y1="736" x2="321" y2="642" stroke="var(--water-2)" stroke-width="2.5" class="flow"/>`));
+// serre
+add(hot("serre","Serre de tomates",`<path d="M434 466 V 424 Q 491 374 548 424 V 466 Z" class="c-ice" opacity=".75" stroke="var(--water-2)" stroke-width="3"/>
+  <path d="M472 466 V 398 M510 466 V 398" stroke="var(--water-2)" stroke-width="2"/>
+  ${[448,474,500,526].map(x=>`<path d="M${x} 464 v-22" stroke="var(--green)" stroke-width="4"/><circle cx="${x+4}" cy="450" r="4" class="c-h"/><circle cx="${x-3}" cy="442" r="3.5" class="c-h"/>`).join("")}`));
+// potager
+let pg="";for(let y=490;y<640;y+=24)for(let x=448;x<545;x+=22)pg+=`<circle cx="${x}" cy="${y}" r="8" class="c-g2"/><circle cx="${x}" cy="${y}" r="4" class="c-g"/>`;
+add(hot("potager","Potager : pommes de terre et salades",`<rect x="434" y="476" width="114" height="166" class="c-s2"/>${pg}`));
+// verger
+let tr="";for(const x of [585,622,659])for(const y of [414,460,506,552,598])tr+=tree(x,y);
+add(hot("verger","Verger de pommiers",`<rect x="562" y="392" width="118" height="250" class="c-g2" opacity=".6"/>${tr}`));
+// vaches
+add(hot("vaches","Élevage de vaches",`<rect x="694" y="392" width="160" height="110" class="c-g2"/>
+  <path d="M694 402 h160 M694 494 h160" stroke="var(--soil-2)" stroke-width="3"/>
+  <rect x="702" y="414" width="62" height="40" class="c-roof"/><polygon points="696,416 733,394 770,416" class="c-s2"/><rect x="724" y="430" width="18" height="24" class="c-wall2"/>
+  ${cow(802,428,.9)}${cow(822,470,.9)}${cow(742,476,.85)}
+  <rect x="784" y="486" width="34" height="10" rx="3" class="c-metal"/><rect x="787" y="487" width="28" height="5" class="c-w2"/>`));
+// porcs
+add(hot("porcs","Élevage de porcs",`<rect x="694" y="510" width="160" height="62" class="c-wall2" opacity=".55"/>
+  <rect x="702" y="526" width="74" height="40" class="c-wall2" stroke="var(--soil-2)" stroke-width="1.5"/><polygon points="696,528 739,508 782,528" class="c-roof"/>
+  ${pig(806,540)}${pig(832,558)}`));
+// volailles
+add(hot("volailles","Élevage de volailles",`<rect x="694" y="580" width="160" height="62" class="c-p" stroke="var(--soil-2)" stroke-width="1.5"/>
+  <rect x="702" y="598" width="86" height="34" class="c-wall"/><polygon points="696,600 745,582 794,600" class="c-s2"/>
+  ${[712,732,752,772].map(x=>`<rect x="${x}" y="608" width="10" height="8" class="c-win"/>`).join("")}
+  ${hen(808,624)}${hen(830,612)}${hen(838,632)}`));
+// canal + péniche
+add(hot("canal","Canal et péniche",`<rect x="866" y="350" width="26" height="296" class="c-w"/>
+  <path d="M879 360 V 640" stroke="var(--water-2)" stroke-width="3" class="flow-slow"/>
+  <rect x="860" y="468" width="38" height="7" class="c-s2"/><rect x="860" y="500" width="38" height="7" class="c-s2"/>
+  <g class="bob"><rect x="870" y="540" width="18" height="62" rx="7" class="c-h"/><rect x="872" y="584" width="14" height="13" class="c-snow"/></g>`));
+// maison (structure)
+add(hot("maison","Maison",`<polygon points="898,456 1020,392 1142,456" class="c-roof"/><rect x="1086" y="404" width="18" height="34" class="c-roof"/>
+  <rect x="910" y="452" width="220" height="178" class="c-wall"/>
+  <rect x="916" y="458" width="100" height="78" class="c-ws"/><rect x="1026" y="458" width="98" height="78" class="c-wall2"/>
+  <rect x="916" y="546" width="100" height="80" class="c-wall2"/><rect x="1026" y="546" width="98" height="80" class="c-ws"/>
+  <rect x="910" y="536" width="220" height="10" class="c-s2"/><rect x="1016" y="452" width="10" height="178" class="c-s2"/>`));
+// canalisations de la maison
+add(`<g fill="none" stroke="var(--water)" stroke-width="4"><path d="M1124 648 V 470 H 940 M1124 560 H 960 M1124 520 H 1080 M1124 600 H 1080"/></g>
+  <g fill="none" stroke="var(--water-2)" stroke-width="1.6" class="flow"><path d="M1124 648 V 470 H 940"/></g>`);
+// douche + baignoire
+let sd="";for(let i=0;i<6;i++)sd+=`<rect x="${930+(i%3)*7}" y="${484+Math.floor(i/3)*20}" width="2.5" height="9" class="fall" style="animation-delay:${i*.15}s"/>`;
+add(hot("douche","Douche et baignoire",`<rect x="920" y="466" width="34" height="68" class="c-snow" opacity=".55" stroke="var(--metal)" stroke-width="2.5"/>
+  <path d="M928 478 h22 l-3 5 h-16Z" class="c-metal"/><g class="c-w">${sd}</g>
+  <path d="M960 504 h52 v12 a14 14 0 0 1 -14 14 h-24 a14 14 0 0 1 -14 -14Z" class="c-snow" stroke="var(--metal)" stroke-width="2.5"/><rect x="963" y="507" width="46" height="6" class="c-w2"/>`));
+// WC
+add(hot("wc","Toilettes",`<rect x="1072" y="482" width="26" height="22" rx="3" class="c-snow" stroke="var(--metal)" stroke-width="2.5"/>
+  <path d="M1052 508 h52 a26 18 0 0 1 -26 18 l2 8 h-18 l2 -9 a18 14 0 0 1 -12 -17Z" class="c-snow" stroke="var(--metal)" stroke-width="2.5"/>`));
+// cuisine / vaisselle
+add(hot("vaisselle","Évier et lave-vaisselle",`<rect x="920" y="590" width="92" height="36" class="c-wall"/><rect x="918" y="586" width="96" height="6" class="c-s2"/>
+  <rect x="926" y="580" width="30" height="8" class="c-metal"/><path d="M950 580 v-14 h-10 v4" stroke="var(--metal)" stroke-width="3.5" fill="none"/>
+  <rect x="964" y="594" width="42" height="30" rx="3" class="c-metal" stroke="var(--grey)" stroke-width="2"/><rect x="968" y="598" width="34" height="5" class="c-gr"/>
+  <path d="M928 556 h28 v6 h-28Z" class="c-wall"/><path d="M936 550 l3 -10 h6 l3 10Z" class="c-w2" stroke="var(--metal)"/>`));
+// lave-linge
+add(hot("linge","Lave-linge",`<rect x="1048" y="566" width="56" height="58" rx="6" class="c-snow" stroke="var(--grey)" stroke-width="2.5"/><rect x="1048" y="566" width="56" height="11" rx="5" class="c-metal"/>
+  <circle cx="1076" cy="602" r="16" class="c-metal"/><circle cx="1076" cy="602" r="11" class="c-w2"/><path d="M1068 604 q4 -4 8 0 t8 0" stroke="var(--water)" stroke-width="2.5" fill="none" class="bob"/>`));
+// jardin
+add(hot("jardin","Jardin et arrosage",`<rect x="898" y="630" width="246" height="16" class="c-g"/>
+  ${[920,946,972,998].map((x,i)=>`<path d="M${x} 632 v-14" stroke="var(--green)" stroke-width="3"/><circle cx="${x}" cy="616" r="6" style="fill:${["var(--home)","var(--agri)","var(--water-2)","var(--home)"][i]}"/>`).join("")}
+  <rect x="1134" y="604" width="8" height="12" class="c-metal"/><path d="M1142 610 C 1160 612, 1150 640, 1166 636" stroke="var(--green)" stroke-width="4" fill="none"/>
+  <g class="c-w2">${[0,1,2,3].map(i=>`<circle cx="${1168+i*4}" cy="${630-i*5}" r="2.6" class="fall" style="animation-delay:${i*.2}s"/>`).join("")}</g>`));
+// égout maison -> station d'épuration
+add(`<path d="M1130 590 H 1162 V 448 H 1186" stroke="var(--soil-2)" stroke-width="5" fill="none" stroke-dasharray="10 6"/>`);
+// station d'épuration
+add(hot("step","Station d’épuration",`<rect x="1186" y="414" width="44" height="40" class="c-wall2" stroke="var(--grey)" stroke-width="1.5"/><rect x="1196" y="424" width="24" height="10" class="c-win"/>
+  <ellipse cx="1270" cy="430" rx="30" ry="12" class="c-metal"/><ellipse cx="1270" cy="428" rx="23" ry="8" class="c-s"/>
+  <ellipse cx="1336" cy="426" rx="32" ry="12" class="c-metal"/><ellipse cx="1336" cy="424" rx="25" ry="8" class="c-g2"/>
+  <ellipse cx="1302" cy="462" rx="28" ry="10" class="c-metal"/><ellipse cx="1302" cy="461" rx="21" ry="6" class="c-w2"/>
+  <path d="M1376 424 V 376" stroke="var(--water)" stroke-width="6"/><path d="M1376 424 V 376" stroke="var(--water-2)" stroke-width="2" class="flow-up"/>`));
+// usine d'eau potable + captage
+add(hot("potable","Usine d’eau potable et captage",`<rect x="1190" y="512" width="96" height="58" class="c-metal"/><polygon points="1186,514 1238,494 1290,514" class="c-gr"/>
+  <circle cx="1214" cy="540" r="11" class="c-w"/><path d="M1214 533 c0 0 -6 7 -6 10 a6 6 0 0 0 12 0 c0 -3 -6 -10 -6 -10Z" class="c-surf"/>
+  <rect x="1236" y="530" width="40" height="16" class="c-win"/>
+  <line x1="1238" y1="570" x2="1238" y2="736" stroke="var(--water)" stroke-width="6"/><line x1="1238" y1="736" x2="1238" y2="570" stroke="var(--water-2)" stroke-width="2.5" class="flow"/>`));
+// château d'eau
+add(hot("chateau","Château d’eau",`<rect x="1338" y="512" width="18" height="136" class="c-wall2"/>
+  <path d="M1312 480 h70 l-8 34 h-54Z" class="c-metal" stroke="var(--grey)" stroke-width="2"/><rect x="1318" y="486" width="58" height="10" class="c-w2"/>
+  <path d="M1286 556 H 1338" stroke="var(--water)" stroke-width="5"/>`));
+// réseau d'eau potable vers la maison
+add(`<path d="M1347 648 H 1124" stroke="var(--water)" stroke-width="5"/><path d="M1347 648 H 1124" stroke="var(--water-2)" stroke-width="2" class="flow"/>`);
+
+const TAGS=[
+  ["glacier",286,22,"Glacier","res"],["lac",150,286,"Lac","res"],["riviere",600,328,"Rivière","res"],["nappe",640,740,"Nappe phréatique","res"],
+  ["moutons",510,232,"Moutons","elev"],["centrale",697,118,"Centrale électrique","indus"],["usine",884,160,"Usine","indus"],["agro",1018,198,"Industrie alimentaire","indus"],
+  ["ville",1250,100,"Ville","home"],["ble",110,416,"Blé","agri"],["mais",320,604,"Maïs","agri"],["pivot",321,432,"Irrigation","agri"],
+  ["serre",491,386,"Serre","agri"],["potager",491,560,"Potager","agri"],["verger",621,384,"Verger","agri"],
+  ["vaches",795,380,"Vaches","elev"],["porcs",780,512,"Porcs","elev"],["volailles",790,580,"Volailles","elev"],["canal",879,440,"Canal","indus"],
+  ["maison",1020,428,"Maison","home"],["douche",968,478,"Douche","home"],["wc",1076,474,"WC","home"],["vaisselle",966,570,"Vaisselle","home"],
+  ["linge",1076,560,"Lave-linge","home"],["jardin",1050,640,"Jardin","home"],["step",1280,392,"Station d’épuration","home"],
+  ["potable",1238,488,"Usine d’eau potable","home"],["chateau",1328,462,"Château d’eau","home"]];
+add(`<g class="tags" id="tags">${TAGS.map(([k,x,y,t,s])=>{const w=t.length*8.6+26;return `<g class="tag" data-for="${k}" transform="translate(${x} ${y})"><rect x="${-w/2}" y="-15" width="${w}" height="30" rx="15" style="stroke:${SEC[s].c}"/><text y="6" text-anchor="middle">${t}</text></g>`;}).join("")}</g>`);
+const scene=$("#scene"); scene.innerHTML=R.join("");
+
+/* ============ DONNÉES ============ */
+// France : eau prélevée par personne et par jour (SDES, moyenne 2010-2019, 66 M hab.)
+const FR=[["energie","Refroidir les centrales électriques",700,"bolt"],["potable","Eau potable (maisons, écoles, commerces…)",220,"tap"],["canaux","Alimenter les canaux",215,"boat"],["agri","Agriculture (irrigation, élevage)",120,"tractor"],["indus","Industrie",110,"factory"]];
+const frBars=hl=>({title:"En France : eau prélevée par personne et par jour",unit:"litres / personne / jour",rows:FR.map(([k,l,v,i])=>({k,l,v,i,t:`≈ ${fmt(v)} L`})),hl,foot:"Total ≈ 1 360 L par personne et par jour, toutes activités confondues."});
+const P={
+  agri:[{l:"Monde · eau prélevée",p:70},{l:"France · eau prélevée",p:9},{l:"France · eau consommée",p:58}],
+  home:[{l:"Monde · eau prélevée (villes et foyers)",p:10},{l:"France · eau prélevée (eau potable)",p:16},{l:"France · eau consommée (eau potable)",p:26}],
+  indus:[{l:"Monde · eau prélevée (industrie et énergie)",p:20},{l:"France · eau prélevée (industrie)",p:8},{l:"France · eau consommée (industrie)",p:4}],
+  energie:[{l:"France · eau prélevée",p:51},{l:"France · eau consommée",p:12},{l:"Eau rendue au fleuve par une centrale à tours",p:77,c:"var(--water)"}],
+};
+const DOM=[["douche","Bains et douches",58,"shower",39],["wc","Toilettes",30,"wc",20],["linge","Linge",18,"washer",12],["vaisselle","Vaisselle",15,"dish",10],["cuisine","Cuisine",9,"pot",6],["jardin","Jardin et voiture",9,"sprout",6],["divers","Divers",9,"dots",6],["boisson","Boisson",1.5,"glass",1]];
+const domBars=hl=>({title:"À la maison en France : litres par personne et par jour",unit:"litres / personne / jour",rows:DOM.map(([k,l,v,i])=>({k,l,v,i,t:`≈ ${fmt(v)} L`})),hl,foot:"Total ≈ 148 L par personne et par jour."});
+// empreinte eau, moyenne mondiale (L/kg) : verte, bleue, grise
+const CROPS=[["ble","Blé",1277,342,207,"wheat"],["riz","Riz",1146,341,187,"bowl"],["mais","Maïs",947,81,194,"sprout"],["pommes","Pommes",561,133,127,"apple"],["pdt","Pommes de terre",191,33,63,"potato"],["salade","Salade",133,28,77,"leaf"],["tomate","Tomates",108,63,43,"tomato"]];
+const ANIM=[["boeuf","Bœuf",14414,550,451,"cow"],["mouton","Mouton",9813,522,76,"sheep"],["porc","Porc",4907,459,622,"pig"],["poulet","Poulet",3545,313,467,"hen"],["oeufs","Œufs",2592,244,429,"egg"],["lait","Lait (par litre)",863,86,72,"milk"]];
+const fpBars=(list,hl,title)=>({title,unit:"litres pour 1 kg (moyenne mondiale)",stack:true,rows:list.map(([k,l,g,b,gr,i])=>({k,l,i,parts:[g,b,gr],v:g+b+gr,t:`≈ ${fmt(rnd(g+b+gr))} L`})),hl});
+const FRESH=[["glace","Glaces et glaciers",68.7,"snow"],["nappe","Nappes souterraines",30.1,"layers"],["surface","Lacs, rivières, marais, sols, air",1.2,"wave"]];
+const freshBars=hl=>({title:"Toute l’eau douce de la Terre, ramenée à 100 L",unit:"litres sur 100 L d’eau douce",rows:FRESH.map(([k,l,v,i])=>({k,l,v,i,t:`${fmt(v)} L`,c:"var(--water)"})),hl});
+const pct=(a,b)=>a/b*100;
+const rnd=v=>v>=1000?Math.round(v/100)*100:Math.round(v/10)*10;
+
+function crop(k,key,title,icon,extra){
+  const c=CROPS.find(x=>x[0]===key), tot=c[2]+c[3]+c[4];
+  return {sec:"agri",title,icon,kpi:{n:`≈ ${fmt(rnd(tot))} L`,u:`d’eau pour produire 1 kg de ${c[1].toLowerCase()}`,x:`Dont seulement ≈ ${fmt(rnd(c[3]))} L d’eau prélevée (eau bleue) : le reste est surtout de la pluie. ${extra}`},
+    c1:fpBars(CROPS,key,"Eau pour produire 1 kg de culture (empreinte eau)"),
+    c2:{title:"Quelle part ?",rows:[{l:`Eau de pluie (eau verte) dans l’empreinte ${c[1]==="Pommes"?"des pommes":c[1]==="Tomates"?"des tomates":"de la culture"}`,p:pct(c[2],tot),c:"var(--green)"},...P.agri]},
+    text:"La plus grande partie de cette eau est de la pluie utilisée par la plante. L’eau bleue est l’eau d’irrigation prélevée dans les rivières et les nappes. Dans le monde, l’agriculture prélève 70 % de l’eau ; en France seulement 9 %, mais c’est elle qui en consomme le plus (58 %).",
+    src:"Water Footprint Network (Mekonnen et Hoekstra, 2011) ; FAO AQUASTAT ; SDES 2010-2019."};
+}
+function animal(k,key,title,icon,drink){
+  const a=ANIM.find(x=>x[0]===key), tot=a[2]+a[3]+a[4];
+  return {sec:"elev",title,icon,kpi:{n:`≈ ${fmt(rnd(tot))} L`,u:`d’eau pour produire 1 kg de ${a[1].toLowerCase()}`,x:`Dont ≈ ${fmt(rnd(a[3]))} L d’eau prélevée (eau bleue) : plus de 80 % est de la pluie tombée sur les prairies et les champs. Eau bue par l’animal : ${drink}.`},
+    c1:fpBars(ANIM,key,"Eau pour produire 1 kg de produit animal (empreinte eau)"),
+    c2:{title:"Quelle part ?",rows:[{l:`Eau de pluie (eau verte) dans l’empreinte du ${a[1].toLowerCase()}`,p:pct(a[2],tot),c:"var(--green)"},{l:"Nourriture de l’animal dans l’empreinte d’un produit animal",p:98},{l:"Produits animaux dans l’empreinte eau de l’agriculture mondiale",p:29}]},
+    text:`Ces litres ne sont pas de l’eau potable bue par l’animal : c’est surtout la pluie qui a fait pousser l’herbe, les céréales et le soja qu’il a mangés pendant sa vie.`,
+    src:"Water Footprint Network (Mekonnen et Hoekstra, 2012) : moyennes mondiales."};
+}
+function dom(k,title,icon,x){
+  const d=DOM.find(r=>r[0]===k);
+  return {sec:"home",title,icon,kpi:{n:`≈ ${fmt(d[2])} L`,u:"par personne et par jour",x},
+    c1:domBars(k),
+    c2:{title:"Quelle part ?",rows:[{l:"de l’eau utilisée à la maison",p:d[4]},{l:"de toute l’eau prélevée en France",p:pct(d[2],1360)}]},
+    text:"L’eau de la maison est de l’eau potable : elle a été pompée dans une nappe ou une rivière, puis traitée. Boire ne représente qu’environ 1 % de l’eau utilisée à la maison.",
+    src:"CIEau (148 L par personne et par jour, répartition des usages) ; SDES 2010-2019 pour le total France."};
+}
+
+const E={
+  "default":{sec:null,title:"Vue générale",icon:"globe",kpi:{n:"≈ 1 400 L",u:"d’eau douce prélevée par personne et par jour dans le monde",x:"En France, c’est presque pareil : ≈ 1 360 L par personne et par jour."},
+    c1:{type:"drops",title:"Sur 100 gouttes d’eau douce prélevées dans le monde"},
+    c2:{title:"Dans le monde : eau prélevée par personne et par jour",unit:"litres / personne / jour",rows:[{k:"a",l:"Agriculture",i:"tractor",v:980,t:"≈ 980 L",c:"var(--agri)"},{k:"i",l:"Industrie et énergie",i:"factory",v:280,t:"≈ 280 L",c:"var(--indus)"},{k:"h",l:"Villes et foyers",i:"house",v:140,t:"≈ 140 L",c:"var(--home)"}]},
+    text:"Ces chiffres comptent l’eau retirée des rivières, des lacs et des nappes pour toute la société, pas seulement l’eau de ta maison. Clique sur un élément du schéma pour voir où elle va.",
+    src:"FAO AQUASTAT : ordres de grandeur mondiaux (≈ 4 000 km³ par an, 8 milliards d’habitants). SDES pour la France."},
+
+  glacier:{sec:"res",title:"Glacier",icon:"snow",kpi:{n:"2,5 %",u:"seulement de l’eau de la Terre est de l’eau douce",x:"Et plus des deux tiers de cette eau douce est gelée."},
+    c1:freshBars("glace"),
+    c2:{title:"Quelle part ?",rows:[{l:"Eau douce dans toute l’eau de la Terre",p:2.5},{l:"Eau douce gelée (glaces, glaciers)",p:68.7}]},
+    text:"Les glaciers stockent de l’eau douce sous forme de glace. En fondant au printemps et en été, ils alimentent les torrents, les lacs et les rivières.",src:"USGS, d’après Gleick (1996)."},
+  lac:{sec:"res",title:"Lac",icon:"wave",kpi:{n:"1,2 L",u:"sur 100 L d’eau douce se trouvent dans les lacs, les rivières, les sols et l’air",x:"C’est pourtant l’eau la plus facile à utiliser."},
+    c1:freshBars("surface"),
+    c2:{title:"Quelle part ?",rows:[{l:"Eau douce dans toute l’eau de la Terre",p:2.5},{l:"Eau de surface et de l’air dans l’eau douce",p:1.2}]},
+    text:"Un lac est une réserve d’eau douce de surface, remplie par la pluie, la fonte des neiges et les cours d’eau. Une partie s’évapore chaque été.",src:"USGS, d’après Gleick (1996)."},
+  riviere:{sec:"res",title:"Rivière",icon:"wave",kpi:{n:"≈ 1/3",u:"de l’eau potable en France vient des rivières et des lacs",x:"Les usines, les centrales et l’agriculture y prélèvent aussi de l’eau."},
+    c1:freshBars("surface"),
+    c2:{title:"Quelle part ?",rows:[{l:"Eau de surface et de l’air dans l’eau douce",p:1.2},{l:"Eau potable française tirée des rivières et des lacs",p:35}]},
+    text:"Une grande partie de l’eau prélevée retourne à la rivière après usage, parfois plus chaude ou plus sale. C’est pour cela qu’on distingue l’eau prélevée et l’eau consommée.",src:"USGS (Gleick, 1996) ; eaufrance (origine de l’eau potable, ordre de grandeur)."},
+  nappe:{sec:"res",title:"Nappe phréatique",icon:"layers",kpi:{n:"≈ 2/3",u:"de l’eau potable en France est pompée dans les nappes",x:"Les forages agricoles puisent aussi dans les nappes."},
+    c1:freshBars("nappe"),
+    c2:{title:"Quelle part ?",rows:[{l:"Eau souterraine dans l’eau douce de la Terre",p:30.1},{l:"Eau potable française tirée des nappes",p:65}]},
+    text:"Une nappe est de l’eau cachée dans les roches du sous-sol. Elle se recharge lentement avec la pluie qui s’infiltre, surtout en hiver.",src:"USGS (Gleick, 1996) ; eaufrance (origine de l’eau potable, ordre de grandeur)."},
+
+  ble:crop("ble","ble","Champ de blé","wheat","En France, le blé pousse surtout en hiver et au printemps, quand il pleut : il est rarement irrigué."),
+  mais:crop("mais","mais","Champ de maïs","sprout","Le maïs grandit en été, quand il pleut peu : c’est une culture souvent irriguée en France."),
+  verger:crop("verger","pommes","Verger de pommiers","apple","Une pomme de 150 g ≈ 120 L d’eau."),
+  potager:crop("potager","pdt","Potager","potato","Les légumes demandent beaucoup moins d’eau par kilo que les céréales ou la viande."),
+  serre:crop("serre","tomate","Serre de tomates","tomato","Dans une serre, il ne pleut pas : on arrose souvent au goutte-à-goutte."),
+  pivot:{sec:"agri",title:"Irrigation",icon:"drop",kpi:{n:"≈ 980 L",u:"prélevés par personne et par jour dans le monde pour l’agriculture",x:"En France : ≈ 120 L par personne et par jour."},
+    c1:{title:"Litres prélevés pour que 100 L arrivent aux racines",unit:"litres prélevés",rows:[{k:"sub",l:"Submersion (on inonde le champ)",i:"wave",v:170,t:"≈ 170 L"},{k:"asp",l:"Aspersion (pivot, canon à eau)",i:"drop",v:135,t:"≈ 135 L"},{k:"gag",l:"Goutte-à-goutte",i:"drop",v:110,t:"≈ 110 L"}],hl:"asp",foot:"Le reste se perd : évaporation, vent, ruissellement, infiltration trop profonde."},
+    c2:{title:"Quelle part ?",rows:[{l:"Terres cultivées irriguées dans le monde",p:20},{l:"Nourriture mondiale produite sur ces terres irriguées",p:40},{l:"Surface agricole irriguée en France",p:7}]},
+    text:"Le pivot pompe l’eau de la nappe par un forage et l’arrose en pluie sur le champ. Irriguer permet de produire beaucoup plus, mais c’est l’usage qui consomme le plus d’eau.",src:"FAO (efficacité typique des méthodes ; 20 % des terres irriguées, 40 % de la nourriture) ; Agreste, recensement agricole 2020."},
+
+  vaches:animal("vaches","boeuf","Élevage de vaches","cow","50 à 100 L par jour pour une vache laitière"),
+  porcs:animal("porcs","porc","Élevage de porcs","pig","5 à 10 L par jour"),
+  volailles:animal("volailles","poulet","Élevage de volailles","hen","0,2 à 0,3 L par jour"),
+  moutons:animal("moutons","mouton","Élevage de moutons","sheep","4 à 7 L par jour"),
+
+  centrale:{sec:"indus",title:"Centrale électrique",icon:"bolt",kpi:{n:"≈ 700 L",u:"prélevés par personne et par jour en France pour refroidir les centrales",x:"Mais seulement ≈ 20 L par personne et par jour sont vraiment consommés (évaporés) : le reste retourne au fleuve. Une centrale à tours prélève ≈ 10 L par kWh et en rend ≈ 7,7 L."},
+    c1:frBars("energie"),c2:{title:"Quelle part ?",rows:P.energie},
+    text:"L’eau refroidit la centrale. La plus grande partie retourne au fleuve, un peu plus chaude. Le reste s’évapore par les tours : c’est le panache blanc, de la vapeur d’eau.",src:"SDES 2010-2019 ; EDF (centrale de Belleville-sur-Loire, étude ACV 2022)."},
+  usine:{sec:"indus",title:"Usine de fabrication",icon:"factory",kpi:{n:"≈ 110 L",u:"prélevés par personne et par jour en France pour l’industrie",x:"L’eau sert à refroidir, laver, fabriquer et transformer les matières premières."},
+    c1:{title:"Eau cachée dans quelques objets",unit:"litres par objet (empreinte eau)",rows:[{k:"jean",l:"Un jean (de la culture du coton aux lavages à la maison)",i:"jean",v:3800,t:"≈ 3 800 L"},{k:"ts",l:"Un T-shirt en coton (250 g)",i:"shirt",v:2500,t:"≈ 2 500 L"}],foot:"L’essentiel de cette eau a servi à faire pousser le coton. La fabrication en usine en représente une petite partie."},
+    c2:{title:"Quelle part ?",rows:P.indus},
+    text:"Une usine prélève de l’eau, l’utilise puis en rend la plus grande partie après traitement. Réutiliser l’eau en circuit fermé permet d’en prélever beaucoup moins.",src:"SDES 2010-2019 ; Levi Strauss & Co, analyse de cycle de vie du jean 501 (2015) ; Water Footprint Network (T-shirt)."},
+  agro:{sec:"indus",title:"Industrie alimentaire",icon:"factory",kpi:{n:"≈ 1 240 L",u:"d’eau cachée dans une pizza",x:"Presque toute cette eau a servi à faire pousser le blé et les tomates, et à nourrir les vaches qui donnent le lait du fromage. L’usine n’en utilise qu’une petite partie."},
+    c1:{title:"Eau cachée dans quelques aliments transformés",unit:"litres par portion (empreinte eau, moyenne mondiale)",rows:[
+      {k:"ch",l:"Tablette de chocolat (100 g)",i:"choc",v:1720,t:"≈ 1 720 L"},
+      {k:"be",l:"Plaquette de beurre (250 g)",i:"milk",v:1390,t:"≈ 1 390 L"},
+      {k:"pz",l:"Pizza (1 entière)",i:"bread",v:1240,t:"≈ 1 240 L"},
+      {k:"pa",l:"Baguette de pain (250 g)",i:"bread",v:400,t:"≈ 400 L"},
+      {k:"la",l:"Verre de lait (25 cl)",i:"milk",v:255,t:"≈ 255 L"},
+      {k:"oe",l:"Un œuf",i:"egg",v:196,t:"≈ 200 L"},
+      {k:"pt",l:"Assiette de pâtes (100 g sèches)",i:"bowl",v:185,t:"≈ 185 L"},
+      {k:"ca",l:"Tasse de café",i:"coffee",v:130,t:"≈ 130 L"},
+      {k:"fr",l:"Portion de fromage (30 g)",i:"milk",v:95,t:"≈ 95 L"},
+      {k:"th",l:"Tasse de thé",i:"coffee",v:27,t:"≈ 27 L"}],foot:"Comme pour le bœuf, la plus grande partie de cette eau est de la pluie tombée sur les champs."},
+    c2:{title:"Quelle part ?",rows:P.indus},
+    text:"À l’usine, l’eau sert à laver les aliments, cuire, refroidir et nettoyer les cuves. Elle entre aussi dans certains produits, comme les boissons.",src:"Water Footprint Network (Mekonnen et Hoekstra) : chocolat 17 196 L/kg, beurre 5 553 L/kg, pain 1 608 L/kg, pâtes 1 849 L/kg, fromage 3 178 L/kg, pizza 1 239 L, verre de lait 255 L, œuf 196 L, café 130 L, thé 27 L."},
+  canal:{sec:"indus",title:"Canal",icon:"boat",kpi:{n:"≈ 215 L",u:"prélevés par personne et par jour en France pour alimenter les canaux",x:"Cette eau n’est presque pas consommée : elle retourne aux rivières. Les péniches transportent des marchandises (céréales, sable…)."},
+    c1:frBars("canaux"),c2:{title:"Quelle part ?",rows:[{l:"France · eau prélevée",p:16}]},
+    text:"Il faut beaucoup d’eau pour remplir les canaux et faire fonctionner les écluses. Cette eau est prélevée, mais elle retourne presque entièrement aux rivières.",src:"SDES 2010-2019."},
+
+  ville:{sec:"home",title:"Ville",icon:"city",kpi:{n:"≈ 220 L",u:"d’eau potable prélevés par personne et par jour en France",x:"Dont ≈ 148 L utilisés à la maison. Le reste : écoles, commerces, hôpitaux, nettoyage des rues… et fuites."},
+    c1:frBars("potable"),c2:{title:"Quelle part ?",rows:P.home},
+    text:"Dans le monde, les villes et les foyers prélèvent environ 10 % de l’eau douce. Cette eau doit être rendue potable avant d’être distribuée.",src:"FAO AQUASTAT ; SDES 2010-2019 ; CIEau."},
+  maison:{sec:"home",title:"Maison",icon:"house",kpi:{n:"≈ 148 L",u:"d’eau du robinet par personne et par jour",x:"Soit environ 100 bouteilles de 1,5 L chaque jour."},
+    c1:domBars(null),c2:{title:"Quelle part ?",rows:[{l:"Eau de la maison dans toute l’eau prélevée en France",p:pct(148,1360)},...P.home.slice(1)]},
+    text:"Les bains et les douches représentent la plus grande part de l’eau de la maison, devant les toilettes.",src:"CIEau ; SDES 2010-2019."},
+  douche:dom("douche","Douche et baignoire","shower","Une douche de 5 min ≈ 60 L ; un bain ≈ 150 L."),
+  wc:dom("wc","Toilettes","wc","Une chasse d’eau classique ≈ 9 L ; une chasse économique 3 à 6 L."),
+  vaisselle:dom("vaisselle","Évier et lave-vaisselle","dish","Un lave-vaisselle récent ≈ 12 L par cycle ; un robinet ouvert ≈ 12 L par minute."),
+  linge:dom("linge","Lave-linge","washer","Un lave-linge récent ≈ 40 à 60 L par cycle."),
+  jardin:dom("jardin","Jardin et arrosage","sprout","Un tuyau d’arrosage ≈ 15 L par minute : 20 minutes ≈ 300 L."),
+  potable:{sec:"home",title:"Usine d’eau potable",icon:"tap",kpi:{n:"≈ 220 L",u:"prélevés par personne et par jour en France pour produire de l’eau potable",x:"L’eau est pompée dans la nappe ou la rivière, filtrée, désinfectée puis contrôlée."},
+    c1:frBars("potable"),c2:{title:"D’où vient l’eau potable en France ?",rows:[{l:"Eau tirée des nappes souterraines",p:65,c:"var(--water)"},{l:"Eau tirée des rivières et des lacs",p:35,c:"var(--water)"}]},
+    text:"L’eau douce n’est pas forcément potable. L’usine la rend propre à la consommation avant de l’envoyer dans le réseau.",src:"SDES 2010-2019 ; eaufrance (origine de l’eau potable, ordre de grandeur)."},
+  chateau:{sec:"home",title:"Château d’eau",icon:"tower",kpi:{n:"1 L sur 5",u:"d’eau potable est perdu dans les fuites avant d’arriver au robinet",x:"Le château d’eau stocke l’eau en hauteur pour qu’elle arrive avec de la pression dans les maisons."},
+    c1:{title:"Pour 100 L d’eau potable envoyés dans les tuyaux",unit:"litres",rows:[{k:"rob",l:"Arrivent au robinet",i:"tap",v:80,t:"≈ 80 L",c:"var(--water)"},{k:"fui",l:"Perdus en fuites",i:"drop",v:20,t:"≈ 20 L",c:"var(--home)"}],hl:"fui"},
+    c2:{title:"Quelle part ?",rows:[{l:"Eau potable perdue dans les fuites des canalisations en France",p:20}]},
+    text:"Réparer les fuites des canalisations est l’un des moyens les plus efficaces d’économiser l’eau potable.",src:"Observatoire SISPEA (OFB) : rendement moyen des réseaux d’environ 80 %."},
+  step:{sec:"home",title:"Station d’épuration",icon:"recycle",kpi:{n:"≈ 9 L sur 10",u:"de l’eau utilisée à la maison repartent par les égouts vers la station d’épuration",x:"Estimation à partir de la répartition des usages domestiques."},
+    c1:{title:"Que devient l’eau de la maison ?",unit:"litres / personne / jour (estimation)",rows:[{k:"eg",l:"Part à l’égout puis à la station",i:"recycle",v:138,t:"≈ 138 L"},{k:"no",l:"Ne repart pas à l’égout (arrosage, boisson…)",i:"sprout",v:10,t:"≈ 10 L"}],hl:"eg"},
+    c2:{title:"Quelle part ?",rows:[{l:"Eau de la maison qui rejoint la station d’épuration",p:93}]},
+    text:"La station retire les déchets, laisse tomber les boues au fond, puis des bactéries mangent la pollution. L’eau traitée retourne à la rivière : elle est plus propre, mais pas potable.",src:"Estimation d’après CIEau (jardin, voiture et boisson ≈ 7 % de l’eau de la maison)."}
+};
+
+/* ============ PANNEAU ============ */
+const panel=$("#panel");
+function barsHTML(c,col){
+  const max=Math.max(...c.rows.map(r=>r.v));
+  const hasHl=c.hl!=null;
+  return `<div class="bars ${hasHl?"has-hl":""}">${c.rows.map(r=>{
+    const fill=c.stack?r.parts.map((p,j)=>`<i data-w="${p/max*100}" style="background:${["var(--green)","var(--water)","var(--grey)"][j]}"></i>`).join("")
+      :`<i data-w="${Math.max(r.v/max*100,.6)}" style="background:${r.c||col}"></i>`;
+    return `<div class="br ${r.k===c.hl?"hl":""}"><span class="bl">${r.i?`<span style="color:${r.c||col}">${ico(r.i)}</span>`:""}<span>${r.l}</span></span><span class="bv">${r.t}</span><span class="bt">${fill}</span></div>`;}).join("")}</div>
+    ${c.stack?`<div class="mini-leg"><span><i class="sw" style="background:var(--green)"></i>eau verte (pluie)</span><span><i class="sw" style="background:var(--water)"></i>eau bleue (irrigation, prélevée)</span><span><i class="sw" style="background:var(--grey)"></i>eau grise (pour diluer la pollution)</span></div>`:""}
+    ${c.foot?`<p class="def">${c.foot}</p>`:""}`;
+}
+function partsHTML(c,col){
+  const pf=p=>p<10?nf.format(Math.round(p*10)/10):nf.format(Math.round(p));
+  return `<div class="parts">${c.rows.map(r=>`<div class="pr"><div class="pl"><span>${r.l}</span><b>${pf(r.p)} %</b></div><div class="pt"><i data-w="${r.p}" style="background:${r.c||col}"></i></div></div>`).join("")}</div>
+    ${c.rows.some(r=>/consommée/.test(r.l))?`<p class="def">Prélevée = retirée de la nature. Consommée = ne revient pas à la nature (évaporée, absorbée par les plantes, mise dans les produits).</p>`:""}`;
+}
+function dropsHTML(){
+  let h="";for(let i=0;i<100;i++){const c=i<70?"var(--agri)":i<90?"var(--indus)":"var(--home)";h+=`<svg viewBox="0 0 24 32" style="color:${c};transition-delay:${i*10}ms"><use href="#i-drop"/></svg>`;}
+  return `<div class="drops" id="drops">${h}</div><div class="mini-leg" style="font-size:.9rem;color:var(--ink);font-weight:700"><span><i class="sw" style="background:var(--agri)"></i>70 agriculture</span><span><i class="sw" style="background:var(--indus)"></i>20 industrie et énergie</span><span><i class="sw" style="background:var(--home)"></i>10 villes et foyers</span></div>`;
+}
+const isParts=c=>!!(c.rows&&c.rows[0]&&"p" in c.rows[0]);
+function chartHTML(n,c,col){
+  const body=c.type==="drops"?dropsHTML():isParts(c)?partsHTML(c,col):barsHTML(c,col);
+  return `<section class="chart"><h3>${n?`<span class="num">${n}</span>`:""}${c.title}</h3>${c.unit?`<span class="unit">${c.unit}</span>`:""}${body}</section>`;
+}
+function render(key){
+  const e=E[key]||E.default, s=e.sec?SEC[e.sec]:null, col=s?s.c:"var(--water)";
+  panel.innerHTML=`<div class="p-top"><div>
+      ${s?`<span class="kicker" style="border-color:${col}">${s.n}</span>`:`<span class="kicker" style="border-color:var(--water-deep)">Monde</span>`}
+      <h2 class="p-title"><span style="color:${col}">${ico(e.icon)}</span>${e.title}</h2></div>
+      ${s?`<button class="back" id="back">${ico("globe")}Vue générale</button>`:""}</div>
+    <div class="kpi"><span class="n" style="color:${s?col:"var(--water-deep)"}">${e.kpi.n}</span><span class="u">${e.kpi.u}</span>${e.kpi.x?`<span class="x">${e.kpi.x}</span>`:""}</div>
+    ${(()=>{const two=e.c2&&!isParts(e.c2);return chartHTML(two?1:0,e.c1,col)+(two?chartHTML(2,e.c2,col):"");})()}
+    <p class="expl">${e.text}</p>
+    ${!s?`<p class="def" style="display:flex;gap:8px;align-items:center;font-size:.9rem;color:var(--ink)"><span style="color:var(--water)">${ico("hand")}</span>Clique sur un champ, un animal, une usine, la maison…</p>`:""}
+    <p class="src">Source : ${e.src}</p>`;
+  raf2(()=>{$$("[data-w]",panel).forEach(i=>i.style.width=i.dataset.w+"%");$("#drops",panel)?.classList.add("show");});
+  $("#back",panel)?.addEventListener("click",()=>select(null));
+}
+
+/* ============ INTERACTIONS ============ */
+let current=null;
+function select(k){
+  current=k;
+  $$(".hot",scene).forEach(h=>h.classList.toggle("sel",h.dataset.k===k));
+  $$(".tag",scene).forEach(t=>t.classList.toggle("sel",t.dataset.for===k));
+  render(k||"default");
+  if(k&&matchMedia("(max-width:1000px)").matches)panel.scrollIntoView({behavior:REDUCE?"auto":"smooth",block:"start"});
+}
+scene.addEventListener("click",ev=>{const h=ev.target.closest(".hot");select(h?(h.dataset.k===current?null:h.dataset.k):null);});
+$$(".hot",scene).forEach(h=>h.addEventListener("keydown",ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();select(h.dataset.k);}}));
+document.addEventListener("keydown",ev=>{if(ev.key==="Escape")select(null);});
+$("#resetBtn").addEventListener("click",()=>select(null));
+$("#tagBtn").addEventListener("click",ev=>{const b=ev.currentTarget,on=b.getAttribute("aria-pressed")==="true";b.setAttribute("aria-pressed",!on);$("#tags").classList.toggle("off",on);$("span",b).textContent=on?"Afficher les noms":"Masquer les noms";});
+select(null);
+
+/* ============ ONGLET « MES GESTES » ============ */
+const GCAT={bain:{n:"Salle de bain",c:"var(--water)"},maison:{n:"Maison, jardin et voiture",c:"var(--home)"},alim:{n:"Alimentation",c:"var(--agri)"},vet:{n:"Vêtements",c:"var(--indus)"},trans:{n:"Transports",c:"var(--trans)"},num:{n:"Numérique",c:"var(--num)"}};
+const GRP=[
+  {k:"rob",n:"Eau du robinet",i:"tap",c:"var(--water)",sub:"Eau potable utilisée à la maison."},
+  {k:"cac",n:"Eau cachée : alimentation et vêtements",i:"sprout",c:"var(--green)",sub:"Toute l’eau utilisée pour produire ce que je mange et ce que je porte, surtout de la pluie tombée sur les champs."},
+  {k:"tra",n:"Eau cachée : transports",i:"car",c:"var(--trans)",sub:"Eau pour extraire le pétrole et fabriquer le carburant (≈ 6 L d’eau par litre d’essence), ou pour produire l’électricité."},
+  {k:"num",n:"Eau cachée : numérique",i:"bolt",c:"var(--num)",sub:"Eau pour fabriquer les appareils, refroidir les centres de données et produire l’électricité."}];
+const G=[
+ {g:"rob",c:"bain",i:"shower",t:"Prendre des douches plus courtes",a:240,b:60,
+  x:"<b class='k'>Si tu prends une douche de 5 minutes au lieu de 20, tu économises 180 L d’eau par jour.</b>Sur une année, ça fait environ 65 000 L, plus de 400 baignoires ! Pourquoi ? Une douche coule à environ 12 L par minute : 20 min = 240 L, 5 min = 60 L. Astuce : avec un pommeau économe, ta douche de 5 min ne demande plus que 35 L.",s:"Centre d’information sur l’eau."},
+ {g:"rob",c:"bain",i:"tap",t:"Fermer le robinet pendant le brossage des dents",a:48,b:.5,
+  x:"<b class='k'>Si tu fermes le robinet pendant que tu te brosses les dents, tu économises environ 47 L d’eau par jour.</b>Sur une année, ça fait plus de 17 000 L. Pourquoi ? Un robinet ouvert coule à environ 12 L par minute. Deux brossages de 2 minutes, robinet ouvert = 48 L. Avec un simple verre pour te rincer : 0,5 L.",s:"Centre d’information sur l’eau."},
+ {g:"rob",c:"bain",i:"wc",t:"Utiliser la petite chasse d’eau",a:45,b:18,
+  x:"<b class='k'>Si tu utilises la petite chasse d’eau, tu économises 27 L d’eau par jour.</b>Sur une année, ça fait près de 10 000 L. Pourquoi ? Pour 5 passages aux toilettes par jour, une chasse classique utilise 5 × 9 L = 45 L. Avec la double chasse (petite chasse de 3 L, grande chasse de 6 L seulement quand il le faut) : 18 L.",s:"Centre d’information sur l’eau."},
+ {g:"rob",c:"maison",i:"drop",t:"Réparer un robinet qui goutte",a:120,b:0,
+  x:"<b class='k'>Si tu fais réparer un robinet qui goutte chez toi, ta famille économise 120 L d’eau par jour.</b>Sur une année, ça fait près de 44 000 L ! Pourquoi ? Un robinet qui goutte perd environ 5 L par heure. Souvent, il suffit de changer un petit joint. Attention : une chasse d’eau qui fuit peut perdre plus de 600 L par jour.",s:"UFC-Que Choisir."},
+ {g:"rob",c:"maison",i:"washer",t:"Lancer le lave-linge seulement quand il est plein",a:18,b:12,
+  x:"<b class='k'>Si ta famille attend que le lave-linge soit plein avant de le lancer, tu économises environ 6 L d’eau par jour.</b>Sur une année, ça fait environ 2 200 L. Pourquoi ? Le linge représente environ 18 L d’eau par personne et par jour. En remplissant bien la machine, on fait environ 1 lavage sur 3 en moins : 18 L → 12 L.",s:"Centre d’information sur l’eau ; « 1 lavage sur 3 » est une hypothèse."},
+ {g:"rob",c:"maison",i:"sprout",t:"Arroser le jardin avec l’eau de pluie",a:129,b:0,
+  x:"<b class='k'>Si ta famille arrose le jardin avec l’eau de pluie au lieu du tuyau, elle économise environ 900 L d’eau du robinet par semaine en été.</b>Ça fait environ 129 L par jour. Pourquoi ? Un tuyau coule à environ 15 L par minute : 3 arrosages de 20 minutes par semaine = 900 L. Avec un récupérateur d’eau de pluie, on n’utilise plus du tout l’eau du robinet.",s:"Ordre de grandeur, Centre d’information sur l’eau."},
+ {g:"rob",c:"maison",i:"car",t:"Laver la voiture en station de lavage",a:13.3,b:4,
+  x:"<b class='k'>Si ta famille lave la voiture en station plutôt qu’au tuyau, elle économise environ 280 L d’eau par mois.</b>Ça fait environ 9 L par jour. Pourquoi ? Un lavage au tuyau demande environ 200 L, un lavage en station haute pression environ 60 L. Pour 2 lavages par mois : 400 L → 120 L. En station, l’eau est souvent recyclée.",s:"Ordres de grandeur."},
+ {g:"cac",c:"alim",i:"cow",t:"Manger moins de bœuf",a:1650,b:559,
+  x:"<b class='k'>Si tu manges du bœuf 1 fois par semaine au lieu de 5, et que tu le remplaces par un plat végétarien, tu économises environ 1 100 L d’eau par jour.</b>Sur une année, ça fait environ 400 000 L ! Pourquoi ? Une portion de bœuf (150 g) demande environ 2 310 L d’eau, surtout de la pluie qui a fait pousser l’herbe et les céréales mangées par la vache. Un plat de lentilles et de légumes : environ 400 L.",s:"Water Footprint Network (bœuf 15 415 L/kg, lentilles 5 874 L/kg)."},
+ {g:"cac",c:"alim",i:"hen",t:"Manger moins de porc et de poulet",a:770,b:611,
+  x:"<b class='k'>Si tu manges du porc ou du poulet 4 fois par semaine au lieu de 7, et que tu les remplaces par un plat végétarien, tu économises environ 160 L d’eau par jour.</b>Sur une année, ça fait près de 58 000 L. Pourquoi ? Une portion de 150 g demande environ 900 L pour le porc et 650 L pour le poulet. Un plat de lentilles et de légumes : environ 400 L.",s:"Water Footprint Network (porc 5 988 L/kg, poulet 4 325 L/kg)."},
+ {g:"cac",c:"alim",i:"choc",t:"Manger moins de chocolat",a:229,b:115,
+  x:"<b class='k'>Si tu manges 2 tablettes de chocolat par mois au lieu de 4, tu économises environ 3 400 L d’eau par mois.</b>Ça fait environ 115 L par jour. Pourquoi ? Une tablette de 100 g demande environ 1 720 L d’eau, surtout pour faire pousser les cacaoyers.",s:"Water Footprint Network (chocolat 17 196 L/kg)."},
+ {g:"cac",c:"alim",i:"bread",t:"Ne plus jeter de pain",a:114,b:0,
+  x:"<b class='k'>Si ta famille ne jette plus les 2 baguettes de pain de trop chaque semaine, elle économise 800 L d’eau par semaine.</b>Ça fait environ 114 L par jour. Pourquoi ? Une baguette demande environ 400 L d’eau pour faire pousser le blé. Jeter de la nourriture, c’est aussi jeter l’eau qui a servi à la produire.",s:"Water Footprint Network (pain 1 608 L/kg)."},
+ {g:"cac",c:"alim",i:"tap",ii:"soda",t:"Boire moins de soda",a:225,b:64.3,
+  x:"<b class='k'>Si tu bois 2 bouteilles de soda de 50 cl par semaine au lieu d’une par jour, tu économises environ 160 L d’eau par jour.</b>Sur une année, ça fait près de 59 000 L. Pourquoi ? Une bouteille de 50 cl de soda demande 150 à 300 L d’eau (on a pris 225 L), surtout pour faire pousser le sucre et les autres ingrédients. En plus, c’est meilleur pour ta santé.",s:"Ercin, Aldaya et Hoekstra (2011), Water Footprint Network : 150 à 300 L par bouteille de 50 cl."},
+ {g:"cac",c:"alim",i:"tap",ii:"orange",t:"Manger une orange plutôt que boire un jus",a:200,b:84,
+  x:"<b class='k'>Si tu manges une orange au lieu de boire un verre de jus d’orange chaque jour, tu économises environ 115 L d’eau par jour.</b>Sur une année, ça fait environ 42 000 L. Pourquoi ? Il faut plusieurs oranges pour remplir un verre de jus de 20 cl : il demande environ 200 L d’eau. Une orange de 150 g : environ 85 L.",s:"Water Footprint Network (jus d’orange ≈ 1 000 L par litre ; oranges ≈ 560 L par kg)."},
+ {g:"cac",c:"alim",i:"tap",ii:"bottle",t:"Boire l’eau du robinet plutôt qu’en bouteille",a:4.5,b:1.5,
+  x:"<b class='k'>Si tu bois 1,5 L d’eau du robinet par jour au lieu d’eau en bouteille, tu économises environ 3 L d’eau par jour.</b>Sur une année, ça fait environ 1 100 L, et des centaines de bouteilles en plastique en moins. Pourquoi ? Il faut environ 3 L d’eau pour produire 1 L d’eau en bouteille (fabrication de la bouteille, mise en bouteille). L’eau du robinet arrive directement chez toi.",s:"Pacific Institute (2007)."},
+ {g:"cac",c:"vet",i:"shirt",t:"Acheter moins de vêtements neufs",a:205,b:68.5,
+  x:"<b class='k'>Si tu achètes 10 vêtements neufs par an au lieu de 30, tu économises environ 50 000 L d’eau par an.</b>Ça fait environ 137 L par jour. Pourquoi ? Un T-shirt en coton demande environ 2 500 L d’eau, surtout pour faire pousser le coton. Astuce : un vêtement d’occasion ne demande presque pas d’eau en plus.",s:"Water Footprint Network (T-shirt en coton ≈ 2 500 L)."},
+ {g:"cac",c:"vet",i:"jean",t:"Garder ses jeans plus longtemps",a:41.6,b:10.4,
+  x:"<b class='k'>Si tu achètes 1 jean neuf par an au lieu de 4, tu économises environ 11 400 L d’eau par an.</b>Ça fait environ 31 L par jour. Pourquoi ? Un jean demande environ 3 800 L d’eau, de la culture du coton jusqu’aux lavages à la maison.",s:"Levi Strauss & Co, analyse de cycle de vie du jean 501 (2015)."},
+ {g:"cac",c:"vet",i:"tap",ii:"shoe",t:"Acheter moins de chaussures en cuir",a:65.8,b:21.9,
+  x:"<b class='k'>Si tu achètes 1 paire de chaussures en cuir par an au lieu de 3, tu économises environ 16 000 L d’eau par an.</b>Ça fait environ 44 L par jour. Pourquoi ? Une paire de chaussures en cuir demande environ 8 000 L d’eau. La plus grande partie a servi à nourrir la vache dont vient le cuir.",s:"Water Footprint Network (≈ 8 000 L par paire)."},
+ {g:"cac",c:"vet",i:"tap",ii:"hoodie",t:"Acheter moins de sweats en coton",a:54.8,b:13.7,
+  x:"<b class='k'>Si tu achètes 1 sweat en coton par an au lieu de 4, tu économises environ 15 000 L d’eau par an.</b>Ça fait environ 41 L par jour. Pourquoi ? Un sweat contient environ 500 g de coton, et il faut environ 10 000 L d’eau pour produire 1 kg de tissu en coton : environ 5 000 L par sweat.",s:"Estimation d’après le Water Footprint Network (coton ≈ 10 000 L par kg)."},
+ {g:"tra",c:"trans",i:"tap",ii:"bike",t:"Aller au collège à pied ou à vélo",a:2.2,b:0,
+  x:"<b class='k'>Si tu vas au collège à pied ou à vélo au lieu d’y aller en voiture, tu économises environ 2 L d’eau par jour d’école.</b>Sur une année scolaire (environ 160 jours), ça fait environ 350 L. Pourquoi ? Pour un trajet de 3 km (6 km aller-retour), une voiture brûle environ 0,36 L d’essence. Il faut environ 6 L d’eau pour extraire le pétrole et fabriquer 1 L d’essence : 0,36 × 6 ≈ 2,2 L d’eau.",s:"Argonne National Laboratory, cité par l’Association canadienne des carburants (≈ 6 L d’eau par litre d’essence)."},
+ {g:"tra",c:"trans",i:"tap",ii:"carpool",t:"Faire du covoiturage",a:7.2,b:3.6,
+  x:"<b class='k'>Si ta famille partage la voiture avec une autre famille pour les trajets de tous les jours, elle économise environ 3,6 L d’eau par jour.</b>Sur une année, ça fait environ 1 300 L. Pourquoi ? 20 km en voiture brûlent environ 1,2 L d’essence, et il faut environ 7 L d’eau pour produire ce carburant. À deux familles dans la même voiture, chacune n’en utilise que la moitié.",s:"Argonne National Laboratory (≈ 6 L d’eau par litre d’essence) ; voiture à 6 L aux 100 km."},
+ {g:"tra",c:"trans",i:"tap",ii:"train",t:"Partir en vacances en train plutôt qu’en avion",a:.74,b:.38,
+  x:"<b class='k'>Si tu pars en vacances en train plutôt qu’en avion (par exemple Paris–Marseille aller-retour, une fois par an), tu économises environ 130 L d’eau par an.</b>Ça fait environ 0,4 L par jour. Pourquoi ? En avion, il faut environ 45 L de kérosène par passager pour ce voyage de 1 500 km, soit environ 270 L d’eau pour produire ce carburant. En TGV, il faut environ 60 kWh d’électricité par passager, soit environ 140 L d’eau évaporée dans les centrales. Ce sont des estimations : le grand avantage du train, c’est surtout qu’il rejette beaucoup moins de gaz à effet de serre.",s:"Estimation d’après Argonne (carburant) et EDF (≈ 2,3 L d’eau évaporée par kWh)."},
+ {g:"num",c:"num",i:"tap",ii:"phone",t:"Garder son smartphone plus longtemps",a:35,b:8.7,
+  x:"<b class='k'>Si tu gardes ton smartphone 4 ans au lieu de le changer tous les ans, tu économises environ 9 600 L d’eau par an.</b>Ça fait environ 26 L par jour. Pourquoi ? Fabriquer un smartphone demanderait environ 12 760 L d’eau (extraction des métaux, fabrication des puces). C’est une estimation : les chiffres varient beaucoup selon les études.",s:"Friends of the Earth et Trucost (2015), estimation."},
+ {g:"num",c:"num",i:"tap",ii:"screen",t:"Regarder les vidéos en qualité normale",a:21,b:2,
+  x:"<b class='k'>Si tu regardes 2 h de vidéos par jour en qualité normale au lieu de 3 h en haute définition (HD), tu économises environ 19 L d’eau par jour.</b>Sur une année, ça fait près de 7 000 L. Pourquoi ? Une heure de vidéo en streaming demande 2 à 12 L d’eau pour faire tourner et refroidir les centres de données (on a pris 7 L). Regarder en qualité normale plutôt qu’en HD divise ce chiffre par 7.",s:"Obringer et al., Purdue University (2021)."},
+ {g:"num",c:"num",i:"tap",ii:"cam",t:"Couper la caméra pendant les appels vidéo",a:7,b:.3,
+  x:"<b class='k'>Si tu coupes ta caméra pendant 1 h d’appel vidéo par jour, tu économises environ 7 L d’eau par jour.</b>Sur une année, ça fait environ 2 400 L. Pourquoi ? Une heure d’appel vidéo demande environ 7 L d’eau. Sans caméra, il y a beaucoup moins d’images à envoyer : presque 25 fois moins d’eau.",s:"Obringer et al., Purdue University (2021)."},
+ {g:"num",c:"num",i:"tap",ii:"game",t:"Jouer moins longtemps aux jeux vidéo",a:1.4,b:.5,
+  x:"<b class='k'>Si tu joues 1 h par jour à la console au lieu de 3 h, tu économises environ 1 L d’eau par jour.</b>Sur une année, ça fait environ 330 L. Pourquoi ? L’électricité de la console est produite par des centrales qui évaporent de l’eau pour se refroidir. C’est peu : pour le numérique, c’est surtout la fabrication des appareils qui compte.",s:"Estimation d’après EDF (2022) ; consommation typique d’une console."},
+ {g:"num",c:"num",i:"tap",ii:"ai",t:"Poser moins de questions à une IA",a:.43,b:.07,
+  x:"<b class='k'>Si tu poses 5 questions par jour à une IA au lieu de 30, tu économises environ 0,4 L d’eau par jour.</b>Sur une année, ça fait environ 130 L. Pourquoi ? Une étude estime qu’une IA comme ChatGPT utilise environ 0,5 L d’eau pour 20 à 50 questions, pour refroidir ses ordinateurs et produire leur électricité.",s:"Li et al., université de Californie (2023), estimation."}
+];
+const gi=g=>g.ii?`<svg class="ico" aria-hidden="true" viewBox="0 0 24 24">${{soda:'<path d="M9 2h6v3l2 3v14H7V8l2-3Z" fill="currentColor"/><path d="M7 12h10v5H7Z" fill="var(--surface)" opacity=".6"/>',orange:'<circle cx="12" cy="13" r="8" fill="currentColor"/><path d="M12 5c1-2 3-3 5-3-1 2-3 3-5 3Z" fill="var(--green)"/><circle cx="12" cy="13" r="4" fill="none" stroke="var(--surface)" stroke-width="1.4"/>',bottle:'<path d="M10 1h4v3l2 3v15H8V7l2-3Z" fill="currentColor"/><path d="M8 11h8M8 16h8" stroke="var(--surface)" stroke-width="1.4"/>',shoe:'<path d="M2 17v-6l5 1 3-3 4 4 6 1a2 2 0 0 1 2 2v1Z" fill="currentColor"/><path d="M2 19h20" stroke="currentColor" stroke-width="2.4"/>',hoodie:'<path d="M8 3a4 4 0 0 1 8 0l5 4-2 5-2-1v10H7V11l-2 1-2-5Z" fill="currentColor"/><path d="M10 3c0 3 4 3 4 0" stroke="var(--surface)" stroke-width="1.4" fill="none"/>',bike:'<circle cx="6" cy="16" r="4" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="18" cy="16" r="4" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M6 16l4-8h6l2 8M10 8l3 8M9 5h3" stroke="currentColor" stroke-width="2" fill="none"/>',carpool:'<path d="M3 16v-4l2.5-5h13L21 12v4Z" fill="currentColor"/><circle cx="7" cy="17" r="2.5" fill="currentColor"/><circle cx="17" cy="17" r="2.5" fill="currentColor"/><circle cx="9.5" cy="10" r="1.6" fill="var(--surface)"/><circle cx="14.5" cy="10" r="1.6" fill="var(--surface)"/>',train:'<rect x="5" y="2" width="14" height="16" rx="4" fill="currentColor"/><rect x="7.5" y="5" width="9" height="5" fill="var(--surface)"/><circle cx="9" cy="14" r="1.3" fill="var(--surface)"/><circle cx="15" cy="14" r="1.3" fill="var(--surface)"/><path d="M8 18l-3 4M16 18l3 4" stroke="currentColor" stroke-width="2"/>',phone:'<rect x="6" y="2" width="12" height="20" rx="3" fill="currentColor"/><rect x="8" y="5" width="8" height="12" fill="var(--surface)"/>',screen:'<rect x="2" y="4" width="20" height="13" rx="2" fill="currentColor"/><path d="M10 8v5l4-2.5Z" fill="var(--surface)"/><path d="M8 21h8" stroke="currentColor" stroke-width="2"/>',cam:'<rect x="2" y="6" width="14" height="12" rx="2" fill="currentColor"/><path d="M16 10l6-3v10l-6-3Z" fill="currentColor"/>',game:'<path d="M6 7h12a4 4 0 0 1 4 4v3a3 3 0 0 1-5 2l-2-2H9l-2 2a3 3 0 0 1-5-2v-3a4 4 0 0 1 4-4Z" fill="currentColor"/><path d="M7 10v4M5 12h4" stroke="var(--surface)" stroke-width="1.6"/><circle cx="16" cy="11" r="1.2" fill="var(--surface)"/><circle cx="18" cy="13" r="1.2" fill="var(--surface)"/>',ai:'<rect x="4" y="5" width="16" height="14" rx="4" fill="currentColor"/><circle cx="9" cy="12" r="1.7" fill="var(--surface)"/><circle cx="15" cy="12" r="1.7" fill="var(--surface)"/><path d="M12 2v3" stroke="currentColor" stroke-width="2"/>'}[g.ii]}</svg>`:ico(g.i);
+const fL=v=>v<1?nf.format(Math.round(v*100)/100):fmt(v);
+$("#gCats").innerHTML=Object.values(GCAT).map(c=>`<span><i class="sw" style="background:${c.c}"></i>${c.n}</span>`).join("");
+const gmx=Math.max(...G.map(g=>g.a));
+$("#gChart").innerHTML=GRP.map(gr=>{const L=G.filter(g=>g.g===gr.k),A=L.reduce((x,g)=>x+g.a,0),B=L.reduce((x,g)=>x+g.b,0),d=A-B;
+  return `<div class="gc-grp"><h3><span style="color:${gr.c}">${ico(gr.i)}</span>${gr.n}</h3><span class="tot">Total : ${fL(A)} L → ${fL(B)} L par jour · <b>− ${fL(d)} L (− ${Math.round(d/A*100)} %)</b></span><span class="sub">${gr.sub}</span></div>`+
+  L.map(g=>{const id=G.indexOf(g),c=GCAT[g.c].c,dd=g.a-g.b;return `<div class="gr" style="--c:${c}">
+    <span class="gl"><span style="color:${c}">${gi(g)}</span><span>${g.t}</span><button class="qm" aria-expanded="false" aria-controls="gx-${id}" aria-label="Explication : ${g.t}">?</button></span>
+    <span class="gt"><i class="ga" data-w="${Math.max(g.a/gmx*100,.35)}"></i><i class="gb" data-w="${g.b?Math.max(g.b/gmx*100,.2):0}"></i></span>
+    <span class="gv"><span class="n0">${fL(g.a)} L</span><span>→</span><b>${fL(g.b)} L</b><em>− ${fL(dd)} L économisés</em></span>
+    <div class="gx" id="gx-${id}" hidden>${g.x}<span class="s">Source : ${g.s}</span></div></div>`;}).join("");}).join("");
+$$("#gChart .qm").forEach(b=>b.addEventListener("click",()=>{const x=$("#"+b.getAttribute("aria-controls"));x.hidden=!x.hidden;b.setAttribute("aria-expanded",!x.hidden);}));
+function gUpdate(){$$("#gChart [data-w]").forEach(i=>i.style.width=i.dataset.w+"%");}
+function route(){
+  const v=location.hash.slice(1)==="gestes"?"gestes":"territoire";
+  $("#v-territoire").hidden=v!=="territoire";$("#v-gestes").hidden=v!=="gestes";
+  $$(".tabn").forEach(a=>a.dataset.v===v?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current"));
+  if(v==="gestes"){$$("#gChart .gt i").forEach(i=>i.style.width="0");raf2(gUpdate);}
+}
+window.addEventListener("hashchange",()=>{route();window.scrollTo(0,0);});
+route();
+</script>
+
+</body></html>
