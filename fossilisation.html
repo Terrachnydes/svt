@@ -238,29 +238,38 @@ const TP={soil:'humide',cover:'rapide',disturb:'faible'};
 let mode='reste';
 
 /* =========================================================
-   MOTEUR : valeurs pédagogiques qualitatives (non mesurées)
+   MOTEUR DÉTERMINISTE : mêmes paramètres => même résultat
+   (règles qualitatives pédagogiques, non mesurées)
    ========================================================= */
-function remainWeights(p){
-  const B={rapide:1,lent:.45,aucun:.04}[p.burial];
-  const Bio={faible:1,moyenne:.6,forte:.25}[p.decomp];
-  const Ox={pauvre:1,oxygene:.55}[p.oxy];
-  const E={calme:1,agite:.55,lac:.9,sol:.4}[p.env];
-  const struct=B*E*(.45+.55*Bio)*(.8+.2*Ox);   // protection des parties résistantes
-  const soft=B*E*Bio*Ox;                        // protection des parties molles
-  const ns=1-struct, ag=p.env==='agite'?1.4:1;
+function decideRemains(p){
+  const agite=p.env==='agite', ideal=p.decomp==='faible'&&p.oxy==='pauvre';
   switch(p.org){
-    case 'ammonite': return {hard:struct,imprint:.28*struct,exc:.12*soft**3,frag:ns*.7*ag,none:ns*.8+.04};
-    case 'poisson':  return {hard:.9*struct,imprint:.15*struct,exc:.15*soft**3,frag:ns*.8*ag,none:ns*.9+.05};
-    case 'meduse':   return {imprint:.55*soft**1.5,exc:.12*soft**3,none:(1-soft)*1.2+.35};
-    case 'feuille':  return {comp:struct,imprint:.4*struct,frag:ns*.6*ag,none:ns+.06};
+    case 'ammonite': case 'poisson':
+      if(p.burial==='aucun') return agite?'frag':'none';          // reste exposé : détruit ou dispersé
+      if(p.burial==='rapide') return (ideal&&!agite)?'exc':'hard'; // protégé vite
+      // enfouissement lent
+      if(agite) return 'frag';                                     // les courants dispersent
+      if(p.oxy==='pauvre') return 'hard';                          // peu de décomposeurs actifs
+      if(p.decomp==='forte') return 'frag';                        // charognards nombreux
+      return 'imprint';                                            // seule la forme reste moulée
+    case 'meduse':                                                 // aucune partie dure
+      if(p.burial!=='rapide') return 'none';
+      if(ideal&&!agite) return 'exc';
+      if(p.decomp==='faible'||p.oxy==='pauvre') return 'imprint';
+      return 'none';
+    case 'feuille':
+      if(p.burial==='aucun') return 'none';
+      if(p.env==='sol') return p.burial==='rapide'?'imprint':'frag'; // sol aéré : la matière se décompose
+      if(p.burial==='rapide') return 'comp';
+      return p.oxy==='pauvre'?'comp':'imprint';
   }
 }
-function traceWeights(p){
-  const form=p.soil==='humide'?1:.25, cov=p.cover==='rapide'?1:.1, dis=p.disturb==='faible'?1:.3;
-  const q=form*cov*dis;
-  return {twell:.85*q+.02,tpart:.3*Math.sqrt(q)*(1-.5*q)+.03,tnone:(1-q)*.9+.05};
+function decideTrace(p){
+  const bad=(p.soil==='sec')+(p.cover==='aucun')+(p.disturb==='forte');
+  return bad===0?'twell':bad===1?'tpart':'tnone';
 }
-function pick(w,r){let s=0;for(const k in w)s+=w[k];let x=r()*s;for(const k in w){x-=w[k];if(x<=0)return k;}return Object.keys(w).pop();}
+// graine fixe calculée à partir des paramètres (dessin identique à chaque essai)
+function paramSeed(o){const s=JSON.stringify(o);let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h|0;}
 
 function outcomeInfo(o,org){
   const T={
@@ -548,11 +557,11 @@ function layerPlan(kind,burial,palKey){
   return L;
 }
 function buildRun(){
-  const seed=(Math.random()*2147483647)|0, r=rng(seed);
+  const seed=paramSeed(mode==='reste'?{mode,...P}:{mode,...TP}), r=rng(seed);
   run={mode,seed,r,acc:0,done:false};
   $('#gLayers').innerHTML='';$('#gScav').innerHTML='';$('#gBact').innerHTML='';$('#gFrags').innerHTML='';$('#gFossil').innerHTML='';$('#gRain').innerHTML='';$('#gCritters').innerHTML='';
   if(mode==='reste'){
-    const p={...P};run.p=p;run.outcome=pick(remainWeights(p),r);
+    const p={...P};run.p=p;run.outcome=decideRemains(p);
     buildEnvRemains();
     const g=ORG_GEOM[p.org];
     run.alive=alivePos(p.org,p.env);
@@ -589,7 +598,7 @@ function buildRun(){
     $('#gFossil').innerHTML=`<g transform="translate(${fx},${fy}) scale(${g.s})">${fossilMarkup(p.org,o,seed)}</g>`;
     run.zoom=[fx-170,fy-125,340,210];
   }else{
-    const p={...TP};run.p=p;run.outcome=pick(traceWeights(p),r);
+    const p={...TP};run.p=p;run.outcome=decideTrace(p);
     buildEnvTrace();
     run.layers=layerPlan('trace',p.cover,'trace');
     const d0=p.soil==='humide'?9:3;
@@ -1000,7 +1009,8 @@ renderPanel();renderJournal();refreshIdle();updButtons();
 requestAnimationFrame(frame);
 // interface de test (non visible)
 window.SIM={P,TP,S,get run(){return run;},setMode:m=>{mode=m;renderPanel();newExperiment();},start:startRun,
-  step:sec=>{if(S.phase!=='run')return;advance(sec);},remainWeights,traceWeights,newExperiment};
+  step:sec=>{if(S.phase!=='run')return;advance(sec);},decideRemains,decideTrace,newExperiment};
 </script>
 </body>
 </html>
+
