@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comment se forme le sol ?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4ecdf;--card:#fffaf2;--ink:#3a2a1c;--muted:#806a55;--brown:#7b4a26;--line:#e6d6bf;--green:#4f8a3a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif}
+header{max-width:1120px;margin:0 auto;padding:14px 18px 0;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+h1{font-family:Fredoka,Nunito,sans-serif;font-size:30px;margin:0;color:var(--brown)}
+header p{margin:0;color:var(--muted);font-weight:700}
+.app{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;max-width:1120px;margin:0 auto;padding:12px 18px 12px}
+.below{max-width:1120px;margin:0 auto;padding:0 18px 24px;display:flex;flex-direction:column;gap:12px}
+@media(max-width:1000px){.app{grid-template-columns:1fr}}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:12px}
+.card h2{font-family:Fredoka,sans-serif;font-size:18px;margin:0 0 8px;color:var(--brown)}
+.window{position:relative;border-radius:20px;overflow:hidden;border:5px solid #5a3a20;background:#9fd3f0;box-shadow:0 6px 0 #3e2714}
+#scene{display:block;width:100%;height:auto;aspect-ratio:1000/600;cursor:pointer}
+.msg{margin-top:10px;background:#fffaf2;border:2px solid var(--line);border-radius:14px;padding:10px 14px;font-weight:800;font-size:17px;min-height:46px}
+.msg.warn{background:#ffe1d1;border-color:#f3b89c;color:#8a2c0c}
+.msg.p2{background:#eef7e6;border-color:#bcdca5}
+.skip{width:100%;margin-top:8px;border:2px dashed #c9a77c;background:#fff6dc;border-radius:10px;padding:8px;font-weight:800;font-family:Nunito,sans-serif;font-size:14px;cursor:pointer;color:var(--brown)}
+.gauge.g2{display:none;margin-top:8px}.gauge.g2 .bar div{background:linear-gradient(90deg,#c98a4a,#7b4a26)}
+.gauge span.gl{min-width:118px}
+.tip{position:absolute;display:none;max-width:280px;background:#fffaf2;border:3px solid var(--brown);border-radius:14px;padding:8px 12px;font-weight:700;font-size:15px;box-shadow:0 4px 0 rgba(0,0,0,.2);pointer-events:none;z-index:5}
+.tip .t{font-family:Fredoka,sans-serif;font-size:18px;color:var(--brown);display:block;margin-bottom:2px}
+.tip.big{max-width:380px;font-size:16px;line-height:1.35;border-color:#e8a33a;background:#fff8e8}
+.tip .nb{display:inline-block;width:26px;height:26px;line-height:26px;border-radius:50%;background:#e8a33a;color:#fff;text-align:center;margin-right:8px;font-size:16px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+@media(max-width:700px){.steps{grid-template-columns:repeat(2,1fr)}}
+.st b{display:block;font-size:14px;margin-top:2px}
+.st small{display:block;font-weight:700;font-size:12.5px;margin-top:3px;line-height:1.25}
+.controls{display:flex;gap:10px;margin-top:12px;align-items:stretch;flex-wrap:wrap}
+.controls .play{width:auto;flex:0 0 300px}
+.controls .reset,.controls .skip{margin-top:0;flex:1;min-width:180px}
+.st{background:#ece2d3;border-radius:14px;padding:9px 10px;text-align:center;font-weight:800;font-size:12px;line-height:1.15;color:#a8957f;transition:.4s;border:2px solid transparent}
+.st .e{display:block;font-size:26px;filter:grayscale(1);opacity:.45;transition:.4s}
+.st .n{display:inline-block;background:#cbbba5;color:#fff;border-radius:50%;width:20px;height:20px;line-height:20px;font-size:12px;margin-bottom:2px}
+.st.on{background:#fff6dc;color:var(--ink);border-color:#e8b85a}
+.st.on .e{filter:none;opacity:1}
+.st.on .n{background:#e8a33a}
+.hint{color:var(--muted);font-weight:700;font-size:14px;margin:8px 4px 0}
+.chartcard h2 small{font-family:Nunito,sans-serif;font-size:13px;font-weight:800;margin-left:10px}
+.chartcard h2 small i{display:inline-block;width:18px;height:4px;border-radius:2px;vertical-align:middle;margin:0 4px 0 8px}
+#chart{display:block;width:100%;height:auto;aspect-ratio:1000/170}
+.side{display:flex;flex-direction:column;gap:12px}
+.play{width:100%;font-family:Fredoka,sans-serif;font-size:24px;border:0;border-radius:14px;padding:12px;background:var(--green);color:#fff;cursor:pointer;box-shadow:0 4px 0 #2f5a22}
+.play:active{transform:translateY(2px);box-shadow:0 2px 0 #2f5a22}
+.play.pause{background:#d9822b;box-shadow:0 4px 0 #8f4f12}
+.row{display:flex;gap:6px;margin-top:10px}
+.seg{flex:1;border:2px solid var(--line);background:#fff;border-radius:10px;padding:7px 4px;font-weight:800;font-family:Nunito,sans-serif;font-size:14px;cursor:pointer;color:var(--ink)}
+.seg.on{background:var(--brown);border-color:var(--brown);color:#fff}
+.reset{width:100%;margin-top:8px;border:2px solid var(--line);background:#fff;border-radius:10px;padding:8px;font-weight:800;font-family:Nunito,sans-serif;font-size:15px;cursor:pointer;color:var(--ink)}
+.actor{display:flex;align-items:center;gap:10px;width:100%;border:2px solid var(--line);background:#fff;border-radius:14px;padding:8px 10px;margin-bottom:7px;cursor:pointer;text-align:left;font-family:Nunito,sans-serif;color:var(--ink)}
+.actor .ic{font-size:28px;width:34px;text-align:center}
+.actor .tx{flex:1;font-weight:800;font-size:15px;line-height:1.15}
+.actor .tx small{display:block;font-weight:700;color:var(--muted);font-size:12px}
+.sw{width:44px;height:26px;border-radius:13px;background:#cdbfae;position:relative;transition:.25s;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.25s}
+.actor.on{border-color:#8cc06f;background:#f2fbea}
+.actor.on .sw{background:var(--green)}
+.actor.on .sw::after{left:21px}
+.actor:not(.on) .ic{filter:grayscale(1);opacity:.5}
+.loupewrap{display:flex;justify-content:center}
+#loupe{width:270px;height:270px;border-radius:50%;border:8px solid #4a4f57;box-shadow:0 0 0 3px #9aa0a8,0 5px 0 3px #2c3036;background:#3d2716}
+.lcap{text-align:center;font-weight:800;font-size:14px;margin:10px 0 6px;min-height:38px}
+.humus h2{font-size:22px}
+.hgrid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px;align-items:start}
+@media(max-width:820px){.hgrid{grid-template-columns:1fr}}
+.follow{display:block;margin:12px auto 0;border:0;border-radius:12px;padding:10px 16px;font-family:Fredoka,sans-serif;font-size:18px;background:#d9822b;color:#fff;cursor:pointer;box-shadow:0 3px 0 #8f4f12}
+.follow.stop{background:#7b4a26;box-shadow:0 3px 0 #3e2714}
+.fdots{display:flex;gap:6px;justify-content:center;margin-top:10px;visibility:hidden}
+.fdots.show{visibility:visible}
+.fdots i{width:12px;height:12px;border-radius:50%;background:#e1d3bf}
+.fdots i.on{background:#d9822b}
+.chain{display:flex;align-items:flex-start;gap:4px;margin-top:4px}
+@media(max-width:700px){.chain{flex-direction:column;align-items:stretch}.arrow{min-height:60px}}
+.node{flex:0 0 112px;text-align:center;background:#ece2d3;border:3px solid transparent;border-radius:16px;padding:10px 4px;font-weight:800;font-size:14px;color:#a8957f;transition:.4s}
+.node svg,.node .e{display:block;margin:0 auto 4px;height:46px;font-size:38px;line-height:46px;filter:grayscale(1);opacity:.4;transition:.4s}
+.node.on{background:#fff6dc;border-color:#e8b85a;color:var(--ink)}
+.node.on svg,.node.on .e{filter:none;opacity:1}
+.arrow{flex:1;min-width:0;text-align:center;font-size:13px;font-weight:700;color:var(--muted);padding-top:22px;position:relative}
+.arrow b{color:var(--ink)}
+.flow{position:relative;height:16px;margin:0 6px 6px;border-radius:8px;background:#e6d6bf;overflow:hidden}
+.flow::after{content:"";position:absolute;right:-2px;top:-4px;border-left:14px solid #e6d6bf;border-top:12px solid transparent;border-bottom:12px solid transparent}
+.flow i{position:absolute;top:4px;width:8px;height:8px;border-radius:50%;background:#d9822b;left:-10px;animation:mv 1.8s linear infinite;animation-play-state:paused;opacity:0}
+.flow i:nth-child(2){animation-delay:-.6s}.flow i:nth-child(3){animation-delay:-1.2s}
+.arrow.dark .flow i{background:#2a1a0e}
+.arrow.go .flow{background:#f3d9a9}.arrow.go .flow::after{border-left-color:#f3d9a9}
+.arrow.go .flow i{opacity:1}
+.arrow.run .flow i{animation-play-state:running}
+.arrow .x{display:none;position:absolute;left:50%;top:12px;transform:translateX(-50%);background:#c8401a;color:#fff;border-radius:50%;width:28px;height:28px;line-height:28px;font-size:16px;font-weight:800}
+.arrow.cut .x{display:block}.arrow.cut .flow i{opacity:0}
+.cmsg{margin:14px 0 0;padding:10px 14px;border-radius:12px;background:#f2fbea;font-weight:800;font-size:15px;min-height:42px}
+.cmsg.warn{background:#ffe1d1;color:#8a2c0c}
+.gauge{margin-top:14px;display:flex;align-items:center;gap:12px;font-weight:800}
+.gauge .bar{flex:1;height:22px;border-radius:11px;background:#e6d6bf;overflow:hidden}
+.gauge .bar div{height:100%;width:0;background:linear-gradient(90deg,#5a3a20,#1c120a);border-radius:11px;transition:width .3s}
+.gauge b{font-family:Fredoka,sans-serif;font-size:20px;min-width:70px;text-align:right}
+@keyframes mv{from{left:-10px}to{left:100%}}
+.leg{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:center;font-size:12px;font-weight:700;color:var(--muted)}
+.leg span{display:inline-flex;align-items:center;gap:4px}
+.leg i{display:inline-block;width:12px;height:12px;border-radius:3px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Comment se forme le sol ?</h1>
+  <p>1. Le sol se forme à partir de la roche. 2. Forêt ou champ : que devient-il ?</p>
+</header>
+
+<div class="app">
+  <main>
+    <div class="window" id="win">
+      <canvas id="scene" width="1000" height="600"></canvas>
+      <div class="tip" id="tip"></div>
+    </div>
+    <div class="controls">
+      <button class="play" id="play">▶ Lancer</button>
+      <button class="reset" id="reset">↺ Recommencer</button>
+      <button class="skip" id="skip">⏭ Aller directement à la 2e partie (forêt / champ)</button>
+    </div>
+    <div class="msg" id="msg">Appuie sur ▶ pour faire passer le temps.</div>
+    <div class="steps" id="steps">
+      <div class="st"><span class="n">1</span><span class="e">🌧️</span><b>La roche se casse</b><small>La pluie, le gel et les racines brisent la roche-mère en morceaux.</small></div>
+      <div class="st"><span class="n">2</span><span class="e">🌱</span><b>Les plantes s'installent</b><small>Lichens et mousses, puis herbes et arbres. Leurs racines fissurent la roche.</small></div>
+      <div class="st"><span class="n">3</span><span class="e">🍂</span><b>La litière</b><small>Les feuilles mortes tombent et s'accumulent à la surface du sol.</small></div>
+      <div class="st"><span class="n">4</span><span class="e">🪱</span><b>Les animaux du sol</b><small>Vers de terre, cloportes… découpent les feuilles et les enfouissent.</small></div>
+      <div class="st"><span class="n">5</span><span class="e">🦠</span><b>Les microorganismes</b><small>Champignons et bactéries transforment les débris en humus.</small></div>
+      <div class="st"><span class="n">6</span><span class="e">🟫</span><b>Le sol est formé</b><small>L'humus se mélange aux morceaux de roche : c'est le sol.</small></div>
+      <div class="st"><span class="n">7</span><span class="e">🌳</span><b>Sol forestier</b><small>Chaque année les feuilles mortes retournent au sol : l'humus est renouvelé.</small></div>
+      <div class="st"><span class="n">8</span><span class="e">🚜</span><b>Sol de champ</b><small>La récolte est emportée : l'humus n'est plus renouvelé, l'agriculture épuise le sol peu à peu.</small></div>
+    </div>
+    <p class="hint">👆 Clique sur un numéro pour une explication détaillée, ou sur un élément pour savoir ce que c'est. 🔍 Clique sur la loupe pour voir l'humus se fabriquer.</p>
+  </main>
+</div>
+
+<script>
+(()=>{
+// ================= outils =================
+const rand=(a,b)=>a+Math.random()*(b-a);
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const smooth=(x,a,b)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);};
+const lerp=(a,b,t)=>a+(b-a)*t;
+const col=(c1,c2,t)=>`rgb(${Math.round(lerp(c1[0],c2[0],t))},${Math.round(lerp(c1[1],c2[1],t))},${Math.round(lerp(c1[2],c2[2],t))})`;
+const fmt=n=>Math.round(n).toLocaleString('fr-FR');
+const fmt1=n=>n<10?n.toFixed(1).replace('.',','):fmt(n);
+
+const cv=document.getElementById('scene'),ctx=cv.getContext('2d');
+const W=1000,H=600,Y0=190,MID=500,CULT=200,T1=10000;
+const dpr=Math.min(2,window.devicePixelRatio||1);
+cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+const FF='Fredoka, Nunito, sans-serif',NF='Nunito, sans-serif';
+
+// ================= état =================
+const ON={rain:true,plants:true,animals:true,microbes:true};
+let S,SF,phase,splitRT,cultY,ended,hist1,events1,hist2,lastRec,lastRec2;
+let playing=false,speed=3,rtPlay=0,hits=[],gL,gR,waiting=false,nowS=0;
+let falling=[],ground=[],crumbs=[],drops=[],marks=[],worms=[],clops=[],colls=[],mud=[];
+const soil=()=>({t:0,F:0,L:0,D:0,H:0,veg:0,mix:1});
+function init(){
+  S=soil();SF=null;phase=1;waiting=false;splitRT=0;cultY=0;ended=false;
+  hist1=[{t:0,s:0,h:0}];events1=[];hist2=[];lastRec=0;lastRec2=-99;
+  falling=[];ground=[];crumbs=[];drops=[];marks=[];worms=[];clops=[];colls=[];mud=[];
+}
+
+// ================= modèle (années, cm) =================
+function simulate(s,dt){
+  s.F+=((ON.rain?0.012:0)+0.004*s.veg)*(1-s.F/85)*dt;
+  const target=ON.plants?Math.min(1,0.06+(s.F*0.3+s.H)/25):0;
+  s.veg+=(target-s.veg)*Math.min(1,(target>s.veg?1/500:1/60)*dt);
+  const I=ON.plants?0.05*s.veg:0, cut=ON.animals?0.01*s.L:0, mL=ON.microbes?0.008*s.L:0, mD=ON.microbes?0.05*s.D:0;
+  s.L=Math.max(0,s.L+(I-cut-mL)*dt);
+  s.D=Math.max(0,s.D+(cut-mD)*dt);
+  s.H=Math.max(0,s.H+(0.15*mL+0.25*mD-(ON.microbes?0.0002*s.H:0))*dt);
+  const lit=s.L+s.D;if(lit>40){s.L*=40/lit;s.D*=40/lit;}
+  s.mix+=((ON.animals?1:0.45)-s.mix)*Math.min(1,dt/300);
+  s.t+=dt;
+}
+// champ : récolte emportée (presque rien ne retourne au sol), labour qui accélère la destruction de l'humus, érosion
+function fieldStep(s,dt){
+  s.veg=0;
+  s.L=Math.max(0,s.L+(0.006-0.15*s.L)*dt);
+  s.D=Math.max(0,s.D-0.3*s.D*dt);
+  s.H=Math.max(0,s.H+(0.03*s.L-0.0065*s.H)*dt);
+  s.F=Math.max(5,s.F-0.042*dt);
+  s.mix=1;s.t+=dt;
+}
+function layersCm(s){
+  const lit=s.L+s.D, Am=Math.min(s.F,s.H*s.mix*0.9), A=Am+0.3*s.H;
+  const B=Math.max(0,Math.min(s.F-Am,0.35*Am+0.05*s.H)), C=Math.max(0,s.F-Am-B);
+  return {lit,A,B,C,total:lit+A+B+C};
+}
+function geomFor(s,K){const c=layersCm(s);const g={K,cm:c,lit:c.lit*K,A:c.A*K,B:c.B*K,C:c.C*K};
+  g.aTop=Y0+g.lit;g.bTop=g.aTop+g.A;g.cTop=g.bTop+g.B;g.rTop=g.cTop+g.C;return g;}
+function computeGeom(){
+  const tL=layersCm(S).total,tR=phase===2?layersCm(SF).total:0;
+  const K=Math.min(3.2,(H-Y0-45)/Math.max(1,tL,tR));
+  gL=geomFor(S,K);gR=phase===2?geomFor(SF,K):gL;
+}
+const gAt=x=>(phase===2&&x>=MID)?gR:gL;
+const sAt=x=>(phase===2&&x>=MID)?SF:S;
+const rangeOf=side=>phase===1?[40,W-40]:(side==='R'?[MID+34,W-40]:[40,MID-34]);
+const sideOf=x=>phase===1?'A':(x<MID?'L':'R');
+
+// ================= textures & décors =================
+function tex(base,specks,size=170){
+  const c=document.createElement('canvas');c.width=c.height=size;const g=c.getContext('2d');
+  g.fillStyle=base;g.fillRect(0,0,size,size);
+  for(const [cl,n,a,b] of specks){g.fillStyle=cl;for(let i=0;i<n;i++){g.beginPath();g.ellipse(Math.random()*size,Math.random()*size,rand(a,b),rand(a,b)*0.7,Math.random()*3,0,7);g.fill();}}
+  return ctx.createPattern(c,'repeat');
+}
+const T={
+  lit:tex('#8a5a2b',[['#6e431e',70,1,3],['#b07a3c',50,1,2.5]]),
+  A:tex('#3b2616',[['#22150a',140,1,2.6],['#583a21',70,1,2],['#9b8770',30,.6,1.4]]),
+  B:tex('#7a5331',[['#5e3e22',90,1,2.5],['#a88a68',60,.8,2],['#c9b79c',25,1,2.5]]),
+  C:tex('#9e8c76',[['#857462',90,1,3],['#bcae9b',60,1,2.5]]),
+  R:tex('#73757c',[['#5f6167',100,1,4],['#8b8d94',80,1,3],['#55575d',30,2,6]])
+};
+const rocks=[...Array(280)].map(()=>{const n=6+(Math.random()*3|0);return{x:rand(0,W),u:Math.pow(Math.random(),0.8),r:rand(.6,1.15),col:['#8a8c92','#9a9ca2','#7b7d83','#a7a29a','#8f8a82'][Math.random()*5|0],pts:[...Array(n)].map((_,i)=>[i/n*Math.PI*2,rand(.7,1.1)])};});
+const pebbles=[...Array(140)].map(()=>({x:rand(0,W),u:Math.random(),s:rand(1.2,3.5),col:['#a8a49c','#c4b9a6','#8e8b86'][Math.random()*3|0]}));
+const litLeaves=[...Array(260)].map(()=>({x:rand(0,W),u:Math.random(),rot:rand(0,6.3),s:rand(4,8),col:['#c2722b','#a85d22','#d39a3d','#8c4f1f','#b8862f'][Math.random()*5|0]}));
+const litCrumbs=[...Array(420)].map(()=>({x:rand(0,W),u:Math.random(),s:rand(.8,2)}));
+const cracks=[...Array(16)].map(()=>{let x=rand(20,W-20),d=0;const p=[[x,d]];for(let i=0;i<4;i++){x+=rand(-14,14);d+=rand(6,16);p.push([x,d]);}return p;});
+const bact=[...Array(70)].map(()=>({x:rand(0,W),u:Math.random(),ph:rand(0,6.3),a:rand(0,3.1)}));
+const hyphae=[];
+(function(){for(let k=0;k<9;k++){const grow=(x,d,a,len,o)=>{if(o>5)return;const x2=x+Math.cos(a)*len,d2=d+Math.sin(a)*len;hyphae.push([x,d,x2,d2]);grow(x2,d2,a+rand(-.6,.6),len*rand(.7,.95),o+1);if(Math.random()<.6)grow(x2,d2,a+rand(-1.3,1.3),len*.7,o+1);};grow(rand(40,W-40),rand(1,4),rand(.4,2.7),rand(14,22),0);}})();
+const lichens=[...Array(40)].map(()=>({x:rand(10,W-10),rx:rand(3,7),col:['#d8c24a','#c98b3a','#a7b882','#e0d070'][Math.random()*4|0]}));
+const mosses=[...Array(45)].map(()=>({x:rand(10,W-10),rx:rand(4,9)}));
+const grass=[...Array(34)].map((_,i)=>({x:20+i*28+rand(-8,8),h:rand(.6,1.1),n:4+(Math.random()*3|0)}));
+const mkBlobs=n=>[...Array(n)].map(()=>({dx:rand(-40,40),dy:rand(-32,14),r:rand(20,32),c:['#4f8a3a','#5f9c44','#467c33','#6aa84e'][Math.random()*4|0]}));
+const mkRoots=()=>{const segs=[];const grow=(x,d,a,len,w,o)=>{if(o>4||len<.04)return;const x2=x+Math.cos(a)*len*.6,d2=d+Math.sin(a)*len;segs.push([x,d,x2,d2,w]);grow(x2,d2,a+rand(-.5,.5),len*.75,w*.7,o+1);if(Math.random()<.75)grow(x2,d2,a+rand(-1.1,1.1),len*.6,w*.55,o+1);};for(let i=0;i<4;i++)grow(0,0,Math.PI/2+rand(-.9,.9),rand(.3,.45),1,0);return segs;};
+const trees=[{x:330,s:1,blobs:mkBlobs(9),roots:mkRoots()},{x:830,s:.8,blobs:mkBlobs(8),roots:mkRoots()}];
+const shrubs=[{x:170,roots:mkRoots()},{x:600,roots:mkRoots()},{x:945,roots:mkRoots()}];
+const mush=[255,430,705];
+const crops=[];for(let x=528;x<985;x+=11)crops.push({x:x+rand(-2,2),h:rand(.85,1.1),ph:rand(0,6)});
+
+// ================= dessin : outils =================
+function wave(x,ph){return Math.sin(x*0.018+ph)+0.5*Math.sin(x*0.047+ph*2.3);}
+function fillFrom(top,amp,ph,style){
+  ctx.beginPath();ctx.moveTo(0,top+amp*wave(0,ph));
+  for(let x=10;x<=W;x+=10)ctx.lineTo(x,top+amp*wave(x,ph));
+  ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fillStyle=style;ctx.fill();
+}
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function pill(t,x,y,o={}){
+  ctx.font=o.font||`800 14px ${NF}`;const w=ctx.measureText(t).width+(o.pad||16),h=o.h||24;
+  let x0=o.align==='right'?x-w:o.align==='left'?x:x-w/2;
+  ctx.fillStyle=o.bg||'rgba(255,250,240,.92)';rr(x0,y-h/2,w,h,h/2);ctx.fill();
+  if(o.border){ctx.strokeStyle=o.border;ctx.lineWidth=2;ctx.stroke();}
+  ctx.fillStyle=o.fg||'#3a2a1c';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(t,x0+w/2,y+1);
+  return [x0,w];
+}
+function badge(n,x,y,r=13){ctx.fillStyle='#e8a33a';ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#fff';ctx.font=`700 ${r+3}px ${FF}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(n,x,y+1);}
+function drawLeaf(x,y,rot,s,c){
+  ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(0,0,s,s*.48,0,0,7);ctx.fill();
+  ctx.strokeStyle='rgba(80,40,10,.5)';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(-s,0);ctx.lineTo(s,0);ctx.stroke();ctx.restore();
+}
+const sp2=()=>phase===2?smooth(rtPlay-splitRT,0,1.5):0;   // ouverture de la séparation
+const fp2=()=>phase===2?smooth(rtPlay-splitRT,.8,3):0;    // transformation en champ
+const vis=x=>(phase===2&&x>=MID)?1-fp2():1;               // végétation naturelle visible ?
+
+// ================= dessin principal =================
+function draw(){
+  computeGeom();hits=[];
+  const sp=sp2(),fp=fp2();
+  // ciel
+  const sky=ctx.createLinearGradient(0,0,0,Y0);sky.addColorStop(0,'#8fcaee');sky.addColorStop(1,'#dff1fa');
+  ctx.fillStyle=sky;ctx.fillRect(0,0,W,Y0+5);
+  ctx.fillStyle='rgba(255,214,90,.25)';ctx.beginPath();ctx.arc(80,92,40,0,7);ctx.fill();
+  ctx.fillStyle='#ffd65a';ctx.beginPath();ctx.arc(80,92,28,0,7);ctx.fill();
+  if(ON.rain){const w=weather(),dark=w.on?0.35:0;
+    for(const c of clouds()){ctx.fillStyle=`rgba(${255-dark*120},${255-dark*110},${255-dark*100},.95)`;
+      for(const [dx,dy,r] of [[0,0,24],[26,-9,28],[54,0,22],[28,9,22]]){ctx.beginPath();ctx.arc(c.x+dx,c.y+dy,r,0,7);ctx.fill();}
+      hits.push({k:'pluie',x:c.x+28,y:c.y,r:48});}}
+  // sols
+  if(phase===1)drawGround(S,gL,0,W,false,0);
+  else{drawGround(S,gL,0,MID,false,0);drawGround(SF,gR,MID,W,true,fp);}
+  // vie du sol
+  for(const c of crumbs){ctx.globalAlpha=c.a;ctx.fillStyle=col([190,118,48],[24,15,8],c.h);ctx.beginPath();ctx.arc(c.x,c.y,c.s,0,7);ctx.fill();}
+  ctx.globalAlpha=1;
+  for(const w of worms)drawWorm(w);
+  for(const l of ground){ctx.globalAlpha=Math.min(1,l.life*2);drawLeaf(l.x,Y0+l.dy,l.rot,l.s,l.col);hits.push({k:'feuille',x:l.x,y:Y0+l.dy,r:7});}
+  ctx.globalAlpha=1;
+  drawPlants();
+  if(phase===2)drawField(fp);
+  // champignons
+  for(const x of mush){const s=sAt(x),m=(ON.microbes?1:0)*smooth(s.H,2,8)*smooth(s.L+s.D,.3,1)*vis(x);if(m<0.03)continue;
+    ctx.fillStyle='#efe6d2';ctx.fillRect(x-2.5*m,Y0-14*m,5*m,14*m);
+    ctx.fillStyle='#a8552e';ctx.beginPath();ctx.ellipse(x,Y0-14*m,11*m,7*m,0,Math.PI,0);ctx.fill();
+    ctx.fillStyle='#f6ead8';ctx.beginPath();ctx.arc(x-4*m,Y0-17*m,1.6*m,0,7);ctx.arc(x+4*m,Y0-18*m,1.4*m,0,7);ctx.fill();
+    hits.push({k:'champignon',x,y:Y0-10,r:16});}
+  for(const c of clops)drawCloporte(c);
+  for(const c of colls){const y=Y0-1-c.hop;ctx.fillStyle='#e9e4f0';ctx.beginPath();ctx.ellipse(c.x,y,2.6,1.5,0,0,7);ctx.fill();ctx.strokeStyle='#8c84a0';ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(c.x+2,y);ctx.lineTo(c.x+4.5,y-2);ctx.stroke();hits.push({k:'collembole',x:c.x,y,r:6});}
+  for(const l of falling)drawLeaf(l.x,l.y,l.rot,l.s,l.col);
+  // météo
+  for(const d of drops){if(d.snow){ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(d.x,d.y,2.2,0,7);ctx.fill();}
+    else{ctx.strokeStyle='rgba(60,120,200,.75)';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(d.x,d.y);ctx.lineTo(d.x-2,d.y-11);ctx.stroke();}}
+  for(const m of marks){ctx.globalAlpha=m.a;
+    if(m.snow){ctx.strokeStyle='#fff';ctx.lineWidth=1.3;ctx.beginPath();for(let i=0;i<3;i++){const a=i*Math.PI/3;ctx.moveTo(m.x-Math.cos(a)*4,Y0-1-Math.sin(a)*4);ctx.lineTo(m.x+Math.cos(a)*4,Y0-1+Math.sin(a)*4);}ctx.stroke();
+      if(m.crack){ctx.strokeStyle='#2b2b30';ctx.beginPath();ctx.moveTo(m.x,Y0);ctx.lineTo(m.x+3,Y0+5);ctx.lineTo(m.x-2,Y0+9);ctx.lineTo(m.x+2,Y0+14);ctx.stroke();}}
+    else{ctx.strokeStyle='rgba(90,150,220,.8)';ctx.lineWidth=1.2;ctx.beginPath();ctx.ellipse(m.x,Y0-1,6*(1.2-m.a),2*(1.2-m.a),0,0,7);ctx.stroke();}}
+  ctx.globalAlpha=1;
+  for(const m of mud){ctx.fillStyle='rgba(120,80,45,.9)';ctx.beginPath();ctx.arc(m.x,m.y,2.2,0,7);ctx.fill();}
+  // repères
+  if(phase===2)drawDivider(sp);
+  drawRulers(sp);
+  if(sp<1)drawLabels(1-sp);
+  if(phase===2)drawAnnot(fp);
+  drawBadges();
+  drawLoupeIcons();
+  drawTop(sp);
+  if(waiting)pill('✅ Le sol est fabriqué !',MID,80,{font:`700 20px ${FF}`,bg:'#eef7e6',border:'#3f7a2c',h:34,pad:24});
+  if(Over.on)drawOverlay();
+}
+function drawLoupeIcons(){
+  if(Over.on)return;
+  const ic=[];
+  if(phase===1){if(S.L+S.D>0.3)ic.push(['foret',700,Y0-30]);}
+  else if(sp2()>.9)ic.push(['foret',90,Y0+Math.max(gL.lit,3)+28],['champ',935,Y0+Math.max(gR.lit,3)+44]);
+  for(const [k,x,y] of ic){
+    const pu=Math.sin(nowS*4);
+    ctx.strokeStyle=`rgba(232,163,58,${.55+.35*pu})`;ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y,25+3*pu,0,7);ctx.stroke();
+    ctx.strokeStyle='#4a4f57';ctx.lineCap='round';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(x+13,y+13);ctx.lineTo(x+25,y+25);ctx.stroke();
+    ctx.fillStyle='rgba(225,242,255,.7)';ctx.beginPath();ctx.arc(x,y,16,0,7);ctx.fill();
+    ctx.strokeStyle='#4a4f57';ctx.lineWidth=5;ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.8)';ctx.beginPath();ctx.arc(x-5,y-5,4,0,7);ctx.fill();
+    pill('clique !',x,y-34,{font:`800 11px ${NF}`,h:18,bg:'#fff6dc',border:'#e8a33a',pad:12});
+    hits.push({k:'loupe',kind:k,x,y,r:30});
+  }
+}
+
+function drawGround(s,g,x0,x1,field,fp){
+  ctx.save();ctx.beginPath();ctx.rect(x0,0,x1-x0,H);ctx.clip();
+  const bands=[['lit',Y0,g.lit,T.lit],['A',g.aTop,g.A,T.A],['B',g.bTop,g.B,T.B],['C',g.cTop,g.C,T.C],['R',g.rTop,999,T.R]];
+  let prev=0,first=true,ph=0;
+  for(const [k,top,px,st] of bands){
+    if(px<0.3&&k!=='R')continue;
+    const amp=first?0:Math.min(4,prev*0.4);first=false;ph+=1.7;
+    fillFrom(top,amp,ph,st);
+    if(field&&k==='A'){const a=0.75*fp*(1-s.H/Math.max(1,s.H0));if(a>0.01)fillFrom(top,amp,ph,`rgba(196,166,120,${a})`);}
+    decorate(k,top,px,s);prev=px;
+  }
+  // racines
+  const soilPx=g.rTop-Y0;
+  const roots=(x,segs,depth,w,a)=>{if(depth<3||a<0.02)return;ctx.strokeStyle=`rgba(95,60,30,${.9*a})`;ctx.lineCap='round';
+    for(const [xa,da,xb,db,ww] of segs){ctx.lineWidth=Math.max(.8,ww*w);ctx.beginPath();ctx.moveTo(x+xa*depth,Y0+da*depth);ctx.lineTo(x+xb*depth,Y0+db*depth);ctx.stroke();}};
+  for(const t of trees){const gr=smooth(S.veg,.62,.92);roots(t.x,t.roots,Math.min(soilPx*0.9+8,230*t.s)*gr,5*t.s*gr,vis(t.x));}
+  for(const sh of shrubs){const gr=smooth(S.veg,.42,.65);roots(sh.x,sh.roots,Math.min(soilPx*0.7+5,110)*gr,3*gr,vis(sh.x));}
+  // champignons (filaments) + bactéries
+  const mic=ON.microbes?1:0;
+  const hyA=mic*0.6*smooth(s.L+s.D,0.3,1.5);
+  if(hyA>0.01){ctx.save();ctx.beginPath();ctx.rect(x0,Y0,x1-x0,g.lit+g.A*0.7+2);ctx.clip();
+    ctx.strokeStyle=`rgba(248,243,228,${hyA})`;ctx.lineWidth=1;ctx.beginPath();
+    const sc=Math.max(0.6,Math.min(1.4,(g.lit+g.A*0.7)/50));
+    for(const [xa,da,xb,db] of hyphae){ctx.moveTo(xa,Y0+da*sc);ctx.lineTo(xb,Y0+db*sc);}ctx.stroke();ctx.restore();}
+  const bA=mic*smooth(s.L+s.H,0.3,2)*(field?0.6:1);
+  if(bA>0.01){ctx.fillStyle=`rgba(120,220,90,${0.9*bA})`;const depth=g.lit+g.A*0.85;
+    for(const b of bact){if(b.x<x0||b.x>x1)continue;const x=b.x+Math.sin(rtPlay*2+b.ph)*3,y=Y0+2+b.u*depth+Math.cos(rtPlay*1.7+b.ph)*2;
+      ctx.save();ctx.translate(x,y);ctx.rotate(b.a+rtPlay*.5);ctx.beginPath();ctx.ellipse(0,0,2.6,1.2,0,0,7);ctx.fill();ctx.restore();
+      hits.push({k:'bacterie',x,y,r:5});}}
+  ctx.restore();
+}
+
+function decorate(k,top,px,s){
+  if(k==='lit'){
+    const L=s.L,D=s.D,tot=L+D+1e-6,v=smooth(px,0.5,10);
+    const nL=Math.round(litLeaves.length*(L/tot)*v),nD=Math.round(litCrumbs.length*Math.min(1,D/tot*1.4)*v);
+    for(let i=0;i<nL;i++){const l=litLeaves[i];drawLeaf(l.x,top+2+l.u*Math.max(0,px-3),l.rot,l.s*Math.min(1,.5+px/20),l.col);}
+    ctx.fillStyle=ON.microbes?'#5a3416':'#9a5b22';
+    for(let i=0;i<nD;i++){const c=litCrumbs[i];ctx.beginPath();ctx.arc(c.x,top+1+c.u*Math.max(0,px-2),c.s,0,7);ctx.fill();}
+  }else if(k==='B'){
+    for(const p of pebbles){ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(p.x,top+p.u*px,p.s*Math.min(1,px/20+.3),0,7);ctx.fill();}
+  }else if(k==='C'){
+    const f=clamp(px/50,.35,1);
+    for(const r of rocks){const sz=lerp(2.5,15,r.u)*r.r*f;if(sz<1.2)continue;const x=r.x,y=top+r.u*px;
+      ctx.fillStyle=r.col;ctx.beginPath();r.pts.forEach(([a,m],i)=>{const qx=x+Math.cos(a)*sz*m,qy=y+Math.sin(a)*sz*m*.8;i?ctx.lineTo(qx,qy):ctx.moveTo(qx,qy);});ctx.closePath();ctx.fill();
+      ctx.strokeStyle='rgba(50,50,55,.35)';ctx.lineWidth=1;ctx.stroke();}
+  }else if(k==='R'){
+    ctx.strokeStyle='rgba(35,35,40,.45)';ctx.lineWidth=1.3;
+    for(const c of cracks){ctx.beginPath();c.forEach(([x,d],i)=>i?ctx.lineTo(x,top+d):ctx.moveTo(x,top+d));ctx.stroke();}
+  }
+}
+
+function drawPlants(){
+  const v=S.veg,sw=Math.sin(rtPlay*1.3)*1.5;
+  const la=smooth(v,.02,.12)*(1-.6*smooth(v,.6,.95));
+  if(la>0.01)for(const l of lichens){const a=la*vis(l.x);if(a<.02)continue;ctx.globalAlpha=a;ctx.fillStyle=l.col;ctx.beginPath();ctx.ellipse(l.x,Y0,l.rx,2.6,0,Math.PI,0);ctx.fill();hits.push({k:'lichen',x:l.x,y:Y0-2,r:8});}
+  const ma=smooth(v,.1,.25);
+  if(ma>0.01){ctx.fillStyle='#5f9a3a';for(const m of mosses){const a=ma*vis(m.x);if(a<.02)continue;ctx.globalAlpha=a;ctx.beginPath();ctx.ellipse(m.x,Y0,m.rx,4*ma,0,Math.PI,0);ctx.fill();hits.push({k:'lichen',x:m.x,y:Y0-2,r:8});}}
+  ctx.globalAlpha=1;
+  const ga=smooth(v,.22,.45);
+  if(ga>0.01){ctx.strokeStyle='#4f9a35';ctx.lineCap='round';ctx.lineWidth=2;
+    for(const t of grass){const a=vis(t.x);if(a<.02)continue;ctx.globalAlpha=a;const h=22*t.h*ga;for(let i=0;i<t.n;i++){const dx=(i-t.n/2)*2.5;ctx.beginPath();ctx.moveTo(t.x+dx,Y0);ctx.quadraticCurveTo(t.x+dx,Y0-h*.6,t.x+dx*2.2+sw,Y0-h);ctx.stroke();}
+      hits.push({k:'herbe',x:t.x,y:Y0-h/2,r:10});}ctx.globalAlpha=1;}
+  const sa=smooth(v,.42,.65);
+  if(sa>0.02)for(const s of shrubs){const a=vis(s.x);if(a<.02)continue;ctx.globalAlpha=a;const r=16*sa;ctx.fillStyle='#6b4527';ctx.fillRect(s.x-2*sa,Y0-10*sa,4*sa,10*sa);
+    for(const [dx,dy,rr2,c] of [[-12,-14,1,'#4f8a3a'],[10,-15,1,'#5f9c44'],[0,-24,1.1,'#467c33']]){ctx.fillStyle=c;ctx.beginPath();ctx.arc(s.x+dx*sa+sw*.5,Y0+dy*sa,r*rr2,0,7);ctx.fill();}
+    hits.push({k:'arbuste',x:s.x,y:Y0-18*sa,r:26*sa});}
+  ctx.globalAlpha=1;
+  const ta=smooth(v,.62,.92);
+  if(ta>0.02)for(const t of trees){const a=vis(t.x),s=t.s*ta,x=t.x,th=100*s,tw=14*s,swy=sw*s;
+    if(a<1){ctx.globalAlpha=1-a;ctx.fillStyle='#6b4527';ctx.fillRect(x-tw/2,Y0-14,tw,14);ctx.fillStyle='#c9a77c';ctx.beginPath();ctx.ellipse(x,Y0-14,tw/2,3,0,0,7);ctx.fill();
+      if(1-a>.5)hits.push({k:'souche',x,y:Y0-8,r:14});}
+    if(a<.02)continue;ctx.globalAlpha=a;
+    ctx.fillStyle='#6b4527';ctx.beginPath();ctx.moveTo(x-tw/2,Y0);ctx.quadraticCurveTo(x-tw*.3,Y0-th*.5,x-tw*.25+swy,Y0-th);ctx.lineTo(x+tw*.25+swy,Y0-th);ctx.quadraticCurveTo(x+tw*.3,Y0-th*.5,x+tw/2,Y0);ctx.fill();
+    const cx=x+swy,cy=Y0-th-14*s;
+    for(const b of t.blobs){ctx.fillStyle=b.c;ctx.beginPath();ctx.arc(cx+b.dx*s,cy+b.dy*s,b.r*s,0,7);ctx.fill();}
+    hits.push({k:'arbre',x:cx,y:cy,r:55*s},{k:'arbre',x,y:Y0-th/2,r:12*s});}
+  ctx.globalAlpha=1;
+}
+
+// ---------- le champ ----------
+function cropC(){const t=rtPlay-splitRT-2.5;return t<0?0:t%8;}   // cycle de 8 s : pousse, mûrit, récolte, labour
+const isBare=()=>{const c=cropC();return phase===2&&(c>=6||c<1);};
+function drawField(fp){
+  ctx.save();ctx.beginPath();ctx.rect(MID,0,W-MID,H);ctx.clip();ctx.globalAlpha=fp;
+  const c=cropC(),grow=smooth(c,0,3),ripe=smooth(c,3,4);
+  const hx=c<4?W+90:(c<6?lerp(W+70,MID-70,(c-4)/2):MID-90);
+  const px=c<6?-1:(c<7.5?lerp(MID-70,W+70,(c-6)/1.5):W+90);
+  // sillons de labour
+  const fa=c>=6?1:(c<3?1-grow*.6:0);
+  if(fa>0){ctx.strokeStyle=`rgba(40,25,12,${.6*fa})`;ctx.lineWidth=1.6;
+    for(let x=MID+6;x<W;x+=12){if(c>=6&&x>px)continue;ctx.beginPath();ctx.arc(x+6,Y0+1,6,Math.PI*1.1,Math.PI*1.9);ctx.stroke();}}
+  // blé
+  ctx.lineCap='round';
+  for(const k of crops){
+    const cut=(c>=4&&c<6&&k.x>hx)||c>=6;
+    if(cut){if(c>=6&&k.x<px)continue;ctx.strokeStyle='#cdb46a';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(k.x,Y0);ctx.lineTo(k.x,Y0-4);ctx.stroke();continue;}
+    const h=38*k.h*grow;if(h<1)continue;const sw=Math.sin(rtPlay*1.6+k.ph)*1.5*grow;
+    ctx.strokeStyle=col([92,160,60],[214,178,74],ripe);ctx.lineWidth=1.8;ctx.beginPath();ctx.moveTo(k.x,Y0);ctx.quadraticCurveTo(k.x,Y0-h*.6,k.x+sw,Y0-h);ctx.stroke();
+    if(grow>.6){ctx.fillStyle=col([120,175,70],[228,190,80],ripe);ctx.beginPath();ctx.ellipse(k.x+sw,Y0-h-4,2.4,6*grow,0,0,7);ctx.fill();}
+  }
+  hits.push({k:'ble',x:650,y:Y0-15,r:40},{k:'ble',x:780,y:Y0-15,r:40},{k:'ble',x:910,y:Y0-15,r:40});
+  // tracteur
+  if(c>=4&&c<6){drawTractor(hx,-1,'harvest');hits.push({k:'tracteur',x:hx,y:Y0-20,r:36});}
+  if(c>=6&&c<7.5){drawTractor(px,1,'plow');hits.push({k:'tracteur',x:px,y:Y0-20,r:36});}
+  // récolte emportée
+  if(c>=4.3&&c<7){const pr=(c-4.3)/2.7;ctx.globalAlpha=fp*(1-pr*pr);
+    ctx.font=`800 22px ${NF}`;ctx.textAlign='center';ctx.fillStyle='#7a2c0c';ctx.fillText('🌾↑',900,lerp(Y0-40,150,pr));}
+  ctx.restore();ctx.globalAlpha=1;
+}
+function drawTractor(x,dir,mode){
+  ctx.save();ctx.translate(x,Y0);ctx.scale(dir,1);
+  if(mode==='harvest'){ctx.fillStyle='#8a5a2b';ctx.fillRect(-70,-22,34,14);ctx.fillStyle='#e0b84c';ctx.beginPath();ctx.ellipse(-53,-23,17,7,0,Math.PI,0);ctx.fill();
+    ctx.fillStyle='#333';ctx.beginPath();ctx.arc(-60,-6,6,0,7);ctx.arc(-46,-6,6,0,7);ctx.fill();ctx.strokeStyle='#555';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-36,-12);ctx.lineTo(-24,-12);ctx.stroke();}
+  else{ctx.strokeStyle='#555';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-24,-12);ctx.lineTo(-44,-12);ctx.stroke();
+    ctx.fillStyle='#777';for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(-40-i*8,-12);ctx.lineTo(-34-i*8,-12);ctx.lineTo(-38-i*8,2);ctx.closePath();ctx.fill();}}
+  ctx.fillStyle='#c8401a';ctx.fillRect(-24,-26,40,16);ctx.fillRect(-20,-44,20,20);
+  ctx.fillStyle='#bfe3f5';ctx.fillRect(-17,-41,14,11);
+  ctx.fillStyle='#555';ctx.fillRect(10,-36,3,10);
+  ctx.fillStyle='#222';ctx.beginPath();ctx.arc(-12,-11,12,0,7);ctx.fill();ctx.beginPath();ctx.arc(12,-7,7,0,7);ctx.fill();
+  ctx.fillStyle='#e0b84c';ctx.beginPath();ctx.arc(-12,-11,4,0,7);ctx.arc(12,-7,2.5,0,7);ctx.fill();
+  ctx.restore();
+}
+
+function drawWorm(w){
+  const pts=[[w.x,w.y],...w.trail];if(pts.length<3)return;
+  const body=pts.slice(0,Math.min(pts.length,18));
+  ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.strokeStyle='#9e4f55';ctx.lineWidth=8;ctx.beginPath();body.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();
+  ctx.strokeStyle='#e3949a';ctx.lineWidth=5.5;ctx.stroke();
+  const c=body[Math.min(body.length-1,6)];ctx.fillStyle='#c26b73';ctx.beginPath();ctx.arc(c[0],c[1],4.6,0,7);ctx.fill();
+  ctx.strokeStyle='rgba(140,60,70,.5)';ctx.lineWidth=1;
+  for(let i=2;i<body.length;i+=3){ctx.beginPath();ctx.arc(body[i][0],body[i][1],2.6,0,7);ctx.stroke();}
+  if(w.carry)drawLeaf(w.x+3,w.y-2,w.carryRot,5,'#c2722b');
+  hits.push({k:'ver',x:w.x,y:w.y,r:10});const m=body[(body.length/2)|0];hits.push({k:'ver',x:m[0],y:m[1],r:10});
+}
+function drawCloporte(c){
+  const y=Y0-4;ctx.save();ctx.translate(c.x,y);if(c.dir<0)ctx.scale(-1,1);
+  ctx.strokeStyle='#4a4a52';ctx.lineWidth=1;
+  for(let i=0;i<4;i++){const lx=-5+i*3.3,o=Math.sin(rtPlay*14+i)*1.2;ctx.beginPath();ctx.moveTo(lx,1);ctx.lineTo(lx+o,4);ctx.stroke();}
+  ctx.fillStyle='#7d7f8a';ctx.beginPath();ctx.ellipse(0,0,8,4.2,0,Math.PI,0);ctx.fill();ctx.fillRect(-8,-.2,16,1.6);
+  ctx.strokeStyle='#5c5e68';for(let i=-5;i<=5;i+=2.5){ctx.beginPath();ctx.moveTo(i,-3.6);ctx.lineTo(i,1);ctx.stroke();}
+  ctx.strokeStyle='#4a4a52';ctx.beginPath();ctx.moveTo(7,-1);ctx.lineTo(12,-5);ctx.moveTo(7,-1);ctx.lineTo(12,-2);ctx.stroke();
+  ctx.restore();hits.push({k:'cloporte',x:c.x,y,r:11});
+}
+
+// ---------- règles, étiquettes, repères ----------
+function rulerTicks(x0,x1,K,bottom,both){
+  const stepCm=K*10>=22?10:(K*20>=22?20:50);
+  ctx.fillStyle='#3a2a1c';ctx.strokeStyle='#3a2a1c';ctx.font=`800 11px ${NF}`;ctx.textBaseline='middle';
+  for(let cm=0;Y0+cm*K<=bottom;cm+=stepCm/2){const y=Y0+cm*K,maj=cm%stepCm===0,l=maj?12:7;
+    ctx.lineWidth=maj?1.5:1;ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x1-l,y);if(both){ctx.moveTo(x0,y);ctx.lineTo(x0+l,y);}ctx.stroke();
+    if(maj&&cm>0){ctx.textAlign=both?'center':'right';ctx.fillText(cm,both?(x0+x1)/2:x1-14,y);}}
+  ctx.textAlign=both?'center':'left';ctx.fillText('cm',both?(x0+x1)/2:x0+4,Y0+9);
+}
+function bracket(x,top,bot,val,side,color){
+  if(bot-top<6)return;
+  ctx.strokeStyle=color;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,top+2);ctx.lineTo(x,bot-2);
+  ctx.moveTo(x-6,top+2);ctx.lineTo(x+6,top+2);ctx.moveTo(x-6,bot-2);ctx.lineTo(x+6,bot-2);ctx.stroke();
+  const y=clamp((top+bot)/2,Y0+16,H-16);
+  pill('↕ '+fmt(val)+' cm',side==='right'?x+8:x-8,y,{align:side==='right'?'left':'right',font:`700 14px ${FF}`,bg:'#fffaf2',border:color,h:22,pad:12});
+}
+function drawRulers(sp){
+  // 1re partie : règle à gauche
+  if(sp<1){ctx.globalAlpha=1-sp;const bottom=Math.min(H-4,gL.rTop+30);
+    ctx.fillStyle='rgba(255,250,240,.88)';ctx.fillRect(0,Y0,44,bottom-Y0);rulerTicks(0,44,gL.K,bottom,false);
+    bracket(56,Y0,gL.rTop,gL.cm.total,'right','#7b4a26');
+    ctx.font=`800 12px ${NF}`;ctx.fillStyle='#3a2a1c';ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.globalAlpha=1;}
+  // 2e partie : règle au centre, commune aux deux sols
+  if(sp>0){ctx.globalAlpha=sp;const bottom=lerp(Y0,H,sp);
+    ctx.fillStyle='rgba(255,250,240,.95)';ctx.fillRect(MID-22,Y0,44,bottom-Y0);
+    ctx.save();ctx.beginPath();ctx.rect(0,Y0,W,bottom-Y0);ctx.clip();rulerTicks(MID-22,MID+22,gL.K,H,true);ctx.restore();
+    bracket(MID-34,Y0,gL.rTop,gL.cm.total,'left','#3f7a2c');
+    bracket(MID+34,Y0,gR.rTop,gR.cm.total,'right','#c8601a');
+    ctx.globalAlpha=1;}
+}
+function drawLabels(a){
+  const g=gL;ctx.globalAlpha=a;
+  const items=[['Litière',Y0,g.lit],['Humus + minéraux',g.aTop,g.A],["Un peu d'humus",g.bTop,g.B],['Roche en morceaux',g.cTop,g.C],['Roche-mère',g.rTop,H-g.rTop]];
+  for(const [t,top,px] of items){const lit=t==='Litière';if(px<(lit?2:15))continue;const y=lit?Math.max(top+px/2,Y0+12):top+px/2;
+    pill(t,W-12,y,{align:'right',h:18,font:`800 11px ${NF}`,pad:12});}
+  ctx.globalAlpha=1;
+}
+function drawDivider(sp){
+  ctx.fillStyle='#3e2714';const top=74;ctx.fillRect(MID-3,top,6,(Y0-top)*sp);
+}
+function drawAnnot(fp){
+  const a=fp*smooth(cultY,2,12);if(a<.02)return;ctx.globalAlpha=a;
+  // 7 : forêt, les feuilles mortes retournent au sol
+  ctx.strokeStyle='#3f7a2c';ctx.lineWidth=2.5;ctx.setLineDash([6,5]);ctx.beginPath();ctx.moveTo(200,132);ctx.quadraticCurveTo(196,150,212,Y0-10);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#3f7a2c';ctx.beginPath();ctx.moveTo(212,Y0-4);ctx.lineTo(205,Y0-16);ctx.lineTo(220,Y0-15);ctx.closePath();ctx.fill();
+  {const [x0,w]=pill('Chaque année, les feuilles mortes retournent au sol',36,118,{align:'left',font:`800 11px ${NF}`,h:20,pad:28,bg:'#eef7e6',border:'#3f7a2c'});hits.push({k:'num',n:7,x:36,y:118,r:14,rx:x0,ry:108,rw:w,rh:20});}
+  if(0)pill('',36,118,{align:'left',font:`800 11px ${NF}`,h:20,pad:28,bg:'#eef7e6',border:'#3f7a2c'});badge(7,36,118,10);
+  const yL=gL.aTop+Math.max(16,gL.A*0.45);
+  pill("+ humus : il est renouvelé, le sol reste riche",240,yL,{bg:'#eef7e6',border:'#3f7a2c',font:`800 11px ${NF}`,h:20});
+  // 8 : champ, la récolte est emportée et le sol s'épuise
+  {const [x0,w]=pill('La récolte est emportée : rien ne retourne au sol',546,118,{align:'left',font:`800 11px ${NF}`,h:20,pad:28,bg:'#ffe9d6',border:'#c8601a',fg:'#7a2c0c'});hits.push({k:'num',n:8,x:546,y:118,r:14,rx:x0,ry:108,rw:w,rh:20});}
+  if(0)pill('',546,118,{align:'left',font:`800 11px ${NF}`,h:20,pad:28,bg:'#ffe9d6',border:'#c8601a',fg:'#7a2c0c'});badge(8,546,118,10);
+  const b=smooth(cultY,20,40);ctx.globalAlpha=a*b;
+  const yR=gR.aTop+Math.max(16,gR.A*0.45);
+  pill("− humus : l'agriculture épuise le sol peu à peu",712,yR,{bg:'#ffe1d1',border:'#c8401a',fg:'#8a2c0c',font:`800 11px ${NF}`,h:20});
+  if(mud.length>4){ctx.globalAlpha=a;pill('💧 la pluie emporte la terre nue →',W-128,Y0-22,{bg:'#ffe1d1',border:'#c8401a',fg:'#8a2c0c',font:`800 11px ${NF}`,h:20});}
+  ctx.globalAlpha=1;
+}
+function stepsDone(){
+  const lit=S.L+S.D,c=layersCm(S);
+  return [S.F>2,S.veg>0.08,lit>0.5,ON.animals&&S.D>0.05,S.H>1,c.A>10,phase===2,phase===2&&cultY>40];
+}
+function drawBadges(){
+  const a=1-sp2();if(a<0.02)return;ctx.globalAlpha=a;
+  const st=stepsDone(),g=gL,tg=smooth(S.veg,.62,.92);
+  const items=[
+    [g.C>10?[170,g.cTop+g.C*0.5]:[190,Y0+10],'La pluie et le gel cassent la roche'],
+    [tg>.4?[352,Y0-48]:[240,Y0-44],'Les racines des plantes cassent la roche'],
+    [[140,Y0-14],'Les feuilles mortes forment la litière'],
+    [[150,g.aTop+Math.max(30,g.A*0.5)],'Les animaux du sol découpent les feuilles'],
+    [[455,g.aTop+14],"Champignons et bactéries fabriquent l'humus"],
+    [[455,g.aTop+Math.max(48,g.A*0.62)],'Humus + morceaux de roche = sol']
+  ];
+  items.forEach(([[x,y],t],i)=>{if(!st[i])return;
+    const [x0,w]=pill(t,x+4,y,{align:'left',font:`800 11px ${NF}`,h:19,pad:28,bg:'rgba(255,246,220,.94)',border:'#e8a33a'});badge(i+1,x,y,10);
+    hits.push({k:'num',n:i+1,x,y,r:14,rx:x0,ry:y-10,rw:w,rh:20});});
+  ctx.globalAlpha=1;
+}
+function drawTop(sp){
+  // temps, toujours visible en haut
+  let t='⏱ '+fmt(Math.round(Math.min(S.t,phase===1?T1:1e9)/10)*10)+' ans';
+  if(phase===2)t='⏱ '+fmt(T1+cultY)+' ans';
+  pill(t,MID,22,{font:`700 17px ${FF}`,bg:'rgba(58,42,28,.9)',fg:'#ffd27a',h:28,pad:22});
+  if(phase===2){ctx.globalAlpha=sp;
+    pill('🚜 '+fmt(cultY)+' ans de culture',MID,52,{font:`800 11px ${NF}`,bg:'#fff6dc',border:'#e8b85a',h:20});
+    // titres des deux sols
+    const titles=[['Sol forestier',40,S,'#3f7a2c'],['Sol de champ',W-250,SF,'#c8601a']];
+    for(const [txt,x,s,c] of titles){
+      pill(txt,x,24,{align:'left',font:`700 16px ${FF}`,bg:'#fffaf2',border:c,h:28,pad:20});
+      // mini-jauge humus
+      ctx.font=`800 12px ${NF}`;ctx.fillStyle='#3a2a1c';ctx.textAlign='left';ctx.textBaseline='middle';
+      ctx.fillStyle='rgba(255,250,240,.9)';rr(x,48,210,20,10);ctx.fill();
+      ctx.fillStyle='#3a2a1c';ctx.fillText('humus',x+8,58.5);
+      ctx.fillStyle='#e6d6bf';rr(x+56,52,104,12,6);ctx.fill();
+      ctx.fillStyle='#1c120a';rr(x+56,52,Math.max(4,104*Math.min(1,s.H/50)),12,6);ctx.fill();
+      ctx.fillStyle='#3a2a1c';ctx.fillText(fmt1(s.H)+' cm',x+166,58.5);
+    }
+    ctx.globalAlpha=1;}
+}
+
+// ================= météo =================
+function weather(){const p=rtPlay%9;return{on:ON.rain&&(p<3.2||(p>4.5&&p<7.5)),snow:p>4.5&&phase===1};}
+function clouds(){return[{x:(rtPlay*14)%(W+200)-120,y:105},{x:(rtPlay*9+520)%(W+200)-120,y:128}];}
+
+// ================= acteurs animés =================
+function sync(list,side,n,make){const mine=list.filter(o=>o.side===side);
+  for(let i=mine.length;i<n;i++)list.push(make(side));
+  let extra=mine.length-n;for(let i=list.length-1;i>=0&&extra>0;i--)if(list[i].side===side){list.splice(i,1);extra--;}}
+function updateActors(dt){
+  const v=S.veg,w=weather();
+  // pluie / gel
+  if(w.on){for(const c of clouds()){if(c.x<-40||c.x>W)continue;if(Math.random()<(w.snow?2.5:7)*dt*6)drops.push({x:c.x+rand(-10,66),y:c.y+20,snow:w.snow,ph:rand(0,6)});}}
+  for(const d of drops){d.y+=(d.snow?55:380)*dt;if(d.snow)d.x+=Math.sin(rtPlay*3+d.ph)*20*dt;
+    if(d.y>=Y0-1){d.dead=true;const g=gAt(d.x);marks.push({x:d.x,a:1,snow:d.snow,crack:d.snow&&(g.lit+g.A)<3&&Math.random()<.5});
+      if(!d.snow&&d.x>MID&&isBare()&&Math.random()<.6)mud.push({x:d.x,y:Y0-1,vx:rand(45,75)});}}
+  drops=drops.filter(d=>!d.dead);
+  for(const m of marks)m.a-=dt*(m.snow?.9:2.2);marks=marks.filter(m=>m.a>0);
+  for(const m of mud){m.x+=m.vx*dt;m.y=Y0-1+Math.sin(m.x*.2)*.8;}mud=mud.filter(m=>m.x<W);
+
+  // feuilles qui tombent (seulement côté forêt dans la 2e partie)
+  if(ON.plants&&v>0.25&&Math.random()<3*smooth(v,.25,1)*dt){
+    const ta=smooth(v,.62,.92);const tr=trees.filter(t=>vis(t.x)>.5),gr=grass.filter(t=>vis(t.x)>.5);let x,y;
+    if(ta>.3&&tr.length&&Math.random()<.7){const t=tr[Math.random()*tr.length|0];const s=t.s*ta;x=t.x+rand(-40,40)*s;y=Y0-114*s+rand(-25,10)*s;}
+    else if(gr.length){const t=gr[Math.random()*gr.length|0];x=t.x;y=Y0-14;}
+    if(x!==undefined)falling.push({x,y,rot:rand(0,6),s:rand(4,6),col:['#c2722b','#d39a3d','#a85d22','#b8862f'][Math.random()*4|0],ph:rand(0,6)});}
+  for(const l of falling){l.y+=28*dt;l.x+=Math.sin(rtPlay*2.2+l.ph)*22*dt;l.rot+=dt*1.5;
+    if(phase===2)l.x=Math.min(l.x,MID-30);
+    if(l.y>=Y0-1){l.dead=true;ground.push({x:l.x,dy:rand(-2,1),rot:l.rot,s:l.s,col:l.col,life:1});}}
+  falling=falling.filter(l=>!l.dead);
+  const decay=(ON.animals?0.035:0)+(ON.microbes?0.03:0);
+  for(const l of ground)l.life-=decay*dt;
+  ground=ground.filter(l=>l.life>0);if(ground.length>140)ground.splice(0,ground.length-140);
+
+  // nombre d'animaux de chaque côté
+  const lit=S.L+S.D;
+  if(phase===1){
+    sync(worms,'A',ON.animals&&lit>0.5&&(gL.A+gL.B+gL.C)>12?Math.min(4,1+Math.floor(S.H/8)):0,newWorm);
+    sync(clops,'A',ON.animals?Math.round(4*smooth(lit,.3,1.5)):0,newClop);
+    sync(colls,'A',ON.animals?Math.round(9*smooth(lit,.3,1.5)):0,newColl);
+  }else{
+    sync(worms,'L',ON.animals&&lit>0.5?Math.min(3,1+Math.floor(S.H/12)):0,newWorm);
+    sync(worms,'R',ON.animals?(SF.H>25?2:(SF.H>12?1:0)):0,newWorm);
+    sync(clops,'L',ON.animals?Math.round(2*smooth(lit,.3,1.5)):0,newClop);sync(clops,'R',0,newClop);
+    sync(colls,'L',ON.animals?Math.round(5*smooth(lit,.3,1.5)):0,newColl);sync(colls,'R',ON.animals&&SF.H>15?2:0,newColl);
+  }
+  for(const c of clops){const [lo,hi]=rangeOf(c.side);c.x+=c.dir*c.sp*dt;if(c.x<lo){c.x=lo;c.dir=1;}if(c.x>hi){c.x=hi;c.dir=-1;}if(Math.random()<.15*dt)c.dir*=-1;
+    for(const l of ground){if(Math.abs(l.x-c.x)<9){l.life-=0.25*dt;if(Math.random()<1.5*dt)addCrumb(l.x);}}
+    if(lit>1&&Math.random()<.4*dt)addCrumb(c.x);}
+  for(const c of colls){const [lo,hi]=rangeOf(c.side);c.t-=dt;if(c.t<=0&&c.hop<=0){c.vy=rand(40,70);c.t=rand(.6,2.5);c.dir=Math.random()<.5?-1:1;}
+    if(c.vy||c.hop>0){c.hop+=c.vy*dt;c.vy-=220*dt;c.x+=(c.dir||1)*30*dt;if(c.hop<=0){c.hop=0;c.vy=0;}}c.x=clamp(c.x,lo,hi);}
+  for(const wm of worms)updateWorm(wm,dt);
+  for(const c of crumbs){if(c.y<c.ty)c.y=Math.min(c.ty,c.y+7*dt);
+    if(ON.microbes)c.h=Math.min(1,c.h+dt*.3);
+    if(c.h>=1&&c.y>=c.ty)c.a-=dt*.5;else c.a=Math.min(1,c.a+dt*2);}
+  crumbs=crumbs.filter(c=>c.a>0);if(crumbs.length>220)crumbs.splice(0,crumbs.length-220);
+}
+function newClop(side){const [lo,hi]=rangeOf(side);return{side,x:rand(lo,hi),dir:Math.random()<.5?-1:1,sp:rand(10,16)};}
+function newColl(side){const [lo,hi]=rangeOf(side);return{side,x:rand(lo,hi),hop:0,vy:0,t:rand(0,2)};}
+function addCrumb(x){const g=gAt(x);crumbs.push({x:x+rand(-5,5),y:Y0+rand(0,2),ty:Y0+g.lit+rand(.1,.6)*Math.max(6,g.A),h:0,a:0,s:rand(1,2.2)});}
+function wormBounds(w){const g=gAt(w.x);return{top:Y0+3,bot:Math.max(Y0+14,Y0+g.lit+(g.A+g.B)*0.95+g.C*0.15)};}
+function newWorm(side){const [lo,hi]=rangeOf(side);const x0=rand(lo+20,hi-20);const w={side,x:x0,y:0,trail:[],carry:false,carryRot:0,ph:rand(0,6)};
+  const b=wormBounds(w);w.y=rand(b.top+8,b.bot);w.trail=[...Array(18)].map((_,i)=>[x0-i*2.2,w.y+Math.sin(i*.5)*2]);pickTarget(w);return w;}
+function pickTarget(w){const b=wormBounds(w),[lo,hi]=rangeOf(w.side);
+  if(w.carry){w.tx=clamp(w.x+rand(-120,120),lo,hi);w.ty=rand(lerp(b.top,b.bot,.35),b.bot);w.mode='down';return;}
+  const leaves=ground.filter(l=>l.x>lo&&l.x<hi);
+  if(leaves.length&&Math.random()<.45){const l=leaves[Math.random()*leaves.length|0];w.tx=l.x;w.ty=Y0+1;w.leaf=l;w.mode='leaf';return;}
+  w.tx=clamp(w.x+rand(-200,200),lo,hi);w.ty=rand(b.top+6,b.bot);w.mode='walk';}
+function updateWorm(w,dt){const b=wormBounds(w),[lo,hi]=rangeOf(w.side);w.ty=clamp(w.ty,b.top-2,b.bot);w.tx=clamp(w.tx,lo,hi);
+  const dx=w.tx-w.x,dy=w.ty-w.y,d=Math.hypot(dx,dy);
+  if(d<4){
+    if(w.mode==='leaf'){if(w.leaf&&w.leaf.life>0){w.leaf.life=0;w.carry=true;w.carryRot=w.leaf.rot;}}
+    else if(w.mode==='down'&&w.carry){w.carry=false;for(let i=0;i<5;i++)crumbs.push({x:w.x+rand(-6,6),y:w.y+rand(-4,4),ty:w.y+rand(0,6),h:.3,a:1,s:rand(1.2,2.4)});}
+    pickTarget(w);return;}
+  const a=Math.atan2(dy,dx)+Math.sin(rtPlay*4+w.ph)*.5;
+  const lt=w.trail[0];if(!lt||Math.hypot(lt[0]-w.x,lt[1]-w.y)>2.2){w.trail.unshift([w.x,w.y]);if(w.trail.length>40)w.trail.pop();}
+  w.x=clamp(w.x+Math.cos(a)*24*dt,lo-5,hi+5);w.y=clamp(w.y+Math.sin(a)*24*dt,b.top-2,b.bot+2);}
+
+// ================= passage à la 2e partie =================
+function startSplit(){
+  phase=2;splitRT=rtPlay;cultY=0;
+  S.H0=S.H;SF=Object.assign({},S);SF.H0=S.H;
+  hist2=[{y:0,sF:layersCm(S).total,hF:S.H,sC:layersCm(SF).total,hC:SF.H}];lastRec2=0;
+  ground=ground.filter(l=>l.x<MID-20);crumbs=crumbs.filter(c=>c.x<MID);falling=falling.filter(l=>l.x<MID-20);
+  for(const l of [worms,clops,colls])for(const o of l)o.side=sideOf(o.x);
+}
+
+function shine(g){const rg=g.createRadialGradient(110,100,20,150,150,150);rg.addColorStop(0,'rgba(255,255,255,.12)');rg.addColorStop(1,'rgba(0,0,0,.25)');g.fillStyle=rg;g.fillRect(0,0,300,300);}
+
+// ================= loupe sur l'image : fabrication de l'humus =================
+const FPH={
+  foret:[[0,3.5,'1. Une feuille morte tombe sur le sol.'],[3.5,8,'2. Cloportes et vers de terre la découpent en petits morceaux.'],[8,13.5,'3. Champignons et bactéries décomposent les morceaux.'],[13.5,16.5,"4. Il reste une matière noire : l'humus."],[16.5,21,"5. Les vers mélangent l'humus aux grains de roche : c'est le sol !"]],
+  champ:[[0,3.5,'1. Après la récolte, il ne reste que quelques débris de paille.'],[3.5,8,"2. Très peu d'animaux du sol pour les découper."],[8,13.5,'3. Peu de champignons et de bactéries pour les décomposer.'],[13.5,16.5,"4. Très peu d'humus est fabriqué."],[16.5,21,"5. Le labour et la pluie font disparaître l'humus : le sol s'appauvrit."]]
+};
+const FEND=23,Over={on:false,t:0,kind:'foret',x:0,y:0,resume:false};
+const fPieces=[...Array(7)].map((_,i)=>{const a=i/7*6.283+.3;return{dx:Math.cos(a)*rand(48,72),dy:Math.sin(a)*rand(38,58),s:rand(14,19),rot:rand(0,6),pts:[...Array(6)].map((_,j)=>[j/6*6.283,rand(.6,1.1)])};});
+const fHum=[...Array(46)].map(()=>{const a=rand(0,6.283),r=rand(10,105);return{pi:Math.random()*7|0,ox:rand(-12,12),oy:rand(-10,10),r:rand(2.2,4.2),sx:150+Math.cos(a)*r,sy:150+Math.sin(a)*r};});
+const fRock=[...Array(15)].map(()=>{const a=rand(0,6.283),r=rand(15,105),b=rand(0,6.283);return{fx:150+Math.cos(b)*230,fy:150+Math.sin(b)*230,tx:150+Math.cos(a)*r,ty:150+Math.sin(a)*r,s:rand(8,14),c:['#a9a39a','#c4b9a6','#8e8b86','#b9ad98'][Math.random()*4|0],pts:[...Array(6)].map((_,j)=>[j/6*6.283,rand(.7,1.1)])};});
+function lab(g,t,x,y){g.font=`800 13px ${NF}`;g.textAlign='center';g.textBaseline='middle';const w=g.measureText(t).width+12;
+  g.fillStyle='rgba(255,250,240,.92)';g.beginPath();g.roundRect?g.roundRect(x-w/2,y-10,w,20,10):g.rect(x-w/2,y-10,w,20);g.fill();g.fillStyle='#3a2a1c';g.fillText(t,x,y+1);}
+// dessine la séquence dans un repère 300 x 300
+function drawSeq(g,t,kind){
+  const C=kind==='champ',nP=C?2:7,nHy=C?2:7,nBac=C?5:21,nHum=C?6:46,psc=C?.7:1;
+  g.fillStyle=C?'#7a5a3a':'#5a3a20';g.fillRect(0,0,300,300);
+  if(C)for(const r of fRock){g.globalAlpha=.35;g.fillStyle=r.c;g.beginPath();g.arc(300-r.tx,300-r.ty,r.s*.7,0,7);g.fill();}g.globalAlpha=1;
+  // 1. ce qui tombe au sol
+  if(!C&&t<5){const y=t<3.5?lerp(-60,150,1-Math.pow(1-t/3.5,2)):150,x=150+(t<3.5?Math.sin(t*2.5)*25:0);
+    g.save();g.translate(x,y);g.rotate(-.4+(t<3.5?Math.sin(t*2)*.4:0));g.fillStyle='#d9822b';g.beginPath();g.ellipse(0,0,62,30,0,0,7);g.fill();
+    g.strokeStyle='rgba(110,55,15,.7)';g.lineWidth=2;g.beginPath();g.moveTo(-70,0);g.lineTo(58,0);for(let i=-3;i<=3;i++){if(!i)continue;g.moveTo(i*14,0);g.lineTo(i*14+10,i>0?-20:20);g.moveTo(i*14,0);g.lineTo(i*14+10,i>0?20:-20);}g.stroke();g.restore();
+    if(t<3.5)lab(g,'feuille morte',x,y-48);}
+  if(C&&t<5){const e=t<3.5?1-Math.pow(1-t/3.5,2):1;
+    for(let i=0;i<2;i++){const x=150+fPieces[i].dx*.3,y=lerp(-40,150+fPieces[i].dy*.3,e);g.save();g.translate(x,y);g.rotate(.5+i*1.2+(t<3.5?Math.sin(t*3+i):0)*.3);g.fillStyle='#d8c06a';g.fillRect(-20,-3,40,6);g.restore();}
+    if(t<3.5)lab(g,'débris de paille',150,lerp(-80,100,e));}
+  // 2. découpage en morceaux
+  const sp=smooth(t,5,7.5),dk=smooth(t,8.5,13),fa=1-smooth(t,12.5,14);
+  if(t>=5&&fa>0)for(let i=0;i<nP;i++){const p=fPieces[i];g.save();g.globalAlpha=fa;g.translate(150+p.dx*(C?.3+.7*sp:sp),150+p.dy*(C?.3+.7*sp:sp));g.rotate(p.rot);const sz=p.s*psc*(1-.7*dk);
+    g.fillStyle=col(C?[214,186,100]:[217,130,43],[70,40,20],dk);g.beginPath();p.pts.forEach(([a,m],j)=>{const x=Math.cos(a)*sz*m,y=Math.sin(a)*sz*m*.75;j?g.lineTo(x,y):g.moveTo(x,y);});g.closePath();g.fill();g.restore();}
+  if(t>3.5&&t<8.5){
+    if(!C){const cx2=lerp(-50,350,(t-3.5)/5),cy=232;g.save();g.translate(cx2,cy);g.scale(3,3);
+      g.strokeStyle='#4a4a52';g.lineWidth=.8;for(let i=0;i<4;i++){const lx2=-5+i*3.3,o=Math.sin(t*14+i)*1.2;g.beginPath();g.moveTo(lx2,1);g.lineTo(lx2+o,4);g.stroke();}
+      g.fillStyle='#7d7f8a';g.beginPath();g.ellipse(0,0,8,4.2,0,Math.PI,0);g.fill();g.fillRect(-8,-.2,16,1.6);
+      g.strokeStyle='#5c5e68';for(let i=-5;i<=5;i+=2.5){g.beginPath();g.moveTo(i,-3.6);g.lineTo(i,1);g.stroke();}
+      g.strokeStyle='#4a4a52';g.beginPath();g.moveTo(7,-1);g.lineTo(12,-5);g.moveTo(7,-1);g.lineTo(12,-2);g.stroke();g.restore();lab(g,'cloporte',cx2,cy-26);}
+    const wx=lerp(360,-120,(t-3.5)/5);g.lineCap='round';g.strokeStyle='#9e4f55';g.lineWidth=15;g.beginPath();
+    for(let i=0;i<=20;i++){const x=wx+i*6,y=70+Math.sin(i*.5+t*5)*6;i?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();g.strokeStyle='#e3949a';g.lineWidth=11;g.stroke();
+    g.fillStyle='#c26b73';g.beginPath();g.arc(wx+30,70+Math.sin(2.5+t*5)*6,8,0,7);g.fill();lab(g,C?'un seul ver de terre':'ver de terre',wx+60,44);}
+  // 3. champignons et bactéries
+  const hg=smooth(t,8,10.5),hf=1-smooth(t,13.5,15);
+  if(t>8&&hf>0){g.strokeStyle=`rgba(245,240,225,${.9*hf})`;g.lineWidth=2;
+    for(let i=0;i<nHy;i++){const p=fPieces[i%nP],a0=i/7*6.283+.3,sx=150+Math.cos(a0)*150,sy=150+Math.sin(a0)*150,ex=150+p.dx,ey=150+p.dy;
+      const mx=lerp(sx,ex,hg*.5)+Math.sin(i)*14,my=lerp(sy,ey,hg*.5)+Math.cos(i)*14;g.beginPath();g.moveTo(sx,sy);g.quadraticCurveTo(mx,my,lerp(sx,ex,hg),lerp(sy,ey,hg));g.stroke();
+      g.beginPath();g.moveTo(mx,my);g.lineTo(mx+16*hg*Math.cos(a0+1.2),my+16*hg*Math.sin(a0+1.2));g.stroke();}
+    if(t<13.5)lab(g,C?'peu de champignons':'champignon',205,150+Math.sin(.3)*112+20);}
+  const ba=smooth(t,8.5,9.5)*(1-smooth(t,14,15.5));
+  if(ba>0){g.globalAlpha=ba;for(let i=0;i<nBac;i++){const p=fPieces[i%nP],a=t*1.5+i*2.1,r=12+(i%3)*5;
+      g.save();g.translate(150+p.dx+Math.cos(a)*r,150+p.dy+Math.sin(a)*r);g.rotate(a+1.57);g.fillStyle='#6fcf4f';g.beginPath();g.ellipse(0,0,6,2.6,0,0,7);g.fill();g.strokeStyle='#3e8a2a';g.lineWidth=1;g.stroke();g.restore();}
+    g.globalAlpha=1;if(t<13.5)lab(g,C?'peu de bactéries':'bactéries',150+fPieces[C?1:3].dx,150+fPieces[C?1:3].dy+32);}
+  // 4-5. humus puis mélange (forêt) ou disparition (champ)
+  const rk=smooth(t,16.5,19);
+  if(t>16.5&&!C)for(const r of fRock){const x=lerp(r.fx,r.tx,rk),y=lerp(r.fy,r.ty,rk);g.fillStyle=r.c;g.beginPath();r.pts.forEach(([a,m],i)=>{const qx=x+Math.cos(a)*r.s*m,qy=y+Math.sin(a)*r.s*m;i?g.lineTo(qx,qy):g.moveTo(qx,qy);});g.closePath();g.fill();}
+  if(C&&t>16.5){g.strokeStyle='rgba(120,180,240,.8)';g.lineWidth=2;for(let i=0;i<14;i++){const x=(i*47+t*30)%300,y=(i*71+t*260)%300;g.beginPath();g.moveTo(x,y);g.lineTo(x-3,y-12);g.stroke();}}
+  const ha=smooth(t,10,13.5),mx2=smooth(t,17,20);
+  if(ha>0){g.fillStyle='#141008';for(let k=0;k<nHum;k++){const hm=fHum[k],p=fPieces[hm.pi%nP];
+      const gone=C?(k>=2?smooth(t,17,19.5):smooth(t,19,21)*.6):0;g.globalAlpha=ha*(1-gone);
+      const x=lerp(150+p.dx+hm.ox,hm.sx,C?mx2*.4:mx2),y=lerp(150+p.dy+hm.oy,hm.sy,C?mx2*.4:mx2)+(C?mx2*30:0);g.beginPath();g.arc(x,y,hm.r,0,7);g.fill();}g.globalAlpha=1;
+    if(t>13.5&&t<16.5)lab(g,C?"très peu d'humus":'humus',150,C?110:150);}
+  if(t>19)lab(g,C?"le sol s'appauvrit":'humus + grains de roche = sol',150,255);
+  shine(g);
+  const ph=FPH[kind].findIndex(([a,b])=>t>=a&&t<b);return ph<0?4:ph;
+}
+function openOverlay(kind,x,y){Over.on=true;Over.t=0;Over.kind=kind;Over.x=x;Over.y=y;Over.resume=playing;setPlaying(false);hideTip();}
+function closeOver(){if(!Over.on)return;Over.on=false;if(Over.resume&&!ended&&!waiting)setPlaying(true);}
+function drawOverlay(){
+  const t=Over.t,C=Over.kind==='champ',cx=MID,cy=332,R=212;
+  ctx.fillStyle='rgba(20,12,5,.5)';ctx.fillRect(0,0,W,H);
+  // faisceau de la loupe
+  const a=Math.atan2(Over.y-cy,Over.x-cx);
+  ctx.fillStyle='rgba(255,250,235,.18)';ctx.beginPath();ctx.moveTo(Over.x,Over.y);ctx.lineTo(cx+Math.cos(a+1.5708)*R,cy+Math.sin(a+1.5708)*R);ctx.lineTo(cx+Math.cos(a-1.5708)*R,cy+Math.sin(a-1.5708)*R);ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(225,242,255,.7)';ctx.beginPath();ctx.arc(Over.x,Over.y,14,0,7);ctx.fill();ctx.strokeStyle='#4a4f57';ctx.lineWidth=4;ctx.stroke();
+  // contenu
+  ctx.save();ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.clip();ctx.translate(cx-R,cy-R);ctx.scale(2*R/300,2*R/300);
+  const idx=drawSeq(ctx,t,Over.kind);ctx.restore();
+  ctx.strokeStyle='#4a4f57';ctx.lineWidth=14;ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.stroke();
+  ctx.strokeStyle='#9aa0a8';ctx.lineWidth=3;ctx.beginPath();ctx.arc(cx,cy,R+8,0,7);ctx.stroke();
+  // titre, légende, fermeture
+  const title=phase===1?"🔍 La fabrication de l'humus":(C?"🔍 Sol de champ : l'humus":"🔍 Sol forestier : l'humus");
+  pill(title,cx,98,{font:`700 20px ${FF}`,bg:'#fffaf2',border:C?'#c8601a':'#3f7a2c',h:34,pad:26});
+  pill(FPH[Over.kind][idx][2],cx,572,{font:`800 17px ${NF}`,bg:'#fff6dc',border:'#e8a33a',h:34,pad:28});
+  ctx.fillStyle='#c8401a';ctx.beginPath();ctx.arc(cx+R*.74,cy-R*.74,17,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.font=`800 18px ${NF}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('✖',cx+R*.74,cy-R*.74+1);
+  // comparaison (2e partie)
+  if(phase===2){const al=smooth(t,13.5,14.5);if(al>0){ctx.globalAlpha=al;const x=760,y=250;
+    ctx.fillStyle='#fffaf2';rr(x,y,220,128,16);ctx.fill();ctx.strokeStyle='#e6d6bf';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#3a2a1c';ctx.font=`700 17px ${FF}`;ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText('Humus fabriqué',x+14,y+22);
+    const rows=[['forêt',1,'#3f7a2c'],['champ',0.13,'#c8601a']];
+    rows.forEach(([n,v,c],i)=>{const yy=y+56+i*38;ctx.font=`800 14px ${NF}`;ctx.fillStyle=c;ctx.fillText(n,x+14,yy);
+      ctx.fillStyle='#e6d6bf';rr(x+70,yy-9,136,18,9);ctx.fill();ctx.fillStyle='#1c120a';rr(x+70,yy-9,Math.max(10,136*v*smooth(t,13.5,16)),18,9);ctx.fill();});
+    ctx.globalAlpha=1;}}
+}
+
+// ================= interface =================
+const msgEl=document.getElementById('msg'),stEls=[...document.querySelectorAll('.st')];
+function updateUI(){
+  const Lc=layersCm(S),lit=S.L+S.D;
+  stepsDone().forEach((v,i)=>stEls[i]&&stEls[i].classList.toggle('on',v));
+  let m,cls='';
+  if(phase===2){cls='p2';
+    if(ended)m="Après 200 ans de culture : le sol du champ s'est appauvri, le sol forestier est resté riche.";
+    else if(cultY<8)m="On coupe une partie de la forêt pour faire un champ.";
+    else if(cultY<70)m="⑦ Forêt : les feuilles mortes tombent chaque année et nourrissent le sol en humus.";
+    else if(cultY<140)m="⑧ Champ : la récolte est emportée, presque rien ne retourne au sol. L'humus n'est plus renouvelé.";
+    else m="⑧ Champ : année après année, l'humus diminue et la pluie emporte la terre nue : l'agriculture épuise le sol.";}
+  else if(waiting){m="✅ Le sol est fabriqué ! En 10 000 ans, environ "+fmt(Lc.total)+" cm de sol se sont formés. Appuie sur ▶ pour la suite.";cls='p2';}
+  else if(!ON.plants&&S.F>2){m="Sans végétaux : pas de feuilles mortes, donc pas d'humus !";cls='warn';}
+  else if(!ON.microbes&&lit>3){m="Personne ne transforme les débris : la litière s'entasse !";cls='warn';}
+  else if(!ON.animals&&S.L>3){m="Sans animaux, les feuilles restent entières longtemps.";cls='warn';}
+  else if(!ON.rain&&S.F<5){m="Sans pluie ni gel, la roche se casse très lentement.";cls='warn';}
+  else if(S.t===0&&!playing)m="Appuie sur ▶ : au départ, il n'y a que la roche-mère.";
+  else if(S.veg<0.05)m="① La pluie et le gel cassent la roche-mère.";
+  else if(S.veg<0.2)m="② Lichens et mousses s'installent sur la roche.";
+  else if(lit<0.5)m="② Les plantes poussent. Leurs racines cassent la roche.";
+  else if(S.H<1)m="③ Les feuilles mortes forment la litière. ④ Les animaux les découpent.";
+  else if(Lc.A<10)m="⑤ Champignons et bactéries fabriquent l'humus.";
+  else m="⑥ L'humus se mélange aux morceaux de roche : le sol s'épaissit !";
+  if(msgEl.textContent!==m)msgEl.textContent=m;msgEl.className='msg '+cls;
+}
+
+// ================= boucle =================
+let last=performance.now(),frameN=0;
+function record1(){hist1.push({t:Math.min(S.t,T1),s:layersCm(S).total,h:S.H});lastRec=S.t;}
+function frame(now){
+  const dts=Math.min(0.05,(now-last)/1000);last=now;
+  if(playing){
+    rtPlay+=dts;
+    if(phase===1&&!waiting){let yrs=dts*100*speed;while(yrs>0){const d=Math.min(2,yrs);simulate(S,d);yrs-=d;}
+      if(S.t-lastRec>=25)record1();
+      if(S.t>=T1){S.t=T1;record1();waiting=true;setPlaying(false);}}
+    else if(!ended){const yrs=dts*8*speed/3;simulate(S,yrs);fieldStep(SF,yrs);cultY=Math.min(CULT,cultY+yrs);
+      if(cultY-lastRec2>=2||cultY>=CULT){hist2.push({y:cultY,sF:layersCm(S).total,hF:S.H,sC:layersCm(SF).total,hC:SF.H});lastRec2=cultY;}
+      if(cultY>=CULT){ended=true;setPlaying(false);}}
+  }
+  draw();
+  if(playing)updateActors(dts);
+  nowS=now/1000;
+  if(Over.on){Over.t+=dts;if(Over.t>FEND)closeOver();}
+  updateUI();
+  requestAnimationFrame(frame);
+}
+
+// ================= contrôles =================
+const playBtn=document.getElementById('play');
+function setPlaying(p){playing=p;
+  playBtn.textContent=p?'⏸ Pause':(ended?'↺ Rejouer':waiting?'▶ Forêt ou champ ?':'▶ '+(S.t>0?'Continuer':'Lancer'));playBtn.classList.toggle('pause',p);}
+playBtn.onclick=()=>{if(Over.on)closeOver();if(ended){init();setPlaying(true);return;}if(waiting){waiting=false;startSplit();setPlaying(true);return;}setPlaying(!playing);};
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&e.target.tagName!=='BUTTON'){e.preventDefault();playBtn.click();}});
+document.getElementById('reset').onclick=()=>{Over.on=false;init();setPlaying(false);hideTip();};
+document.getElementById('skip').onclick=()=>{if(phase===2)return;Over.on=false;
+  while(S.t<T1){simulate(S,2);if(S.t-lastRec>=25)record1();}S.t=T1;record1();waiting=false;startSplit();setPlaying(true);};
+const NAMES={rain:'pluie',plants:'végétaux',animals:'animaux',microbes:'microbes'};
+document.querySelectorAll('.actor').forEach(b=>b.onclick=()=>{const k=b.dataset.k;ON[k]=!ON[k];b.classList.toggle('on',ON[k]);
+  if(phase===1&&S.t>0){const near=events1.filter(e=>Math.abs(e.t-S.t)<1500).length;events1.push({t:S.t,label:(ON[k]?'+ ':'sans ')+NAMES[k],row:near%3});}});
+
+// ================= infos au clic =================
+const INFO={
+  pluie:['🌧️ Pluie et gel',"L'eau et la glace cassent la roche en petits morceaux. ①"],
+  lichen:['Lichens et mousses','Les premiers êtres vivants sur la roche nue. ②'],
+  herbe:['🌱 Herbes','Leurs racines cassent la roche. Leurs feuilles mortes tombent au sol.'],
+  arbuste:['🌿 Arbuste','Ses feuilles mortes tombent et nourrissent le sol.'],
+  arbre:['🌳 Arbre','Ses feuilles mortes nourrissent le sol. Ses racines cassent la roche.'],
+  souche:['🪵 Souche',"L'arbre a été coupé pour faire un champ."],
+  ver:['🪱 Ver de terre','Il enfouit les feuilles mortes et mélange le sol. ④'],
+  cloporte:['Cloporte','Il découpe les feuilles mortes en petits morceaux. ④'],
+  collembole:['Collembole','Minuscule animal qui grignote les débris de feuilles. ④'],
+  champignon:['🍄 Champignons','Leurs filaments blancs décomposent les feuilles mortes. ⑤'],
+  bacterie:['🦠 Bactéries',"Invisibles à l'œil nu, elles transforment les débris en humus. ⑤"],
+  feuille:['🍂 Feuille morte','Elle sera découpée puis transformée en humus. ③'],
+  ble:['🌾 Champ de blé',"La récolte est emportée : les plantes ne retournent pas au sol."],
+  tracteur:['🚜 Tracteur',"Il récolte, puis laboure. La terre reste nue et la pluie l'emporte."],
+  lit:['🍂 Litière','Feuilles mortes et débris, à la surface du sol. ③'],
+  A:['Humus + minéraux',"L'humus (noir) mélangé aux grains de roche. C'est la couche la plus fertile. ⑥"],
+  B:["Un peu d'humus","Des morceaux de roche avec un peu d'humus."],
+  C:['Roche en morceaux','La roche cassée par la pluie, le gel et les racines. ①'],
+  R:['Roche-mère',"La roche dure. Le sol se forme à partir d'elle."]
+};
+const NUMS={
+  1:['La roche se casse',"La roche-mère est dure. L'eau de pluie entre dans ses fissures. Quand il gèle, l'eau devient de la glace, prend plus de place et fait éclater la roche. Peu à peu, la roche se casse en morceaux de plus en plus petits."],
+  2:['Les plantes s\'installent',"Les premiers êtres vivants sur la roche nue sont les lichens et les mousses. Viennent ensuite les herbes, les buissons puis les arbres. Leurs racines s'enfoncent dans les fissures et cassent encore la roche."],
+  3:['La litière',"Chaque automne, les feuilles mortes, les brindilles et les fruits tombent sur le sol. Cette couche de débris végétaux s'appelle la litière. C'est la nourriture des êtres vivants du sol."],
+  4:['Les animaux du sol',"Vers de terre, cloportes, collemboles… mangent les feuilles mortes et les découpent en petits morceaux. Les vers de terre les enfouissent et mélangent la terre en creusant leurs galeries."],
+  5:['Les microorganismes',"Les champignons (avec leurs filaments blancs) et les bactéries (invisibles à l'œil nu) décomposent les petits morceaux de feuilles. Ils les transforment en humus : une matière noire, riche pour les plantes."],
+  6:['Le sol est formé',"Les vers de terre mélangent l'humus aux morceaux de roche : c'est le sol. Il faut des milliers d'années pour former quelques dizaines de centimètres de sol."],
+  7:['Le sol forestier',"Dans la forêt, personne n'enlève les feuilles mortes. Chaque année, elles tombent, sont découpées par les animaux puis transformées en humus par les champignons et les bactéries. L'humus est sans cesse renouvelé : le sol reste épais et riche."],
+  8:['Le sol de champ',"Dans le champ, on récolte les plantes et on les emporte : presque rien ne retourne au sol. L'humus n'est plus renouvelé et le labour le fait disparaître plus vite. La terre nue est aussi emportée par la pluie. Année après année, l'agriculture épuise le sol."]
+};
+const tip=document.getElementById('tip');let tipTimer;
+function hideTip(){tip.style.display='none';}
+cv.addEventListener('click',e=>{
+  const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*W/r.width,y=(e.clientY-r.top)*H/r.height;
+  if(Over.on){closeOver();return;}
+  let best=null,bh=null,bd=1e9;for(const h of hits){const inR=h.rw&&x>=h.rx&&x<=h.rx+h.rw&&y>=h.ry&&y<=h.ry+h.rh;const d=inR?-1:Math.hypot(h.x-x,h.y-y);if((inR||d<h.r)&&d<bd){bd=d;best=h.k;bh=h;}}
+  if(best==='loupe'){openOverlay(bh.kind,bh.x,bh.y);return;}
+  if(!best){const g=gAt(x);if(y<Y0)best=null;else if(y<g.aTop)best='lit';else if(y<g.bTop)best='A';else if(y<g.cTop)best='B';else if(y<g.rTop)best='C';else best='R';}
+  let inf=best&&INFO[best],big=false;
+  if(best==='num'){inf=NUMS[bh.n];big=true;}
+  if(!inf){hideTip();return;}
+  tip.classList.toggle('big',big);
+  tip.innerHTML=big?`<span class="t"><span class="nb">${bh.n}</span>${inf[0]}</span>${inf[1]}`:`<span class="t">${inf[0]}</span>${inf[1]}`;tip.style.display='block';
+  const wr=document.getElementById('win').getBoundingClientRect();
+  let tx=e.clientX-wr.left+12,ty=e.clientY-wr.top+12;
+  const tw=tip.offsetWidth,th=tip.offsetHeight;if(tx+tw>wr.width-8)tx=e.clientX-wr.left-tw-12;if(ty+th>wr.height-8)ty=e.clientY-wr.top-th-12;
+  tip.style.left=Math.max(6,tx)+'px';tip.style.top=Math.max(6,ty)+'px';
+  clearTimeout(tipTimer);tipTimer=setTimeout(hideTip,big?12000:4500);
+});
+
+init();setPlaying(false);requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

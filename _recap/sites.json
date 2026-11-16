@@ -179,6 +179,14 @@
    "artifact": "https://claude.ai/artifact/Wa3p5qXtATScybZSVU62j1",
    "version": "1794317449-4af9",
    "verifie": "2026-11-11"
+  },
+  {
+   "titre": "Comment se forme le sol ?",
+   "theme": "Le sol",
+   "fichier": "formation-du-sol.html",
+   "artifact": "https://claude.ai/artifact/XR8XL66f6Eiitd2Cnqhvxt",
+   "version": "1794865021-c15a",
+   "verifie": "2026-11-16"
   }
  ],
  "ignores": [
