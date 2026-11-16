@@ -53,4 +53,12 @@ Quand on ajoute un nouveau site, lui donner une catégorie qui existe déjà dan
 Chaque carte de la page récap a un bouton « Consignes » : nombre de consignes, niveau (6e → 2nde), difficulté, durée et précisions,
 puis Claude génère les consignes et le barème sur 20 (capacité `sample` de la page, sur le compte de la personne qui l'utilise).
 Le contenu du site envoyé à Claude est un extrait automatique des textes, boutons et réglages du fichier (`fiche()` dans `build_hub.py`).
-La page déclare les capacités `mcp` (bouton de synchro), `sample` (consignes), `db` et `user` (organisation des catégories) : ne pas les retirer en republiant (republier SANS passer `capabilities` les conserve).
+## Onglet « Progression SVT »
+
+La page a deux onglets : « Mes sites » et « Progression SVT » (adresse `#progression`).
+L'onglet Progression lit le Google Sheet du cahier numérique (`1ABGFTjPtowzLW2vnhZ20Bmk63kC5lYjzouLHpYwfi30`, onglets `Cours`, `Consignes`, `Règles IA`) avec le connecteur Google Sheets,
+affiche toutes les activités (3e / 4e / 5e / 6e, séances les unes sous les autres, aperçu du site pris dans les données de la page),
+et propose « Consignes et correction avec Claude » (capacité `sample`). Les modifications validées sont ajoutées dans l'onglet `Demandes IA` ;
+le script Apps Script du cahier (`traiterDemandesIA`, chaque minute) les écrit dans les Google Docs.
+
+La page déclare les capacités `mcp` (bouton de synchro : Claude Code Remote `fire_trigger` ; onglet Progression : Google Sheets `get_values`, `append_values`, `update_values`), `sample` (consignes et progression), `db` et `user` (organisation des catégories) : ne pas les retirer en republiant (republier SANS passer `capabilities` les conserve).
