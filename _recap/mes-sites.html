@@ -615,7 +615,8 @@ function carte(n, s, a) {
       ${enAttente ? '<div class="etat">⏳ Modification en cours d’écriture dans les Docs…</div>' : ''}
       <details><summary>Consignes (${cs.length})</summary>${cs.map(c => `<div><b>${esc(c.lettre)}</b> · ${esc(c.texte)}</div>`).join('') || '<div class="sous">Aucune consigne lue.</div>'}</details>
       ${a.cor ? `<details><summary>Correction${total(info) ? ' · ' + total(info) + ' pts' : ''}</summary>${cs.map(c => { const b = bareme(info, c.lettre); return b ? `<div><b>${esc(c.lettre)}</b> · ${b.max} pts${(b.criteres || []).map(x => `<div class="crit">${x.points} pt · ${esc(x.texte)}</div>`).join('') || (b.correction || []).map(t => `<div class="crit">${esc(t)}</div>`).join('')}</div>` : ''; }).join('')}</details>` : ''}
-      <a class="cl plein" href="${lienAtelier(ctx)}" target="_blank" rel="noopener">✦ Consignes et correction avec Claude</a>
+      <button class="cl plein" data-atelier="${cle(n, s, a)}">✦ Discuter avec Claude ici</button>
+      <a class="cl" href="${lienAtelier(ctx)}" target="_blank" rel="noopener">↗ Ouvrir dans une conversation</a>
       ${site ? `<a class="cl" href="${lienSite(ctx)}" target="_blank" rel="noopener">✦ Modifier le site avec Claude</a>` : ''}
       ${!a.cor ? `<button class="cl" data-generer="${n}|${s.numero}|${a.numero}|${idDoc(a.act)}">⚡ Générer la correction</button>` : ''}
       <div class="liens">
@@ -696,7 +697,7 @@ function dessinerAtelier() {
   const site = infoSite(info.site);
   const fil = atelier.messages.map((m, i) => m.role === 'user'
     ? `<div class="msg-moi">${esc(m.affiche || m.content)}</div>`
-    : `<div class="msg-claude">${esc(m.message || '')}${m.propIndex != null ? blocProposition(m.propIndex) : ''}</div>`).join('');
+    : `<div class="msg-claude">${mise(m.message || '')}${m.propIndex != null ? blocProposition(m.propIndex) : ''}</div>`).join('');
   $('#pg-pan').innerHTML = `
     <div class="p-tete"><button class="fermer" id="fermer">×</button>
       <div class="sous">${NOMS[niveau]} · séance ${s.numero} « ${esc(s.titre)} » · A${a.numero}${a.numero === 5 ? ' (bilan)' : ''}</div>
@@ -715,7 +716,7 @@ function dessinerAtelier() {
       <div class="puces">
         ${['Consignes plus courtes et plus simples', 'Barème : réponses attendues plus précises', 'Vérifie que le barème colle aux consignes', 'Une consigne plus difficile pour les bons élèves'].map(t => `<button class="puce" data-rapide="${esc(t)}">${esc(t)}</button>`).join('')}
       </div>
-      <textarea id="demande" placeholder="Ce que tu veux changer (consignes, barème, ou les deux)…"></textarea>
+      <textarea id="demande" placeholder="Pose une question ou dis ce que tu veux changer… (Ctrl+Entrée pour envoyer)"></textarea>
       <div class="liens" style="margin-top:8px"><button class="bouton" id="envoyer" ${sample ? '' : 'disabled'}>Envoyer à Claude</button></div>
     </div>`;
   $('#fermer').addEventListener('click', fermerAtelier);
@@ -729,7 +730,7 @@ function dessinerAtelier() {
 function consigneSysteme(info) {
   const { niveau, s, a } = atelier;
   const site = infoSite(info.site);
-  return `Tu es l'assistant d'un professeur de SVT de collège pour son cahier numérique. Tu proposes des modifications des consignes et/ou du barème d'UNE activité. Tu ne modifies rien toi-même : le professeur valide, puis un script écrit dans les Google Docs.
+  return `Tu es l'assistant d'un professeur de SVT de collège pour son cahier numérique. Tu l'aides à améliorer les consignes et/ou le barème d'UNE activité. Tu ne modifies rien toi-même : le professeur valide, puis un script écrit dans les Google Docs.
 
 Activité : SVT ${NOMS[niveau]}, séance ${s.numero} « ${s.titre} », activité ${a.numero}${a.numero === 5 ? ' (activité bilan, qui s’appuie sur les connaissances de la séance)' : ''}.
 Titre : ${info.titre || ''}
@@ -753,39 +754,53 @@ Règles pour le barème :
 - total de TOUTES les consignes = exactement 20 points ;
 - si tu changes une consigne, mets son barème en cohérence.
 ${REGLES.correction ? '- règles du professeur : ' + REGLES.correction + '\n' : ''}
-Réponds UNIQUEMENT par un objet JSON, sans texte autour :
-{"message": "1 à 3 phrases : ce que tu proposes et pourquoi",
- "consignes": null ou la liste COMPLÈTE [{"lettre":"A","texte":"..."}],
+Discute normalement avec le professeur, en français, de façon concise (pas de longs préambules). Tu peux répondre à des questions, donner ton avis, proposer plusieurs pistes.
+Quand tu proposes une modification concrète à appliquer, termine ta réponse par UN bloc de code json (et un seul), sans le commenter :
+\`\`\`json
+{"consignes": null ou la liste COMPLÈTE [{"lettre":"A","texte":"..."}],
  "bareme": null ou le barème COMPLET [{"lettre":"A","type":"Texte","mode":"Cumulatif","criteres":[{"points":2,"texte":"..."}]}]}
-Mets null pour ce que tu ne changes pas. Si on te pose seulement une question, réponds dans "message" avec les deux autres à null.`;
+\`\`\`
+Mets null pour ce que tu ne changes pas. Sans proposition concrète (question, avis, plusieurs pistes à choisir), n'ajoute pas de bloc. Le professeur voit sous ta réponse un bouton « Appliquer dans les Docs » qui écrit ta proposition.`;
 }
 
-function extraireJson(t) {
-  const d = t.indexOf('{'), f = t.lastIndexOf('}');
-  if (d === -1 || f <= d) throw new Error('Réponse de Claude illisible.');
-  return JSON.parse(t.slice(d, f + 1));
+// Sépare le texte de la réponse et le bloc ```json de proposition (s'il y en a un)
+function separer(t) {
+  const m = String(t || '').match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/i);
+  let prop = null;
+  if (m) { try { const o = JSON.parse(m[1]); prop = { consignes: Array.isArray(o.consignes) ? o.consignes : null, bareme: Array.isArray(o.bareme) ? o.bareme : null }; } catch (e) { prop = null; } }
+  const texte = String(t || '').replace(/```(?:json)?[\s\S]*?(```|$)/gi, '').trim();
+  return { texte, prop: prop && (prop.consignes || prop.bareme) ? prop : null };
+}
+// Mise en forme simple : **gras**, listes et retours à la ligne
+function mise(t) {
+  return esc(t).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/^#+\s*(.+)$/gm, '<b>$1</b>').replace(/\n/g, '<br>');
 }
 
 async function envoyer(texte) {
-  if (!texte || !sample || !atelier) return;
+  if (!texte || !sample || !atelier || atelier.occupe) return;
   const info = infoAct(atelier.a) || { consignes: [], bareme: {} };
   const premier = !atelier.messages.length;
-  atelier.messages.push({ role: 'user', content: premier ? consigneSysteme(info) + '\n\nDemande du professeur : ' + texte : texte, affiche: texte });
+  atelier.messages.push({ role: 'user', content: premier ? consigneSysteme(info) + '\n\nMessage du professeur : ' + texte : texte, affiche: texte });
+  atelier.occupe = true;
   dessinerAtelier();
   const r = $('#reflexion'); r.classList.remove('cache'); r.textContent = 'Claude réfléchit…';
   $('#envoyer').disabled = true;
+  const fil = $('#fil');
   try {
-    const rep = await sample(atelier.messages.map(m => ({ role: m.role, content: m.content })), { cache: false });
-    const obj = extraireJson(rep.text || '');
-    const prop = { consignes: Array.isArray(obj.consignes) ? obj.consignes : null, bareme: Array.isArray(obj.bareme) ? obj.bareme : null };
-    const m = { role: 'assistant', content: JSON.stringify(obj), message: obj.message || '' };
-    if (prop.consignes || prop.bareme) { atelier.propositions.push(prop); m.propIndex = atelier.propositions.length - 1; }
+    const rep = await sample(atelier.messages.map(m => ({ role: m.role, content: m.content })), {
+      cache: false,
+      onText: ({ text }) => { const z = $('#reflexion'); if (!z) return; z.innerHTML = mise(separer(text).texte) || 'Claude réfléchit…'; fil.scrollTop = fil.scrollHeight; }
+    });
+    const { texte: t, prop } = separer(rep.text || '');
+    const m = { role: 'assistant', content: rep.text || '', message: t };
+    if (prop) { atelier.propositions.push(prop); m.propIndex = atelier.propositions.length - 1; }
     atelier.messages.push(m);
   } catch (e) {
     atelier.messages.pop();
     toast(e && e.code === 'not_granted' ? 'Autorise la page à utiliser Claude.' : e && e.code === 'rate_limited' ? 'Trop de demandes : réessaie dans un moment.' : 'Claude n’a pas pu répondre (' + ((e && (e.code || e.message)) || 'erreur') + ').', true);
   }
-  dessinerAtelier();
+  atelier.occupe = false;
+  if (atelier) dessinerAtelier();
 }
 
 // Lignes du barème au format lu par le script du Sheet
