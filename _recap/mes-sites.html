@@ -186,7 +186,7 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
   </div>
   <div id="prog" hidden>
     <div class="barre">
-      <p>Toutes les activités du cahier numérique, par niveau et par séance. « Consignes et correction avec Claude » : Claude propose, tu valides, c'est écrit dans les Google Docs (1 à 2 min).</p>
+      <p>Toutes les activités du cahier numérique, par niveau et par séance. « Consignes et correction avec Claude » ouvre une conversation Claude qui connaît l'activité : il propose, tu valides, il l'écrit dans les Google Docs (1 à 2 min).</p>
       <span class="sous" id="pg-maj"></span>
       <button class="bouton leger" type="button" id="pg-regles">⚙ Règles globales</button>
       <button class="bouton leger" type="button" id="pg-recharger" title="Relire le Sheet">↻</button>
@@ -615,7 +615,7 @@ function carte(n, s, a) {
       ${enAttente ? '<div class="etat">⏳ Modification en cours d’écriture dans les Docs…</div>' : ''}
       <details><summary>Consignes (${cs.length})</summary>${cs.map(c => `<div><b>${esc(c.lettre)}</b> · ${esc(c.texte)}</div>`).join('') || '<div class="sous">Aucune consigne lue.</div>'}</details>
       ${a.cor ? `<details><summary>Correction${total(info) ? ' · ' + total(info) + ' pts' : ''}</summary>${cs.map(c => { const b = bareme(info, c.lettre); return b ? `<div><b>${esc(c.lettre)}</b> · ${b.max} pts${(b.criteres || []).map(x => `<div class="crit">${x.points} pt · ${esc(x.texte)}</div>`).join('') || (b.correction || []).map(t => `<div class="crit">${esc(t)}</div>`).join('')}</div>` : ''; }).join('')}</details>` : ''}
-      <button class="cl plein" data-atelier="${cle(n, s, a)}">✦ Consignes et correction avec Claude</button>
+      <a class="cl plein" href="${lienAtelier(ctx)}" target="_blank" rel="noopener">✦ Consignes et correction avec Claude</a>
       ${site ? `<a class="cl" href="${lienSite(ctx)}" target="_blank" rel="noopener">✦ Modifier le site avec Claude</a>` : ''}
       ${!a.cor ? `<button class="cl" data-generer="${n}|${s.numero}|${a.numero}|${idDoc(a.act)}">⚡ Générer la correction</button>` : ''}
       <div class="liens">
@@ -854,6 +854,30 @@ function appliquer(i) {
   });
   if (!lignes.length) { toast('Coche au moins un changement.', true); return; }
   demander(lignes, 'S' + atelier.s.numero + ' · A' + a.numero);
+}
+
+// ---------------------------------------------------------------------
+// Consignes et correction : conversation Claude pré-remplie. Claude propose,
+// puis, après accord, écrit la demande dans l'onglet « Demandes IA » avec le
+// connecteur Google Sheets ; le script du cahier l'applique dans les Docs.
+// ---------------------------------------------------------------------
+function lienAtelier(c) {
+  const info = c.info || { consignes: [], bareme: {} };
+  const act = idDoc(c.a.act), cor = idDoc(c.a.cor);
+  const cs = (info.consignes || []).map(x => `Consigne ${x.lettre} : ${x.texte}`).join('\n');
+  const t =
+    `Je veux modifier directement les consignes et/ou la correction d'une activité de mon cahier numérique : SVT ${NOMS[c.niveau]}, séance ${c.s.numero} « ${c.s.titre} », activité ${c.a.numero}${c.a.numero === 5 ? ' (bilan)' : ''}.\n` +
+    `Titre : ${c.titre}\n` + (info.problematique ? `Problématique : ${info.problematique}\n` : '') + (c.site ? `Site : ${c.site.url}\n` : '') +
+    `Doc activité : ${c.a.act}\n` + (cor ? `Doc correction : ${c.a.cor}\n` : 'Pas encore de Doc correction.\n') +
+    `\nConsignes actuelles :\n${cs || '(aucune lue)'}\n` + (cor ? `\nBarème actuel :\n${texteBareme(info)}\n` : '') +
+    `\nRègles : mêmes lettres de consignes (pas d'ajout ni de suppression) ; 30 min pour toute l'activité, consignes courtes ; barème = réponse attendue concrète, points entiers de 1 à 3, total de toutes les consignes = 20, « Texte - Cumulatif » sauf consigne avec photo (« Photo - Progressif »).` +
+    (REGLES.consignes ? ` Mes règles consignes : ${REGLES.consignes}.` : '') + (REGLES.correction ? ` Mes règles correction : ${REGLES.correction}.` : '') +
+    `\n\nMontre-moi d'abord ta proposition (avant / après). Quand je dis OK, applique-la avec le connecteur Google Sheets : append_values dans le Sheet ${SHEET}, plage 'Demandes IA'!A1, une ligne par élément modifié, 11 colonnes :\n` +
+    `[identifiant unique, type, "${act}", "${cor}", lettre, contenu, "", "", "", "", ""]\n` +
+    `- type "consigne" : contenu = nouveau texte, sans « Consigne X : » ;\n` +
+    `- type "bareme" : contenu = barème complet de la consigne, une ligne par retour à la ligne : « Consigne X - Texte - Cumulatif - N pts » (N = somme des critères) puis « N pt(s) : réponse attendue ».\n` +
+    `Un script l'écrit dans le Google Doc en 1 à 2 min : relis ensuite la colonne G de tes lignes (fait / erreur, message en H) et dis-moi le résultat.\n\nCe que je veux changer : `;
+  return 'https://claude.ai/new?q=' + encodeURIComponent(t);
 }
 
 // ---------------------------------------------------------------------
