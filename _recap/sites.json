@@ -7,7 +7,7 @@
   "Orientation 3e",
   "Le sol"
  ],
- "derniere_maj": "2026-11-10",
+ "derniere_maj": "2026-11-16",
  "sites": [
   {
    "titre": "Inondations et canicules",
@@ -110,8 +110,8 @@
    "theme": "Génétique et évolution",
    "fichier": "La Phalène du bouleau.html",
    "artifact": "https://claude.ai/artifact/38j3YFumCozZ5Gxnf9DRcq",
-   "version": null,
-   "verifie": "2026-11-08"
+   "version": "1794833607-49bc",
+   "verifie": "2026-11-16"
   },
   {
    "titre": "Globe tectonique",
