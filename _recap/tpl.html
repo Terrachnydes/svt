@@ -92,6 +92,7 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 .tabs > button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
 .tabs > button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 /* ===== Progression SVT ===== */
+.wrap.large{max-width:none}
 #prog[hidden]{display:none!important}
 #prog{--cl:#0e6b4f;--orange:#c2410c;--rouge:#c0392b;--jaune:#e0a800;--vert:#2f7a55;--bleu:#2563eb;display:flex;flex-direction:column;gap:14px;font-size:15px}
 #pg-barre{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:14px;padding-bottom:6px;font-size:15px}
@@ -108,11 +109,11 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 :is(#prog,#pg-barre) .filtres button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
 #prog .info{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--muted)}
 #prog .defile{overflow-x:auto;background:transparent;border:0;border-radius:12px}
-#prog .duo{display:flex;align-items:flex-start;min-width:max-content}
-#prog .grille{flex:1;display:grid;grid-template-columns:repeat(var(--n,4),minmax(225px,1fr));gap:10px;padding:10px;min-width:calc(var(--n,4)*235px)}
+#prog .duo{display:flex;align-items:flex-start;gap:4px}
+#prog .grille{flex:var(--n,4) 1 0;min-width:0;display:grid;grid-template-columns:repeat(var(--n,4),minmax(0,1fr));gap:10px;padding:10px 0}
 #prog .grille.un .col{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));align-items:start}
 #prog .grille.un .seance{grid-column:1/-1}
-#prog .lcol{width:235px;flex:none;padding:10px 0 10px 10px;display:flex;flex-direction:column;gap:7px}
+#prog .lcol{flex:1 1 0;min-width:0;padding:10px 6px 10px 0;display:flex;flex-direction:column;gap:7px}
 #prog .lcol .tete{border-bottom:2px solid var(--line);padding-bottom:6px;margin-bottom:6px}
 #prog .tete{font-family:var(--display);font-weight:600;font-size:1.15rem;padding:2px 6px}
 #prog .col{display:flex;flex-direction:column;gap:7px}
@@ -137,7 +138,7 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .pub.mini{position:static;width:24px;height:24px;margin-left:auto;flex:none}
 #prog .pub.mini svg{width:13px;height:13px}
 #prog .ca .pb{font-size:12.5px;color:var(--muted);font-style:italic;line-height:1.3}
-#prog .claude{white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--cl);background:var(--cl);color:#fff;border-radius:7px;padding:6px 8px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;width:100%}
+#prog .claude{text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--cl);background:var(--cl);color:#fff;border-radius:7px;padding:6px 8px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;width:100%}
 #prog .claude.vide{background:transparent;color:var(--cl)}
 #prog .claude:hover{filter:brightness(1.08)}
 #prog .site{position:relative;display:block;height:72px;border-radius:7px;overflow:hidden;border:1px solid var(--line);background:var(--thumb)}
@@ -726,7 +727,7 @@ function colonneLiens() {
     return `<div class="ca">
       ${b.site ? boutonPub(k) : ''}
       <div class="l1"><span class="ed${b.titre ? '' : ' vide'}" data-k="${esc(k)}" data-f="titre" title="Cliquer pour modifier">${esc(b.titre || 'Titre à définir')}</span></div>
-      ${st ? `<a class="url" href="${esc(st.url)}" target="_blank" rel="noopener" title="${esc(st.url)}">🔗 ${esc(st.url.replace(/^https?:\/\//, ''))}</a>${st.externe ? '' : vignette(st, k)}`
+      ${st ? `<a class="url" href="${esc(st.url)}" target="_blank" rel="noopener" title="${esc(st.url)}">🔗 ${esc((() => { try { return decodeURIComponent(st.url); } catch (e) { return st.url; } })().replace(/^https?:\/\//, ''))}</a>${st.externe ? '' : vignette(st, k)}`
         : '<div class="encours">⏳ En cours de création dans une conversation Claude. Il apparaîtra ici une fois en ligne (↻ pour relire).</div>'}
     </div>`;
   }).join('');
@@ -1060,7 +1061,7 @@ window.__progression = { demarrer };
 function ongletVoir(t){
   const p=t==="progression";
   document.getElementById("tab-sites").hidden=p;document.getElementById("tab-sites").style.display=p?"none":"flex";
-  document.getElementById("prog").hidden=!p;document.getElementById("pg-barre").hidden=!p;
+  document.getElementById("prog").hidden=!p;document.querySelector(".wrap").classList.toggle("large",p);document.getElementById("pg-barre").hidden=!p;
   document.querySelectorAll(".tabs > button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===(p?"progression":"sites"))));
   if(p)window.__progression.demarrer();
 }
