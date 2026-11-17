@@ -95,44 +95,64 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 .tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 /* ===== Progression SVT ===== */
 #prog[hidden]{display:none!important}
-#prog{--cl:#c96442;--orange:#c2410c;--rouge:#c0392b;--vert:#2f7a55;--bleu:#2563eb;display:flex;flex-direction:column;gap:14px;font-size:15px}
+#prog{--cl:#c96442;--orange:#c2410c;--rouge:#c0392b;--jaune:#e0a800;--vert:#2f7a55;--bleu:#2563eb;display:flex;flex-direction:column;gap:14px;font-size:15px}
 #prog .barre{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-#prog .barre p{margin:0;flex:1 1 320px;color:var(--muted);font-size:.92rem}
-#prog .sous{color:var(--muted);font-size:13.5px}
+#prog .barre p{margin:0;flex:1 1 100%;color:var(--muted);font-size:.9rem}
+#prog .sous{color:var(--muted);font-size:13px}
 #prog .bouton{font:inherit;font-size:.9rem;font-weight:700;padding:8px 13px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
 #prog .bouton:disabled{opacity:.5;cursor:default}
 #prog .bouton.leger{background:var(--surface);color:var(--fg);border-color:var(--line);font-weight:500}
 #prog .bouton.petit{padding:4px 9px;font-size:12.5px;border-radius:7px}
+#prog .legende{display:flex;gap:12px;font-size:12.5px;color:var(--muted);align-items:center;flex-wrap:wrap}
+#prog .legende i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+#prog .filtres{display:flex;gap:6px}
+#prog .filtres button{font:inherit;font-size:13.5px;font-weight:700;padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer}
+#prog .filtres button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
 #prog .info{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--muted)}
 #prog .defile{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
-#prog .grille{display:grid;grid-template-columns:50px repeat(4,minmax(230px,1fr));gap:10px;padding:10px;min-width:1030px}
-#prog .tete{font-family:var(--display);font-weight:600;font-size:1.2rem;padding:4px 6px}
-#prog .seance{font-weight:700;font-size:12px;color:var(--muted);padding-top:18px}
-#prog .titre-seance{padding:16px 6px 2px;font-weight:700;font-size:14.5px;border-top:2px solid var(--line)}
-#prog .num{font-weight:700;color:var(--muted);padding-top:8px;text-align:center}
-#prog .num small{display:block;font-weight:400;font-size:10.5px}
-#prog .ca{border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;background:var(--bg)}
-#prog .ca.attente{outline:2px solid var(--bleu)}
-#prog .apercu{display:block;aspect-ratio:16/10;background:var(--thumb);overflow:hidden;border-bottom:1px solid var(--line)}
-#prog .apercu img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
-#prog .apercu.sans{aspect-ratio:auto;height:42px;display:grid;place-items:center;color:var(--muted);font-size:13px;text-decoration:none}
-#prog .corps{padding:10px 12px 12px;display:flex;flex-direction:column;gap:7px}
-#prog .code{font-size:12px;color:var(--muted);font-weight:700}
-#prog .alerte{color:var(--orange);font-size:12px}
-#prog .titre{font-weight:700;font-size:15px;line-height:1.25}
-#prog .pb{font-size:13px;color:var(--muted);font-style:italic}
-#prog .pb::before{content:"❓ ";font-style:normal}
-#prog .cl{display:block;text-align:center;border:1px solid var(--cl);color:var(--cl);background:transparent;border-radius:8px;padding:7px 10px;font:inherit;font-size:13px;font-weight:700;text-decoration:none;width:100%;cursor:pointer}
-#prog .cl.plein{background:var(--cl);color:#fff}
-#prog .cl:hover{filter:brightness(1.08)}
-#prog details{font-size:13px}
-#prog summary{cursor:pointer;font-weight:700}
-#prog details>div{margin-top:4px}
-#prog .crit{color:var(--muted);padding-left:10px;font-size:12.5px}
-#prog .liens{display:flex;gap:10px;font-size:12.5px;align-items:center;flex-wrap:wrap}
-#prog .liens a{color:var(--accent)}
-#prog .liens button:not(.bouton){margin-left:auto;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:6px;padding:2px 8px;cursor:pointer}
-#prog .etat{font-size:12px;color:var(--bleu)}
+#prog .duo{display:flex;align-items:flex-start;min-width:max-content}
+#prog .grille{flex:1;display:grid;grid-template-columns:repeat(var(--n,4),minmax(225px,1fr));gap:10px;padding:10px;min-width:calc(var(--n,4)*235px)}
+#prog .grille.un .col{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));align-items:start}
+#prog .grille.un .seance{grid-column:1/-1}
+#prog .lcol{width:235px;flex:none;padding:10px 0 10px 10px;display:flex;flex-direction:column;gap:7px}
+#prog .lcol .tete{border-bottom:2px solid var(--line);padding-bottom:6px;margin-bottom:6px}
+#prog .tete{font-family:var(--display);font-weight:600;font-size:1.15rem;padding:2px 6px}
+#prog .col{display:flex;flex-direction:column;gap:7px}
+#prog .seance{display:flex;align-items:flex-start;gap:6px;font-weight:700;font-size:13px;padding:12px 4px 2px;border-top:2px solid var(--line)}
+#prog .ca{position:relative;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:8px 10px 9px;display:flex;flex-direction:column;gap:6px}
+#prog .ca.vierge{border-style:dashed;background:transparent}
+#prog .ca.vierge .l1{color:var(--muted);font-weight:400}
+#prog .ca .l1{font-weight:700;font-size:14px;line-height:1.25;padding-right:30px}
+#prog .ca .l1 b{color:var(--accent);margin-right:4px}
+#prog .ed{cursor:text;border-radius:4px;padding:0 2px;margin:0 -2px}
+#prog .ed:hover{background:var(--accent-soft)}
+#prog .ed[contenteditable="true"]{background:var(--surface);outline:2px solid var(--accent);color:var(--fg);font-style:normal}
+#prog .ed.vide{color:var(--orange);font-weight:400;font-style:normal}
+#prog .pub{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:7px;border:1px solid transparent;display:grid;place-items:center;cursor:pointer;padding:0;font-weight:700;font-size:14px}
+#prog .pub svg{width:15px;height:15px}
+#prog .pub.jamais{background:var(--rouge);color:#fff}
+#prog .pub.maj{background:var(--jaune);color:#1d2420}
+#prog .pub.ok{background:var(--vert);color:#fff}
+#prog .pub:hover{filter:brightness(1.1)}
+#prog .pub:disabled{opacity:.6;cursor:wait}
+#prog .pub.mini{position:static;width:24px;height:24px;margin-left:auto;flex:none}
+#prog .pub.mini svg{width:13px;height:13px}
+#prog .ca .pb{font-size:12.5px;color:var(--muted);font-style:italic;line-height:1.3}
+#prog .claude{white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--cl);background:var(--cl);color:#fff;border-radius:7px;padding:6px 8px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;width:100%}
+#prog .claude.vide{background:transparent;color:var(--cl)}
+#prog .claude:hover{filter:brightness(1.08)}
+#prog .site{position:relative;display:block;height:72px;border-radius:7px;overflow:hidden;border:1px solid var(--line);background:var(--thumb)}
+#prog .site img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+#prog .dbl{position:absolute;left:5px;right:5px;bottom:5px;display:flex;gap:5px}
+#prog .dbl a{flex:1;text-align:center;font-size:12px;font-weight:700;padding:4px 6px;border-radius:6px;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+#prog .dbl .voir{background:var(--surface);color:var(--fg);border:1px solid var(--line)}
+#prog .dbl .modi{background:var(--cl);color:#fff;border:1px solid var(--cl)}
+#prog .dbl a:hover{filter:brightness(1.08)}
+#prog .ext{height:28px;display:flex;align-items:center;gap:6px;padding:0 9px;border-radius:7px;background:var(--thumb);color:var(--muted);font-size:12.5px;text-decoration:none;overflow:hidden;white-space:nowrap}
+#prog .url{font-size:12px;color:var(--accent);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-decoration:none}
+#prog .creer{display:grid;place-items:center;height:30px;border:1px dashed var(--cl);color:var(--cl);background:transparent;border-radius:7px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;width:100%;text-decoration:none}
+#prog .creer:hover{background:var(--cl);color:#fff}
+#prog .encours{font-size:12.5px;color:var(--muted)}
 #pg-pan{position:fixed;top:0;right:0;bottom:0;width:min(620px,100%);background:var(--surface);color:var(--fg);box-shadow:-8px 0 30px rgba(0,0,0,.25);z-index:20;display:flex;flex-direction:column;transform:translateX(105%);transition:transform .2s}
 #pg-pan.ouvert{transform:none}
 #prog .p-tete{padding:16px 18px 10px;border-bottom:1px solid var(--line)}
@@ -144,8 +164,15 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog textarea.regle{min-height:160px}
 #prog .puces{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 #prog .puce{border:1px solid var(--line);background:var(--bg);color:var(--muted);border-radius:99px;padding:4px 10px;font:inherit;font-size:12.5px;cursor:pointer}
-#prog .bloc{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:13.5px}
-#prog .bloc h3{margin:0 0 6px;font-size:14px}
+#prog .bloc{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:13.5px;background:var(--bg)}
+#prog .bloc h3{margin:0 0 8px;font-size:14px;display:flex;justify-content:space-between;gap:8px}
+#prog .bloc h3 small{font-weight:400;color:var(--muted)}
+#prog .cons{margin:0 0 8px}
+#prog .cons b{color:var(--accent)}
+#prog .crit{font-size:12.5px;color:var(--muted);padding:2px 0 2px 12px;border-left:2px solid var(--line);margin:2px 0}
+#prog .crit i{font-style:normal;font-weight:700;color:var(--fg)}
+#prog .liens{display:flex;gap:10px;font-size:12.5px;align-items:center;flex-wrap:wrap}
+#prog .liens a{color:var(--accent)}
 #prog .msg-moi{background:var(--thumb);border-radius:10px;padding:8px 10px;margin:10px 0 10px 40px;font-size:14px;white-space:pre-wrap}
 #prog .msg-claude{border-left:3px solid var(--cl);padding:4px 10px;margin:10px 0;font-size:14px}
 #prog .prop{border:1px solid var(--cl);border-radius:10px;padding:10px 12px;margin:8px 0}
@@ -186,7 +213,9 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
   </div>
   <div id="prog" hidden>
     <div class="barre">
-      <p>Toutes les activités du cahier numérique, par niveau et par séance. « Consignes et correction avec Claude » ouvre une conversation Claude qui connaît l'activité : il propose, tu valides, il l'écrit dans les Google Docs (1 à 2 min).</p>
+      <p>Clic sur un titre ou une problématique pour l'écrire · ✦ Claude pour consignes et correction · la flèche publie pour les élèves.</p>
+      <div class="legende"><span><i style="background:#c0392b"></i>jamais publiée</span><span><i style="background:#e0a800"></i>à mettre à jour</span><span><i style="background:#2f7a55"></i>publiée</span></div>
+      <div class="filtres" id="pg-filtres"></div>
       <span class="sous" id="pg-maj"></span>
       <button class="bouton leger" type="button" id="pg-regles">⚙ Règles globales</button>
       <button class="bouton leger" type="button" id="pg-recharger" title="Relire le Sheet">↻</button>
@@ -467,23 +496,33 @@ gcopy.onclick=()=>{const t=gout.textContent;const ok=()=>{gcopy.textContent="Cop
   try{navigator.clipboard.writeText(t).then(ok,()=>{const r=document.createRange();r.selectNodeContents(gout);const s=getSelection();s.removeAllRanges();s.addRange(r);gcopy.textContent="Ctrl+C pour copier"})}catch(_){}};
 document.getElementById("q").addEventListener("input",e=>render(e.target.value));
 render("");
-/* ===== Onglet « Progression SVT » (connecteur Google Sheets + capacité « sample ») ===== */
+/* ===== Onglet « Progression SVT » (connecteur Google Sheets + capacité « sample ») =====
+   Brouillon et version publiée de chaque activité, titre de séance et lien : onglet « Activités » du Sheet.
+   Colonnes : A clé · B type · C niveau · D séance · E n° · F-J brouillon (titre, problématique, consignes, correction, site)
+              · K-O publié (mêmes champs) · P publié le · Q modifié le · R Doc activité */
 (() => {
 
 const SHEET = '1ABGFTjPtowzLW2vnhZ20Bmk63kC5lYjzouLHpYwfi30';
 const NIVEAUX = ['3', '4', '5', '6'];
 const NOMS = { '3': '3e', '4': '4e', '5': '5e', '6': '6e' };
 const COL_NIVEAU = { '3': 1, '4': 3, '5': 5, '6': 7 };   // B, D, F, H dans Cours
+const ONGLET = "'Activités'";
+const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>';
+const ETAT = { jamais: 'Jamais publiée : cliquer pour publier', maj: 'Modifiée depuis la publication : cliquer pour mettre à jour', ok: 'Publiée et à jour' };
 
 let mcp = null, sample = null;
-let COURS = {}, CONSIGNES = {}, REGLES = { consignes: '', correction: '' }, SITES = {};
-let attente = {};          // id demande → { act, libelle }
+let COURS = {}, CONSIGNES = {}, REGLES = { consignes: '', correction: '' }, SITES = {}, ROWS = {}, ORIENTATION = [];
+let META = {};             // clé → { type, niveau, seance, num, doc, cor }
 let atelier = null;        // activité ouverte dans le panneau
+let vue = 'Tous';
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const idDoc = u => { const m = String(u || '').match(/[-\w]{25,}/); return m ? m[0] : ''; };
-function toast(t, err) { const x = $('#pg-toast'); x.textContent = t; x.className = err ? 'err' : ''; clearTimeout(toast.t); toast.t = setTimeout(() => x.classList.add('cache'), err ? 8000 : 4000); }
+const js = (v, d) => { try { const o = JSON.parse(v || ''); return o == null ? d : o; } catch (e) { return d; } };
+const valide = u => { u = String(u || '').trim(); return !!u && u !== '/'; };
+const maintenant = () => new Date().toLocaleString('fr-FR');
+function toast(t, err) { const x = $('#pg-toast'); x.textContent = t; x.className = err ? 'err' : ''; clearTimeout(toast.t); toast.t = setTimeout(() => x.classList.add('cache'), err ? 8000 : 4500); }
 
 // ---------------------------------------------------------------------
 // Connecteur Google Sheets
@@ -511,29 +550,33 @@ function erreurMcp(e) {
 // ---------------------------------------------------------------------
 // Chargement
 // ---------------------------------------------------------------------
+async function lireActivites() {
+  const v = await lire(ONGLET + '!A2:R1000');
+  ROWS = {};
+  v.forEach((r, i) => { const k = String(r[0] || '').trim(); if (k) ROWS[k] = { ligne: i + 2, v: Array.from({ length: 18 }, (_, j) => String(r[j] == null ? '' : r[j])) }; });
+}
 async function chargerTout() {
   $('#pg-maj').textContent = 'Lecture du Sheet…';
   const [cours, cons, regles] = await Promise.all([
     lire('Cours!A1:I73'),
     lire('Consignes!A2:L1000'),
-    lire("'Règles IA'!B1:B2").catch(() => [])
+    lire("'Règles IA'!B1:B2").catch(() => []),
+    lireActivites()
   ]);
-  // Cours : séance s → ligne 2 + 6(s-1) (titres), puis A1-A5
   COURS = {};
   NIVEAUX.forEach(n => {
     const c = COL_NIVEAU[n];
     COURS[n] = [];
     for (let s = 0; s < 12; s++) {
       const t = 1 + s * 6, ligne = i => cours[i] || [];
-      COURS[n].push({ numero: s + 1, titre: String(ligne(t)[c] || '').trim(),
-        activites: [1, 2, 3, 4, 5].map(a => ({ numero: a, act: String(ligne(t + a)[c] || '').trim(), cor: String(ligne(t + a)[c + 1] || '').trim() })) });
+      const titre = String(ligne(t)[c] || '').trim();
+      COURS[n].push({ numero: s + 1, titre: /^vide$/i.test(titre) ? '' : titre,
+        activites: [1, 2, 3, 4, 5].map(a => ({ numero: a, act: valide(ligne(t + a)[c]) ? String(ligne(t + a)[c]).trim() : '', cor: valide(ligne(t + a)[c + 1]) ? String(ligne(t + a)[c + 1]).trim() : '' })) });
     }
   });
-  // Consignes (même logique que le cahier élève)
   CONSIGNES = {};
   cons.forEach(r => {
     const id = String(r[0] || '').trim(); if (!id) return;
-    const js = (v, d) => { try { return JSON.parse(v || '') || d; } catch (e) { return d; } };
     const afficher = String(r[5] == null || r[5] === '' ? 'TRUE' : r[5]).toUpperCase() !== 'FALSE';
     const site = !afficher ? '' : (String(r[4] || '').trim() || (/^https?:\/\//i.test(String(r[2] || '')) ? String(r[2]).trim() : ''));
     const infos = js(r[11], {});
@@ -543,245 +586,337 @@ async function chargerTout() {
   $('#pg-maj').textContent = 'Sheet lu à ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 }
 
+const GH = 'https://terrachnydes.github.io/svt/';
 function chargerSites() {
-  data.forEach(([g, items]) => items.forEach(i => { if (i.f) SITES[i.f] = i; }));
+  ORIENTATION = [];
+  data.forEach(([g, items]) => items.forEach(i => {
+    if (!i.f) return;
+    SITES[i.f] = i;
+    if (/orientation/i.test(g)) ORIENTATION.push({ titre: i.t, url: GH + encodeURIComponent(i.f) });
+  }));
 }
-function slug(f) { return f.replace(/\.html?$/i, '').normalize('NFD').replace(/[^\x00-\x7f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
 function infoSite(url) {
   if (!url) return null;
   const m = String(url).match(/terrachnydes\.github\.io\/svt\/([^?#]+)/i);
-  if (!m) return { url, titre: 'Site' };
+  if (!m) return { url, externe: true, titre: (String(url).match(/^https?:\/\/(?:www\.)?([^/]+)/i) || [, url])[1] };
   let f = m[1]; try { f = decodeURIComponent(f); } catch (e) {}
   const s = SITES[f] || {};
   return { url, fichier: f, titre: s.t || f.replace(/\.html?$/i, ''), artifact: s.c || '', conversation: s.v || '', apercu: s.img || '' };
 }
+const memeUrl = (a, b) => { const d = u => { try { return decodeURIComponent(String(u || '').trim()); } catch (e) { return String(u || '').trim(); } }; return d(a) === d(b); };
 
 // ---------------------------------------------------------------------
-// Tableau
+// Brouillon / publié
 // ---------------------------------------------------------------------
-function infoAct(a) { return CONSIGNES[idDoc(a.act)] || null; }
-function bareme(info, l) { const b = info && info.bareme || {}; return b[l] || null; }
-function total(info) { return info ? Object.values(info.bareme || {}).reduce((t, x) => t + (+x.max || 0), 0) : 0; }
+const CHAMPS = ['titre', 'pb', 'cons', 'cor', 'site'];
+function defauts(k) {
+  const m = META[k] || {};
+  if (m.type === 'séance') return { titre: m.titreCours || '', pb: '', cons: '', cor: '', site: '' };
+  if (m.type === 'lien') return { titre: m.titre || '', pb: '', cons: '', cor: '', site: m.url || '' };
+  const info = CONSIGNES[m.doc] || null;
+  const site = info ? info.site : '';
+  const st = infoSite(site);
+  return {
+    titre: (info && info.titre) || (st && !st.externe ? st.titre : ''),
+    pb: (info && info.problematique) || '',
+    cons: info && info.consignes && info.consignes.length ? JSON.stringify(info.consignes) : '',
+    cor: info && info.bareme && Object.keys(info.bareme).length ? JSON.stringify(info.bareme) : '',
+    site
+  };
+}
+function brouillon(k) {
+  const r = ROWS[k];
+  if (!r) return defauts(k);
+  const o = {}; CHAMPS.forEach((c, i) => o[c] = r.v[5 + i]); return o;
+}
+function etat(k) {
+  const r = ROWS[k];
+  if (!r || !r.v[15]) return 'jamais';
+  return CHAMPS.every((c, i) => r.v[5 + i] === r.v[10 + i]) ? 'ok' : 'maj';
+}
+function ligneNeuve(k, b) {
+  const m = META[k] || {};
+  return [k, m.type || 'activité', m.niveau ? NOMS[m.niveau] || m.niveau : 'tous', m.seance || '', m.num || '', ...CHAMPS.map(c => b[c] || ''), '', '', '', '', '', '', maintenant(), m.doc || ''];
+}
 
-function alertes(info, a) {
-  const al = [];
-  if (!a.cor) al.push('pas de correction');
-  if (!info) { al.push('Doc pas encore lu'); return al; }
-  const L = (info.consignes || []).map(c => c.lettre), b = info.bareme || {};
-  if (!L.length) al.push('aucune consigne lue');
-  if (L.length > 4) al.push(L.length + ' consignes pour 30 min');
-  if (a.cor && Object.keys(b).length && total(info) !== 20) al.push('barème sur ' + total(info));
-  const manque = Object.keys(b).length ? L.filter(l => !b[l]) : [];
-  if (manque.length) al.push('barème manquant : ' + manque.join(', '));
-  return al;
+async function sauver(k, champs, libelle) {
+  const b = Object.assign(brouillon(k), champs || {});
+  const vals = CHAMPS.map(c => b[c] || '');
+  const r = ROWS[k];
+  try {
+    if (r) {
+      await ecrire(`${ONGLET}!F${r.ligne}:J${r.ligne}`, [vals]);
+      await ecrire(`${ONGLET}!Q${r.ligne}`, [[maintenant()]]);
+      vals.forEach((x, i) => r.v[5 + i] = x);
+    } else {
+      await ajouter(ONGLET + '!A1', [ligneNeuve(k, b)]);
+      await lireActivites();
+    }
+    if (libelle) toast(libelle);
+    afficher();
+    return true;
+  } catch (e) { toast(erreurMcp(e), true); afficher(); return false; }
+}
+
+async function publier(k, bouton) {
+  if (etat(k) === 'ok') { toast('Déjà publiée et à jour.'); return; }
+  if (bouton) bouton.disabled = true;
+  const avant = etat(k);
+  try {
+    if (!ROWS[k]) { await ajouter(ONGLET + '!A1', [ligneNeuve(k, brouillon(k))]); await lireActivites(); }
+    const r = ROWS[k], b = brouillon(k), quand = maintenant();
+    await ecrire(`${ONGLET}!K${r.ligne}:P${r.ligne}`, [[...CHAMPS.map(c => b[c] || ''), quand]]);
+    CHAMPS.forEach((c, i) => r.v[10 + i] = b[c] || ''); r.v[15] = quand;
+    let wl = '';
+    try { wl = await listeBlanche(b.site); } catch (e) { wl = ' ⚠ Liste blanche non mise à jour (' + erreurMcp(e) + ').'; }
+    toast((avant === 'maj' ? 'Mise à jour publiée.' : 'Publiée.') + wl);
+  } catch (e) { toast(erreurMcp(e), true); }
+  afficher();
+}
+
+// Liste blanche du cahier : onglet Cours, colonne F à partir de F100 (F99 = « Liste blanche »)
+async function listeBlanche(url) {
+  if (!/terrachnydes\.github\.io\/svt\//i.test(url || '')) return '';
+  const v = await lire('Cours!F100:F400');
+  if (v.some(r => memeUrl(r[0], url))) return '';
+  let i = v.findIndex(r => !String((r || [])[0] || '').trim());
+  if (i < 0) i = v.length;
+  await ecrire(`Cours!F${100 + i}`, [[url]]);
+  return ' Site ajouté à la liste blanche.';
+}
+
+// ---------------------------------------------------------------------
+// Affichage
+// ---------------------------------------------------------------------
+const cleAct = (n, s, a) => `${NOMS[n]}-S${s}-A${a}`;
+const cleSea = (n, s) => `${NOMS[n]}-S${s}`;
+function boutonPub(k, mini) {
+  const e = etat(k);
+  return `<button class="pub ${e}${mini ? ' mini' : ''}" type="button" title="${ETAT[e]}" data-pub="${esc(k)}">${e === 'ok' ? '✓' : ARROW}</button>`;
+}
+function vignette(st, k) {
+  return `<div class="site">${st.apercu ? `<img src="${esc(st.apercu)}" alt="" loading="lazy" onerror="this.remove()">` : ''}
+    <div class="dbl"><a class="voir" href="${esc(st.url)}" target="_blank" rel="noopener">👁 Consulter</a><a class="modi" href="${lienSite(k, st)}" target="_blank" rel="noopener">✦ Modifier</a></div></div>`;
+}
+
+function carte(n, s, a) {
+  const k = cleAct(n, s.numero, a.numero);
+  META[k] = { type: 'activité', niveau: n, seance: s.numero, num: a.numero, doc: idDoc(a.act), act: a.act, cor: a.cor, seanceTitre: s.titre };
+  const b = brouillon(k), st = infoSite(b.site), cs = js(b.cons, []);
+  return `<div class="ca">
+    ${boutonPub(k)}
+    <div class="l1"><b>S${s.numero}.${a.numero}</b><span class="ed${b.titre ? '' : ' vide'}" data-k="${esc(k)}" data-f="titre" title="Cliquer pour modifier">${esc(b.titre || 'Titre à définir')}</span></div>
+    <div class="pb">❓ <span class="ed${b.pb ? '' : ' vide'}" data-k="${esc(k)}" data-f="pb" title="Cliquer pour modifier">${esc(b.pb || 'Problématique à définir')}</span></div>
+    <button class="claude${cs.length ? '' : ' vide'}" type="button" data-atelier="${esc(k)}">✦ Consignes · Correction</button>
+    ${st && !st.externe ? vignette(st, k)
+      : (st ? `<a class="ext" href="${esc(st.url)}" target="_blank" rel="noopener">🔗 ${esc(st.titre)}</a>` : '') + `<a class="creer" href="${lienCreer(k)}" target="_blank" rel="noopener" data-creer="${esc(k)}">+ Créer un site</a>`}
+  </div>`;
+}
+
+let cleVierge = 'LIEN-' + Date.now().toString(36);
+function colonneLiens() {
+  const lignes = Object.entries(ROWS).filter(([, r]) => r.v[1] === 'lien').sort((x, y) => x[1].ligne - y[1].ligne);
+  const cartes = [];
+  ORIENTATION.forEach((o, i) => {
+    if (lignes.some(([, r]) => memeUrl(r.v[9], o.url) || memeUrl(r.v[14], o.url))) return;
+    const k = 'LIEN-' + o.url.split('/').pop().replace(/[^\w]+/g, '').slice(0, 30);
+    META[k] = { type: 'lien', niveau: 'tous', titre: o.titre, url: o.url };
+    cartes.push(k);
+  });
+  lignes.forEach(([k]) => { META[k] = { type: 'lien', niveau: 'tous' }; cartes.splice(cartes.length, 0, k); });
+  const html = cartes.map(k => {
+    const b = brouillon(k), st = infoSite(b.site);
+    return `<div class="ca">
+      ${b.site ? boutonPub(k) : ''}
+      <div class="l1"><span class="ed${b.titre ? '' : ' vide'}" data-k="${esc(k)}" data-f="titre" title="Cliquer pour modifier">${esc(b.titre || 'Titre à définir')}</span></div>
+      ${st ? `<a class="url" href="${esc(st.url)}" target="_blank" rel="noopener" title="${esc(st.url)}">🔗 ${esc(st.url.replace(/^https?:\/\//, ''))}</a>${st.externe ? '' : vignette(st, k)}`
+        : '<div class="encours">⏳ En cours de création dans une conversation Claude. Il apparaîtra ici une fois en ligne (↻ pour relire).</div>'}
+    </div>`;
+  }).join('');
+  META[cleVierge] = { type: 'lien', niveau: 'tous' };
+  return `<div class="lcol"><div class="tete">Lien</div>${html}
+    <div class="ca vierge"><div class="l1">Nouveau site</div><a class="creer" href="${lienCreer(cleVierge)}" target="_blank" rel="noopener" data-creer="${cleVierge}">+ Créer un site</a></div></div>`;
 }
 
 function afficher() {
+  const nv = vue === 'Tous' ? NIVEAUX : [vue];
   const lignes = [];
   for (let s = 1; s <= 12; s++) {
-    const se = NIVEAUX.map(n => COURS[n][s - 1]);
-    if (!se.some(x => x.titre || x.activites.some(a => a.act))) continue;
-    lignes.push(`<div class="seance">Séance ${s}</div>` + se.map(x => `<div class="titre-seance">${esc(x.titre || '—')}</div>`).join(''));
-    for (let a = 1; a <= 5; a++) {
-      const cases = se.map((x, i) => { const act = x.activites[a - 1]; return act.act ? carte(NIVEAUX[i], x, act) : '<div></div>'; });
-      if (cases.every(c => c === '<div></div>')) continue;
-      lignes.push(`<div class="num">A${a}${a === 5 ? '<small>bilan</small>' : ''}</div>` + cases.join(''));
-    }
+    const se = nv.map(n => COURS[n][s - 1]);
+    const actives = se.map((x, i) => x.activites.filter(a => a.act || ROWS[cleAct(nv[i], s, a.numero)]));
+    if (!se.some((x, i) => x.titre || actives[i].length || ROWS[cleSea(nv[i], s)])) continue;
+    lignes.push(se.map((x, i) => {
+      const n = nv[i], ks = cleSea(n, s);
+      if (!x.titre && !actives[i].length && !ROWS[ks]) return '<div class="col"></div>';
+      META[ks] = { type: 'séance', niveau: n, seance: s, titreCours: x.titre };
+      const t = brouillon(ks).titre;
+      return `<div class="col"><div class="seance"><span>Séance ${s} — <span class="ed${t ? '' : ' vide'}" data-k="${esc(ks)}" data-f="titre" title="Cliquer pour modifier">${esc(t || 'Titre à définir')}</span></span>${boutonPub(ks, true)}</div>` +
+        actives[i].map(a => carte(n, x, a)).join('') + '</div>';
+    }).join(''));
   }
-  $('#pg-main').innerHTML = `<div class="defile"><div class="grille"><div class="tete"></div>${NIVEAUX.map(n => `<div class="tete">${NOMS[n]}</div>`).join('')}${lignes.join('')}</div></div>`;
-  document.querySelectorAll('[data-atelier]').forEach(b => b.addEventListener('click', () => ouvrirAtelier(b.dataset.atelier)));
-  document.querySelectorAll('[data-relire]').forEach(b => b.addEventListener('click', () => demander([['relire', ...b.dataset.relire.split('|'), '', '']], 'Relecture des Docs')));
-  document.querySelectorAll('[data-generer]').forEach(b => b.addEventListener('click', () => {
-    const [n, s, a, act] = b.dataset.generer.split('|');
-    demander([['correction', act, '', '', '', n, s, a]], 'Génération de la correction');
-  }));
-}
-
-function cle(n, s, a) { return n + '|' + s.numero + '|' + a.numero; }
-function trouver(k) { const [n, s, a] = k.split('|'); const se = COURS[n][s - 1]; return { niveau: n, s: se, a: se.activites[a - 1] }; }
-
-function carte(n, s, a) {
-  const info = infoAct(a), site = infoSite(info && info.site), al = alertes(info, a);
-  const titre = (info && info.titre) || (site && site.titre) || 'Activité ' + a.numero;
-  const cs = info ? info.consignes || [] : [];
-  const enAttente = Object.values(attente).some(x => x.act === idDoc(a.act));
-  const ctx = { niveau: n, s, a, info, site, titre };
-  return `<div class="ca ${enAttente ? 'attente' : ''}">
-    ${site ? (site.apercu ? `<a class="apercu" href="${esc(site.url)}" target="_blank" rel="noopener"><img src="${esc(site.apercu)}" alt="" loading="lazy" onerror="this.parentNode.classList.add('sans');this.parentNode.textContent='🧪 Ouvrir le site'"></a>` : `<a class="apercu sans" href="${esc(site.url)}" target="_blank" rel="noopener">🧪 Ouvrir le site</a>`) : '<div class="apercu sans">📄 sans site</div>'}
-    <div class="corps">
-      <div class="code">S${s.numero} · A${a.numero}${al.length ? ` <span class="alerte" title="${esc(al.join(' · '))}">⚠ ${esc(al[0])}${al.length > 1 ? ' +' + (al.length - 1) : ''}</span>` : ''}</div>
-      <div class="titre">${esc(titre)}</div>
-      ${info && info.problematique ? `<div class="pb">${esc(info.problematique)}</div>` : ''}
-      ${enAttente ? '<div class="etat">⏳ Modification en cours d’écriture dans les Docs…</div>' : ''}
-      <details><summary>Consignes (${cs.length})</summary>${cs.map(c => `<div><b>${esc(c.lettre)}</b> · ${esc(c.texte)}</div>`).join('') || '<div class="sous">Aucune consigne lue.</div>'}</details>
-      ${a.cor ? `<details><summary>Correction${total(info) ? ' · ' + total(info) + ' pts' : ''}</summary>${cs.map(c => { const b = bareme(info, c.lettre); return b ? `<div><b>${esc(c.lettre)}</b> · ${b.max} pts${(b.criteres || []).map(x => `<div class="crit">${x.points} pt · ${esc(x.texte)}</div>`).join('') || (b.correction || []).map(t => `<div class="crit">${esc(t)}</div>`).join('')}</div>` : ''; }).join('')}</details>` : ''}
-      <button class="cl plein" data-atelier="${cle(n, s, a)}">✦ Discuter avec Claude ici</button>
-      <a class="cl" href="${lienAtelier(ctx)}" target="_blank" rel="noopener">↗ Ouvrir dans une conversation</a>
-      ${site ? `<a class="cl" href="${lienSite(ctx)}" target="_blank" rel="noopener">✦ Modifier le site avec Claude</a>` : ''}
-      ${!a.cor ? `<button class="cl" data-generer="${n}|${s.numero}|${a.numero}|${idDoc(a.act)}">⚡ Générer la correction</button>` : ''}
-      <div class="liens">
-        <a href="${esc(a.act)}" target="_blank" rel="noopener">Doc activité</a>
-        ${a.cor ? `<a href="${esc(a.cor)}" target="_blank" rel="noopener">Doc correction</a>` : ''}
-        ${site ? `<a href="${esc(site.url)}" target="_blank" rel="noopener">Site</a>` : ''}
-        <button data-relire="${idDoc(a.act)}|${idDoc(a.cor)}" title="Relire les Docs">↻</button>
-      </div>
-    </div></div>`;
+  $('#pg-filtres').innerHTML = ['Tous', ...NIVEAUX].map(v => `<button type="button" aria-pressed="${v === vue}" data-vue="${v}">${v === 'Tous' ? 'Tous' : NOMS[v]}</button>`).join('');
+  const liens = vue === 'Tous' || vue === '3' ? colonneLiens() : '';
+  $('#pg-main').innerHTML = `<div class="defile"><div class="duo">${liens}<div class="grille${nv.length === 1 ? ' un' : ''}" style="--n:${nv.length}">${nv.map(n => `<div class="tete">${NOMS[n]}</div>`).join('')}${lignes.join('')}</div></div></div>`;
+  if (atelier) dessinerAtelier();
 }
 
 // ---------------------------------------------------------------------
-// Demandes → onglet « Demandes IA » (appliquées par le script en ~1 min)
-// ligne : [id, type, act, cor, lettre, contenu, statut, message, niveau, séance, numéro]
+// Événements (délégués)
 // ---------------------------------------------------------------------
-async function demander(lignes, libelle) {
-  const rows = lignes.map(l => {
-    const id = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    const [type, act, cor, lettre, contenu, niveau, seance, numero] = l;
-    attente[id] = { act, libelle };
-    return [id, type, act, cor || '', lettre || '', contenu || '', '', '', niveau || '', seance || '', numero || ''];
-  });
-  try {
-    await ajouter("'Demandes IA'!A1", rows);
-    toast(libelle + ' : envoyé, écrit dans les Docs d’ici 1 à 2 min.');
-    afficher();
-    suivre();
-  } catch (e) {
-    rows.forEach(r => delete attente[r[0]]);
-    toast(/Unable to parse range|not found|introuvable/i.test(String(e && e.message)) ? 'Onglet « Demandes IA » absent : lance une fois le menu Correction IA → Installer la page Activités.' : erreurMcp(e), true);
+$('#prog').addEventListener('click', e => {
+  const ed = e.target.closest('.ed');
+  if (ed && ed.closest('#pg-main') && !ed.isContentEditable) {
+    if (ed.classList.contains('vide')) ed.textContent = '';
+    ed.dataset.avant = ed.classList.contains('vide') ? '' : ed.textContent;
+    ed.contentEditable = 'true'; ed.focus();
+    const r = document.createRange(); r.selectNodeContents(ed); r.collapse(false); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    return;
   }
-}
-
-let suivi = null;
-function suivre() {
-  if (suivi) return;
-  suivi = setInterval(async () => {
-    if (!Object.keys(attente).length) { clearInterval(suivi); suivi = null; return; }
-    try {
-      const v = await lire("'Demandes IA'!A2:H");
-      let fini = false;
-      v.forEach(r => {
-        const d = attente[r[0]];
-        if (!d || !(r[6] === 'fait' || r[6] === 'erreur')) return;
-        delete attente[r[0]]; fini = true;
-        toast(r[6] === 'fait' ? d.libelle + ' : fait. ' + (r[7] || '') : d.libelle + ' : ' + (r[7] || 'erreur'), r[6] !== 'fait');
-      });
-      if (fini) { await chargerTout(); afficher(); if (atelier) dessinerAtelier(); }
-    } catch (e) { /* on réessaie au prochain tour */ }
-  }, 10000);
-}
+  const b = e.target.closest('[data-vue],[data-pub],[data-atelier],[data-creer]');
+  if (!b) return;
+  if (b.dataset.vue) { vue = b.dataset.vue; afficher(); }
+  else if (b.dataset.pub) publier(b.dataset.pub, b);
+  else if (b.dataset.atelier) ouvrirAtelier(b.dataset.atelier);
+  else if (b.dataset.creer) {
+    const k = b.dataset.creer;
+    if (k === cleVierge) { cleVierge = 'LIEN-' + Date.now().toString(36); sauver(k, { titre: 'Nouveau site (en création)' }); }
+    else if (!ROWS[k]) sauver(k, {});
+  }
+});
+$('#prog').addEventListener('keydown', e => {
+  const ed = e.target.closest && e.target.closest('.ed[contenteditable="true"]');
+  if (!ed) return;
+  if (e.key === 'Enter') { e.preventDefault(); ed.blur(); }
+  if (e.key === 'Escape') { e.stopPropagation(); ed.dataset.annule = '1'; ed.blur(); }
+});
+$('#prog').addEventListener('focusout', e => {
+  const ed = e.target.closest && e.target.closest('.ed[contenteditable="true"]');
+  if (!ed) return;
+  ed.contentEditable = 'false';
+  const v = ed.textContent.replace(/\s+/g, ' ').trim(), k = ed.dataset.k, f = ed.dataset.f;
+  if (ed.dataset.annule || v === (brouillon(k)[f] || '')) { afficher(); return; }
+  sauver(k, { [f]: v }, (f === 'pb' ? 'Problématique' : 'Titre') + ' enregistré. La flèche le publie pour les élèves.');
+});
 
 // ---------------------------------------------------------------------
-// Atelier Claude : consignes + correction d'une activité
+// Atelier Claude : consignes + correction d'une activité (brouillon)
 // ---------------------------------------------------------------------
-function texteBareme(info) {
-  return (info.consignes || []).map(c => {
-    const b = bareme(info, c.lettre);
+function criteres(b) { return b.criteres && b.criteres.length ? b.criteres : (b.correction || []).map(t => ({ points: '', texte: t })); }
+function texteBareme(cs, bar) {
+  return cs.map(c => {
+    const b = bar[c.lettre];
     if (!b) return `Consigne ${c.lettre} : pas de barème`;
-    const crit = b.criteres || (b.correction || []).map(t => ({ points: '?', texte: t }));
-    return `Consigne ${c.lettre} - ${b.type === 'photo' ? 'Photo' : 'Texte'} - ${b.mode === 'progressif' || b.type === 'photo' ? 'Progressif' : 'Cumulatif'} - ${b.max} pts\n` +
-      crit.map(x => `${x.points} pt : ${x.texte}`).join('\n');
+    return `Consigne ${c.lettre} - ${/photo/i.test(b.type) ? 'Photo' : 'Texte'} - ${/progressif/i.test(b.mode) || /photo/i.test(b.type) ? 'Progressif' : 'Cumulatif'} - ${b.max} pts\n` +
+      criteres(b).map(x => `${x.points || '?'} pt : ${x.texte}`).join('\n');
   }).join('\n\n');
 }
+const total = bar => Object.values(bar || {}).reduce((t, x) => t + (+x.max || 0), 0);
 
-function ouvrirAtelier(k) {
-  const t = trouver(k);
-  atelier = { k, ...t, messages: [], propositions: [] };
-  $('#pg-pan').classList.add('ouvert');
-  dessinerAtelier();
-}
+function ouvrirAtelier(k) { atelier = { k, messages: [], propositions: [] }; $('#pg-pan').classList.add('ouvert'); dessinerAtelier(); }
 function fermerAtelier() { $('#pg-pan').classList.remove('ouvert'); atelier = null; }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') fermerAtelier(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !e.defaultPrevented) fermerAtelier(); });
+
+function blocsActuels(b) {
+  const cs = js(b.cons, []), bar = js(b.cor, {});
+  return `<div class="bloc"><h3>Consignes <small>${cs.length || 'aucune'}</small></h3>${cs.map(c => `<p class="cons"><b>${esc(c.lettre)}</b> · ${esc(c.texte)}</p>`).join('') || '<div class="sous">Pas encore de consignes : demande à Claude d’en proposer.</div>'}</div>
+    <div class="bloc"><h3>Correction <small>${Object.keys(bar).length ? total(bar) + ' pts' : 'aucune'}</small></h3>${Object.entries(bar).map(([l, v]) => `<p class="cons"><b>${esc(l)}</b> · ${esc(v.max)} pts</p>${criteres(v).map(x => `<div class="crit">${x.points ? `<i>${esc(x.points)} pt · </i>` : ''}${esc(x.texte)}</div>`).join('')}`).join('') || '<div class="sous">Pas encore de correction.</div>'}</div>`;
+}
 
 function dessinerAtelier() {
-  const { niveau, s, a } = atelier;
-  const info = infoAct(a) || { consignes: [], bareme: {} };
-  const site = infoSite(info.site);
-  const fil = atelier.messages.map((m, i) => m.role === 'user'
-    ? `<div class="msg-moi">${esc(m.affiche || m.content)}</div>`
-    : `<div class="msg-claude">${mise(m.message || '')}${m.propIndex != null ? blocProposition(m.propIndex) : ''}</div>`).join('');
+  const k = atelier.k, m = META[k] || {}, b = brouillon(k), st = infoSite(b.site);
+  const fil = atelier.messages.map(x => x.role === 'user'
+    ? `<div class="msg-moi">${esc(x.affiche || x.content)}</div>`
+    : `<div class="msg-claude">${mise(x.message || '')}${x.propIndex != null ? blocProposition(x.propIndex) : ''}</div>`).join('');
+  const brouillonTexte = $('#demande') ? $('#demande').value : '';
   $('#pg-pan').innerHTML = `
-    <div class="p-tete"><button class="fermer" id="fermer">×</button>
-      <div class="sous">${NOMS[niveau]} · séance ${s.numero} « ${esc(s.titre)} » · A${a.numero}${a.numero === 5 ? ' (bilan)' : ''}</div>
-      <h2>${esc(info.titre || (site && site.titre) || 'Activité ' + a.numero)}</h2>
-      ${info.problematique ? `<div class="sous">❓ ${esc(info.problematique)}</div>` : ''}
-      <div class="liens" style="margin-top:6px"><a href="${esc(a.act)}" target="_blank" rel="noopener">Doc activité</a>${a.cor ? `<a href="${esc(a.cor)}" target="_blank" rel="noopener">Doc correction</a>` : ''}${site ? `<a href="${esc(site.url)}" target="_blank" rel="noopener">Site</a>` : ''}</div>
+    <div class="p-tete"><button class="fermer" id="fermer" type="button">×</button>
+      <div class="sous">${NOMS[m.niveau] || ''} · S${m.seance}.${m.num} · séance « ${esc(m.seanceTitre || '')} » ${boutonEtat(k)}</div>
+      <h2>${esc(b.titre || 'Titre à définir')}</h2>
+      <div class="sous">❓ ${esc(b.pb || 'Problématique à définir')}</div>
+      <div class="liens" style="margin-top:6px">${m.act ? `<a href="${esc(m.act)}" target="_blank" rel="noopener">Doc activité</a>` : ''}${m.cor ? `<a href="${esc(m.cor)}" target="_blank" rel="noopener">Doc correction</a>` : ''}${st ? `<a href="${esc(st.url)}" target="_blank" rel="noopener">Site</a>` : ''}</div>
     </div>
     <div class="p-corps" id="fil">
-      <div class="bloc"><h3>Consignes actuelles</h3>${(info.consignes || []).map(c => `<div><b>${esc(c.lettre)}</b> · ${esc(c.texte)}</div>`).join('') || '<div class="sous">Aucune consigne lue.</div>'}</div>
-      ${a.cor ? `<div class="bloc"><h3>Barème actuel · ${total(info)} pts</h3><div style="white-space:pre-wrap;font-size:13px">${esc(texteBareme(info))}</div></div>` : '<div class="bloc sous">Pas encore de Doc correction pour cette activité.</div>'}
-      ${fil}
+      ${blocsActuels(b)}
+      ${fil || `<div class="msg-claude">Voilà l’activité telle qu’elle est. Que veux-tu changer ? Je propose, tu coches, c’est enregistré en brouillon. Les élèves le verront quand tu cliqueras sur la flèche.</div>`}
       <div id="reflexion" class="msg-claude cache"></div>
     </div>
     <div class="p-pied">
       ${sample ? '' : '<div class="ko" style="margin-bottom:6px">Claude n’est pas disponible ici : ouvre cette page dans Claude et accepte qu’elle l’utilise.</div>'}
       <div class="puces">
-        ${['Consignes plus courtes et plus simples', 'Barème : réponses attendues plus précises', 'Vérifie que le barème colle aux consignes', 'Une consigne plus difficile pour les bons élèves'].map(t => `<button class="puce" data-rapide="${esc(t)}">${esc(t)}</button>`).join('')}
+        ${['Propose un titre et une problématique', 'Consignes plus courtes et plus simples', 'Barème : réponses attendues plus précises', 'Vérifie que le barème colle aux consignes'].map(t => `<button class="puce" type="button" data-rapide="${esc(t)}">${esc(t)}</button>`).join('')}
       </div>
-      <textarea id="demande" placeholder="Pose une question ou dis ce que tu veux changer… (Ctrl+Entrée pour envoyer)"></textarea>
-      <div class="liens" style="margin-top:8px"><button class="bouton" id="envoyer" ${sample ? '' : 'disabled'}>Envoyer à Claude</button></div>
+      <textarea id="demande" placeholder="Dis ce que tu veux changer… (Ctrl+Entrée pour envoyer)"></textarea>
+      <div class="liens" style="margin-top:8px"><button class="bouton" type="button" id="envoyer" ${sample ? '' : 'disabled'}>Envoyer à Claude</button></div>
     </div>`;
+  $('#demande').value = brouillonTexte;
   $('#fermer').addEventListener('click', fermerAtelier);
   $('#envoyer').addEventListener('click', () => envoyer($('#demande').value.trim()));
   $('#demande').addEventListener('keydown', e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) envoyer($('#demande').value.trim()); });
-  document.querySelectorAll('[data-rapide]').forEach(b => b.addEventListener('click', () => envoyer(b.dataset.rapide)));
-  document.querySelectorAll('[data-appliquer]').forEach(b => b.addEventListener('click', () => appliquer(+b.dataset.appliquer)));
+  $('#pg-pan').querySelectorAll('[data-rapide]').forEach(x => x.addEventListener('click', () => envoyer(x.dataset.rapide)));
+  $('#pg-pan').querySelectorAll('[data-appliquer]').forEach(x => x.addEventListener('click', () => appliquer(+x.dataset.appliquer)));
   const f = $('#fil'); f.scrollTop = f.scrollHeight;
 }
+function boutonEtat(k) { const e = etat(k); return `<span style="color:${e === 'ok' ? 'var(--vert)' : e === 'maj' ? '#a47a00' : 'var(--rouge)'}">· ${e === 'ok' ? 'publiée' : e === 'maj' ? 'à mettre à jour' : 'jamais publiée'}</span>`; }
 
-function consigneSysteme(info) {
-  const { niveau, s, a } = atelier;
-  const site = infoSite(info.site);
-  return `Tu es l'assistant d'un professeur de SVT de collège pour son cahier numérique. Tu l'aides à améliorer les consignes et/ou le barème d'UNE activité. Tu ne modifies rien toi-même : le professeur valide, puis un script écrit dans les Google Docs.
+function consigneSysteme() {
+  const k = atelier.k, m = META[k] || {}, b = brouillon(k), st = infoSite(b.site), cs = js(b.cons, []), bar = js(b.cor, {});
+  return `Tu es l'assistant d'un professeur de SVT de collège pour son cahier numérique. Tu l'aides à écrire le titre, la problématique, les consignes et la correction (barème) d'UNE activité. Tu ne modifies rien toi-même : le professeur coche ce qu'il garde et c'est enregistré en brouillon.
 
-Activité : SVT ${NOMS[niveau]}, séance ${s.numero} « ${s.titre} », activité ${a.numero}${a.numero === 5 ? ' (activité bilan, qui s’appuie sur les connaissances de la séance)' : ''}.
-Titre : ${info.titre || ''}
-Problématique : ${info.problematique || '(non lue)'}
-${site ? 'Site interactif utilisé (Document 1) : « ' + site.titre + ' » ' + site.url : 'Pas de site interactif.'}
+Activité : SVT ${NOMS[m.niveau]}, séance ${m.seance} « ${m.seanceTitre || ''} », activité ${m.num}${m.num === 5 ? ' (activité bilan, qui s’appuie sur les connaissances de la séance)' : ''}.
+Titre : ${b.titre || '(à définir)'}
+Problématique : ${b.pb || '(à définir)'}
+${st ? 'Site ou ressource utilisé (Document 1) : « ' + st.titre + ' » ' + st.url : 'Pas de site interactif.'}
 
 Consignes actuelles :
-${(info.consignes || []).map(c => 'Consigne ' + c.lettre + ' : ' + c.texte).join('\n') || '(aucune)'}
+${cs.map(c => 'Consigne ' + c.lettre + ' : ' + c.texte).join('\n') || '(aucune)'}
 
 Barème actuel :
-${a.cor ? texteBareme(info) : '(pas de Doc correction)'}
+${Object.keys(bar).length ? texteBareme(cs, bar) : '(aucun)'}
 
 Règles pour les consignes :
-- les élèves ont 30 minutes pour toute l'activité : consignes courtes, claires, un verbe d'action ;
-- garde le même nombre de consignes et les mêmes lettres (ajouter ou supprimer une consigne se fait dans le Doc) ;
+- les élèves ont 30 minutes pour toute l'activité : consignes courtes, claires, un verbe d'action, pas de sous-questions ;
+- consignes nommées A, B, C… ;
 ${REGLES.consignes ? '- règles du professeur : ' + REGLES.consignes + '\n' : ''}
 Règles pour le barème :
 - une entrée par consigne, mêmes lettres que les consignes ;
 - type "Texte" et mode "Cumulatif" par défaut ; "Photo" et "Progressif" seulement si la consigne demande une photo ;
-- chaque critère = la réponse attendue concrète (pas une reformulation de la question), points entiers de 1 à 3 ;
+- chaque critère = la réponse attendue concrète (pas une reformulation de la question), formulations acceptées séparées par « / », points entiers de 1 à 3 ;
 - total de TOUTES les consignes = exactement 20 points ;
-- si tu changes une consigne, mets son barème en cohérence.
+- si tu changes les consignes, mets le barème en cohérence.
 ${REGLES.correction ? '- règles du professeur : ' + REGLES.correction + '\n' : ''}
-Discute normalement avec le professeur, en français, de façon concise (pas de longs préambules). Tu peux répondre à des questions, donner ton avis, proposer plusieurs pistes.
-Quand tu proposes une modification concrète à appliquer, termine ta réponse par UN bloc de code json (et un seul), sans le commenter :
+La problématique est une question courte que l'activité aide à résoudre. Le titre fait quelques mots.
+Discute normalement avec le professeur, en français, de façon concise. Tu peux répondre à des questions, donner ton avis, proposer plusieurs pistes.
+Quand tu proposes une modification concrète, termine ta réponse par UN bloc de code json (et un seul), sans le commenter :
 \`\`\`json
-{"consignes": null ou la liste COMPLÈTE [{"lettre":"A","texte":"..."}],
+{"titre": null ou "…", "problematique": null ou "…",
+ "consignes": null ou la liste COMPLÈTE [{"lettre":"A","texte":"..."}],
  "bareme": null ou le barème COMPLET [{"lettre":"A","type":"Texte","mode":"Cumulatif","criteres":[{"points":2,"texte":"..."}]}]}
 \`\`\`
-Mets null pour ce que tu ne changes pas. Sans proposition concrète (question, avis, plusieurs pistes à choisir), n'ajoute pas de bloc. Le professeur voit sous ta réponse un bouton « Appliquer dans les Docs » qui écrit ta proposition.`;
+Mets null pour ce que tu ne changes pas. Sans proposition concrète, n'ajoute pas de bloc.`;
 }
 
-// Sépare le texte de la réponse et le bloc ```json de proposition (s'il y en a un)
 function separer(t) {
   const m = String(t || '').match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/i);
   let prop = null;
-  if (m) { try { const o = JSON.parse(m[1]); prop = { consignes: Array.isArray(o.consignes) ? o.consignes : null, bareme: Array.isArray(o.bareme) ? o.bareme : null }; } catch (e) { prop = null; } }
+  if (m) {
+    try {
+      const o = JSON.parse(m[1]);
+      prop = { titre: typeof o.titre === 'string' && o.titre.trim() ? o.titre.trim() : null, problematique: typeof o.problematique === 'string' && o.problematique.trim() ? o.problematique.trim() : null,
+        consignes: Array.isArray(o.consignes) ? o.consignes.map(c => ({ lettre: String(c.lettre || '').toUpperCase(), texte: String(c.texte || '').trim() })) : null,
+        bareme: Array.isArray(o.bareme) ? o.bareme : null };
+    } catch (e) { prop = null; }
+  }
   const texte = String(t || '').replace(/```(?:json)?[\s\S]*?(```|$)/gi, '').trim();
-  return { texte, prop: prop && (prop.consignes || prop.bareme) ? prop : null };
+  return { texte, prop: prop && (prop.titre || prop.problematique || prop.consignes || prop.bareme) ? prop : null };
 }
-// Mise en forme simple : **gras**, listes et retours à la ligne
-function mise(t) {
-  return esc(t).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/^#+\s*(.+)$/gm, '<b>$1</b>').replace(/\n/g, '<br>');
-}
+function mise(t) { return esc(t).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/^#+\s*(.+)$/gm, '<b>$1</b>').replace(/\n/g, '<br>'); }
 
 async function envoyer(texte) {
   if (!texte || !sample || !atelier || atelier.occupe) return;
-  const info = infoAct(atelier.a) || { consignes: [], bareme: {} };
   const premier = !atelier.messages.length;
-  atelier.messages.push({ role: 'user', content: premier ? consigneSysteme(info) + '\n\nMessage du professeur : ' + texte : texte, affiche: texte });
+  atelier.messages.push({ role: 'user', content: premier ? consigneSysteme() + '\n\nMessage du professeur : ' + texte : texte, affiche: texte });
   atelier.occupe = true;
+  if ($('#demande')) $('#demande').value = '';
   dessinerAtelier();
   const r = $('#reflexion'); r.classList.remove('cache'); r.textContent = 'Claude réfléchit…';
   $('#envoyer').disabled = true;
@@ -799,113 +934,89 @@ async function envoyer(texte) {
     atelier.messages.pop();
     toast(e && e.code === 'not_granted' ? 'Autorise la page à utiliser Claude.' : e && e.code === 'rate_limited' ? 'Trop de demandes : réessaie dans un moment.' : 'Claude n’a pas pu répondre (' + ((e && (e.code || e.message)) || 'erreur') + ').', true);
   }
-  atelier.occupe = false;
-  if (atelier) dessinerAtelier();
+  if (atelier) { atelier.occupe = false; dessinerAtelier(); }
 }
 
-// Lignes du barème au format lu par le script du Sheet
-function lignesBareme(b) {
-  const crit = (b.criteres || []).map(c => ({ points: Math.round(+c.points || 0), texte: String(c.texte || '').trim() })).filter(c => c.texte);
-  const max = crit.reduce((t, c) => t + c.points, 0);
-  const type = /photo/i.test(b.type) ? 'Photo' : 'Texte', mode = /progressif/i.test(b.mode) ? 'Progressif' : 'Cumulatif';
-  return { max, crit, lignes: [`Consigne ${b.lettre} - ${type} - ${mode} - ${max} pts`].concat(crit.map(c => `${c.points} pt${c.points > 1 ? 's' : ''} : ${c.texte}`)) };
+function versObjet(liste) {
+  const o = {};
+  liste.forEach(b => {
+    const crit = (b.criteres || []).map(c => ({ points: Math.round(+c.points || 0), texte: String(c.texte || '').trim() })).filter(c => c.texte);
+    o[String(b.lettre || '').toUpperCase()] = { max: crit.reduce((t, c) => t + c.points, 0), type: /photo/i.test(b.type) ? 'photo' : 'texte', mode: /progressif/i.test(b.mode) ? 'progressif' : 'cumulatif', criteres: crit };
+  });
+  return o;
 }
-
-function verifier(prop, info) {
-  const pb = [];
-  const L = (info.consignes || []).map(c => c.lettre);
-  if (prop.consignes) {
-    const P = prop.consignes.map(c => String(c.lettre || '').toUpperCase());
-    if (P.join() !== L.join()) pb.push('Les lettres des consignes ne correspondent pas au Doc (' + P.join(', ') + ' au lieu de ' + L.join(', ') + ').');
-  }
+function verifier(prop) {
+  const b = brouillon(atelier.k), pb = [];
+  const cs = prop.consignes || js(b.cons, []);
+  const L = cs.map(c => c.lettre).join();
+  if (prop.consignes && prop.consignes.some(c => !c.lettre || !c.texte)) pb.push('Une consigne n’a pas de lettre ou de texte.');
   if (prop.bareme) {
-    const tot = prop.bareme.reduce((t, b) => t + lignesBareme(b).max, 0);
+    const o = versObjet(prop.bareme), tot = total(o);
     if (tot !== 20) pb.push('Total du barème proposé : ' + tot + ' pts (au lieu de 20).');
-    if (prop.bareme.some(b => (b.criteres || []).some(c => !(Number.isInteger(+c.points) && +c.points >= 1 && +c.points <= 3)))) pb.push('Un critère a des points hors 1 à 3.');
-    const B = prop.bareme.map(b => String(b.lettre || '').toUpperCase());
-    if (B.join() !== L.join()) pb.push('Le barème ne couvre pas les consignes ' + L.join(', ') + '.');
-    if (!atelier.a.cor) pb.push('Pas de Doc correction : génère-le d’abord.');
-  }
+    if (prop.bareme.some(x => (x.criteres || []).some(c => !(Number.isInteger(+c.points) && +c.points >= 1 && +c.points <= 3)))) pb.push('Un critère a des points hors 1 à 3.');
+    if (Object.keys(o).join() !== L) pb.push('Le barème ne couvre pas exactement les consignes ' + L + '.');
+  } else if (prop.consignes && b.cor && Object.keys(js(b.cor, {})).join() !== L) pb.push('Les consignes changent de lettres : demande aussi le barème correspondant.');
   return pb;
 }
-
 function blocProposition(i) {
-  const prop = atelier.propositions[i];
-  const info = infoAct(atelier.a) || { consignes: [], bareme: {} };
-  const pb = verifier(prop, info);
-  const items = [];
-  (prop.consignes || []).forEach(c => {
-    const avant = (info.consignes.find(x => x.lettre === c.lettre) || {}).texte || '';
-    if (avant.trim() === String(c.texte || '').trim()) return;
-    items.push(`<label><input type="checkbox" checked data-p="${i}" data-type="consigne" data-lettre="${esc(c.lettre)}"><span><b>Consigne ${esc(c.lettre)}</b><br><span class="avant">${esc(avant)}</span><br><span class="apres">${esc(c.texte)}</span></span></label>`);
-  });
-  (prop.bareme || []).forEach(b => {
-    const n = lignesBareme(b), ancien = bareme(info, b.lettre);
-    const ancienTexte = ancien ? (ancien.criteres || []).map(x => x.points + ' pt : ' + x.texte).join('\n') : '';
-    const nouveauTexte = n.crit.map(x => x.points + ' pt : ' + x.texte).join('\n');
-    if (ancienTexte === nouveauTexte) return;
-    items.push(`<label><input type="checkbox" checked data-p="${i}" data-type="bareme" data-lettre="${esc(b.lettre)}"><span><b>Barème ${esc(b.lettre)} · ${n.max} pts</b><br><span class="avant" style="white-space:pre-wrap">${esc(ancienTexte)}</span><br><span class="apres" style="white-space:pre-wrap">${esc(nouveauTexte)}</span></span></label>`);
-  });
-  if (!items.length) return '<div class="sous">Aucun changement par rapport aux Docs.</div>';
+  const prop = atelier.propositions[i], b = brouillon(atelier.k), pb = verifier(prop), items = [];
+  const ligne = (type, nom, avant, apres) => `<label><input type="checkbox" checked data-p="${i}" data-type="${type}"><span><b>${nom}</b><br><span class="avant" style="white-space:pre-wrap">${esc(avant || '(vide)')}</span><br><span style="white-space:pre-wrap">${esc(apres)}</span></span></label>`;
+  if (prop.titre && prop.titre !== b.titre) items.push(ligne('titre', 'Titre', b.titre, prop.titre));
+  if (prop.problematique && prop.problematique !== b.pb) items.push(ligne('pb', 'Problématique', b.pb, prop.problematique));
+  if (prop.consignes) {
+    const av = js(b.cons, []).map(c => c.lettre + ' · ' + c.texte).join('\n'), ap = prop.consignes.map(c => c.lettre + ' · ' + c.texte).join('\n');
+    if (av !== ap) items.push(ligne('cons', 'Consignes', av, ap));
+  }
+  if (prop.bareme) {
+    const o = versObjet(prop.bareme), cs = prop.consignes || js(b.cons, []);
+    const av = texteBareme(js(b.cons, []), js(b.cor, {})), ap = texteBareme(cs, o);
+    if (av !== ap) items.push(ligne('cor', 'Correction · ' + total(o) + ' pts', av, ap));
+  }
+  if (!items.length) return '<div class="sous">Aucun changement par rapport au brouillon.</div>';
   return `<div class="prop">${items.join('')}
     ${pb.map(p => `<div class="ko">⚠ ${esc(p)}</div>`).join('') || '<div class="ok">✓ Format et total vérifiés</div>'}
-    <div class="liens" style="margin-top:8px"><button class="bouton petit" data-appliquer="${i}" ${pb.length ? 'disabled title="Demande à Claude de corriger le problème"' : ''}>Appliquer dans les Docs</button>
+    <div class="liens" style="margin-top:8px"><button class="bouton petit" type="button" data-appliquer="${i}" ${pb.length ? 'disabled title="Demande à Claude de corriger le problème"' : ''}>Enregistrer dans le brouillon</button>
     <span class="sous">ou continue la discussion pour ajuster</span></div></div>`;
 }
-
 function appliquer(i) {
-  const prop = atelier.propositions[i];
-  const a = atelier.a;
-  const lignes = [];
-  document.querySelectorAll(`input[data-p="${i}"]:checked`).forEach(x => {
-    const l = x.dataset.lettre;
-    if (x.dataset.type === 'consigne') {
-      const c = prop.consignes.find(c => c.lettre === l);
-      lignes.push(['consigne', idDoc(a.act), idDoc(a.cor), l, String(c.texte).trim()]);
-    } else {
-      const b = prop.bareme.find(b => b.lettre === l);
-      lignes.push(['bareme', idDoc(a.act), idDoc(a.cor), l, lignesBareme(b).lignes.join('\n')]);
-    }
+  const prop = atelier.propositions[i], ch = {};
+  $('#pg-pan').querySelectorAll(`input[data-p="${i}"]:checked`).forEach(x => {
+    const t = x.dataset.type;
+    if (t === 'titre') ch.titre = prop.titre;
+    if (t === 'pb') ch.pb = prop.problematique;
+    if (t === 'cons') ch.cons = JSON.stringify(prop.consignes);
+    if (t === 'cor') ch.cor = JSON.stringify(versObjet(prop.bareme));
   });
-  if (!lignes.length) { toast('Coche au moins un changement.', true); return; }
-  demander(lignes, 'S' + atelier.s.numero + ' · A' + a.numero);
+  if (!Object.keys(ch).length) { toast('Coche au moins un changement.', true); return; }
+  sauver(atelier.k, ch, 'Enregistré en brouillon. La flèche publie pour les élèves.');
 }
 
 // ---------------------------------------------------------------------
-// Consignes et correction : conversation Claude pré-remplie. Claude propose,
-// puis, après accord, écrit la demande dans l'onglet « Demandes IA » avec le
-// connecteur Google Sheets ; le script du cahier l'applique dans les Docs.
+// Conversations Claude : créer un site / modifier un site
 // ---------------------------------------------------------------------
-function lienAtelier(c) {
-  const info = c.info || { consignes: [], bareme: {} };
-  const act = idDoc(c.a.act), cor = idDoc(c.a.cor);
-  const cs = (info.consignes || []).map(x => `Consigne ${x.lettre} : ${x.texte}`).join('\n');
-  const t =
-    `Je veux modifier directement les consignes et/ou la correction d'une activité de mon cahier numérique : SVT ${NOMS[c.niveau]}, séance ${c.s.numero} « ${c.s.titre} », activité ${c.a.numero}${c.a.numero === 5 ? ' (bilan)' : ''}.\n` +
-    `Titre : ${c.titre}\n` + (info.problematique ? `Problématique : ${info.problematique}\n` : '') + (c.site ? `Site : ${c.site.url}\n` : '') +
-    `Doc activité : ${c.a.act}\n` + (cor ? `Doc correction : ${c.a.cor}\n` : 'Pas encore de Doc correction.\n') +
-    `\nConsignes actuelles :\n${cs || '(aucune lue)'}\n` + (cor ? `\nBarème actuel :\n${texteBareme(info)}\n` : '') +
-    `\nRègles : mêmes lettres de consignes (pas d'ajout ni de suppression) ; 30 min pour toute l'activité, consignes courtes ; barème = réponse attendue concrète, points entiers de 1 à 3, total de toutes les consignes = 20, « Texte - Cumulatif » sauf consigne avec photo (« Photo - Progressif »).` +
-    (REGLES.consignes ? ` Mes règles consignes : ${REGLES.consignes}.` : '') + (REGLES.correction ? ` Mes règles correction : ${REGLES.correction}.` : '') +
-    `\n\nMontre-moi d'abord ta proposition (avant / après). Quand je dis OK, applique-la avec le connecteur Google Sheets : append_values dans le Sheet ${SHEET}, plage 'Demandes IA'!A1, une ligne par élément modifié, 11 colonnes :\n` +
-    `[identifiant unique, type, "${act}", "${cor}", lettre, contenu, "", "", "", "", ""]\n` +
-    `- type "consigne" : contenu = nouveau texte, sans « Consigne X : » ;\n` +
-    `- type "bareme" : contenu = barème complet de la consigne, une ligne par retour à la ligne : « Consigne X - Texte - Cumulatif - N pts » (N = somme des critères) puis « N pt(s) : réponse attendue ».\n` +
-    `Un script l'écrit dans le Google Doc en 1 à 2 min : relis ensuite la colonne G de tes lignes (fait / erreur, message en H) et dis-moi le résultat.\n\nCe que je veux changer : `;
-  return 'https://claude.ai/new?q=' + encodeURIComponent(t);
+function contexte(k) {
+  const m = META[k] || {};
+  if (m.type === 'lien') return 'un lien de la colonne « Lien » de mon cahier numérique (visible par tous les élèves)';
+  return `mon cahier numérique : SVT ${NOMS[m.niveau]}, séance ${m.seance} « ${m.seanceTitre || ''} », activité ${m.num}`;
 }
-
-// ---------------------------------------------------------------------
-// Site : conversation Claude pré-remplie (le site se modifie dans sa conversation)
-// ---------------------------------------------------------------------
-function lienSite(c) {
-  const st = c.site;
-  const cs = c.info ? (c.info.consignes || []).map(x => `Consigne ${x.lettre} : ${x.texte}`).join('\n') : '';
-  const t = `Je veux modifier mon site SVT « ${st.titre} », utilisé dans mon cahier numérique (${NOMS[c.niveau]}, séance ${c.s.numero} « ${c.s.titre} », activité ${c.a.numero}).\n` +
+const LISTE_BLANCHE = `liste blanche du cahier : Google Sheet ${SHEET}, onglet Cours, colonne F, sur la première ligne vide à partir de F100 (F99 = titre « Liste blanche »), si l'adresse n'y est pas déjà`;
+function lienCreer(k) {
+  const m = META[k] || {}, b = brouillon(k), cs = js(b.cons, []);
+  const t = `Je veux créer un nouveau site SVT interactif pour ${contexte(k)}.\n` +
+    (m.type === 'lien' ? '' : `Titre de l'activité : ${b.titre || '(à définir)'}\nProblématique : ${b.pb || '(à définir)'}\n` + (cs.length ? `Consignes actuelles :\n${cs.map(c => c.lettre + ' : ' + c.texte).join('\n')}\n` : '')) +
+    `\nConstruis le site avec moi. Ne le mets pas en ligne tant que je ne dis pas « mets ce site en ligne ». Quand je le dis :\n` +
+    `1. fais la procédure « mets ce site en ligne » de _recap/README.md du dépôt Terrachnydes/svt (GitHub, page Mes sites SVT) ;\n` +
+    `2. ajoute l'adresse du site à la ${LISTE_BLANCHE} ;\n` +
+    `3. range le site ici : dans le même Sheet, onglet « Activités », trouve la ligne dont la colonne A vaut « ${k} » (relis l'onglet si besoin) et écris l'adresse GitHub du site en colonne J` + (m.type === 'lien' ? ' et son titre en colonne F' : '') + `. Ne touche pas aux colonnes K à P (version publiée) : je publierai moi-même depuis la page Progression.\n\nLe site que je veux : `;
+  return 'https://claude.ai/new?q=' + encodeURIComponent(t.slice(0, 7500));
+}
+function lienSite(k, st) {
+  const b = brouillon(k), cs = js(b.cons, []);
+  const t = `Je veux modifier mon site SVT « ${st.titre} », utilisé dans ${contexte(k)}.\n` +
     `Site en ligne : ${st.url}\n` + (st.fichier ? `Fichier sur GitHub : dépôt Terrachnydes/svt, « ${st.fichier} »\n` : '') +
     (st.artifact ? `Artifact Claude du site : ${st.artifact}\n` : '') + (st.conversation ? `Conversation où le site a été créé : ${st.conversation}\n` : '') +
-    (cs ? `\nConsignes de l'activité qui s'appuient sur ce site :\n${cs}\n` : '') +
-    `\nUne fois la modification faite, sans me redemander : republie l'artifact du site s'il en a un, mets à jour « ${st.fichier || 'le fichier'} » dans Terrachnydes/svt (commit + push) comme décrit dans _recap/README.md, refais l'aperçu (python3 _recap/build_hub.py "${st.fichier || ''}") et republie la page « Mes sites SVT ». Préviens-moi si les consignes ne collent plus au site.\n\nCe que je veux changer : `;
+    (cs.length ? `\nConsignes de l'activité qui s'appuient sur ce site :\n${cs.map(c => c.lettre + ' : ' + c.texte).join('\n')}\n` : '') +
+    `\nUne fois la modification faite, sans me redemander : republie l'artifact du site s'il en a un, mets à jour « ${st.fichier || 'le fichier'} » dans Terrachnydes/svt (commit + push) comme décrit dans _recap/README.md, refais l'aperçu (python3 _recap/build_hub.py "${st.fichier || ''}") et republie la page « Mes sites SVT ». Vérifie que l'adresse est bien dans la ${LISTE_BLANCHE}. Préviens-moi si les consignes ne collent plus au site.\n\nCe que je veux changer : `;
   return 'https://claude.ai/new?q=' + encodeURIComponent(t.slice(0, 7500));
 }
 
@@ -915,21 +1026,18 @@ function lienSite(c) {
 $('#pg-regles').addEventListener('click', () => {
   atelier = null;
   $('#pg-pan').innerHTML = `
-    <div class="p-tete"><button class="fermer" id="fermer">×</button><h2>Règles globales</h2>
-      <div class="sous">Envoyées à Claude à chaque demande. Les règles de correction servent aussi à la génération automatique des Docs correction.</div></div>
+    <div class="p-tete"><button class="fermer" id="fermer" type="button">×</button><h2>Règles globales</h2>
+      <div class="sous">Envoyées à Claude à chaque demande de consignes ou de correction.</div></div>
     <div class="p-corps">
       <h3>Consignes</h3><textarea class="regle" id="r1" placeholder="Ex. : 20 mots max par consigne, 3 consignes max, vocabulaire simple…">${esc(REGLES.consignes)}</textarea>
       <h3 style="margin-top:14px">Corrections</h3><textarea class="regle" id="r2" placeholder="Ex. : critères = réponse attendue concrète, 1 pt par élément…">${esc(REGLES.correction)}</textarea>
     </div>
-    <div class="p-pied"><button class="bouton" id="r-enr">Enregistrer</button></div>`;
+    <div class="p-pied"><button class="bouton" type="button" id="r-enr">Enregistrer</button></div>`;
   $('#pg-pan').classList.add('ouvert');
   $('#fermer').addEventListener('click', fermerAtelier);
   $('#r-enr').addEventListener('click', async () => {
-    try {
-      await ecrire("'Règles IA'!B1:B2", [[$('#r1').value], [$('#r2').value]]);
-      REGLES = { consignes: $('#r1').value, correction: $('#r2').value };
-      toast('Règles enregistrées.');
-    } catch (e) { toast(/parse range|not found/i.test(String(e && e.message)) ? 'Onglet « Règles IA » absent : lance une fois le menu Correction IA → Installer la page Activités.' : erreurMcp(e), true); }
+    try { await ecrire("'Règles IA'!B1:B2", [[$('#r1').value], [$('#r2').value]]); REGLES = { consignes: $('#r1').value, correction: $('#r2').value }; toast('Règles enregistrées.'); }
+    catch (e) { toast(erreurMcp(e), true); }
   });
 });
 $('#pg-recharger').addEventListener('click', async () => { try { await chargerTout(); afficher(); } catch (e) { toast(erreurMcp(e), true); } });

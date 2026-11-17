@@ -32,7 +32,7 @@ Cette phrase veut dire : GitHub + page « Mes sites SVT » + colonne F du Google
 2. Ajouter l'entrée dans `sites.json` → `sites` (avec la `version` lue), et le retirer de `en_attente`.
 3. `python3 _recap/build_hub.py <fichier>.html`, commit, push.
 4. Lire puis republier la page récap avec `_recap/mes-sites.html`, sans passer `capabilities`.
-5. Ajouter l'URL GitHub du site dans la « liste blanche » du cahier numérique : Google Sheet `1ABGFTjPtowzLW2vnhZ20Bmk63kC5lYjzouLHpYwfi30`, onglet `Cours`, colonne F, première case vide à partir de F100 (connecteur Google Sheets).
+5. Ajouter l'URL GitHub du site dans la « liste blanche » du cahier numérique : Google Sheet `1ABGFTjPtowzLW2vnhZ20Bmk63kC5lYjzouLHpYwfi30`, onglet `Cours`, colonne F, première case vide à partir de F100, F99 étant le titre « Liste blanche » (connecteur Google Sheets).
 
 ## Organisation des catégories
 
@@ -56,9 +56,15 @@ Le contenu du site envoyé à Claude est un extrait automatique des textes, bout
 ## Onglet « Progression SVT »
 
 La page a deux onglets : « Mes sites » et « Progression SVT » (adresse `#progression`).
-L'onglet Progression lit le Google Sheet du cahier numérique (`1ABGFTjPtowzLW2vnhZ20Bmk63kC5lYjzouLHpYwfi30`, onglets `Cours`, `Consignes`, `Règles IA`) avec le connecteur Google Sheets,
-affiche toutes les activités (3e / 4e / 5e / 6e, séances les unes sous les autres, aperçu du site pris dans les données de la page),
-et propose « Consignes et correction avec Claude » (capacité `sample`). Les modifications validées sont ajoutées dans l'onglet `Demandes IA` ;
-le script Apps Script du cahier (`traiterDemandesIA`, chaque minute) les écrit dans les Google Docs.
+L'onglet Progression lit le Google Sheet du cahier numérique (`1ABGFTjPtowzLW2vnhZ20Bmk63kC5lYjzouLHpYwfi30`, onglets `Cours`, `Consignes`, `Règles IA`, `Activités`) avec le connecteur Google Sheets.
+Colonne « Lien » (sites hors activités, ex. orientation, visibles par tous les élèves) puis 3e / 4e / 5e / 6e, séances les unes sous les autres, 5 activités par séance (structure de l'onglet `Cours`).
+Chaque carte : S{séance}.{n°} + titre, problématique (modifiables d'un clic), bouton « ✦ Consignes · Correction » (panneau Claude, capacité `sample`), site (Consulter / Modifier) ou « + Créer un site », flèche de publication.
+
+Onglet `Activités` = brouillon + version publiée, une ligne par activité (`5e-S3-A2`), titre de séance (`5e-S3`) ou lien (`LIEN-…`) :
+A clé · B type (activité / séance / lien) · C niveau · D séance · E n° · F-J brouillon (titre, problématique, consignes JSON, correction JSON, site) · K-O publié (mêmes champs) · P publié le · Q modifié le · R id du Doc activité.
+Sans ligne, le brouillon reprend `Cours` + `Consignes`. Flèche rouge = jamais publié (P vide), jaune = brouillon ≠ publié, verte = identiques.
+Publier copie F-J dans K-O et ajoute l'adresse du site à la liste blanche (Cours!F100…) si elle manque.
+Un site créé depuis « + Créer un site » se range en écrivant son adresse en colonne J de la ligne de la clé (et le titre en F pour un lien), jamais dans K-P.
+Le cahier des élèves ne lit pas encore `Activités` (en attente du feu vert d'Erwan, hors heures de cours).
 
 La page déclare les capacités `mcp` (bouton de synchro : Claude Code Remote `fire_trigger` ; onglet Progression : Google Sheets `get_values`, `append_values`, `update_values`), `sample` (consignes et progression), `db` et `user` (organisation des catégories) : ne pas les retirer en republiant (republier SANS passer `capabilities` les conserve).
