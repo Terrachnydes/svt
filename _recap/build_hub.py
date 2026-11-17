@@ -117,7 +117,7 @@ def main():
             data.append([th, items])
     d = cfg["derniere_maj"].split("-")
     tpl = open(os.path.join(HERE, "tpl.html"), encoding="utf-8").read()
-    out = tpl.replace("__DATA__", json.dumps(data, ensure_ascii=False)).replace("__MAJ__", f"{d[2]}/{d[1]}/{d[0]}")
+    out = tpl.replace("__DATA__", json.dumps(data, ensure_ascii=False)).replace("__MAJ__", f"{d[2]}/{d[1]}/{d[0]}").replace("__FOND__", "data:image/webp;base64," + base64.b64encode(open(os.path.join(HERE, "fond.webp"), "rb").read()).decode())
     open(os.path.join(HERE, "mes-sites.html"), "w", encoding="utf-8").write(out)
     print("page récap régénérée :", sum(len(i) for _, i in data), "sites")
 
