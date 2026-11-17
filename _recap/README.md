@@ -65,6 +65,6 @@ A clé · B type (activité / séance / lien) · C niveau · D séance · E n° 
 Les 12 séances × 5 activités sont toujours affichées. Sans ligne, le brouillon d'une activité de la séance 3 reprend `Consignes` (site, consignes, correction) ; toutes les autres partent vierges (`SEANCES_REPRISES` dans tpl.html). Les titres de séance reprennent `Cours`. Flèche rouge = jamais publié (P vide), jaune = brouillon ≠ publié, verte = identiques.
 Publier copie F-J dans K-O et ajoute l'adresse du site à la liste blanche (Cours!F100…) si elle manque.
 Un site créé depuis « + Créer un site » se range en écrivant son adresse en colonne J de la ligne de la clé (et le titre en F pour un lien), jamais dans K-P.
-Le cahier des élèves ne lit pas encore `Activités` (en attente du feu vert d'Erwan, hors heures de cours).
+Le cahier des élèves (dépôt cahier-numerique, `lirePublie_` dans Affichage.js) lit les colonnes K-P : une activité publiée remplace titre, problématique, consignes, site et correction des Docs ; la correction automatique utilise le barème publié (`baremePublieTexte_`) ; les liens publiés s'ajoutent aux liens de tous les niveaux. Envoi aux élèves par la synchro (toutes les 5 min).
 
 La page déclare les capacités `mcp` (bouton de synchro : Claude Code Remote `fire_trigger` ; onglet Progression : Google Sheets `get_values`, `append_values`, `update_values`), `sample` (consignes et progression), `db` et `user` (organisation des catégories) : ne pas les retirer en republiant (republier SANS passer `capabilities` les conserve).
