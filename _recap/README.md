@@ -62,7 +62,7 @@ Chaque carte : S{séance}.{n°} + titre, problématique (modifiables d'un clic),
 
 Onglet `Activités` = brouillon + version publiée, une ligne par activité (`5e-S3-A2`), titre de séance (`5e-S3`) ou lien (`LIEN-…`) :
 A clé · B type (activité / séance / lien) · C niveau · D séance · E n° · F-J brouillon (titre, problématique, consignes JSON, correction JSON, site) · K-O publié (mêmes champs) · P publié le · Q modifié le · R id du Doc activité.
-Sans ligne, le brouillon reprend `Cours` + `Consignes`. Flèche rouge = jamais publié (P vide), jaune = brouillon ≠ publié, verte = identiques.
+Les 12 séances × 5 activités sont toujours affichées. Sans ligne, le brouillon d'une activité de la séance 3 reprend `Consignes` (site, consignes, correction) ; toutes les autres partent vierges (`SEANCES_REPRISES` dans tpl.html). Les titres de séance reprennent `Cours`. Flèche rouge = jamais publié (P vide), jaune = brouillon ≠ publié, verte = identiques.
 Publier copie F-J dans K-O et ajoute l'adresse du site à la liste blanche (Cours!F100…) si elle manque.
 Un site créé depuis « + Créer un site » se range en écrivant son adresse en colonne J de la ligne de la clé (et le titre en F pour un lien), jamais dans K-P.
 Le cahier des élèves ne lit pas encore `Activités` (en attente du feu vert d'Erwan, hors heures de cours).

@@ -609,10 +609,12 @@ const memeUrl = (a, b) => { const d = u => { try { return decodeURIComponent(Str
 // Brouillon / publié
 // ---------------------------------------------------------------------
 const CHAMPS = ['titre', 'pb', 'cons', 'cor', 'site'];
+const SEANCES_REPRISES = [3];   // seules ces séances reprennent site, consignes et correction de l'ancien cahier ; les autres partent vierges
 function defauts(k) {
   const m = META[k] || {};
   if (m.type === 'séance') return { titre: m.titreCours || '', pb: '', cons: '', cor: '', site: '' };
   if (m.type === 'lien') return { titre: m.titre || '', pb: '', cons: '', cor: '', site: m.url || '' };
+  if (!SEANCES_REPRISES.includes(+m.seance)) return { titre: '', pb: '', cons: '', cor: '', site: '' };
   const info = CONSIGNES[m.doc] || null;
   const site = info ? info.site : '';
   const st = infoSite(site);
@@ -743,11 +745,9 @@ function afficher() {
   const lignes = [];
   for (let s = 1; s <= 12; s++) {
     const se = nv.map(n => COURS[n][s - 1]);
-    const actives = se.map((x, i) => x.activites.filter(a => a.act || ROWS[cleAct(nv[i], s, a.numero)]));
-    if (!se.some((x, i) => x.titre || actives[i].length || ROWS[cleSea(nv[i], s)])) continue;
+    const actives = se.map(x => x.activites);
     lignes.push(se.map((x, i) => {
       const n = nv[i], ks = cleSea(n, s);
-      if (!x.titre && !actives[i].length && !ROWS[ks]) return '<div class="col"></div>';
       META[ks] = { type: 'séance', niveau: n, seance: s, titreCours: x.titre };
       const t = brouillon(ks).titre;
       return `<div class="col"><div class="seance"><span>Séance ${s} — <span class="ed${t ? '' : ' vide'}" data-k="${esc(ks)}" data-f="titre" title="Cliquer pour modifier">${esc(t || 'Titre à définir')}</span></span>${boutonPub(ks, true)}</div>` +
