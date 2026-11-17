@@ -540,11 +540,19 @@ function charge(r) {
   if (p && p.structuredContent) p = p.structuredContent;
   if (p && Array.isArray(p.content)) {
     const t = p.content.find(c => c.type === 'text');
-    if (t) { try { p = JSON.parse(t.text); } catch (e) {} }
+    if (t) { try { p = JSON.parse(t.text); } catch (e) { throw new Error('Réponse illisible du connecteur Google Sheets (' + String(t.text).slice(0, 120) + ')'); } }
   }
   return p || {};
 }
 async function lire(range) { return charge(await mcp.callTool('Google Sheets', 'get_values', { spreadsheetId: SHEET, range })).values || []; }
+// Lecture d'un onglet par petits morceaux (les grosses réponses du connecteur peuvent être coupées)
+async function lireMorceaux(onglet, colFin, debut, taille) {
+  const nb = (await lire(`${onglet}!A${debut}:A2000`)).length;
+  const parts = [];
+  for (let l = debut; l < debut + nb; l += taille) parts.push(lire(`${onglet}!A${l}:${colFin}${Math.min(l + taille - 1, debut + nb - 1)}`));
+  const res = await Promise.all(parts);
+  return [].concat(...res);
+}
 async function ajouter(range, values) { return mcp.callTool('Google Sheets', 'append_values', { spreadsheetId: SHEET, range, values }); }
 async function ecrire(range, values) { return mcp.callTool('Google Sheets', 'update_values', { spreadsheetId: SHEET, range, values }); }
 function erreurMcp(e) {
@@ -558,7 +566,7 @@ function erreurMcp(e) {
 // Chargement
 // ---------------------------------------------------------------------
 async function lireActivites() {
-  const v = await lire(ONGLET + '!A2:R1000');
+  const v = await lireMorceaux(ONGLET, 'R', 2, 40);
   ROWS = {};
   v.forEach((r, i) => { const k = String(r[0] || '').trim(); if (k) ROWS[k] = { ligne: i + 2, v: Array.from({ length: 18 }, (_, j) => String(r[j] == null ? '' : r[j])) }; });
 }
@@ -566,7 +574,7 @@ async function chargerTout() {
   $('#pg-maj').textContent = 'Lecture du Sheet…';
   const [cours, cons, regles] = await Promise.all([
     lire('Cours!A1:I73'),
-    lire('Consignes!A2:L1000'),
+    lireMorceaux('Consignes', 'L', 2, 30),
     lire("'Règles IA'!B1:B2").catch(() => []),
     lireActivites()
   ]);
