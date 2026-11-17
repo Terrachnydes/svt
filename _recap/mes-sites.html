@@ -96,7 +96,7 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 /* ===== Progression SVT ===== */
 #prog[hidden]{display:none!important}
 #prog{--cl:#c96442;--orange:#c2410c;--rouge:#c0392b;--jaune:#e0a800;--vert:#2f7a55;--bleu:#2563eb;display:flex;flex-direction:column;gap:14px;font-size:15px}
-#prog .barre{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#prog .barre{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 #prog .barre p{margin:0;flex:1 1 100%;color:var(--muted);font-size:.9rem}
 #prog .sous{color:var(--muted);font-size:13px}
 #prog .bouton{font:inherit;font-size:.9rem;font-weight:700;padding:8px 13px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
@@ -213,7 +213,6 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
   </div>
   <div id="prog" hidden>
     <div class="barre">
-      <p>Clic sur un titre ou une problématique pour l'écrire · ✦ Claude pour consignes et correction · la flèche publie pour les élèves.</p>
       <div class="filtres" id="pg-filtres"></div>
       <span class="sous" id="pg-maj"></span>
       <button class="bouton leger" type="button" id="pg-regles">⚙ Règles globales</button>
