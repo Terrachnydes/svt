@@ -153,6 +153,13 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .ext{height:28px;display:flex;align-items:center;gap:6px;padding:0 9px;border-radius:7px;background:var(--thumb);color:var(--muted);font-size:12.5px;text-decoration:none;overflow:hidden;white-space:nowrap}
 #prog .url{font-size:12px;color:var(--accent);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-decoration:none}
 #prog .creer{display:grid;place-items:center;height:30px;border:1px dashed var(--cl);color:var(--cl);background:transparent;border-radius:7px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;width:100%;text-decoration:none}
+#prog .duo-site{display:flex;gap:5px}
+#prog .duo-site .creer{font-size:11.5px;padding:0 4px;white-space:nowrap}
+#prog .duo-site .creer{flex:9 1 0;min-width:0}
+#prog .duo-site select.recup{flex:12 1 0}
+#prog select.recup{appearance:none;-webkit-appearance:none;text-align:center;text-align-last:center;padding:0 6px;color:var(--cl);background:transparent;overflow:hidden;text-overflow:ellipsis}
+#prog select.recup:hover{color:#fff;background:var(--cl)}
+#prog select.recup option,#prog select.recup optgroup{color:#1d2420;background:#fff;text-align:left}
 #prog .creer:hover{background:var(--cl);color:#fff}
 #prog .encours{font-size:12.5px;color:var(--muted)}
 #pg-pan{position:fixed;top:0;right:0;bottom:0;width:min(620px,100%);background:var(--surface);color:var(--fg);box-shadow:-8px 0 30px rgba(0,0,0,.25);z-index:20;display:flex;flex-direction:column;transform:translateX(105%);transition:transform .2s}
@@ -711,10 +718,15 @@ function carte(n, s, a) {
     <div class="pb">❓ <span class="ed${b.pb ? '' : ' vide'}" data-k="${esc(k)}" data-f="pb" title="Cliquer pour modifier">${esc(b.pb || 'Problématique à définir')}</span></div>
     <button class="claude${cs.length ? '' : ' vide'}" type="button" data-atelier="${esc(k)}">✦ Consignes · Correction</button>
     ${st && !st.externe ? vignette(st, k)
-      : (st ? `<a class="ext" href="${esc(st.url)}" target="_blank" rel="noopener">🔗 ${esc(st.titre)}</a>` : '') + `<a class="creer" href="${lienCreer(k)}" target="_blank" rel="noopener" data-creer="${esc(k)}">+ Créer un site</a>`}
+      : (st ? `<a class="ext" href="${esc(st.url)}" target="_blank" rel="noopener">🔗 ${esc(st.titre)}</a>` : '') + duoSite(k)}
   </div>`;
 }
 
+function duoSite(k) {
+  const opts = data.map(([g, items]) => `<optgroup label="${esc(g)}">${items.filter(i => i.f).map(i => `<option value="${esc(i.f)}">${esc(i.t)}</option>`).join('')}</optgroup>`).join('');
+  return `<div class="duo-site"><a class="creer" href="${lienCreer(k)}" target="_blank" rel="noopener" data-creer="${esc(k)}">Créer un site</a>` +
+    `<select class="creer recup" data-recup="${esc(k)}" aria-label="Récupérer un site existant"><option value="">Récupérer un site</option>${opts}</select></div>`;
+}
 let cleVierge = 'LIEN-' + Date.now().toString(36);
 function colonneLiens() {
   const lignes = Object.entries(ROWS).filter(([, r]) => r.v[1] === 'lien').sort((x, y) => x[1].ligne - y[1].ligne);
@@ -737,7 +749,7 @@ function colonneLiens() {
   }).join('');
   META[cleVierge] = { type: 'lien', niveau: 'tous' };
   return `<div class="lcol"><div class="tete">Lien</div>${html}
-    <div class="ca vierge"><div class="l1">Nouveau site</div><a class="creer" href="${lienCreer(cleVierge)}" target="_blank" rel="noopener" data-creer="${cleVierge}">+ Créer un site</a></div></div>`;
+    <div class="ca vierge"><div class="l1">Nouveau site</div>${duoSite(cleVierge)}</div></div>`;
 }
 
 function afficher() {
@@ -783,6 +795,15 @@ $('#prog').addEventListener('click', e => {
     if (k === cleVierge) { cleVierge = 'LIEN-' + Date.now().toString(36); sauver(k, { titre: 'Nouveau site (en création)' }); }
     else if (!ROWS[k]) sauver(k, {});
   }
+});
+$('#prog').addEventListener('change', e => {
+  const s = e.target.closest('select[data-recup]');
+  if (!s || !s.value) return;
+  const k = s.dataset.recup, f = s.value, i = SITES[f] || {}, b = brouillon(k);
+  const ch = { site: GH + encodeURIComponent(f) };
+  if (!b.titre || k === cleVierge) ch.titre = i.t || f.replace(/\.html?$/i, '');
+  if (k === cleVierge) cleVierge = 'LIEN-' + Date.now().toString(36);
+  sauver(k, ch, '« ' + (i.t || f) + ' » rangé ici. La flèche le publie pour les élèves.');
 });
 $('#prog').addEventListener('keydown', e => {
   const ed = e.target.closest && e.target.closest('.ed[contenteditable="true"]');
