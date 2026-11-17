@@ -138,12 +138,14 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .pub.mini{position:static;width:24px;height:24px;margin-left:auto;flex:none}
 #prog .pub.mini svg{width:13px;height:13px}
 #prog .ca .pb{font-size:12.5px;color:var(--muted);font-style:italic;line-height:1.3}
-#prog .claude{text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--cl);background:var(--cl);color:#fff;border-radius:7px;padding:6px 8px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;width:100%}
+#prog .claude{text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--cl);background:var(--cl);color:#fff;border-radius:6px;padding:3px 8px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;width:100%}
 #prog .claude.vide{background:transparent;color:var(--cl)}
 #prog .claude:hover{filter:brightness(1.08)}
-#prog .site{position:relative;display:block;height:72px;border-radius:7px;overflow:hidden;border:1px solid var(--line);background:var(--thumb)}
+#prog .site{position:relative;display:block;height:90px;border-radius:7px;overflow:hidden;border:1px solid var(--line);background:var(--thumb)}
 #prog .site img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
-#prog .dbl{position:absolute;left:5px;right:5px;bottom:5px;display:flex;gap:5px}
+#prog .dbl{position:absolute;inset:0;display:flex;gap:6px;align-items:center;justify-content:center;padding:6px;background:rgba(0,0,0,.28);opacity:0;transition:opacity .15s}
+#prog .site:hover .dbl,#prog .site:focus-within .dbl{opacity:1}
+@media (hover:none){#prog .dbl{opacity:1;background:none;align-items:flex-end}}
 #prog .dbl a{flex:1;text-align:center;font-size:12px;font-weight:700;padding:4px 6px;border-radius:6px;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.25)}
 #prog .dbl .voir{background:var(--surface);color:var(--fg);border:1px solid var(--line)}
 #prog .dbl .modi{background:var(--cl);color:#fff;border:1px solid var(--cl)}
