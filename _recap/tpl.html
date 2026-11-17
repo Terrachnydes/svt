@@ -666,7 +666,7 @@ function ligneNeuve(k, b) {
   return [k, m.type || 'activité', m.niveau ? NOMS[m.niveau] || m.niveau : 'tous', m.seance || '', m.num || '', ...CHAMPS.map(c => b[c] || ''), '', '', '', '', '', '', maintenant(), m.doc || ''];
 }
 
-async function sauver(k, champs, libelle) {
+async function sauver(k, champs, libelle, discret) {
   const b = Object.assign(brouillon(k), champs || {});
   const vals = CHAMPS.map(c => b[c] || '');
   const r = ROWS[k];
@@ -680,9 +680,15 @@ async function sauver(k, champs, libelle) {
       await lireActivites();
     }
     if (libelle) toast(libelle);
-    afficher();
+    if (discret) majBoutons(k); else afficher();
     return true;
   } catch (e) { toast(erreurMcp(e), true); afficher(); return false; }
+}
+// Met à jour seulement les flèches d'une clé (sans redessiner la page)
+function majBoutons(k) {
+  document.querySelectorAll('#pg-main [data-pub]').forEach(b => {
+    if (b.dataset.pub === k) b.outerHTML = boutonPub(k, b.classList.contains('mini'));
+  });
 }
 
 async function publier(k, bouton) {
@@ -778,7 +784,16 @@ function colonneLiens() {
     <div class="ca vierge"><div class="l1">Nouveau site</div>${duoSite(cleVierge)}</div></div>`;
 }
 
+let enRendu = false;
 function afficher() {
+  if (enRendu) return;
+  enRendu = true;
+  const y = window.scrollY, dx = ($('#pg-main .defile') || {}).scrollLeft || 0;
+  try { afficherSansGarde(); } finally { enRendu = false; }
+  window.scrollTo(0, y);
+  const d = $('#pg-main .defile'); if (d) d.scrollLeft = dx;
+}
+function afficherSansGarde() {
   const nv = vue === 'Tous' ? NIVEAUX : [vue];
   const lignes = [];
   for (let s = 1; s <= 12; s++) {
@@ -842,8 +857,11 @@ $('#prog').addEventListener('focusout', e => {
   if (!ed) return;
   ed.contentEditable = 'false';
   const v = ed.textContent.replace(/\s+/g, ' ').trim(), k = ed.dataset.k, f = ed.dataset.f;
-  if (ed.dataset.annule || v === (brouillon(k)[f] || '')) { afficher(); return; }
-  sauver(k, { [f]: v }, (f === 'pb' ? 'Problématique' : 'Titre') + ' enregistré. La flèche le publie pour les élèves.');
+  const avant = brouillon(k)[f] || '';
+  const remettre = x => { ed.textContent = x || (f === 'pb' ? 'Problématique à définir' : 'Titre à définir'); ed.classList.toggle('vide', !x); };
+  if (ed.dataset.annule || v === avant) { delete ed.dataset.annule; remettre(avant); return; }
+  remettre(v);
+  sauver(k, { [f]: v }, (f === 'pb' ? 'Problématique' : 'Titre') + ' enregistré. La flèche le publie pour les élèves.', true);
 });
 
 // ---------------------------------------------------------------------
