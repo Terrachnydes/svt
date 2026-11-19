@@ -182,7 +182,7 @@ header button.glow{background:var(--ok);border-color:var(--ok);animation:pulse 1
 .cats button{padding:4px 12px;border-radius:20px;font-size:13.5px}
 .cats button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .dtwrap{overflow-x:auto;margin-bottom:18px;border:1px solid var(--line);border-radius:12px;background:#fff}
-.dt{border-collapse:collapse;width:100%;font-size:13px}
+.dt{border-collapse:collapse;width:100%;font-size:13px;table-layout:fixed;min-width:900px}
 .dt th,.dt td{border:1px solid #eadfcb;padding:4px;text-align:center}
 .dt .corner{font-weight:400;font-size:11.5px;color:var(--ink2);width:330px}
 .dt .era{font-size:12px;padding:3px}
@@ -197,6 +197,16 @@ header button.glow{background:var(--ok);border-color:var(--ok);animation:pulse 1
 .cell:hover{border-color:var(--accent2)}
 .cell.on{background:#c4621d url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 12.5l5 5L20 6' stroke='white' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/22px no-repeat;border:2px solid #a8460f}
 .dt tr.final{background:#fff6dc}
+.dt col.c0{width:330px}
+.dt .corner .dir{display:flex;justify-content:space-between;font-size:12px;color:var(--ink);margin-bottom:3px}
+.rbtn{margin-top:5px;font-size:12.5px;padding:4px 10px}
+.rbtn:disabled{opacity:1;color:#1f6b33;border-color:#9fd3ab;background:#eef8f0;cursor:default}
+.dt td.track{position:relative;height:64px;padding:0;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(100% / var(--n) - 1px),#e2d6bf calc(100% / var(--n) - 1px),#e2d6bf calc(100% / var(--n)))}
+.bar{position:absolute;top:50%;transform:translateY(-50%);height:30px;border-radius:15px;background:linear-gradient(180deg,#e0782f,#c4621d);border:2px solid #9a4712;box-shadow:0 2px 4px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;animation:grow .6s ease-out;transform-origin:left center;min-width:14px}
+.bar.rock{background:linear-gradient(180deg,#8a7a63,#5f5242);border-color:#3e352a}
+.bar span{color:#fff;font-weight:700;font-size:12.5px;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.5);padding:0 8px}
+@keyframes grow{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.tnone{color:#a99a80;font-size:13px;font-style:italic;text-align:center}
 .pcell{width:100%;font-size:12px;padding:8px 2px;border:2px solid #d6c9b1;border-radius:8px}
 .pcell.on{background:var(--ok);color:#fff;border-color:var(--ok);font-weight:700}
 </style>
@@ -1451,7 +1461,7 @@ const EBY = Object.fromEntries(ENVS.map(e => [e.id, e]));
 const PBY = Object.fromEntries(PERIODS.map(p => [p.id, p]));
 
 /* ---------- état ---------- */
-const blank = () => ({ sites: Object.fromEntries('ABC'.split('').map(s => [s, { found: [0, 0, 0], rock: 0, period: '', env: '', grid: {} }])), fos: {} });
+const blank = () => ({ sites: Object.fromEntries('ABC'.split('').map(s => [s, { found: [0, 0, 0], rock: 0, period: '', env: '', dat: {} }])), fos: {} });
 function load() { try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && v.sites && v.fos) return v; } catch (e) { } return blank(); }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(ST)); } catch (e) { } }
 let ST = load();
@@ -1469,13 +1479,13 @@ const orgSVG = id => ORGCACHE[id] || (ORGCACHE[id] = `<svg viewBox="0 0 200 150"
 const envTag = E => `<span class="etag">${E.icon}${esc(E.nom)}</span>`;
 
 function frise(markers) {
-  const W = 900, x = a => 20 + (300 - a) / 300 * (W - 40), top = 30, H = top + 82;
+  const W = 900, x = a => 20 + a / 300 * (W - 40), top = 30, H = top + 82;
   let s = `<svg class="frise" viewBox="0 0 ${W} ${H}" role="img" aria-label="Frise des temps géologiques">`;
-  ERAS.forEach(([n, a, b, c]) => { s += `<rect x="${fx(x(a))}" y="${top}" width="${fx(x(b) - x(a))}" height="18" fill="${c}" stroke="#fff"/><text x="${fx((x(a) + x(b)) / 2)}" y="${top + 13}" font-size="12" text-anchor="middle" font-weight="700" fill="#2a251f">${n}</text>`; });
-  PERIODS.forEach(p => { const x0 = x(p.from), w = x(p.to) - x0; s += `<rect x="${fx(x0)}" y="${top + 20}" width="${fx(w)}" height="34" fill="${p.col}" stroke="#fff"/>${w > 40 ? `<text x="${fx(x0 + w / 2)}" y="${top + 42}" font-size="${w > 70 ? 13 : 11}" text-anchor="middle" font-weight="600" fill="#2a251f">${p.nom}</text>` : ''}`; });
+  ERAS.forEach(([n, a, b, c]) => { s += `<rect x="${fx(x(b))}" y="${top}" width="${fx(x(a) - x(b))}" height="18" fill="${c}" stroke="#fff"/><text x="${fx((x(a) + x(b)) / 2)}" y="${top + 13}" font-size="12" text-anchor="middle" font-weight="700" fill="#2a251f">${n}</text>`; });
+  PERIODS.forEach(p => { const x0 = x(p.to), w = x(p.from) - x0; s += `<rect x="${fx(x0)}" y="${top + 20}" width="${fx(w)}" height="34" fill="${p.col}" stroke="#fff"/>${w > 40 ? `<text x="${fx(x0 + w / 2)}" y="${top + 42}" font-size="${w > 70 ? 13 : 11}" text-anchor="middle" font-weight="600" fill="#2a251f">${p.nom}</text>` : ''}`; });
   for (let a = 300; a >= 0; a -= 25) s += `<path d="M${fx(x(a))} ${top + 56}v6" stroke="#2a251f"/><text x="${fx(x(a))}" y="${top + 74}" font-size="11" text-anchor="middle" fill="#2a251f">${a}</text>`;
   (markers || []).forEach(([k, age], i) => { const xx = x(age) + (i % 2 ? 7 : -7) * 0; s += `<path d="M${fx(xx)} ${top - 1}l-6 -10h12z" fill="#c4410f"/><text x="${fx(xx)}" y="${top - 14}" font-size="13" font-weight="800" text-anchor="middle" fill="#c4410f">${k}</text>`; });
-  return s + `</svg><div class="friseunit">en millions d’années avant aujourd’hui</div>`;
+  return s + `</svg><div class="friseunit">en millions d’années avant aujourd’hui — aujourd’hui à gauche, passé à droite</div>`;
 }
 const overlap = (r, p) => r[0] > p.to && r[1] < p.from;
 const ageTxt = r => r[1] === 0 ? `de <b>${r[0]} millions d’années à aujourd’hui</b>` : `entre <b>${r[0]} et ${r[1]} millions d’années</b>`;
@@ -1533,7 +1543,7 @@ function renderSite() {
       <dl><dt>Ressemble à</dt><dd>${O ? esc(O.nom) : '<span class="todo">à trouver</span>'}</dd><dt>Milieu de vie</dt><dd>${E ? envTag(E) : '<span class="todo">à trouver</span>'}</dd></dl>
       <button class="${ok ? 'ghost' : 'primary'} wide" data-ident="${F.id}">${ok ? 'Modifier mon identification' : `${ICON.loupe} Identifier le mode de vie du fossile grâce au principe d’actualisme`}</button></div></div>`;
   });
-  h += `</div><div class="step"><span class="num">2</span><div><b>Date le site.</b> Pour la roche et pour chaque fossile, lis son âge et <b>coche toutes les périodes</b> qui correspondent. La période du site est celle qui est cochée sur les 4 lignes.</div></div>${datingGrid(s)}
+  h += `</div><div class="step"><span class="num">2</span><div><b>Date le site.</b> Pour la roche et pour chaque fossile, lis son âge et clique sur <b>« Datation radiochronologique »</b> : sa période de formation (roche) ou de vie (fossile) apparaît sur la frise. La période du site est celle où <b>les 4 barres se superposent</b>.</div></div>${datingGrid(s)}
     <div class="step"><span class="num">3</span><div><b>Conclus :</b> quel était l’environnement du ${SITES[s].nom} à cette époque ?${ni < 3 ? ' <span class="todo">Identifie d’abord les 3 fossiles.</span>' : ''}</div></div>
     <div class="envs big ${ni < 3 ? 'off' : ''}">${ENVS.map(E => `<button class="env ${st.env === E.id ? 'on' : ''}" data-senv="${E.id}" ${ni < 3 ? 'disabled' : ''}>${E.icon}<span>${esc(E.nom)}</span></button>`).join('')}</div><div id="siteSentence"></div>`;
   $('#siteBody').innerHTML = h; renderSentence();
@@ -1542,19 +1552,31 @@ function renderSentence() {
   const s = curSite, st = ST.sites[s], P = PBY[st.period];
   $('#siteSentence').innerHTML = (P && st.env && nIdent(s) === 3) ? `<div class="sentence">${ICON.check}<div>Au <b>${P.nom}</b> (entre ${P.from} et ${String(P.to).replace('.', ',')} millions d’années), à l’emplacement du ${SITES[s].nom}, il y avait : <b>${esc(EBY[st.env].nom)}</b>.</div></div>` : '';
 }
+const PREV = PERIODS.slice().reverse(); /* frise : aujourd'hui à gauche, passé à droite */
+function ageX(a) { /* position (0 à 1) d'un âge sur la frise, chaque période a la même largeur */
+  if (a <= 0) return 0; const i = PREV.findIndex(p => a <= p.from); if (i < 0) return 1;
+  const p = PREV[i]; return (i + (a - p.to) / (p.from - p.to)) / PREV.length;
+}
+const fmtMa = v => String(v).replace('.', ',');
 function datingGrid(s) {
-  const st = ST.sites[s], g = st.grid || (st.grid = {});
-  const rows = [{ k: 'R', pic: rockSVG(s), lab: 'Échantillon de roche', txt: `Datation au laboratoire : roche formée ${ageTxt(SITES[s].range)}.` }]
-    .concat(FOSSILS2.filter(f => f.site === s).map(F => ({ k: F.id, pic: fosSVG(F.id), lab: `Fossile ${F.code}`, txt: `On trouve ce fossile dans les roches âgées ${ageTxt(F.range).replace('entre', 'de').replace(' et ', ' à ')}.` })));
-  let h = `<div class="dtwrap"><table class="dt"><thead><tr><th class="corner" rowspan="2">Ma = millions d’années</th>${ERAS.map(([n, a, b, c]) => `<th class="era" colspan="${PERIODS.filter(p => p.from <= a && p.to >= b).length}" style="background:${c}">${n}</th>`).join('')}</tr><tr>${PERIODS.map(p => `<th class="ph" style="background:${p.col}">${p.nom}<small>${p.from} à ${String(p.to).replace('.', ',')} Ma</small></th>`).join('')}</tr></thead><tbody>`;
-  rows.forEach(r => { const v = g[r.k] || []; h += `<tr><th class="rh"><div class="rhi"><div class="rp">${r.pic}</div><div><b>${r.lab}</b><div class="rt">${r.txt}</div></div></div></th>${PERIODS.map((p, j) => `<td><button class="cell ${v[j] ? 'on' : ''}" data-cell="${r.k}:${j}" aria-label="${r.lab} : ${p.nom}" aria-pressed="${!!v[j]}"></button></td>`).join('')}</tr>`; });
-  h += `<tr class="final"><th class="rh"><div><b>➜ Période du site</b><div class="rt">Clique sur la période cochée sur les 4 lignes.</div></div></th>${PERIODS.map(p => `<td><button class="pcell ${st.period === p.id ? 'on' : ''}" data-period="${p.id}" aria-label="Période du site : ${p.nom}">${p.nom}</button></td>`).join('')}</tr></tbody></table></div>`;
+  const st = ST.sites[s], d = st.dat || (st.dat = {});
+  const rows = [{ k: 'R', rock: 1, pic: rockSVG(s), lab: 'Échantillon de roche', range: SITES[s].range, txt: r => `Roche formée ${ageTxt(r)}.` }]
+    .concat(FOSSILS2.filter(f => f.site === s).map(F => ({ k: F.id, pic: fosSVG(F.id), lab: `Fossile ${F.code}`, range: F.range, txt: r => `Ce fossile a vécu ${ageTxt(r)}.` })));
+  const n = PREV.length;
+  let h = `<div class="dtwrap"><table class="dt"><colgroup><col class="c0">${PREV.map(() => '<col>').join('')}</colgroup><thead><tr><th class="corner" rowspan="2"><span class="dir"><b>← Aujourd’hui</b><b>Passé →</b></span>Ma = millions d’années</th>${ERAS.slice().reverse().map(([nm, a, b, c]) => `<th class="era" colspan="${PERIODS.filter(p => p.from <= a && p.to >= b).length}" style="background:${c}">${nm}</th>`).join('')}</tr><tr>${PREV.map(p => `<th class="ph" style="background:${p.col}">${p.nom}<small>${fmtMa(p.to)} à ${fmtMa(p.from)} Ma</small></th>`).join('')}</tr></thead><tbody>`;
+  rows.forEach(r => {
+    const on = !!d[r.k], x0 = ageX(r.range[1]) * 100, x1 = ageX(r.range[0]) * 100;
+    const lbl = r.range[1] === 0 ? `${r.range[0]} Ma → aujourd’hui` : `${r.range[0]} → ${fmtMa(r.range[1])} Ma`;
+    h += `<tr><th class="rh"><div class="rhi"><div class="rp">${r.pic}</div><div><b>${r.lab}</b><div class="rt">${on ? r.txt(r.range) : ''}</div><button class="${on ? 'ghost' : 'primary'} rbtn" data-dat="${r.k}" ${on ? 'disabled' : ''}>${on ? '✓ Datation faite' : '☢ Datation radiochronologique'}</button></div></div></th>
+      <td class="track" colspan="${n}" style="--n:${n}">${on ? `<div class="bar ${r.rock ? 'rock' : ''}" style="left:${x0.toFixed(2)}%;width:${Math.max(x1 - x0, 1.2).toFixed(2)}%" title="${lbl}"><span>${lbl}</span></div>` : `<div class="tnone">Clique sur « Datation radiochronologique »</div>`}</td></tr>`;
+  });
+  h += `<tr class="final"><th class="rh"><div><b>➜ Période du site</b><div class="rt">Clique sur la période où toutes les barres se superposent.</div></div></th>${PREV.map(p => `<td><button class="pcell ${st.period === p.id ? 'on' : ''}" data-period="${p.id}" aria-label="Période du site : ${p.nom}">${p.nom}</button></td>`).join('')}</tr></tbody></table><div class="friseunit">Frise simplifiée : chaque période a la même largeur (elle n’est pas à l’échelle).</div></div>`;
   return h;
 }
 function siteAct(e) {
   const i = e.target.closest('[data-ident]'); if (i) return openIdent(i.dataset.ident);
   const st = ST.sites[curSite];
-  const c = e.target.closest('[data-cell]'); if (c) { const [k, j] = c.dataset.cell.split(':'); const v = st.grid[k] || (st.grid[k] = [0, 0, 0, 0, 0, 0, 0]); v[+j] = v[+j] ? 0 : 1; save(); c.classList.toggle('on', !!v[+j]); c.setAttribute('aria-pressed', !!v[+j]); return; }
+  const dt = e.target.closest('[data-dat]'); if (dt) { (st.dat || (st.dat = {}))[dt.dataset.dat] = 1; save(); const y = $('#siteBody').scrollTop; $('.dtwrap').outerHTML = datingGrid(curSite); $('#siteBody').scrollTop = y; return; }
   const p = e.target.closest('[data-period]'); if (p) { st.period = p.dataset.period; save(); $$('#siteBody .pcell').forEach(b => b.classList.toggle('on', b.dataset.period === st.period)); afterSiteChange(); return; }
   const v = e.target.closest('[data-senv]'); if (v && !v.disabled) { st.env = v.dataset.senv; save(); $$('#siteBody [data-senv]').forEach(b => b.classList.toggle('on', b.dataset.senv === st.env)); afterSiteChange(); }
 }
