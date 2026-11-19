@@ -197,7 +197,7 @@ button,select{font:inherit;color:inherit}
         <button class="btn" id="s-next" type="button">Étape suivante</button>
       </div>
       <ol class="tl" id="tl"></ol>
-      <p class="note">Les paysages défilent dans l'ordre de dépôt des couches : de la plus ancienne (en bas de la falaise) à la plus récente (en haut). C'est le scénario reconstitué à partir des indices de la falaise. Pour chaque couche, on suit un être vivant de sa mort à sa fossilisation : seules les parties dures (coquille, squelette) ou une empreinte se conservent, et un enfouissement rapide les protège de la décomposition. Aucune durée ni aucun âge ne sont indiqués : nous n'avons pas de données pour les calculer. Quand la mer avance ou recule, cela peut venir d'une variation du niveau des océans, mais aussi d'un affaissement ou d'un soulèvement du sol, ou du remplissage du bassin par les sédiments.</p>
+      <p class="note">Les paysages défilent dans l'ordre de dépôt des couches : de la plus ancienne (en bas de la falaise) à la plus récente (en haut). C'est le scénario reconstitué à partir des indices de la falaise. Les sédiments marins ne se déposent que là où il y a de la mer : chaque couche s'amincit puis disparaît vers l'ancien rivage, et devient plus sableuse près de la côte. Pour chaque couche, on suit un être vivant de sa mort à sa fossilisation : seules les parties dures (coquille, squelette) ou une empreinte se conservent, et un enfouissement rapide les protège de la décomposition. Aucune durée ni aucun âge ne sont indiqués : nous n'avons pas de données pour les calculer. Quand la mer avance ou recule, cela peut venir d'une variation du niveau des océans, mais aussi d'un affaissement ou d'un soulèvement du sol, ou du remplissage du bassin par les sédiments.</p>
     </div>
   </div>
 </div>
@@ -725,7 +725,7 @@ function cpat(ctx,type){if(PATC[type])return PATC[type];const c=document.createE
 const TRUE_ENV={V:'plaine',R:'plage',K:'recif',T:'large',M:'plage'};
 const FOC={
  V:{t:'leaf',lab:'Feuilles vivantes',fx:.22,fy:.55,rock:'grès',sed:'#d9b07a',
-    ph:['Un arbre pousse au bord de la rivière. Ses feuilles sont vivantes.','Une feuille meurt : elle se détache, tombe dans la rivière et coule au fond.','Le sable apporté par la rivière la recouvre vite, à l’abri de l’air.','D’autres couches s’empilent au-dessus : la feuille est enfouie de plus en plus profond.','Le sable se tasse et devient du grès : l’empreinte de la feuille est un fossile.']},
+    ph:['Un arbre pousse au bord de la rivière. Ses feuilles sont vivantes.','Une feuille meurt : elle se détache, tombe dans la rivière et coule au fond.','Crue : la rivière déborde et étale du sable sur la plaine. La feuille est vite recouverte, à l’abri de l’air.','D’autres couches s’empilent au-dessus : la feuille est enfouie de plus en plus profond.','Le sable se tasse et devient du grès : l’empreinte de la feuille est un fossile.']},
  R:{t:'bivalve',lab:'Bivalve vivant',fx:.2,fy:.82,rock:'grès',sed:'#e2cd98',
     ph:['Un bivalve vit à moitié enfoui dans le sable, ses siphons tendus vers l’eau.','Il meurt : son corps mou est mangé ou se décompose, seule la coquille reste.','Les vagues apportent du sable qui recouvre la coquille.','D’autres couches s’empilent au-dessus : la coquille est enfouie.','Le sable se tasse et devient du grès : la coquille est fossilisée.']},
  K:{t:'coral',lab:'Corail vivant',fx:.27,fy:.8,rock:'calcaire',sed:'#f2ead6',
@@ -848,12 +848,22 @@ const TRANS=[null,
  ['La mer devient plus profonde','La mer avance toujours : on se retrouve au large, loin du rivage.'],
  ['La mer recule','La mer recule : le rivage revient vers ici, une plage se forme.'],
  ['La mer se retire','La mer se retire complètement : la région émerge.']];
-function world(W,H,g){const SL=H*.05,baseY=H*.88,k=H*.42/24;const hs=CHRONO.map((id,i)=>L[id].m*k*(g[i]||0));
-  const drop=x=>H*.13*Math.pow(Math.max(0,(x/W-.6)/.4),2);const bnd=j=>{let cc=0;for(let i=0;i<j;i++)cc+=hs[i];return x=>baseY-cc+SL*(x/W)+drop(x);};
-  const top=bnd(N),base=x=>H*.07+H*1.1*Math.pow(x/(.42*W),1.7),surf=x=>Math.min(base(x),top(x));return {SL,hs,bnd,top,base,surf};}
+function world(W,H,g){const SL=H*.05,baseY=H*.88,k=H*.42/24;
+  const drop=x=>H*.13*Math.pow(Math.max(0,(x/W-.6)/.4),2),base=x=>H*.07+H*1.1*Math.pow(x/(.42*W),1.7);
+  const full=CHRONO.map(id=>L[id].m*k),hs=full.map((f,i)=>f*(g[i]||0));
+  // chaque couche ne se dépose que là où son milieu existe : sous la mer (couches marines) ou sur la plaine inondée (couche V)
+  const B=[x=>0],xsL=[],exts=[];let cumFull=0;
+  for(let i=0;i<N;i++){const id=CHRONO[i],off=OFFS[TRUE_ENV[id]],seaYi=baseY-cumFull+off*SL,below=B[i];
+    const surfI=x=>Math.min(base(x),baseY-below(x)+SL*x/W+drop(x));let xs=W;for(let x=0;x<=W;x+=4){if(surfI(x)>seaYi+.5){xs=x;break;}}
+    const sm=(a,b,x)=>{const u=clamp((x-a)/(b-a));return u*u*(3-2*u);};const e=i===0?(x=>sm(W*.18,W*.32,x)*sm(xs+W*.06,xs-W*.12,x)):(x=>sm(xs-W*.14,xs+W*.07,x));
+    xsL.push(xs);exts.push(e);const h=hs[i];B.push(x=>below(x)+h*e(x));cumFull+=full[i];}
+  const bnd=j=>x=>baseY-B[j](x)+SL*(x/W)+drop(x);
+  const top=bnd(N),surf=x=>Math.min(base(x),top(x));
+  const seaOf=off=>baseY-hs.reduce((a,b)=>a+b,0)+off*SL;
+  return {SL,hs,bnd,top,base,surf,xsL,exts,seaOf};}
 const TREES=[.05,.12,.2,.27,.33,.39,.45,.51,.58,.64,.7,.76,.82,.88,.94];
-function landscape(c,W,H,t,g,off,reef,dir){
-  const w=world(W,H,g),seaY=w.top(0)+off*w.SL,surf=w.surf,DX=W*.05,DY=-H*.17,P=(x,y,z)=>[x+z*DX,y+z*DY];
+function landscape(c,W,H,t,g,off,reef,dir,flood){
+  const w=world(W,H,g),seaY=w.seaOf(off),surf=w.surf,DX=W*.05,DY=-H*.17,P=(x,y,z)=>[x+z*DX,y+z*DY];
   sky(c,W,H,'#7fb5d8','#e6f1f5');sun(c,W*.12,H*.1,H*.04,'rgba(255,244,200,.95)');clouds(c,W,H,t,3);
   ridge(c,W,H,H*.56,H*.1,3.3,'#b3c9b7',1.4,H*.01);ridge(c,W,H,H*.63,H*.06,5.1,'#9fbf96',1.8,0);
   let xs=null;for(let x=0;x<=W;x+=2){if(surf(x)>seaY+.5){xs=x;break;}}const landEnd=xs===null?W:xs;
@@ -866,7 +876,11 @@ function landscape(c,W,H,t,g,off,reef,dir){
     else col='#93ba6b';
     quad(P(x,y1,0),P(x2,y2,0),P(x2,y2,1),P(x,y1,1),col);}
   // rivière qui serpente sur la plaine jusqu'à la mer
-  const rx0=W*.24;if(landEnd>rx0+W*.04){const zr=x=>.5+.28*Math.sin((x-rx0)/W*16);const f=s=>{const x=lerp(rx0,landEnd+2,s);return P(x,surf(x)-.5,zr(x));};
+  const rx0=W*.24,zr=x=>.5+.28*Math.sin((x-rx0)/W*16);
+  if(flood>0&&landEnd>rx0+W*.04){for(let x=rx0;x<landEnd;x+=4){const x2=Math.min(landEnd,x+4),y1=surf(x)-.6,y2=surf(x2)-.6,za=clamp(zr(x)-.55*flood),zb=clamp(zr(x)+.55*flood),zc=clamp(zr(x2)-.55*flood),zd=clamp(zr(x2)+.55*flood);
+      quad(P(x,y1,za),P(x2,y2,zc),P(x2,y2,zd),P(x,y1,zb),`rgba(132,128,96,${.78*clamp(flood*1.6)})`);}
+    const r=rng(17);c.fillStyle=`rgba(235,215,160,${.9*clamp(flood*1.5)})`;for(let i=0;i<60;i++){const x=lerp(rx0,landEnd,r()),z=clamp(zr(x)+(r()-.5)*1.1*flood),p=P(x,surf(x)-1,z);c.fillRect(p[0]+Math.sin(t*3+i)*2,p[1],2.4,1.6);}}
+  if(landEnd>rx0+W*.04){const f=s=>{const x=lerp(rx0,landEnd+2,s);return P(x,surf(x)-.5,zr(x));};
     ribbon(c,f,s=>H*(.006+.022*s),70,'#e2cf98');ribbon(c,f,s=>H*(.004+.016*s),70,'#3f8fc2');
     c.strokeStyle='rgba(255,255,255,.85)';c.lineWidth=1.6;for(let k=0;k<9;k++){const s=((k/9)+t*.05)%1,a=f(s),b=f(Math.min(1,s+.015));c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke();}
     const lp=f(.45);if(lp[0]<W*.8){c.font=`600 ${Math.round(Math.max(12,H*.028))}px "Source Sans 3",sans-serif`;c.textAlign='center';c.lineWidth=4;c.strokeStyle='rgba(15,25,28,.7)';c.strokeText('rivière',lp[0],lp[1]-H*.035);c.fillStyle='#fff';c.fillText('rivière',lp[0],lp[1]-H*.035);}}
@@ -902,6 +916,11 @@ function landscape(c,W,H,t,g,off,reef,dir){
     if(dir){const q=P(xs,seaY,1),y=q[1]-H*.05,x0=q[0],x1=x0+dir*W*.12,wob=Math.sin(t*6)*3;c.strokeStyle='#ffd27a';c.fillStyle='#ffd27a';c.lineWidth=5;c.beginPath();c.moveTo(x0,y);c.lineTo(x1+dir*wob,y);c.stroke();c.beginPath();c.moveTo(x1+dir*(wob+14),y);c.lineTo(x1+dir*wob,y-9);c.lineTo(x1+dir*wob,y+9);c.closePath();c.fill();
       tag(dir<0?'la mer avance':'la mer recule',(x0+x1)/2,y-H*.025,'center','#ffe7b0');}}
   tag('Relief continental',W*.02,w.base(W*.03)+H*.2,'left');
+  if(flood>.25){const p=P(W*.4,surf(W*.4),.9);c.save();c.globalAlpha=clamp((flood-.25)*3);tag('Crue : la rivière déborde et étale du sable sur la plaine',p[0],p[1]-H*.06,'center','#ffe7b0');c.restore();}
+  // faciès : près de l'ancien rivage, les couches marines sont plus sableuses
+  for(const i of [2,3]){if(w.hs[i]<.5)continue;const x0=w.xsL[i],lo=w.bnd(i),hi=w.bnd(i+1);const gr=c.createLinearGradient(x0,0,x0+W*.14,0);gr.addColorStop(0,'rgba(226,205,152,.95)');gr.addColorStop(1,'rgba(226,205,152,0)');
+    c.save();c.beginPath();c.moveTo(0,0);c.lineTo(W,0);for(let x=W;x>=0;x-=6)c.lineTo(x,Math.min(w.base(x),H+5));c.closePath();c.clip();
+    c.beginPath();for(let x=Math.max(0,x0-W*.1);x<=x0+W*.16;x+=4)c.lineTo(x,lo(x));for(let x=x0+W*.16;x>=Math.max(0,x0-W*.1);x-=4)c.lineTo(x,hi(x));c.closePath();c.fillStyle=gr;c.fill();c.restore();}
   // emplacement de la future falaise
   const sx=W*SITE,sy=xs!==null&&sx>=xs?seaY:surf(sx),pa=P(sx,sy,0),pb=P(sx,sy,1);c.setLineDash([6,5]);c.strokeStyle='rgba(255,255,255,.95)';c.lineWidth=2;c.beginPath();c.moveTo(pb[0],pb[1]);c.lineTo(pa[0],pa[1]);c.lineTo(sx,H);c.stroke();c.setLineDash([]);
   tag('Ici : la future falaise',pb[0],pb[1]-H*.03,'center','#ffe7b0');
@@ -935,14 +954,15 @@ function drawFrame(now){
   const envOf=i=>A.seq[Math.min(i,N-1)].env;
   try{
     if(s>=N){const tr=clamp(into/(TR*.8));
-      if(tr<1){const q=ease(clamp(tr/.6));landscape(c,W,H,t,g,lerp(OFFS[envOf(N-1)],1.0,q),0,1);
+      if(tr<1){const q=ease(clamp(tr/.6));landscape(c,W,H,t,g,lerp(OFFS[envOf(N-1)],1.0,q),0,1,0);
         if(tr>.6){c.save();c.globalAlpha=ease((tr-.6)/.4);today(c,W,H,t);c.restore();}
         banner(c,W,H,TRANS[5][0],Math.sin(Math.PI*clamp(tr/.9)));}
       else today(c,W,H,t);}
     else{
       const e1=envOf(s),e0=s>0?envOf(s-1):e1;let off=OFFS[e1],reef=e1==='recif'?1:0,dir=0;
       if(s>0&&into<TR){const q=ease(clamp((into-600)/(TR-1400)));off=lerp(OFFS[e0],OFFS[e1],q);reef=lerp(e0==='recif'?1:0,reef,q);dir=OFFS[e1]<OFFS[e0]?-1:1;if(q>=1)dir=0;}
-      const lw=landscape(c,W,H,t,g,off,reef,dir);
+      const pF=(into-P0)/FOSS,flood=s===0&&into>=P0?Math.sin(Math.PI*clamp((pF-.3)/.5)):0;
+      const lw=landscape(c,W,H,t,g,off,reef,dir,flood);
       if(s>0&&into<TR)banner(c,W,H,TRANS[s][0],Math.sin(Math.PI*clamp((into-300)/(TR-600))));
       if(into>=TR){const a=clamp((into-TR)/600),sp=liveSpot2(c,W,H,t,s,into<P0?a:1,lw);
         if(into>=P0)loupe(c,W,H,t,s,clamp((into-P0)/FOSS),sp.fx,sp.fy);}
