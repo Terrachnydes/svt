@@ -536,7 +536,7 @@ function renderLaunch(){$('#scen-txt').textContent='Regarde l’histoire de la f
 document.addEventListener('change',e=>{const s=e.target.closest('[data-env]');if(!s)return;if(s.value)S.env[s.dataset.env]=s.value;else delete S.env[s.dataset.env];save();renderLaunch();});
 
 /* ================= SCÉNARIO ================= */
-const TR=4600,LIVE=4400,FOSS=10000,P0=TR+LIVE,STEP=P0+FOSS+400,FADE=1500,EPI=8000,N=5,TOTAL=N*STEP+EPI;
+const TR=5200,LIVE=2600,FOSS=9500,P0=TR+LIVE,STEP=P0+FOSS+500,FADE=1500,EPI=8000,N=5,TOTAL=N*STEP+EPI;
 const A={t:0,play:true,open:false,last:0,lastS:-1,seq:[]};
 function lg(c,x0,y0,x1,y1,st){const g=c.createLinearGradient(x0,y0,x1,y1);st.forEach((s,i)=>g.addColorStop(i/(st.length-1),s));return g;}
 function sky(c,W,H,a,b){c.fillStyle=lg(c,0,0,0,H,[a,b]);c.fillRect(0,0,W,H);}
@@ -764,7 +764,7 @@ function parts(c,t,x,y,s,tt,rot,al){c.save();if(al!=null)c.globalAlpha*=al;c.tra
     c.strokeStyle='#bf9070';c.lineWidth=Math.max(1.5,s*.025);for(const [ex,ey,ph] of [[.55,.2,0],[.48,.17,1]]){const w=Math.sin(tt*2+ph)*.02*s;c.beginPath();c.moveTo(.4*s,.36*s);c.lineTo(ex*s+w,ey*s);c.stroke();c.fillStyle='#2a1a10';c.beginPath();c.arc(ex*s+w,ey*s,.018*s,0,7);c.fill();}}
   c.restore();}
 function partialRect(c,x,y,w,h,col){c.fillStyle=col;c.fillRect(x,y,w,h);}
-function fossilPanel(c,W,H,tt,s,p){
+function fossilPanel(c,W,H,tt,s,p,inset){
   const id=CHRONO[s],F=FOC[id],l=L[id],t=F.t;
   const deep=id==='T',surfY=id==='V'?H*.22:id==='K'?H*.06:deep?-1:H*.12;
   // fond : ciel + eau
@@ -798,7 +798,7 @@ function fossilPanel(c,W,H,tt,s,p){
     else if(dying){const q=clamp((p-PH_B[1])/(PH_B[2]-PH_B[1]));spr(c,sprite(t,'alive',ALIVE_TINT[t]),x,y,S,0,1-q);parts(c,t,x,y,S,tt,0,clamp(1-q*2));organism(c,t,'dead',x,y,S,tt,0,q);}
     else organism(c,t,'dead',x,y,S,tt,0);
     if(t==='bivalve'){c.fillStyle='#e2cd98';c.beginPath();c.ellipse(x,yb0+2,S*.6,S*.12,0,Math.PI,0,true);c.fill();}}
-  if(dying&&!life){const q=clamp((p-PH_B[1])/(PH_B[2]-PH_B[1]));if(q>.6){c.fillStyle=`rgba(255,255,255,${(1-q)*1.6})`;c.font=`700 ${Math.round(H*.035)}px "Source Sans 3",sans-serif`;c.textAlign='center';c.fillText(t==='leaf'?'feuille morte':'coquille vide',ox,oy-S*.6);}}
+  if(dying&&!life){const q=clamp((p-PH_B[1])/(PH_B[2]-PH_B[1]));if(q>.6){c.fillStyle=`rgba(255,255,255,${(1-q)*1.6})`;c.font=`700 ${Math.round(Math.max(12,H*.05))}px "Source Sans 3",sans-serif`;c.textAlign='center';c.fillText(t==='leaf'?'feuille morte':'coquille vide',ox,oy-S*.6);}}
   // nouvelle couche (sédiments meubles) puis couches au-dessus
   if(nl>0){const y=yb0-nl;c.fillStyle=F.sed;c.globalAlpha=.97;c.fillRect(0,y,W,nl+1);c.globalAlpha=1;
     const r=rng(5);c.fillStyle='rgba(90,70,40,.25)';for(let i=0;i<260;i++){c.fillRect(r()*W,y+r()*nl,1.6,1.6);}
@@ -808,7 +808,7 @@ function fossilPanel(c,W,H,tt,s,p){
   if(ob>0){const y=yb0-nl-ob,cols=CHRONO.slice(s+1).map(k=>L[k].color);if(!cols.length)cols.push('#b9a988','#a99878');
     const n=Math.max(2,cols.length),bh=ob/n;for(let i=0;i<n;i++){c.fillStyle=cols[i%cols.length];c.globalAlpha=.9;c.fillRect(0,y+ob-(i+1)*bh,W,bh+1);}c.globalAlpha=1;
     c.strokeStyle='rgba(30,20,10,.35)';for(let i=0;i<=n;i++){c.beginPath();c.moveTo(0,y+i*bh);c.lineTo(W,y+i*bh);c.stroke();}
-    if(ob>H*.06){c.font=`600 ${Math.round(H*.03)}px "Source Sans 3",sans-serif`;c.fillStyle='rgba(20,25,25,.8)';c.textAlign='center';c.fillText('couches déposées plus tard',W*.45,y+ob/2+H*.01);}
+    if(ob>H*.06){c.font=`600 ${Math.round(Math.max(11,H*.045))}px "Source Sans 3",sans-serif`;c.fillStyle='rgba(20,25,25,.8)';c.textAlign='center';c.fillText('couches déposées plus tard',W*.45,y+ob/2+H*.01);}
     const ay=yb0-nl-ob-H*.02;c.fillStyle='#ffd27a';for(const x of [W*.2,W*.7]){c.beginPath();c.moveTo(x,ay+H*.05);c.lineTo(x-H*.025,ay);c.lineTo(x+H*.025,ay);c.fill();}}
   // pluie de sédiments
   const rain=clamp((p-PH_B[2]+.04)/.06)*clamp((PH_B[4]-p)/.05);
@@ -819,16 +819,18 @@ function fossilPanel(c,W,H,tt,s,p){
     const g=c.createRadialGradient(fx,fy,0,fx,fy,S*.8);g.addColorStop(0,`rgba(255,215,120,${.45*q})`);g.addColorStop(1,'rgba(255,215,120,0)');c.fillStyle=g;c.beginPath();c.arc(fx,fy,S*.8,0,7);c.fill();
     spr(c,sprite(t,'fossil',`rgba(${l.rgb.join(',')},.35)`),fx,fy,t==='leaf'?S*.75:S,t==='leaf'?Math.PI/2:t==='ammonite'?.6:0,q);
     c.setLineDash([7,5]);c.strokeStyle=`rgba(255,226,150,${q})`;c.lineWidth=2.5;c.beginPath();c.arc(fx,fy,S*(.62+.03*pul),0,7);c.stroke();c.setLineDash([]);
-    c.font=`700 ${Math.round(H*.045)}px "Zilla Slab",Georgia,serif`;c.textAlign='left';c.lineWidth=4;c.strokeStyle='rgba(15,25,28,.8)';c.strokeText('Fossile',fx+S*.7,fy);c.fillStyle='#ffe2a0';c.fillText('Fossile',fx+S*.7,fy);
-    c.font=`600 ${Math.round(H*.032)}px "Source Sans 3",sans-serif`;c.strokeText(`dans le ${F.rock}`,fx+S*.7,fy+H*.045);c.fillStyle='#fff';c.fillText(`dans le ${F.rock}`,fx+S*.7,fy+H*.045);}
+    const lx=inset?fx:fx+S*.7,ly=inset?fy-S*.75:fy,al=inset?'center':'left';
+    c.font=`700 ${Math.round(Math.max(14,H*.07))}px "Zilla Slab",Georgia,serif`;c.textAlign=al;c.lineWidth=4;c.strokeStyle='rgba(15,25,28,.8)';c.strokeText('Fossile',lx,ly);c.fillStyle='#ffe2a0';c.fillText('Fossile',lx,ly);
+    c.font=`600 ${Math.round(Math.max(11,H*.05))}px "Source Sans 3",sans-serif`;c.strokeText(`dans le ${F.rock}`,lx,ly+Math.max(13,H*.055));c.fillStyle='#fff';c.fillText(`dans le ${F.rock}`,lx,ly+Math.max(13,H*.055));}
   c.restore();
   // frise des étapes
+  if(inset)return;
   const ph=PH_B.findIndex((b,i)=>p>=b&&p<PH_B[i+1]),bw=Math.min(W*.13,150),gap=6,tot=5*bw+4*gap,x0=(W-tot)/2-40,y0=H-H*.075;
   c.font=`600 ${Math.round(Math.max(10,H*.024))}px "Source Sans 3",sans-serif`;c.textAlign='center';
   for(let i=0;i<5;i++){const x=x0+i*(bw+gap);c.fillStyle=i===ph?'#ffd27a':i<ph?'rgba(255,255,255,.85)':'rgba(255,255,255,.35)';c.beginPath();c.roundRect?c.roundRect(x,y0,bw,H*.05,8):c.rect(x,y0,bw,H*.05);c.fill();c.fillStyle='#1d2928';c.fillText(['Vivant','Mort','Recouvert','Enfoui','Fossile'][i],x+bw/2,y0+H*.034);}
 }
 function liveSpot(c,W,H,tt,s,a){const F=FOC[CHRONO[s]],fx=W*F.fx,fy=H*F.fy,R=H*(F.t==='leaf'?.13:.09);
-  c.save();c.fillStyle=`rgba(8,18,22,${.42*a})`;c.beginPath();c.rect(0,0,W,H);c.arc(fx,fy,R,0,7,true);c.fill('evenodd');c.restore();
+  c.save();c.fillStyle=`rgba(8,18,22,${.42*a})`;c.beginPath();c.rect(0,0,W,H);c.moveTo(fx+R,fy);c.arc(fx,fy,R,0,7,true);c.fill('evenodd');c.restore();
   if(F.t!=='leaf'){const S=H*(F.t==='ammonite'?.12:.075),dx=F.t==='ammonite'?Math.sin(tt*.8)*W*.01:F.t==='gastropod'?Math.sin(tt*.3)*W*.008:0,dy=F.t==='ammonite'?Math.sin(tt*1.3)*H*.01:0;
     organism(c,F.t,'alive',fx+dx,fy+dy,S,tt,F.t==='ammonite'?-.25:0,a);}
   c.save();c.globalAlpha=a;c.setLineDash([10,7]);c.lineDashOffset=-tt*20;c.strokeStyle='#ffd27a';c.lineWidth=3;c.beginPath();c.arc(fx,fy,R*(1+.04*Math.sin(tt*3)),0,7);c.stroke();c.setLineDash([]);
@@ -836,38 +838,110 @@ function liveSpot(c,W,H,tt,s,a){const F=FOC[CHRONO[s]],fx=W*F.fx,fy=H*F.fy,R=H*(
   c.fillStyle='rgba(20,30,32,.88)';c.beginPath();c.roundRect?c.roundRect(lx,ly,w,fs*1.5,fs*.4):c.rect(lx,ly,w,fs*1.5);c.fill();c.fillStyle='#ffe2a0';c.textAlign='center';c.fillText(F.lab,lx+w/2,ly+fs*1.08);c.restore();}
 
 function sceneFor(i){if(i>=N)return today;const k=A.seq[i].env;return SC[k]||SC.plaine;}
+/* ================= PAYSAGE CONTINU : LA MER AVANCE ET RECULE ================= */
+const SITE=.55;
+const OFFS={plaine:1.0,plage:.55,recif:-.75,large:-3.4};
+const ENVTAG={plaine:'Plaine et rivière',plage:'Plage',recif:'Récif de coraux',large:'Mer ouverte'};
+const TRANS=[null,
+ ['La mer monte','La mer monte et envahit la plaine : la rivière laisse place à une plage.'],
+ ['La mer avance encore','La mer continue d’avancer : ici, l’eau devient peu profonde, chaude et claire.'],
+ ['La mer devient plus profonde','La mer avance toujours : on se retrouve au large, loin du rivage.'],
+ ['La mer recule','La mer recule : le rivage revient vers ici, une plage se forme.'],
+ ['La mer se retire','La mer se retire complètement : la région émerge.']];
+function world(W,H,g){const SL=H*.05,baseY=H*.88,k=H*.42/24;const hs=CHRONO.map((id,i)=>L[id].m*k*(g[i]||0));
+  const drop=x=>H*.13*Math.pow(Math.max(0,(x/W-.6)/.4),2);const bnd=j=>{let cc=0;for(let i=0;i<j;i++)cc+=hs[i];return x=>baseY-cc+SL*(x/W)+drop(x);};
+  const top=bnd(N),base=x=>H*.07+H*1.1*Math.pow(x/(.42*W),1.7),surf=x=>Math.min(base(x),top(x));return {SL,hs,bnd,top,base,surf};}
+const TREES=[.05,.12,.2,.27,.33,.39,.45,.51,.58,.64,.7,.76,.82,.88,.94];
+function landscape(c,W,H,t,g,off,reef,dir){
+  const w=world(W,H,g),seaY=w.top(0)+off*w.SL,surf=w.surf;
+  sky(c,W,H,'#7fb5d8','#e4f0f4');sun(c,W*.12,H*.13,H*.045,'rgba(255,244,200,.95)');clouds(c,W,H,t,3);
+  ridge(c,W,H,H*.72,H*.1,3.3,'#a8c3a6',1.4,H*.01);ridge(c,W,H,H*.8,H*.06,5.1,'#93b58a',1.8,0);
+  if(seaY<H){c.fillStyle=lg(c,0,seaY,0,H,['#4aa6c0','#16506f']);c.fillRect(0,seaY,W,H-seaY);}
+  const b0=w.bnd(0);c.beginPath();c.moveTo(0,H);for(let x=0;x<=W;x+=6)c.lineTo(x,b0(x));c.lineTo(W,H);c.closePath();c.fillStyle='#6f6963';c.fill();
+  c.save();c.beginPath();c.moveTo(0,0);c.lineTo(W,0);for(let x=W;x>=0;x-=6)c.lineTo(x,Math.min(w.base(x),H+5));c.closePath();c.clip();
+  for(let i=0;i<N;i++){if(w.hs[i]<.3)continue;const lo=w.bnd(i),hi=w.bnd(i+1),l=L[CHRONO[i]];c.beginPath();c.moveTo(0,lo(0));c.lineTo(W,lo(W));c.lineTo(W,hi(W));c.lineTo(0,hi(0));c.closePath();c.fillStyle=l.color;c.fill();c.fillStyle=cpat(c,l.pat);c.fill();c.strokeStyle='rgba(30,20,10,.45)';c.lineWidth=1;c.stroke();
+    if(w.hs[i]>H*.03){c.fillStyle='#1d2928';c.font=`600 ${Math.round(H*.028)}px "IBM Plex Mono",monospace`;c.textAlign='center';c.fillText(CHRONO[i],W*.66,(lo(W*.66)+hi(W*.66))/2+H*.01);}}
+  c.restore();
+  c.beginPath();c.moveTo(0,H);let xe=0;for(let x=0;x<=W;x+=6){const y=w.base(x);if(y>H+2)break;c.lineTo(x,y);xe=x;}c.lineTo(xe,H);c.closePath();c.fillStyle=lg(c,0,0,0,H,['#9a8770','#6a5c4d']);c.fill();
+  let xs=null;for(let x=0;x<=W;x+=2){if(surf(x)>seaY+.5){xs=x;break;}}const landEnd=xs===null?W:xs;
+  // plage
+  if(xs!==null){c.fillStyle='#ecd9a0';c.beginPath();for(let x=Math.max(0,xs-W*.05);x<=Math.min(W,xs+W*.05);x+=3)c.lineTo(x,surf(x)-2.5);for(let x=Math.min(W,xs+W*.05);x>=Math.max(0,xs-W*.05);x-=3)c.lineTo(x,surf(x)+2.5);c.fill();}
+  // herbe et rivière sur les terres émergées
+  c.strokeStyle='#5f8a3c';c.lineWidth=4;c.beginPath();for(let x=0;x<=Math.max(0,landEnd-W*.04);x+=4){x?c.lineTo(x,surf(x)):c.moveTo(x,surf(x));}c.stroke();
+  if(landEnd>W*.3){c.strokeStyle='#4d95c3';c.lineWidth=H*.012;c.beginPath();for(let x=W*.22;x<=landEnd;x+=4)c.lineTo(x,surf(x)-1);c.stroke();
+    c.strokeStyle='rgba(255,255,255,.8)';c.lineWidth=1.5;for(let k=0;k<8;k++){const x=W*.22+((t*40+k*W*.08)%(landEnd-W*.22));c.beginPath();c.moveTo(x,surf(x)-1);c.lineTo(x+8,surf(x+8)-1);c.stroke();}}
+  for(const f of TREES){const x=W*f,y=surf(x),a=clamp((seaY-y)/(H*.03))*clamp((landEnd-x)/(W*.03));if(a>0){c.save();c.globalAlpha=a;tree(c,x,y,H*(x<W*.3?.06:.075));c.restore();}}
+  // vie marine selon la profondeur
+  const depth=x=>surf(x)-seaY;
+  for(let i=0;i<14;i++){const x=W*(.3+i*.05),d=depth(x);if(d>H*.008&&d<H*.12){fossil(c,'bivalve',x,surf(x)-3,H*.022,'#f2e6cc','#7a5a3a',i);}
+    if(reef>0&&d>H*.01&&d<H*.12&&i%2===0){c.save();c.globalAlpha=reef;fossil(c,'coral',x+W*.02,surf(x+W*.02)-H*.018,H*.045,['#f0a98f','#f3c47c','#e78f8f','#c9a0dc'][i%4],'#7a3e3e');c.restore();}}
+  for(let i=0;i<5;i++){const x=W*(.25+i*.13)+Math.sin(t*.4+i)*W*.02,d=depth(x),a=clamp((d-H*.08)/(H*.06));if(a>0){c.save();c.globalAlpha=a;fossil(c,'ammonite',x,seaY+d*(.35+.1*(i%3))+Math.sin(t+i)*4,H*.04,'#efdcb5','#5a4027',Math.sin(t*.3+i)*.3);c.restore();}}
+  for(let i=0;i<4;i++){const x=((t*(20+i*6)+i*W*.25)%W),d=depth(x);if(d>H*.04)fish(c,x,seaY+d*.4,H*.012,1,reef>.5?['#f2a24b','#f6d04d','#e86c5a','#4ec3e0'][i]:'#cfe0ea');}
+  // surface, rivage
+  if(xs!==null&&seaY<H){waves(c,xs,W,seaY,t,H*.004,'rgba(255,255,255,.95)',2,18);
+    for(let k=0;k<3;k++){const ph=(t*.7+k/3)%1;c.strokeStyle=`rgba(255,255,255,${.9*(1-ph)})`;c.lineWidth=2;c.beginPath();c.arc(xs+ph*W*.03,seaY,4+ph*10,Math.PI,2*Math.PI);c.stroke();}}
+  const fs=Math.round(Math.max(12,H*.03));c.font=`600 ${fs}px "Source Sans 3",sans-serif`;
+  const tag=(txt,x,y,al,col)=>{c.textAlign=al;c.lineWidth=4;c.strokeStyle='rgba(15,25,28,.75)';c.strokeText(txt,x,y);c.fillStyle=col||'#fff';c.fillText(txt,x,y);};
+  if(xs!==null&&seaY<H){tag('Niveau de la mer',W*.84,seaY+H*.05,'right');c.fillStyle='#ffd27a';c.beginPath();c.arc(xs,seaY,5,0,7);c.fill();tag('Rivage',xs,seaY-H*.05,'center','#ffe7b0');
+    if(dir){const y=seaY-H*.1,x1=xs+dir*W*.12,wob=Math.sin(t*6)*3;c.strokeStyle='#ffd27a';c.fillStyle='#ffd27a';c.lineWidth=5;c.beginPath();c.moveTo(xs,y);c.lineTo(x1+dir*wob,y);c.stroke();c.beginPath();c.moveTo(x1+dir*(wob+14),y);c.lineTo(x1+dir*wob,y-9);c.lineTo(x1+dir*wob,y+9);c.closePath();c.fill();}}
+  else tag('La mer est plus loin →',W*.86,H*.3,'right');
+  tag('Relief continental',W*.02,w.base(W*.03)+H*.2,'left');
+  // emplacement de la future falaise
+  const sx=W*SITE;c.setLineDash([6,6]);c.strokeStyle='rgba(255,255,255,.85)';c.lineWidth=2;c.beginPath();c.moveTo(sx,H*.12);c.lineTo(sx,surf(sx));c.stroke();c.setLineDash([]);
+  tag('Ici : la future falaise',sx,H*.105,'center','#ffe7b0');
+  return {xs,seaY,surf,depth};
+}
+function loupe(c,W,H,t,s,p,sx,sy){
+  const o=p<.05?ease(p/.05):p>.96?1-ease((p-.96)/.04):1;if(o<=0)return;
+  const R=Math.min(H*.27,W*.16)*o,cx=W*.73,cy=H*.33;
+  c.save();c.strokeStyle='rgba(255,226,150,.9)';c.lineWidth=2;c.setLineDash([5,5]);c.beginPath();c.moveTo(sx,sy);c.lineTo(cx-R*.95,cy+R*.3);c.moveTo(sx,sy);c.lineTo(cx-R*.3,cy+R*.95);c.stroke();c.setLineDash([]);
+  c.fillStyle='#ffd27a';c.beginPath();c.arc(sx,sy,5,0,7);c.fill();
+  c.strokeStyle='#2b3335';c.lineWidth=R*.12;c.lineCap='round';c.beginPath();c.moveTo(cx+R*.72,cy+R*.72);c.lineTo(cx+R*1.15,cy+R*1.15);c.stroke();
+  c.beginPath();c.arc(cx,cy,R,0,7);c.save();c.clip();c.translate(cx-1.2*R,cy-R);fossilPanel(c,2.4*R,2*R,t,s,p,true);c.restore();
+  c.strokeStyle='#2b3335';c.lineWidth=Math.max(4,R*.06);c.beginPath();c.arc(cx,cy,R,0,7);c.stroke();c.restore();}
+function liveSpot2(c,W,H,t,s,a,lw){const F=FOC[CHRONO[s]],sx=W*SITE,gy=lw.surf(sx);let fx=sx,fy=gy-H*.03,S=H*.06;
+  if(F.t==='leaf'){fx=W*.51;fy=lw.surf(fx)-H*.07;}else if(F.t==='ammonite'){fy=lw.seaY+(gy-lw.seaY)*.45;S=H*.08;}else if(F.t==='coral'){fy=gy-H*.025;}else if(F.t==='bivalve'||F.t==='gastropod'){fy=gy-H*.02;S=H*.05;}
+  const R=H*.08;c.save();c.fillStyle=`rgba(8,18,22,${.35*a})`;c.beginPath();c.rect(0,0,W,H);c.moveTo(fx+R,fy);c.arc(fx,fy,R,0,7,true);c.fill('evenodd');c.restore();
+  if(F.t!=='leaf')organism(c,F.t,'alive',fx+(F.t==='ammonite'?Math.sin(t)*6:0),fy,S,t,F.t==='ammonite'?-.25:0,a);
+  c.save();c.globalAlpha=a;c.setLineDash([9,6]);c.lineDashOffset=-t*20;c.strokeStyle='#ffd27a';c.lineWidth=3;c.beginPath();c.arc(fx,fy,R,0,7);c.stroke();c.setLineDash([]);
+  const fs=Math.round(Math.max(13,H*.036));c.font=`700 ${fs}px "Source Sans 3",sans-serif`;const w=c.measureText(F.lab).width+fs,lx=clamp(fx-w/2,8,W-w-130),ly=Math.max(fy-R-fs*1.7,H*.14);
+  c.fillStyle='rgba(20,30,32,.88)';c.beginPath();c.roundRect?c.roundRect(lx,ly,w,fs*1.5,fs*.4):c.rect(lx,ly,w,fs*1.5);c.fill();c.fillStyle='#ffe2a0';c.textAlign='center';c.fillText(F.lab,lx+w/2,ly+fs*1.08);c.restore();
+  return {fx,fy};}
+
 function drawFrame(now){
   const s=Math.min(Math.floor(A.t/STEP),N),into=A.t-s*STEP;
-  let key;if(s>=N)key='E';else if(s>0&&into<TR)key='T';else if(into<P0)key='L';else{const p=(into-P0)/FOSS;key='F'+PH_B.findIndex((b,i)=>p>=b&&p<PH_B[i+1]);}
+  let key;if(s>=N)key='E';else if(into<TR)key=s>0?'T':'I';else if(into<P0)key='L';else{const p=(into-P0)/FOSS;key='F'+Math.max(0,PH_B.findIndex((b,i)=>p>=b&&p<PH_B[i+1]));}
   if(s!==A.lastS||key!==A.lastKey){if(s!==A.lastS)renderTL();A.lastS=s;A.lastKey=key;setCaption(s,key);}
   sizeCanvas();
   const cv=$('#cv'),c=cv.getContext('2d'),d=cv._d||1,W=cv.width/d,H=cv.height/d;if(W<10)return;
   c.setTransform(d,0,0,d,0,0);c.globalAlpha=1;c.globalCompositeOperation='source-over';const t=now/1000;
-  let col=s<N?clamp((into-P0-PH_B[2]*FOSS)/((PH_B[3]-PH_B[2])*FOSS)):1;
+  const gl=s<N?clamp((into-P0-PH_B[2]*FOSS)/((PH_B[3]-PH_B[2])*FOSS)):1;
+  const g=CHRONO.map((_,i)=>i<s?1:i===s?gl:0);
+  const envOf=i=>A.seq[Math.min(i,N-1)].env;
   try{
-    if(s>0&&into<TR){const p=into/TR,a=lvl(s-1),b=lvl(s);
-      const msg=s===N?'La mer se retire : la région émerge':b>a?(b-a>1?'La mer avance nettement sur la région':'La mer avance sur la région'):b<a?(a-b>1?'La mer recule nettement':'La mer recule'):(a===0?'Toujours la terre ferme, mais le paysage change':'Le milieu marin change peu');
-      const q=clamp((p-.2)/.45);
-      c.fillStyle='#1d2928';c.fillRect(0,0,W,H);
-      if(p<.22){const z=ease(p/.22);c.save();c.translate(W/2,H/2);c.scale(1-.1*z,1-.1*z);c.translate(-W/2,-H/2);sceneFor(s-1)(c,W,H,t);c.restore();c.save();c.globalAlpha=z;coupe(c,W,H,t,s,0,a,b,0,'');c.restore();}
-      else if(p<.78)coupe(c,W,H,t,s,0,a,b,q,b>a?-1:b<a?1:0);
-      else{const z=ease((p-.78)/.22);coupe(c,W,H,t,s,0,a,b,1,0);c.save();c.globalAlpha=z;const sc=1.1-.1*z;c.translate(W/2,H/2);c.scale(sc,sc);c.translate(-W/2,-H/2);sceneFor(s)(c,W,H,t);c.restore();}
-      banner(c,W,H,msg,Math.sin(Math.PI*clamp((p-.12)/.76)));}
-    else if(s<N&&into<P0){sceneFor(s)(c,W,H,t);const st=s>0?TR:0;liveSpot(c,W,H,t,s,clamp((into-st-300)/700));}
-    else if(s<N){const p=clamp((into-P0)/FOSS),F=FOC[CHRONO[s]],fx=W*F.fx,fy=H*F.fy,big=Math.hypot(W,H);
-      let r=big;if(p<.07)r=lerp(H*.1,big,ease(p/.07));else if(p>.95)r=lerp(big,H*.1,ease((p-.95)/.05));
-      if(r<big){sceneFor(s)(c,W,H,t);liveSpot(c,W,H,t,s,1);}
-      c.save();c.beginPath();c.arc(fx,fy,r,0,7);c.clip();fossilPanel(c,W,H,t,s,p);c.restore();
-      if(r<big){c.strokeStyle='rgba(255,226,150,.95)';c.lineWidth=5;c.beginPath();c.arc(fx,fy,r,0,7);c.stroke();}}
-    else sceneFor(s)(c,W,H,t);
-    c.globalAlpha=1;drawColumn(c,W,H,s,col);
+    if(s>=N){const tr=clamp(into/(TR*.8));
+      if(tr<1){const q=ease(clamp(tr/.6));landscape(c,W,H,t,g,lerp(OFFS[envOf(N-1)],1.0,q),0,1);
+        if(tr>.6){c.save();c.globalAlpha=ease((tr-.6)/.4);today(c,W,H,t);c.restore();}
+        banner(c,W,H,TRANS[5][0],Math.sin(Math.PI*clamp(tr/.9)));}
+      else today(c,W,H,t);}
+    else{
+      const e1=envOf(s),e0=s>0?envOf(s-1):e1;let off=OFFS[e1],reef=e1==='recif'?1:0,dir=0;
+      if(s>0&&into<TR){const q=ease(clamp((into-600)/(TR-1400)));off=lerp(OFFS[e0],OFFS[e1],q);reef=lerp(e0==='recif'?1:0,reef,q);dir=OFFS[e1]<OFFS[e0]?-1:1;if(q>=1)dir=0;}
+      const lw=landscape(c,W,H,t,g,off,reef,dir);
+      if(s>0&&into<TR)banner(c,W,H,TRANS[s][0],Math.sin(Math.PI*clamp((into-300)/(TR-600))));
+      if(into>=TR){const a=clamp((into-TR)/600),sp=liveSpot2(c,W,H,t,s,into<P0?a:1,lw);
+        if(into>=P0)loupe(c,W,H,t,s,clamp((into-P0)/FOSS),sp.fx,sp.fy);}
+    }
+    c.globalAlpha=1;drawColumn(c,W,H,s,s<N?gl:1);
   }catch(err){console.error(err);c.setTransform(d,0,0,d,0,0);}
 }
 function setCaption(s,key){const c=$('#cap');
-  if(s>=N){c.innerHTML=`<span class="k">Aujourd’hui</span><strong>La falaise actuelle</strong><span>La région est émergée. Bien après le dépôt des cinq couches, l’érosion les a entaillées : on observe maintenant les roches et leurs fossiles dans la falaise.</span>`;return;}
+  if(s>=N){c.innerHTML=`<span class="k">Aujourd’hui</span><strong>La falaise actuelle</strong><span>${TRANS[5][1]} Bien plus tard, l’érosion entaille les couches : on observe maintenant les roches et leurs fossiles dans la falaise.</span>`;return;}
   const q=A.seq[s],F=FOC[q.id];
-  if(key==='T'||key==='L')c.innerHTML=`<span class="k">Temps ${s+1} sur 5 · couche ${q.id}</span><strong>${ENVLABEL[q.env]}</strong><span>${key==='L'?'Repère l’être vivant entouré : on va suivre ce qu’il devient.':'Le paysage change…'}</span>`;
-  else{const i=+key.slice(1);c.innerHTML=`<span class="k">Couche ${q.id} · formation d’un fossile</span><strong>${PH_T[i]}</strong><span>${F.ph[i]}</span>`;}}
+  if(key==='I')c.innerHTML=`<span class="k">Temps 1 sur 5 · couche ${q.id}</span><strong>Au début : ${ENVLABEL[q.env].toLowerCase()}</strong><span>La mer est loin, à droite. Le pointillé montre l’endroit où se trouvera la falaise.</span>`;
+  else if(key==='T')c.innerHTML=`<span class="k">Temps ${s+1} sur 5 · couche ${q.id}</span><strong>${TRANS[s][0]}</strong><span>${TRANS[s][1]}</span>`;
+  else if(key==='L')c.innerHTML=`<span class="k">Temps ${s+1} sur 5 · couche ${q.id}</span><strong>${ENVLABEL[q.env]}</strong><span>Repère l’être vivant entouré : la loupe va montrer ce qu’il devient.</span>`;
+  else{const i=+key.slice(1);c.innerHTML=`<span class="k">Couche ${q.id} · formation d’un fossile (loupe)</span><strong>${PH_T[i]}</strong><span>${F.ph[i]}</span>`;}}
 function renderTL(){const s=Math.min(Math.floor(A.t/STEP),N);
   $('#tl').innerHTML=A.seq.map((q,i)=>`<li><button type="button" data-step="${i}" class="${i===s?'on':''}"><span class="t">Temps ${i+1}</span><span class="chip" style="--sw:${L[q.id].color}">${q.id}</span>${ENVLABEL[q.env]}</button></li>`).join('')+
   `<li><button type="button" data-step="5" class="${s===N?'on':''}"><span class="t">Aujourd’hui</span><span class="chip" style="--sw:#b9b2a6">⌂</span>La falaise actuelle</button></li>`;}
