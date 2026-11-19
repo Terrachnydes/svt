@@ -276,6 +276,25 @@ td.ft-env{font-weight:700;white-space:nowrap;border-left:none}
 td.ft-env.env-mer{background:#e1effa;color:#174c7c;border-right:5px solid #2a6fb0!important}
 td.ft-env.env-terre{background:#e7f4e1;color:#2c5a18;border-right:5px solid #4b8a2e!important}
 .ft-row:hover td.ft-env.env-mer{background:#d2e6f7}.ft-row:hover td.ft-env.env-terre{background:#dbeed2}
+@media (max-width:900px){
+ body{height:auto;min-height:100vh;overflow:auto}
+ #main{display:contents}
+ header{order:0}.mapwrap{order:1}footer{order:2}#guide{order:3;border-left:0;flex:none}
+ .mapwrap{height:65vh;min-height:360px}
+ #guide{overflow:visible}
+ header h1{white-space:normal;font-size:17px}
+ footer{flex-wrap:wrap;border-bottom:1px solid var(--line)}
+ .flabel{width:auto;flex:1 1 100%}
+ .chips{flex:1 1 100%;flex-wrap:wrap}
+ .chip{flex:1 1 90px;min-width:0}
+ #play{margin-left:auto}
+ .sgrid,.cmpg{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:480px){
+ .legend{font-size:11px;padding:5px 7px;max-width:calc(100% - 20px)}
+ .sp-card{grid-template-columns:minmax(0,1fr)}
+ #pop{max-width:calc(100vw - 20px)}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.warp{display:none}}
 #print{display:none}
 @media print{

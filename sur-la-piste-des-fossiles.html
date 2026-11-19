@@ -28,6 +28,7 @@ button.wide{width:100%}
 header{background:linear-gradient(180deg,#4a3a29,#33281c);color:#f6ecd8;display:flex;align-items:center;gap:10px;padding:8px 18px;flex-wrap:wrap}
 header .logo{width:32px;height:32px}
 header h1{font-size:20px;margin:0;white-space:nowrap}
+@media (max-width:600px){header h1{white-space:normal}header h1 small{display:block;margin-left:0}}
 header h1 small{font-weight:400;font-size:13px;opacity:.75;margin-left:8px}
 header .sp{flex:1}
 header #prog{font-size:14px;margin-right:6px}
@@ -178,6 +179,7 @@ header button.glow{background:var(--ok);border-color:var(--ok);animation:pulse 1
 .help .ex{background:#fff2d9;border-left:4px solid #e0a548;padding:8px 12px;border-radius:0 8px 8px 0}
 @media (max-width:1250px){.idwrap{grid-template-columns:260px minmax(0,1fr)}#identLeft .fpic{height:200px}.orow{grid-template-columns:150px minmax(0,1fr)}.orow .oact{grid-column:1/-1}}
 @media (max-width:760px){.idwrap{grid-template-columns:1fr;overflow:auto}.orow{grid-template-columns:1fr}.consigne{flex-direction:column;align-items:stretch}}
+@media (max-width:560px){#quarries{grid-template-columns:minmax(0,1fr);padding:0 12px 12px}.fos3,.bil4{grid-template-columns:minmax(0,1fr)}.agebox{grid-template-columns:minmax(0,1fr)}.envs.big{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-height:700px){.consigne{font-size:13px;padding:6px 14px}#identLeft .fpic{height:190px}}
 @media print{
   body *{visibility:hidden}

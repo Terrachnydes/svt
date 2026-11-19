@@ -180,7 +180,10 @@ input[type=range]{flex:1;accent-color:var(--accent);min-width:0;height:26px}
 @media (max-width:1000px){
   html,body{height:auto}
   body{overflow:auto}
-  .lab{grid-template-columns:1fr}
+  .lab{grid-template-columns:minmax(0,1fr);flex:none}
+  .top{flex-wrap:wrap;gap:8px 12px}
+  .brand h1{font-size:21px}
+  .modes{margin-left:0}
   .panel{overflow:visible}
   .samples{flex-direction:row;flex-wrap:wrap}
   .sample{flex:1 1 140px}
@@ -188,6 +191,14 @@ input[type=range]{flex:1;accent-color:var(--accent);min-width:0;height:26px}
   .modal-body{grid-template-columns:1fr}
   .sample-view svg.hero{width:200px;height:167px}
 }
+@media (max-width:600px){
+  .brand{flex:1 1 100%}
+  .modes{margin-right:0;flex:1 1 auto}
+  .modes button{flex:1;padding:7px 8px}
+  .coll-btn{margin-left:auto}
+  .dishwrap{min-width:0;width:100%}
+}
+.modes button,.btn{white-space:nowrap}
 @media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
 </style>
 

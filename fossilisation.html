@@ -92,6 +92,36 @@ td input{width:20px;height:20px}
 .cmpcard dd{margin:0;font-weight:600}
 .cmpcard dd.diff{color:#0e7e77;background:#dff5f3;border-radius:4px;padding:0 4px}
 .cmpnote{font-size:17px;color:var(--muted);margin:4px 0}
+/* Écrans étroits */
+#app{grid-template-columns:minmax(0,1fr)}
+header{gap:8px 14px}
+.hdr-right{flex-wrap:wrap;justify-content:flex-end}
+footer{flex-wrap:wrap;row-gap:6px;padding-block:6px}
+@media (max-width:1200px){
+  #app{grid-template-rows:auto 1fr auto}
+  header{flex-wrap:wrap;padding:6px 12px}
+  .tab{margin-top:0;border-radius:8px}
+  .brand h1{font-size:20px}
+  footer .lbl[title]{display:none}
+}
+@media (max-width:900px){
+  body{overflow:auto}
+  #app{height:auto;min-height:100vh}
+  main{grid-template-columns:minmax(0,1fr)}
+  #stage{height:62vh;min-height:340px}
+  aside{border-left:0;border-top:3px solid var(--sand2);overflow:visible}
+  #timeBox{width:min(290px,calc(100% - 20px))}
+  #resultCard{width:min(360px,calc(100% - 24px))}
+  #infoLbl{max-width:calc(100% - 20px)}
+  #hint{max-width:90%}
+  .cmp{grid-template-columns:minmax(0,1fr)}
+  #journal{position:fixed}
+  .jbody{overflow:auto}
+}
+@media (max-width:480px){
+  body{font-size:16px}
+  button,.btn,.chip,.badge{font-size:15px}
+}
 </style>
 </head>
 <body>
