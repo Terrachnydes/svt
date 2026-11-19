@@ -1462,8 +1462,10 @@ const PBY = Object.fromEntries(PERIODS.map(p => [p.id, p]));
 
 /* ---------- état ---------- */
 const blank = () => ({ sites: Object.fromEntries('ABC'.split('').map(s => [s, { found: [0, 0, 0], rock: 0, period: '', env: '', dat: {} }])), fos: {} });
-function load() { try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && v.sites && v.fos) return v; } catch (e) { } return blank(); }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(ST)); } catch (e) { } }
+/* Rien n'est gardé en mémoire : chaque ouverture repart de zéro (on efface aussi les anciennes sauvegardes). */
+try { localStorage.removeItem(KEY); localStorage.removeItem('paleo_actualisme_4e'); } catch (e) { }
+function load() { return blank(); }
+function save() { }
 let ST = load();
 const nFound = s => ST.sites[s].found.filter(Boolean).length;
 const collected = s => nFound(s) === 3 && !!ST.sites[s].rock;
