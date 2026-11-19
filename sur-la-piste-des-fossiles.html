@@ -223,6 +223,7 @@ header button.glow{background:var(--ok);border-color:var(--ok);animation:pulse 1
 @keyframes pop{from{transform:translateY(20px);opacity:0}}
 #radio .rh2{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fff2d9;font-weight:700;font-size:15px}
 #radio .rh2 span{flex:1}
+#radio .rh2 button{font-size:18px;padding:2px 10px;line-height:1}
 #radio svg{display:block;width:100%;height:auto}
 #radio .cap{min-height:58px;padding:8px 14px 4px;font-size:15px;line-height:1.35}
 #radio .prog{height:6px;background:#eadfcb;margin:6px 14px 12px;border-radius:3px;overflow:hidden}
@@ -1603,29 +1604,32 @@ function datingGrid(s) {
   rows.forEach(r => {
     const on = !!d[r.k] && RA.k !== r.k, play = RA.k === r.k, x0 = ageX(r.range[1]) * 100, x1 = ageX(r.range[0]) * 100;
     const lbl = r.range[1] === 0 ? `${r.range[0]} Ma → aujourd’hui` : `${r.range[0]} → ${fmtMa(r.range[1])} Ma`;
-    h += `<tr><th class="rh"><div class="rhi"><div class="rp">${r.pic}</div><div><b>${r.lab}</b><div class="rt">${on ? r.txt(r.range) : ''}</div><button class="${play ? 'stop' : on ? 'ghost' : 'primary'} rbtn" data-dat="${r.k}">${play ? '■ Arrêter l’animation' : on ? '▶ Revoir l’explication' : '☢ Datation radiochronologique'}</button></div></div></th>
+    h += `<tr><th class="rh"><div class="rhi"><div class="rp">${r.pic}</div><div><b>${r.lab}</b><div class="rt">${on ? r.txt(r.range) : ''}</div><button class="${play ? 'stop' : on ? 'ghost' : 'primary'} rbtn" data-dat="${r.k}" ${on ? 'disabled' : ''}>${play ? '■ Arrêter l’animation' : on ? '✓ Datation faite' : '☢ Datation radiochronologique'}</button></div></div></th>
       <td class="track" colspan="${n}" style="--n:${n}">${play ? `<div class="tnone">Datation en cours…</div>` : on ? `<div class="bar ${r.rock ? 'rock' : ''}" style="left:${x0.toFixed(2)}%;width:${Math.max(x1 - x0, 1.2).toFixed(2)}%" title="${lbl}"><span>${lbl}</span></div>` : `<div class="tnone">Clique sur « Datation radiochronologique »</div>`}</td></tr>`;
   });
   h += `<tr class="final"><th class="rh"><div><b>➜ Période du site</b><div class="rt">Clique sur la période où toutes les barres se superposent.</div></div></th>${PREV.map(p => `<td><button class="pcell ${st.period === p.id ? 'on' : ''}" data-period="${p.id}" aria-label="Période du site : ${p.nom}">${p.nom}</button></td>`).join('')}</tr></tbody></table><div class="friseunit">Frise simplifiée : chaque période a la même largeur (elle n’est pas à l’échelle).</div></div>`;
   return h;
 }
 /* ---------- animation : la datation radiochronologique ---------- */
-const RA = { k: null, raf: 0 };
+const RA = { k: null, raf: 0, seen: {} }; /* l'animation ne se joue qu'une fois par site */
 function refreshDating() { const w = $('.dtwrap'); if (!w || !curSite) return; const y = $('#siteBody').scrollTop; w.outerHTML = datingGrid(curSite); $('#siteBody').scrollTop = y; }
 function radioStart(k) {
   if (RA.k) radioStop(true);
   const st = ST.sites[curSite]; (st.dat || (st.dat = {}))[k] = 1;
+  $('#radio').classList.remove('show');
+  if (RA.seen[curSite]) { refreshDating(); return; }
+  RA.seen[curSite] = 1;
   const rock = k === 'R', F = FBY2[k], range = rock ? SITES[curSite].range : F.range;
   const R = rng(hash('atoms' + k)), N = 30, atoms = [];
   while (atoms.length < N) { const x = 40 + R() * 200, y = 34 + R() * 112; if (((x - 140) / 104) ** 2 + ((y - 90) / 60) ** 2 < 1 && atoms.every(a => Math.hypot(a.x - x, a.y - y) > 17)) atoms.push({ x, y, t: -Math.log(1 - R()) / 1.2 }); }
-  const steps = (rock ? [] : [[0, `On ne peut pas dater directement un fossile : on date <b>les roches dans lesquelles on le trouve</b>.`]])
-    .concat([[0, `Une roche contient des <b>atomes radioactifs</b> <span style="color:#d4471a">●</span>.`],
-      [1, `Avec le temps, ils se transforment en <b>atomes stables</b> <span style="color:#7d7f86">●</span>, toujours à la <b>même vitesse</b> : c’est une horloge naturelle.`],
-      [2, `Au laboratoire, on mesure la part d’atomes transformés : plus elle est grande, plus la roche est <b>vieille</b>.`],
-      [3, `Résultat : ${rock ? 'roche formée' : 'fossile présent'} ${ageTxt(range)}.`]]);
-  const DUR = 3000, total = steps.length * DUR;
+  const steps = [[0, `Une roche contient des <b>atomes radioactifs</b> <span style="color:#d4471a">●</span>.`, 4500],
+    [1, `Avec le temps, ils se transforment en <b>atomes stables</b> <span style="color:#7d7f86">●</span>, toujours à la <b>même vitesse</b> : c’est une horloge naturelle.`, 8000],
+    [2, `Au laboratoire, on mesure la part d’atomes transformés : plus elle est grande, plus la roche est <b>vieille</b>.`, 6000],
+    [2, `Pour un fossile, on date <b>les roches dans lesquelles on le trouve</b>.`, 5000],
+    [3, `<b>Résultat pour ${rock ? 'l’échantillon de roche' : 'le fossile ' + F.code} :</b> ${rock ? 'roche formée' : 'fossile présent'} ${ageTxt(range)}. Regarde la frise !`, 0]];
+  const starts = []; let total = 0; steps.forEach(x => { starts.push(total); total += x[2]; });
   const box = $('#radio');
-  box.innerHTML = `<div class="rh2"><span>☢ La datation radiochronologique</span><button class="ghost" data-rstop>Arrêter ✕</button></div>
+  box.innerHTML = `<div class="rh2"><span>☢ La datation radiochronologique</span><button class="ghost" data-rstop title="Fermer">✕</button></div>
     <svg viewBox="0 0 400 190"><ellipse cx="140" cy="92" rx="112" ry="68" fill="#a59882" stroke="#6e624f" stroke-width="3"/><ellipse cx="140" cy="86" rx="100" ry="56" fill="#b7aa93"/>
     ${atoms.map((a, i) => `<circle id="at${i}" cx="${fx(a.x)}" cy="${fx(a.y)}" r="6.5" fill="#d4471a" stroke="#fff" stroke-width="1.5"/>`).join('')}
     <g id="rclock" transform="translate(320 70)"><circle r="40" fill="#fff" stroke="#2a251f" stroke-width="3"/><path id="rhand" d="M0 0V-30" stroke="#c4410f" stroke-width="4" stroke-linecap="round"/><circle r="4" fill="#2a251f"/></g>
@@ -1635,20 +1639,21 @@ function radioStart(k) {
   box.classList.add('show'); RA.k = k; refreshDating();
   const t0 = performance.now(); let last = -1;
   const tick = now => {
-    const t = Math.max(0, now - t0); if (t >= total + 1200) return radioStop();
-    const si = Math.min(steps.length - 1, Math.floor(t / DUR)), [ph, txt] = steps[si];
+    const t = Math.max(0, now - t0);
+    let si = 0; while (si < steps.length - 1 && t >= starts[si + 1]) si++; const [ph, txt] = steps[si];
     if (si !== last) { $('#rcap').innerHTML = txt; last = si; }
-    const tl = ph === 1 ? (t - si * DUR) / DUR : ph >= 2 ? 1 : 0;   /* temps écoulé (unités arbitraires) */
+    const tl = ph === 1 ? Math.min(1, (t - starts[si]) / steps[si][2]) : ph >= 2 ? 1 : 0;   /* temps écoulé (unités arbitraires) */
     let left = 0; atoms.forEach((a, i) => { const dec = a.t < tl; if (!dec) left++; $('#at' + i).setAttribute('fill', dec ? '#7d7f86' : '#d4471a'); });
     $('#rhand').setAttribute('transform', `rotate(${tl * 720})`);
     $('#rtime').textContent = ph === 0 ? 'Formation de la roche' : ph === 1 ? 'Des millions d’années passent…' : 'Aujourd’hui';
     $('#rcount').textContent = ph >= 2 ? `${N - left} atomes transformés sur ${N}` : '';
     $('#rprog').style.width = Math.min(100, t / total * 100) + '%';
+    if (t >= total) { RA.k = null; refreshDating(); return; } /* fin : le panneau reste ouvert, la croix le ferme */
     RA.raf = requestAnimationFrame(tick);
   };
   RA.raf = requestAnimationFrame(tick);
 }
-function radioStop(silent) { cancelAnimationFrame(RA.raf); RA.k = null; $('#radio').classList.remove('show'); if (!silent) refreshDating(); }
+function radioStop(silent) { cancelAnimationFrame(RA.raf); const was = RA.k; RA.k = null; $('#radio').classList.remove('show'); if (!silent && was) refreshDating(); }
 document.addEventListener('click', e => { if (e.target.closest('[data-rstop]')) radioStop(); });
 function siteAct(e) {
   const i = e.target.closest('[data-ident]'); if (i) return openIdent(i.dataset.ident);
@@ -1727,7 +1732,7 @@ $('#mIdent').addEventListener('click', identAct);
 $('#btnHelp').addEventListener('click', () => show('#mHelp'));
 $('#btnBilan').addEventListener('click', openBilan);
 $('#btnPrint').addEventListener('click', () => window.print());
-$('#btnReset').addEventListener('click', () => { if (confirm('Tout recommencer ? Toutes tes réponses seront effacées.')) { ST = blank(); save(); renderHome(); toast('Nouvelle partie : bonne chasse aux fossiles !', true); } });
+$('#btnReset').addEventListener('click', () => { if (confirm('Tout recommencer ? Toutes tes réponses seront effacées.')) { ST = blank(); save(); RA.seen = {}; renderHome(); toast('Nouvelle partie : bonne chasse aux fossiles !', true); } });
 renderHome();
 </script>
 </body>
