@@ -139,7 +139,7 @@ header button.glow{background:var(--ok);border-color:var(--ok);animation:pulse 1
 #identLeft .obs-t{display:block;margin-top:8px;font-size:14px}
 #identLeft ul{margin:4px 0 0;padding-left:18px;font-size:14px;line-height:1.4}
 #identList{overflow:auto;display:flex;flex-direction:column;gap:8px;padding:0 4px 12px 0;min-height:0}
-.orow{display:grid;grid-template-columns:180px minmax(0,1fr) 420px;gap:12px;align-items:center;background:#fff;border:2px solid var(--line);border-radius:12px;padding:8px;transition:opacity .2s}
+.orow{display:grid;grid-template-columns:180px minmax(0,1fr) minmax(240px,420px);gap:12px;align-items:center;background:#fff;border:2px solid var(--line);border-radius:12px;padding:8px;transition:opacity .2s}
 .orow.sel{border-color:var(--ok);background:#f2fbf3}
 .orow.dim{opacity:.6}
 .orow.dim:hover{opacity:1}
@@ -166,6 +166,8 @@ header button.glow{background:var(--ok);border-color:var(--ok);animation:pulse 1
 .fh{font-size:16px;margin:16px 0 4px}
 .help{font-size:15px;line-height:1.5}
 .help .ex{background:#fff2d9;border-left:4px solid #e0a548;padding:8px 12px;border-radius:0 8px 8px 0}
+@media (max-width:1250px){.idwrap{grid-template-columns:260px minmax(0,1fr)}#identLeft .fpic{height:200px}.orow{grid-template-columns:150px minmax(0,1fr)}.orow .oact{grid-column:1/-1}}
+@media (max-width:760px){.idwrap{grid-template-columns:1fr;overflow:auto}.orow{grid-template-columns:1fr}.consigne{flex-direction:column;align-items:stretch}}
 @media (max-height:700px){.consigne{font-size:13px;padding:6px 14px}#identLeft .fpic{height:190px}}
 @media print{
   body *{visibility:hidden}
