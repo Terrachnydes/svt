@@ -41,7 +41,16 @@ header button.glow{background:var(--ok);border-color:var(--ok);animation:pulse 1
 .mission b{color:#a8460f}
 .mission .sub{font-size:14px;color:var(--ink2);margin-top:2px}
 /* ---- carrières ---- */
-#quarries{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:0 18px 18px;max-width:1400px;margin:0 auto}
+#quarries{display:grid;grid-template-columns:minmax(0,.8fr) repeat(3,minmax(0,1fr));gap:14px;padding:0 18px 18px;max-width:1700px;margin:0 auto}
+.mapcard{background:var(--card);border-radius:14px;box-shadow:0 2px 0 #d6c9b1,0 6px 18px rgba(60,40,10,.12);overflow:hidden;display:flex;flex-direction:column}
+.mapcard .qh{justify-content:center;font-weight:700}
+.mapcard svg{display:block;width:100%;height:auto;flex:1;background:linear-gradient(180deg,#cfe6f3,#b9d9ec)}
+.mapcard .mk{cursor:pointer}
+.mapcard .mk:hover circle.dot{r:13}
+.mapcard .mk.done circle.dot{fill:var(--ok)}
+.mapcard .leg{font-size:12.5px;color:var(--ink2);padding:6px 10px 10px;line-height:1.35}
+.quarry.flash{animation:flash 1.2s}
+@keyframes flash{0%,100%{box-shadow:0 2px 0 #d6c9b1,0 6px 18px rgba(60,40,10,.12)}30%{box-shadow:0 0 0 6px #e0a548}}
 @media (max-width:1100px){#quarries{grid-template-columns:repeat(2,minmax(0,1fr));max-width:900px}}
 .quarry{background:var(--card);border-radius:14px;box-shadow:0 2px 0 #d6c9b1,0 6px 18px rgba(60,40,10,.12);overflow:hidden;display:flex;flex-direction:column;border:3px solid transparent;transition:border-color .3s}
 .quarry.complete{border-color:#e0a548}
@@ -208,6 +217,16 @@ header button.glow{background:var(--ok);border-color:var(--ok);animation:pulse 1
 .bar span{color:#fff;font-weight:700;font-size:12.5px;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.5);padding:0 8px}
 @keyframes grow{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
 .tnone{color:#a99a80;font-size:13px;font-style:italic;text-align:center}
+.rbtn.stop{background:#2a251f;border-color:#2a251f;color:#fff}
+#radio{position:fixed;right:22px;top:76px;width:440px;max-width:calc(100vw - 30px);background:#fffdf8;border:3px solid #e0a548;border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.35);z-index:45;overflow:hidden;display:none}
+#radio.show{display:block;animation:pop .25s ease-out}
+@keyframes pop{from{transform:translateY(20px);opacity:0}}
+#radio .rh2{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fff2d9;font-weight:700;font-size:15px}
+#radio .rh2 span{flex:1}
+#radio svg{display:block;width:100%;height:auto}
+#radio .cap{min-height:58px;padding:8px 14px 4px;font-size:15px;line-height:1.35}
+#radio .prog{height:6px;background:#eadfcb;margin:6px 14px 12px;border-radius:3px;overflow:hidden}
+#radio .prog i{display:block;height:100%;width:0;background:var(--accent)}
 .pcell{width:100%;font-size:12px;padding:8px 2px;border:2px solid #d6c9b1;border-radius:8px}
 .pcell.on{background:var(--ok);color:#fff;border-color:var(--ok);font-weight:700}
 </style>
@@ -232,6 +251,7 @@ header button.glow{background:var(--ok);border-color:var(--ok);animation:pulse 1
 <main id="quarries"></main>
 
 <div id="toast" role="status" aria-live="polite"></div>
+<div id="radio" role="dialog" aria-live="polite"></div>
 
 <div class="modal" id="mSite" role="dialog" aria-modal="true" aria-labelledby="siteTitle"><div class="box">
   <div class="mh"><h2 id="siteTitle"></h2><button class="ghost" data-close>Retour aux carrières ✕</button></div>
@@ -1495,10 +1515,11 @@ const ageTxt = r => r[1] === 0 ? `de <b>${r[0]} millions d’années à aujourd�
 
 /* ---------- accueil ---------- */
 function renderHome() {
-  $('#quarries').innerHTML = 'ABC'.split('').map(s => `<article class="quarry" data-site="${s}"><div class="qh"><span class="plate">${SITES[s].nom}</span><span class="lieu">${esc(SITES[s].lieu)}</span><span class="state"></span></div><div class="scene">${drawQuarry(s)}</div><div class="qf" id="qf${s}"></div></article>`).join('');
+  $('#quarries').innerHTML = franceMap() + 'ABC'.split('').map(s => `<article class="quarry" data-site="${s}"><div class="qh"><span class="plate">${SITES[s].nom}</span><span class="lieu">${esc(SITES[s].lieu)}</span><span class="state"></span></div><div class="scene">${drawQuarry(s)}</div><div class="qf" id="qf${s}"></div></article>`).join('');
   'ABC'.split('').forEach(updateQuarry); updateHeader();
 }
 function updateQuarry(s) {
+  const mk = $(`.mk[data-goto="${s}"]`); if (mk) mk.classList.toggle('done', siteDone(s));
   const q = $(`.quarry[data-site="${s}"]`), st = ST.sites[s];
   st.found.forEach((v, i) => q.querySelector(`[data-fossil="${s}${i + 1}"]`).classList.toggle('found', !!v));
   q.querySelector('[data-rock]').classList.toggle('done', !!st.rock);
@@ -1531,6 +1552,18 @@ function homeAct(e) {
   const f = e.target.closest('[data-fossil]'); if (f) return find(f.dataset.fossil, f);
   const r = e.target.closest('[data-rock]'); if (r) return takeRock(r.dataset.rock);
   const o = e.target.closest('[data-open]'); if (o) return openSite(o.dataset.open);
+  const g = e.target.closest('[data-goto]'); if (g) { const q = $(`.quarry[data-site="${g.dataset.goto}"]`); q.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); q.classList.remove('flash'); void q.offsetWidth; q.classList.add('flash'); }
+}
+/* Carte de France simplifiée (longitude, latitude) */
+const FR = [[2.37,51.05],[2.55,51.09],[3.1,50.78],[3.7,50.32],[4.15,49.97],[4.83,50.15],[4.85,49.8],[5.4,49.62],[5.9,49.5],[6.4,49.47],[7.0,49.15],[7.6,49.08],[8.2,48.98],[7.8,48.6],[7.55,48.1],[7.55,47.6],[7.0,47.5],[6.95,47.25],[6.4,46.95],[6.1,46.6],[6.15,46.25],[6.6,46.4],[6.85,46.15],[7.0,45.9],[6.8,45.7],[7.1,45.25],[6.6,45.1],[6.95,44.85],[6.85,44.5],[7.0,44.2],[7.5,43.85],[7.25,43.7],[6.9,43.45],[6.6,43.15],[5.9,43.1],[5.35,43.3],[4.85,43.35],[4.6,43.45],[4.0,43.55],[3.5,43.28],[3.05,42.95],[3.05,42.55],[3.17,42.43],[2.6,42.35],[1.9,42.45],[1.45,42.6],[0.7,42.85],[0.0,42.7],[-0.7,42.85],[-1.4,43.05],[-1.78,43.35],[-1.5,43.5],[-1.25,44.2],[-1.25,44.65],[-1.1,45.5],[-1.2,46.15],[-1.8,46.5],[-2.15,46.85],[-2.2,47.25],[-2.8,47.5],[-3.5,47.7],[-4.35,47.8],[-4.4,48.1],[-4.75,48.35],[-4.6,48.6],[-3.6,48.75],[-2.9,48.55],[-2.0,48.65],[-1.55,48.65],[-1.6,49.2],[-1.9,49.7],[-1.3,49.7],[-1.15,49.35],[-0.2,49.3],[0.2,49.45],[0.25,49.7],[1.1,49.95],[1.6,50.2],[1.6,50.75],[1.85,50.95]];
+const CORSE = [[9.4,43.0],[9.55,42.7],[9.55,42.1],[9.25,41.4],[8.8,41.6],[8.6,42.0],[8.6,42.4],[9.0,42.65],[9.3,42.7]];
+const SITEPOS = { A: [5.6, 48.75], B: [5.45, 43.6], C: [2.6, 45.05] };
+function franceMap() {
+  const k = 30, P = ([lo, la]) => [(lo + 5.4) * k * .69 + 8, (51.6 - la) * k + 8];
+  const path = L => 'M' + L.map(P).map(([x, y]) => `${fx(x)} ${fx(y)}`).join('L') + 'Z';
+  let m = `<svg viewBox="4 6 326 322" role="img" aria-label="Carte de France avec les sites A, B et C"><path d="${path(FR)}" fill="#efe3c6" stroke="#8a6a3c" stroke-width="2" stroke-linejoin="round"/><path d="${path(CORSE)}" fill="#efe3c6" stroke="#8a6a3c" stroke-width="2" stroke-linejoin="round"/>`;
+  'ABC'.split('').forEach(s => { const [x, y] = P(SITEPOS[s]); m += `<g class="mk" data-goto="${s}" tabindex="0" role="button" aria-label="${SITES[s].nom} : ${esc(SITES[s].lieu)}"><circle cx="${fx(x)}" cy="${fx(y)}" r="16" fill="#c4410f" opacity=".18"/><circle class="dot" cx="${fx(x)}" cy="${fx(y)}" r="11" fill="#c4410f" stroke="#fff" stroke-width="2.5"/><text x="${fx(x)}" y="${fx(y + 4.5)}" font-size="13" font-weight="800" text-anchor="middle" fill="#fff" pointer-events="none">${s}</text></g>`; });
+  return `<article class="mapcard"><div class="qh">Où sont les sites ?</div>${m}</svg><div class="leg">Clique sur une lettre pour retrouver la carrière.</div></article>`;
 }
 
 /* ---------- laboratoire du site ---------- */
@@ -1568,18 +1601,59 @@ function datingGrid(s) {
   const n = PREV.length;
   let h = `<div class="dtwrap"><table class="dt"><colgroup><col class="c0">${PREV.map(() => '<col>').join('')}</colgroup><thead><tr><th class="corner" rowspan="2"><span class="dir"><b>← Aujourd’hui</b><b>Passé →</b></span>Ma = millions d’années</th>${ERAS.slice().reverse().map(([nm, a, b, c]) => `<th class="era" colspan="${PERIODS.filter(p => p.from <= a && p.to >= b).length}" style="background:${c}">${nm}</th>`).join('')}</tr><tr>${PREV.map(p => `<th class="ph" style="background:${p.col}">${p.nom}<small>${fmtMa(p.to)} à ${fmtMa(p.from)} Ma</small></th>`).join('')}</tr></thead><tbody>`;
   rows.forEach(r => {
-    const on = !!d[r.k], x0 = ageX(r.range[1]) * 100, x1 = ageX(r.range[0]) * 100;
+    const on = !!d[r.k] && RA.k !== r.k, play = RA.k === r.k, x0 = ageX(r.range[1]) * 100, x1 = ageX(r.range[0]) * 100;
     const lbl = r.range[1] === 0 ? `${r.range[0]} Ma → aujourd’hui` : `${r.range[0]} → ${fmtMa(r.range[1])} Ma`;
-    h += `<tr><th class="rh"><div class="rhi"><div class="rp">${r.pic}</div><div><b>${r.lab}</b><div class="rt">${on ? r.txt(r.range) : ''}</div><button class="${on ? 'ghost' : 'primary'} rbtn" data-dat="${r.k}" ${on ? 'disabled' : ''}>${on ? '✓ Datation faite' : '☢ Datation radiochronologique'}</button></div></div></th>
-      <td class="track" colspan="${n}" style="--n:${n}">${on ? `<div class="bar ${r.rock ? 'rock' : ''}" style="left:${x0.toFixed(2)}%;width:${Math.max(x1 - x0, 1.2).toFixed(2)}%" title="${lbl}"><span>${lbl}</span></div>` : `<div class="tnone">Clique sur « Datation radiochronologique »</div>`}</td></tr>`;
+    h += `<tr><th class="rh"><div class="rhi"><div class="rp">${r.pic}</div><div><b>${r.lab}</b><div class="rt">${on ? r.txt(r.range) : ''}</div><button class="${play ? 'stop' : on ? 'ghost' : 'primary'} rbtn" data-dat="${r.k}">${play ? '■ Arrêter l’animation' : on ? '▶ Revoir l’explication' : '☢ Datation radiochronologique'}</button></div></div></th>
+      <td class="track" colspan="${n}" style="--n:${n}">${play ? `<div class="tnone">Datation en cours…</div>` : on ? `<div class="bar ${r.rock ? 'rock' : ''}" style="left:${x0.toFixed(2)}%;width:${Math.max(x1 - x0, 1.2).toFixed(2)}%" title="${lbl}"><span>${lbl}</span></div>` : `<div class="tnone">Clique sur « Datation radiochronologique »</div>`}</td></tr>`;
   });
   h += `<tr class="final"><th class="rh"><div><b>➜ Période du site</b><div class="rt">Clique sur la période où toutes les barres se superposent.</div></div></th>${PREV.map(p => `<td><button class="pcell ${st.period === p.id ? 'on' : ''}" data-period="${p.id}" aria-label="Période du site : ${p.nom}">${p.nom}</button></td>`).join('')}</tr></tbody></table><div class="friseunit">Frise simplifiée : chaque période a la même largeur (elle n’est pas à l’échelle).</div></div>`;
   return h;
 }
+/* ---------- animation : la datation radiochronologique ---------- */
+const RA = { k: null, raf: 0 };
+function refreshDating() { const w = $('.dtwrap'); if (!w || !curSite) return; const y = $('#siteBody').scrollTop; w.outerHTML = datingGrid(curSite); $('#siteBody').scrollTop = y; }
+function radioStart(k) {
+  if (RA.k) radioStop(true);
+  const st = ST.sites[curSite]; (st.dat || (st.dat = {}))[k] = 1;
+  const rock = k === 'R', F = FBY2[k], range = rock ? SITES[curSite].range : F.range;
+  const R = rng(hash('atoms' + k)), N = 30, atoms = [];
+  while (atoms.length < N) { const x = 40 + R() * 200, y = 34 + R() * 112; if (((x - 140) / 104) ** 2 + ((y - 90) / 60) ** 2 < 1 && atoms.every(a => Math.hypot(a.x - x, a.y - y) > 17)) atoms.push({ x, y, t: -Math.log(1 - R()) / 1.2 }); }
+  const steps = (rock ? [] : [[0, `On ne peut pas dater directement un fossile : on date <b>les roches dans lesquelles on le trouve</b>.`]])
+    .concat([[0, `Une roche contient des <b>atomes radioactifs</b> <span style="color:#d4471a">●</span>.`],
+      [1, `Avec le temps, ils se transforment en <b>atomes stables</b> <span style="color:#7d7f86">●</span>, toujours à la <b>même vitesse</b> : c’est une horloge naturelle.`],
+      [2, `Au laboratoire, on mesure la part d’atomes transformés : plus elle est grande, plus la roche est <b>vieille</b>.`],
+      [3, `Résultat : ${rock ? 'roche formée' : 'fossile présent'} ${ageTxt(range)}.`]]);
+  const DUR = 3000, total = steps.length * DUR;
+  const box = $('#radio');
+  box.innerHTML = `<div class="rh2"><span>☢ La datation radiochronologique</span><button class="ghost" data-rstop>Arrêter ✕</button></div>
+    <svg viewBox="0 0 400 190"><ellipse cx="140" cy="92" rx="112" ry="68" fill="#a59882" stroke="#6e624f" stroke-width="3"/><ellipse cx="140" cy="86" rx="100" ry="56" fill="#b7aa93"/>
+    ${atoms.map((a, i) => `<circle id="at${i}" cx="${fx(a.x)}" cy="${fx(a.y)}" r="6.5" fill="#d4471a" stroke="#fff" stroke-width="1.5"/>`).join('')}
+    <g id="rclock" transform="translate(320 70)"><circle r="40" fill="#fff" stroke="#2a251f" stroke-width="3"/><path id="rhand" d="M0 0V-30" stroke="#c4410f" stroke-width="4" stroke-linecap="round"/><circle r="4" fill="#2a251f"/></g>
+    <text id="rtime" x="320" y="138" font-size="13" text-anchor="middle" fill="#2a251f" font-weight="700"></text>
+    <text id="rcount" x="140" y="180" font-size="13.5" text-anchor="middle" fill="#2a251f" font-weight="700"></text></svg>
+    <div class="cap" id="rcap"></div><div class="prog"><i id="rprog"></i></div>`;
+  box.classList.add('show'); RA.k = k; refreshDating();
+  const t0 = performance.now(); let last = -1;
+  const tick = now => {
+    const t = Math.max(0, now - t0); if (t >= total + 1200) return radioStop();
+    const si = Math.min(steps.length - 1, Math.floor(t / DUR)), [ph, txt] = steps[si];
+    if (si !== last) { $('#rcap').innerHTML = txt; last = si; }
+    const tl = ph === 1 ? (t - si * DUR) / DUR : ph >= 2 ? 1 : 0;   /* temps écoulé (unités arbitraires) */
+    let left = 0; atoms.forEach((a, i) => { const dec = a.t < tl; if (!dec) left++; $('#at' + i).setAttribute('fill', dec ? '#7d7f86' : '#d4471a'); });
+    $('#rhand').setAttribute('transform', `rotate(${tl * 720})`);
+    $('#rtime').textContent = ph === 0 ? 'Formation de la roche' : ph === 1 ? 'Des millions d’années passent…' : 'Aujourd’hui';
+    $('#rcount').textContent = ph >= 2 ? `${N - left} atomes transformés sur ${N}` : '';
+    $('#rprog').style.width = Math.min(100, t / total * 100) + '%';
+    RA.raf = requestAnimationFrame(tick);
+  };
+  RA.raf = requestAnimationFrame(tick);
+}
+function radioStop(silent) { cancelAnimationFrame(RA.raf); RA.k = null; $('#radio').classList.remove('show'); if (!silent) refreshDating(); }
+document.addEventListener('click', e => { if (e.target.closest('[data-rstop]')) radioStop(); });
 function siteAct(e) {
   const i = e.target.closest('[data-ident]'); if (i) return openIdent(i.dataset.ident);
   const st = ST.sites[curSite];
-  const dt = e.target.closest('[data-dat]'); if (dt) { (st.dat || (st.dat = {}))[dt.dataset.dat] = 1; save(); const y = $('#siteBody').scrollTop; $('.dtwrap').outerHTML = datingGrid(curSite); $('#siteBody').scrollTop = y; return; }
+  const dt = e.target.closest('[data-dat]'); if (dt) { const k = dt.dataset.dat; if (RA.k === k) radioStop(); else radioStart(k); return; }
   const p = e.target.closest('[data-period]'); if (p) { st.period = p.dataset.period; save(); $$('#siteBody .pcell').forEach(b => b.classList.toggle('on', b.dataset.period === st.period)); afterSiteChange(); return; }
   const v = e.target.closest('[data-senv]'); if (v && !v.disabled) { st.env = v.dataset.senv; save(); $$('#siteBody [data-senv]').forEach(b => b.classList.toggle('on', b.dataset.senv === st.env)); afterSiteChange(); }
 }
@@ -1638,7 +1712,7 @@ function openBilan() {
 /* ---------- fenêtres ---------- */
 const ORDER = ['#mIdent', '#mHelp', '#mBilan', '#mSite'];
 function show(id) { $(id).classList.add('show'); document.body.classList.add('modal-open'); }
-function hide(id) { $(id).classList.remove('show'); if (!$('.modal.show')) document.body.classList.remove('modal-open'); if (id === '#mSite') { updateQuarry(curSite); updateHeader(); } }
+function hide(id) { $(id).classList.remove('show'); if (!$('.modal.show')) document.body.classList.remove('modal-open'); if (id === '#mSite') { if (RA.k) radioStop(true); updateQuarry(curSite); updateHeader(); } }
 document.addEventListener('click', e => {
   const c = e.target.closest('[data-close]'); if (c) { hide('#' + c.closest('.modal').id); return; }
   if (e.target.classList && e.target.classList.contains('modal')) hide('#' + e.target.id);
