@@ -40,7 +40,7 @@ header button.glow{background:var(--ok);border-color:var(--ok);animation:pulse 1
 .mission b{color:#a8460f}
 .mission .sub{font-size:14px;color:var(--ink2);margin-top:2px}
 /* ---- carrières ---- */
-#quarries{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;padding:0 18px 18px;max-width:1700px;margin:0 auto}
+#quarries{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:0 18px 18px;max-width:1400px;margin:0 auto}
 @media (max-width:1100px){#quarries{grid-template-columns:repeat(2,minmax(0,1fr));max-width:900px}}
 .quarry{background:var(--card);border-radius:14px;box-shadow:0 2px 0 #d6c9b1,0 6px 18px rgba(60,40,10,.12);overflow:hidden;display:flex;flex-direction:column;border:3px solid transparent;transition:border-color .3s}
 .quarry.complete{border-color:#e0a548}
@@ -154,7 +154,7 @@ header button.glow{background:var(--ok);border-color:var(--ok);animation:pulse 1
 #identFoot .ctext{flex:1;font-size:15px;line-height:1.4}
 /* ---- bilan / aide ---- */
 .hint{margin:0 0 10px;color:var(--ink2)}
-.bil4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.bil4{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .bil4 section{border:2px solid var(--line);border-radius:12px;padding:8px 12px;background:#fff}
 .bil4 section.ok{border-color:var(--ok)}
 .bil4 h3{margin:0 0 6px;font-size:16px}
@@ -1365,8 +1365,7 @@ Object.assign(EICON, {
 const SITES = {
   A: { nom: 'Site A', lieu: 'Carrière de Montcorbel', roche: 'Calcaire blanc, dur', range: [170, 140] },
   B: { nom: 'Site B', lieu: 'Carrière de Saint-Aubry', roche: 'Calcaire fin, en plaquettes', range: [40, 20] },
-  C: { nom: 'Site C', lieu: 'Carrière de la Rouvière', roche: 'Argile grise, tendre', range: [30, 5] },
-  D: { nom: 'Site D', lieu: 'Carrière de Bellefontaine', roche: 'Marne gris-bleu, tendre', range: [100, 60] }
+  C: { nom: 'Site C', lieu: 'Carrière de la Rouvière', roche: 'Argile grise, tendre', range: [30, 5] }
 };
 const FOSSILS2 = [
   { id: 'A1', site: 'A', draw: drawA1, taille: '≈ 14 cm', range: [201, 100], qui: 'ce type de corail',
@@ -1386,13 +1385,7 @@ const FOSSILS2 = [
   { id: 'C2', site: 'C', draw: drawC2, taille: '≈ 12 cm', range: [130, 0], qui: 'ce type de bois (arbre à fleurs)',
     obs: ['Morceau de pierre qui a l’aspect du bois', 'Coupé, il montre des cercles emboîtés : des cernes'] },
   { id: 'C3', site: 'C', draw: drawC3, taille: '≈ 11 cm', range: [250, 0], qui: 'ce groupe de fougères',
-    obs: ['Morceau de feuille formé d’un axe et de folioles', 'Folioles allongées, à bord lisse, arrondies au bout', 'Folioles attachées directement sur l’axe central'] },
-  { id: 'D1', site: 'D', draw: drawD1, taille: '≈ 4,5 cm', range: [400, 66], qui: 'les ammonites',
-    obs: ['Coquille enroulée en spirale, dans un seul plan', 'Côtes sur la coquille', 'Lignes sinueuses : traces des cloisons qui séparaient des loges'] },
-  { id: 'D2', site: 'D', draw: drawDentF, taille: '≈ 4 cm', range: [125, 0], qui: 'ce groupe de poissons',
-    obs: ['Dent triangulaire, aplatie, aux bords tranchants', 'Couverte d’émail brillant', 'Racine en deux parties à la base'] },
-  { id: 'D3', site: 'D', draw: drawCrinoidF, taille: '≈ 12 cm', range: [480, 0], qui: 'ce groupe d’animaux',
-    obs: ['Longue tige faite de petits disques empilés', 'En haut : une petite coupe et 10 bras', 'Bras garnis de petites branches, comme des plumes'] }
+    obs: ['Morceau de feuille formé d’un axe et de folioles', 'Folioles allongées, à bord lisse, arrondies au bout', 'Folioles attachées directement sur l’axe central'] }
 ];
 const CATS = [['tous', 'Tous'], ['moll', 'Coquillages'], ['pois', 'Poissons et reptiles'], ['plant', 'Plantes'], ['autre', 'Autres animaux']];
 /* Êtres vivants actuels — ordre mélangé, pièges compris */
@@ -1456,7 +1449,7 @@ const EBY = Object.fromEntries(ENVS.map(e => [e.id, e]));
 const PBY = Object.fromEntries(PERIODS.map(p => [p.id, p]));
 
 /* ---------- état ---------- */
-const blank = () => ({ sites: Object.fromEntries('ABCD'.split('').map(s => [s, { found: [0, 0, 0], rock: 0, period: '', env: '', grid: {} }])), fos: {} });
+const blank = () => ({ sites: Object.fromEntries('ABC'.split('').map(s => [s, { found: [0, 0, 0], rock: 0, period: '', env: '', grid: {} }])), fos: {} });
 function load() { try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && v.sites && v.fos) return v; } catch (e) { } return blank(); }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(ST)); } catch (e) { } }
 let ST = load();
@@ -1487,8 +1480,8 @@ const ageTxt = r => r[1] === 0 ? `de <b>${r[0]} millions d’années à aujourd�
 
 /* ---------- accueil ---------- */
 function renderHome() {
-  $('#quarries').innerHTML = 'ABCD'.split('').map(s => `<article class="quarry" data-site="${s}"><div class="qh"><span class="plate">${SITES[s].nom}</span><span class="lieu">${esc(SITES[s].lieu)}</span><span class="state"></span></div><div class="scene">${drawQuarry(s)}</div><div class="qf" id="qf${s}"></div></article>`).join('');
-  'ABCD'.split('').forEach(updateQuarry); updateHeader();
+  $('#quarries').innerHTML = 'ABC'.split('').map(s => `<article class="quarry" data-site="${s}"><div class="qh"><span class="plate">${SITES[s].nom}</span><span class="lieu">${esc(SITES[s].lieu)}</span><span class="state"></span></div><div class="scene">${drawQuarry(s)}</div><div class="qf" id="qf${s}"></div></article>`).join('');
+  'ABC'.split('').forEach(updateQuarry); updateHeader();
 }
 function updateQuarry(s) {
   const q = $(`.quarry[data-site="${s}"]`), st = ST.sites[s];
@@ -1500,7 +1493,7 @@ function updateQuarry(s) {
   $('#qf' + s).innerHTML = `<span class="chip ${nf === 3 ? 'ok' : ''}">${ICON.loupe} Fossiles ${nf}/3</span><span class="chip ${st.rock ? 'ok' : ''}">${ICON.hammer} Roche ${st.rock ? 1 : 0}/1</span>` +
     (c ? `<button class="primary open" data-open="${s}">${ICON.flask} ${d ? 'Revoir le labo' : 'Ouvrir le labo'}</button>` : '');
 }
-function updateHeader() { const n = 'ABCD'.split('').filter(siteDone).length; $('#prog').innerHTML = `Sites terminés : <b>${n}/4</b>`; $('#btnBilan').classList.toggle('glow', n === 4); }
+function updateHeader() { const n = 'ABC'.split('').filter(siteDone).length; $('#prog').innerHTML = `Sites terminés : <b>${n}/3</b>`; $('#btnBilan').classList.toggle('glow', n === 3); }
 
 let tT; function toast(html, ok) { const t = $('#toast'); t.innerHTML = html; t.className = 'show' + (ok ? ' ok' : ''); clearTimeout(tT); tT = setTimeout(() => t.className = '', 2800); }
 function progressMsg(s, title) {
@@ -1565,7 +1558,7 @@ function siteAct(e) {
 }
 function afterSiteChange() {
   renderSentence(); updateQuarry(curSite); updateHeader();
-  if (siteDone(curSite)) toast(`<b>${SITES[curSite].nom} terminé !</b><br>${'ABCD'.split('').filter(siteDone).length}/4 sites terminés.`, true);
+  if (siteDone(curSite)) toast(`<b>${SITES[curSite].nom} terminé !</b><br>${'ABC'.split('').filter(siteDone).length}/3 sites terminés.`, true);
 }
 
 /* ---------- identification par actualisme ---------- */
@@ -1605,13 +1598,13 @@ function identAct(e) {
 /* ---------- bilan ---------- */
 function openBilan() {
   let h = `<p class="hint">Recopie ces résultats sur ta fiche d’activité.</p><div class="bil4">`;
-  for (const s of 'ABCD') {
+  for (const s of 'ABC') {
     const st = ST.sites[s];
     h += `<section class="${siteDone(s) ? 'ok' : ''}"><h3>${SITES[s].nom} <small>${esc(SITES[s].lieu)}</small></h3><table><thead><tr><th>Fossile</th><th>Ressemble à</th><th>Milieu de vie</th></tr></thead><tbody>`;
     FOSSILS2.filter(f => f.site === s).forEach(F => { const a = ST.fos[F.id] || {}; h += `<tr><td>${F.code}</td><td>${OBY2[a.org] ? esc(OBY2[a.org].nom) : '—'}</td><td>${EBY[a.env] ? esc(EBY[a.env].nom) : '—'}</td></tr>`; });
     h += `</tbody></table><p><b>Roche datée</b> ${ageTxt(SITES[s].range)} — <b>période du site :</b> ${st.period ? PBY[st.period].nom : '—'}</p><p><b>Environnement :</b> ${EBY[st.env] ? esc(EBY[st.env].nom) : '—'}</p></section>`;
   }
-  h += `</div><h3 class="fh">Les quatre sites sur la frise des temps géologiques</h3>${frise('ABCD'.split('').filter(k => ST.sites[k].period).map(k => { const P = PBY[ST.sites[k].period]; return [k, (P.from + P.to) / 2]; }))}`;
+  h += `</div><h3 class="fh">Les trois sites sur la frise des temps géologiques</h3>${frise('ABC'.split('').filter(k => ST.sites[k].period).map(k => { const P = PBY[ST.sites[k].period]; return [k, (P.from + P.to) / 2]; }))}`;
   $('#bilanBody').innerHTML = h; show('#mBilan');
 }
 
