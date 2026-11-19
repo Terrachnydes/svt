@@ -11,7 +11,8 @@ Il commence par `_`, donc GitHub Pages ne le publie pas.
   - `sites` : un site par entrée : `titre`, `theme` (une valeur de `themes`), `fichier` (nom du fichier à la racine du dépôt), `artifact` (lien Claude, ou `null` si le site n'existe que sur GitHub), `version` (dernière version de l'artifact copiée sur GitHub), `verifie` (date de la dernière vérification), `conversation` (facultatif : lien de la conversation Claude où le site se modifie ; sinon le bouton « Modifier avec Claude » ouvre l'artifact).
   - `ignores` : artifacts à ne jamais publier (documents Claude, outils privés, la page récap elle-même).
   - `en_attente` : nouveaux sites repérés, pas encore validés par Erwan.
-- `build_hub.py` : refait les aperçus des fichiers donnés en argument et régénère `mes-sites.html`.
+- `build_hub.py` : refait les aperçus des fichiers donnés en argument et régénère `mes-sites.html`. Il lance aussi `sans_memoire.py` sur tous les sites.
+- `sans_memoire.py` : ajoute en tête de chaque site un script qui vide `localStorage`/`sessionStorage` à chaque ouverture. Erwan ne veut **aucune mémoire** dans ses sites (sinon les réponses d'un élève restent pour le suivant, et une modification du site peut ne pas apparaître). Une page recopiée depuis son artifact le perd : `build_hub.py` le remet automatiquement. Ne jamais l'enlever.
 - `tpl.html` : modèle de la page récap.
 - `apercus/` : captures des sites (webp).
 

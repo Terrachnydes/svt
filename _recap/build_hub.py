@@ -93,6 +93,12 @@ async def captures(fichiers):
 def main():
     os.makedirs(APERCUS, exist_ok=True)
     cfg = json.load(open(os.path.join(HERE, "sites.json"), encoding="utf-8"))
+    # Aucun site ne garde en mémoire les réponses des élèves (voir sans_memoire.py)
+    sys.path.insert(0, HERE); import sans_memoire
+    for s_ in cfg["sites"]:
+        p_ = os.path.join(REPO, s_["fichier"])
+        if os.path.exists(p_) and sans_memoire.traite(p_) == "ajouté":
+            print("mémoire désactivée :", s_["fichier"])
     a_faire = set(a for a in sys.argv[1:] if a.endswith(".html"))
     for s in cfg["sites"]:
         if not os.path.exists(os.path.join(APERCUS, slug(s["fichier"]) + ".webp")):
