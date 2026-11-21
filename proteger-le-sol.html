@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- sans-memoire --><script>/* Aucune memoire : le site repart de zero a chaque ouverture */try{localStorage.clear();sessionStorage.clear()}catch(e){}</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protéger le sol – SVT 6e</title>
+<style>
+:root{--bg:#f4efe6;--ink:#2b2118;--brun:#7a4b26}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Trebuchet MS","Segoe UI",Ubuntu,"DejaVu Sans",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+.wrap{max-width:1240px;margin:0 auto;padding:16px}
+.top{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;justify-content:space-between}
+.niveau{display:inline-block;background:var(--brun);color:#fff;border-radius:999px;padding:4px 12px;font-size:.9rem;font-weight:700}
+h1{font-size:clamp(1.7rem,4.5vw,2.6rem);margin:.15em 0 0;color:#4a2e14}
+.probleme{flex:1 1 320px;max-width:560px;background:#fff7d6;border-left:7px solid #f0b400;border-radius:12px;padding:10px 14px;font-size:1.08rem}
+.probleme b{display:block;font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;color:#9a6b00}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0}
+.tab{flex:1 1 280px;border:3px solid transparent;border-radius:14px 14px 0 0;padding:10px 14px;font:inherit;font-weight:800;font-size:1.05rem;cursor:pointer;display:flex;align-items:center;gap:10px;opacity:.6;transition:opacity .2s}
+.tab span{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#fff;flex:0 0 30px}
+.tab.t0{background:#b0412a;color:#fff}.tab.t0 span{color:#b0412a}
+.tab.t1{background:#2e8b4a;color:#fff}.tab.t1 span{color:#2e8b4a}
+.tab.on{opacity:1;box-shadow:0 -3px 10px rgba(0,0,0,.15)}
+.tab:hover{opacity:.9}
+.panel{border-radius:0 0 18px 18px;padding:12px;background:#fff}
+.panel.p0{border-top:6px solid #b0412a}.panel.p1{border-top:6px solid #2e8b4a}
+.panel[hidden]{display:none}
+.intro{background:#e5f5e8;border-left:6px solid #2e8b4a;border-radius:10px;padding:8px 12px;margin-bottom:10px}
+.consigne{font-size:1.05rem;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between}
+.compteur{background:#f4efe6;border-radius:999px;padding:5px 14px;font-weight:700}
+.compteur.fini{background:#2e9e4f;color:#fff}
+.scene-box{margin-top:10px;border-radius:14px;overflow:hidden;box-shadow:0 4px 18px rgba(74,46,20,.2)}
+.scene{display:block;width:100%;height:auto;background:#bfe6ff}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 2px}
+.btns button{flex:1 1 150px;border:0;border-radius:12px;padding:10px 8px;font:inherit;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 2px 0 rgba(0,0,0,.2);transition:transform .15s}
+.btns button:hover{transform:translateY(-2px)}
+.btns .n{background:#fff;border-radius:50%;width:24px;height:24px;flex:0 0 24px;display:inline-flex;align-items:center;justify-content:center;font-size:.9rem}
+.btns .vu::after{content:"✓"}
+footer{font-size:.85rem;color:#7d6a58;text-align:center;padding:12px 0 20px}
+
+/* --- scène --- */
+.slbl{font-size:15px;font-weight:700;fill:#fff;paint-order:stroke;stroke:#2b1a0c;stroke-width:4px}
+.hot{cursor:pointer}
+.hot:focus{outline:none}
+.hot:focus-visible .disc circle{stroke:#000}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 1.8s ease-out infinite}
+@keyframes pulse{from{transform:scale(1);opacity:.85}to{transform:scale(1.9);opacity:0}}
+.disc{transform-box:fill-box;transform-origin:center;transition:transform .2s}
+.hot:hover .disc{transform:scale(1.15)}
+.hot .check{display:none}.hot.vu .check{display:inline}.hot.vu .pulse{animation:none;opacity:0}
+.drive{animation:drive var(--t) ease-in-out infinite alternate}
+@keyframes drive{to{transform:translateX(var(--dist))}}
+.spin{transform-box:fill-box;transform-origin:center;animation:spin var(--t) ease-in-out infinite alternate}
+@keyframes spin{to{transform:rotate(var(--rot))}}
+.spinc{transform-box:fill-box;transform-origin:center;animation:spinc 1.2s linear infinite}
+@keyframes spinc{to{transform:rotate(360deg)}}
+.smoke{animation:smoke 2.4s ease-out infinite}
+@keyframes smoke{0%{transform:translate(0,0) scale(.6);opacity:0}20%{opacity:.55}100%{transform:translate(-16px,-46px) scale(1.6);opacity:0}}
+.steam{animation:steam 3s ease-out infinite}
+@keyframes steam{0%{transform:translate(0,0);opacity:0}25%{opacity:.6}100%{transform:translate(6px,-34px);opacity:0}}
+.mist{animation:mist 1s ease-in-out infinite}
+@keyframes mist{0%,100%{opacity:.25}50%{opacity:.6}}
+.fall{animation:fall 1.3s linear infinite}
+@keyframes fall{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(var(--d));opacity:.8}}
+.sink{animation:sink 7s linear infinite}
+@keyframes sink{0%{transform:translateY(0);opacity:0}10%{opacity:1}85%{opacity:1}100%{transform:translateY(var(--d));opacity:0}}
+.rain{animation:rain .9s linear infinite}
+@keyframes rain{0%{transform:translateY(0);opacity:0}10%{opacity:.9}100%{transform:translateY(var(--d));opacity:.9}}
+.throw{animation:throw 1.6s ease-out infinite}
+@keyframes throw{0%{transform:translate(0,0);opacity:0}10%{opacity:1}50%{transform:translate(calc(var(--dx)*.5),calc(var(--dy)*.5 - 28px))}100%{transform:translate(var(--dx),var(--dy));opacity:1}}
+.press{animation:press 1.2s ease-in-out infinite}
+@keyframes press{0%,100%{transform:translateY(0)}50%{transform:translateY(9px)}}
+.infil{animation:infil 2s ease-in infinite}
+@keyframes infil{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(40px);opacity:0}}
+.sway{transform-box:fill-box;transform-origin:50% 100%;animation:sway 3s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.wig{animation:wig 1.6s ease-in-out infinite}
+@keyframes wig{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+.walk{animation:walk 4s ease-in-out infinite alternate}
+@keyframes walk{to{transform:translateX(14px)}}
+.hop{animation:hop 1.8s ease-in-out infinite}
+@keyframes hop{0%,60%,100%{transform:translateY(0)}75%{transform:translateY(-7px)}}
+.cloud{animation:cloud var(--ct,34s) ease-in-out infinite alternate}
+@keyframes cloud{to{transform:translateX(80px)}}
+.rays{transform-box:fill-box;transform-origin:center;animation:rays 24s linear infinite}
+@keyframes rays{to{transform:rotate(360deg)}}
+.blink{animation:blink 3s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:.65}}
+.wave{stroke-dasharray:18 14;animation:wave 3s linear infinite}
+@keyframes wave{to{stroke-dashoffset:-64}}
+.shine{animation:shine 2.5s ease-in-out infinite}
+@keyframes shine{0%,100%{opacity:.45}50%{opacity:.95}}
+.fly{animation:fly var(--t) linear infinite}
+@keyframes fly{from{transform:translateX(-80px)}to{transform:translateX(1280px)}}
+.flap{transform-box:fill-box;transform-origin:center;animation:flap .45s ease-in-out infinite alternate}
+@keyframes flap{to{transform:scaleY(-.5)}}
+.wing{transform-box:fill-box;transform-origin:50% 50%;animation:wing .25s ease-in-out infinite alternate}
+@keyframes wing{to{transform:scaleX(.25)}}
+.graze{transform-box:fill-box;transform-origin:0% 40%;animation:graze 5s ease-in-out infinite}
+@keyframes graze{0%,35%,100%{transform:rotate(0)}50%,85%{transform:rotate(32deg)}}
+.swim{animation:swim 6s ease-in-out infinite alternate}
+@keyframes swim{to{transform:translateX(60px)}}
+
+/* --- fenêtre --- */
+.mbg{position:fixed;inset:0;background:rgba(30,18,6,.55);display:none;align-items:center;justify-content:center;padding:12px;z-index:50}
+.mbg.open{display:flex}
+.modal{background:#fff;border-radius:18px;width:100%;max-width:800px;max-height:calc(100vh - 24px);overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.35);animation:pop .3s ease-out}
+@keyframes pop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+.mh{display:flex;align-items:center;gap:12px;padding:12px 14px;color:#fff;position:sticky;top:0;z-index:2}
+.mh h2{margin:0;font-size:clamp(1.15rem,3.5vw,1.6rem);flex:1}
+.mnum{background:#fff;border-radius:50%;width:38px;height:38px;flex:0 0 38px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem}
+.mx{background:rgba(255,255,255,.25);border:0;color:#fff;font-size:1.6rem;width:40px;height:40px;border-radius:50%;cursor:pointer;flex:0 0 40px}
+.manim{background:#f6f2ea;padding:10px 14px 0}
+.manim svg{display:block;width:100%;height:auto;max-height:300px;border-radius:12px}
+.cap{margin:6px 14px 0;font-style:italic;color:#6b5a48;text-align:center;font-size:.98rem}
+.tog{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:8px 0 2px}
+.tog button{border:2px solid #8a6a4a;background:#fff;color:#4a2e14;border-radius:999px;padding:6px 14px;font:inherit;font-weight:700;cursor:pointer}
+.tog button.on{background:#4a2e14;color:#fff;border-color:#4a2e14}
+.cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:12px 14px}
+.card{background:#f7f3ec;border-radius:12px;padding:10px 12px;font-size:1rem}
+.card h3{margin:0 0 4px;font-size:1rem}
+.card.prot{grid-column:1/-1;background:#e2f5e4;border-left:6px solid #2e9e4f;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between}
+.card.prot>div{flex:1 1 300px}
+.card.prot h3{color:#1f7a3a}
+.card.prot.pb{background:#fbe6e0;border-left-color:#b0412a}.card.prot.pb h3{color:#b0412a}
+.link{border:0;border-radius:10px;padding:8px 12px;font:inherit;font-weight:700;color:#fff;cursor:pointer;background:#2e8b4a}
+.pb .link{background:#b0412a}
+.mf{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:0 14px 14px}
+.mf button{border:0;border-radius:10px;padding:9px 14px;font:inherit;font-weight:700;background:#efe6d8;color:#4a2e14;cursor:pointer}
+.mf button:hover{background:#e3d5bf}
+@media (max-width:820px){.cards{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.cards{grid-template-columns:1fr}.wrap{padding:10px}.panel{padding:8px}.btns button{flex-basis:130px;font-size:.95rem}.tab{font-size:.95rem}}
+
+/* mini-animations */
+.lbl{font-size:13px;font-weight:700;fill:#fff;paint-order:stroke;stroke:#2b1a0c;stroke-width:3px}
+.lbd{font-size:13px;font-weight:700;fill:#4a2e14}
+.np{animation:np 7s linear infinite}
+@keyframes np{0%,35%{fill:#4aa3df}100%{fill:#8b72c4}}
+.np2{animation:np2 8s linear infinite}
+@keyframes np2{0%,35%{fill:#4aa3df}100%{fill:#5fae7b}}
+.wormP{stroke:#e98a9b;animation:wp 7s linear infinite}
+@keyframes wp{0%,45%{stroke:#e98a9b}75%,100%{stroke:#9a9a9a}}
+.grow{transform-box:fill-box;transform-origin:50% 100%;animation:grow 8s ease-out infinite}
+@keyframes grow{0%{transform:scaleY(.55)}60%,100%{transform:scaleY(1)}}
+.drift{animation:drift 8s ease-in infinite}
+@keyframes drift{0%,30%{transform:translate(0,0);opacity:0}38%{opacity:1}92%{opacity:1}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
+.algae{transform-box:fill-box;transform-origin:50% 100%;animation:algae 8s ease-out infinite}
+@keyframes algae{0%,55%{transform:scale(0)}100%{transform:scale(1)}}
+.roll{animation:roll 7s linear infinite}
+@keyframes roll{0%{transform:translateX(-70px)}40%,100%{transform:translateX(270px)}}
+.wrot{transform-box:fill-box;transform-origin:center;animation:wrot 7s linear infinite}
+@keyframes wrot{0%{transform:rotate(0)}40%,100%{transform:rotate(700deg)}}
+.squash{transform-box:fill-box;transform-origin:50% 100%;animation:squash 7s ease-in-out infinite}
+@keyframes squash{0%,12%{transform:scaleY(1)}40%,100%{transform:scaleY(.6)}}
+.fat{transform-box:fill-box;transform-origin:center;animation:fat 7s ease-in-out infinite}
+@keyframes fat{0%,12%{transform:scale(1)}40%,100%{transform:scale(1.45)}}
+.thru{animation:thru 2.6s linear infinite}
+@keyframes thru{0%{transform:translateY(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(150px);opacity:0}}
+.stop{animation:stop 7s linear infinite}
+@keyframes stop{0%,48%{transform:translateY(0);opacity:0}52%{opacity:1}64%,100%{transform:translateY(var(--d));opacity:0}}
+.flaque{transform-box:fill-box;transform-origin:center;animation:flaque 7s ease-out infinite}
+@keyframes flaque{0%,55%{transform:scaleX(0)}90%,100%{transform:scaleX(1)}}
+.crit,.crit2{transition:opacity .8s,transform .8s;transform-box:fill-box;transform-origin:center}
+.bio.abime .crit:not(.keep),.bio.abime .crit2{opacity:0;transform:scale(.3)}
+.bio .sol{transition:fill .8s}
+.bio.abime .sol{fill:#9b7d5e}
+.eros .river{transition:fill .8s}
+.eros:not(.cv) .river{fill:#9a6a3a}
+.eros .nu,.eros .cvg{transition:opacity .6s}
+.eros.cv .nu{opacity:0}
+.eros:not(.cv) .cvg{opacity:0}
+.down{animation:down 8s ease-in infinite}
+@keyframes down{0%,10%{transform:translate(0,0);opacity:0}18%{opacity:1}80%{opacity:1}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
+.thick{animation:thick 8s ease-out infinite}
+@keyframes thick{0%,20%{transform:translateY(0)}100%{transform:translateY(-14px)}}
+.rot g.yr{opacity:0;transition:opacity .7s}
+.rot.y0 g.y0,.rot.y1 g.y1,.rot.y2 g.y2{opacity:1}
+
+
+.bob{animation:bob .35s ease-in-out infinite alternate}
+@keyframes bob{to{transform:translateY(-1.6px)}}
+.dust{animation:dust 1.4s ease-out infinite}
+@keyframes dust{0%{transform:translate(0,0) scale(.4);opacity:0}20%{opacity:.55}100%{transform:translate(-40px,-16px) scale(1.8);opacity:0}}
+.splash{transform-box:fill-box;transform-origin:center;animation:splash .9s linear infinite}
+@keyframes splash{0%,82%{transform:scale(.2);opacity:0}88%{opacity:.9}100%{transform:scale(1.7);opacity:0}}
+.drift2{animation:drift2 6s ease-out infinite}
+@keyframes drift2{0%{transform:translate(0,0) scale(.6);opacity:0}25%{opacity:.45}100%{transform:translate(150px,-24px) scale(1.6);opacity:0}}
+.tw{animation:tw 2.4s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:0}50%{opacity:.9}}
+.ray{animation:ray 6s ease-in-out infinite}
+@keyframes ray{0%,100%{opacity:.1}50%{opacity:.28}}
+.in{transform-box:fill-box;transform-origin:center;animation:popin .55s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes popin{from{transform:scale(0)}to{transform:scale(1)}}
+.panel:not([hidden]){animation:fadein .45s ease-out}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.swish{transform-box:fill-box;transform-origin:50% 0;animation:swish 2.2s ease-in-out infinite}
+@keyframes swish{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(14deg)}}
+.glow{animation:glow 2s ease-in-out infinite}
+@keyframes glow{0%,100%{opacity:.12}50%{opacity:.38}}
+.ripple{stroke-dasharray:10 12;animation:wave 2.5s linear infinite}
+.die{transform-box:fill-box;transform-origin:center;animation:die 6s ease-in infinite}
+@keyframes die{0%,35%{transform:translateY(0) rotate(0);opacity:1}55%,90%{transform:translateY(28px) rotate(180deg);opacity:.55}100%{transform:translateY(28px) rotate(180deg);opacity:0}}
+.fishd{transform-box:fill-box;transform-origin:center;animation:fishd 8s ease-in-out infinite}
+@keyframes fishd{0%,50%{transform:translateX(0);opacity:1}80%,100%{transform:translate(-10px,-8px) rotate(180deg);opacity:.35}}
+.leaf{transform-box:fill-box;transform-origin:center;animation:leaf 4s ease-in infinite}
+@keyframes leaf{0%{transform:translate(0,0) rotate(0);opacity:0}10%{opacity:1}50%{transform:translate(14px,calc(var(--dy)*.5)) rotate(140deg)}90%{opacity:1}100%{transform:translate(-6px,var(--dy)) rotate(300deg);opacity:0}}
+.rise{animation:rise 3s ease-out infinite}
+@keyframes rise{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(-36px);opacity:0}}
+.airout{animation:airout 7s ease-in-out infinite}
+@keyframes airout{0%,12%{opacity:.85}35%,100%{opacity:0}}
+.gr{transform-box:fill-box;transform-origin:50% 100%;animation:gr 1.4s ease-out both}
+@keyframes gr{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.grr{transform-box:fill-box;transform-origin:50% 0;animation:gr 1.8s ease-out both}
+.mbg.open .manim svg{animation:zoomin .5s ease-out}
+@keyframes zoomin{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
+.card{animation:slidein .45s ease-out both}
+.card:nth-child(2){animation-delay:.08s}.card:nth-child(3){animation-delay:.16s}.card:nth-child(4){animation-delay:.26s}
+@keyframes slidein{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+.mnum.go{animation:bounce .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes bounce{from{transform:scale(0) rotate(-90deg)}to{transform:none}}
+.manim{background:linear-gradient(#f6f2ea,#efe6d6)}
+.manim svg{box-shadow:0 3px 12px rgba(74,46,20,.18)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:0s!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+<!-- dégradés et motifs communs -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="defs">
+  <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3d9be0"/><stop offset=".55" stop-color="#9fd7f6"/><stop offset="1" stop-color="#fdf1d3"/></linearGradient>
+  <radialGradient id="gGlow"><stop offset="0" stop-color="#fff6c4" stop-opacity=".9"/><stop offset="1" stop-color="#fff6c4" stop-opacity="0"/></radialGradient>
+  <radialGradient id="gSun" cx=".4" cy=".4"><stop offset="0" stop-color="#fff3a6"/><stop offset="1" stop-color="#ffc629"/></radialGradient>
+  <linearGradient id="gFar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b6d8a8"/><stop offset="1" stop-color="#cfe5bf"/></linearGradient>
+  <linearGradient id="gMid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8cc274"/><stop offset="1" stop-color="#a9d18f"/></linearGradient>
+  <linearGradient id="gHum" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a180a"/><stop offset="1" stop-color="#46301b"/></linearGradient>
+  <linearGradient id="gTer" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6d4426"/><stop offset="1" stop-color="#9a6e47"/></linearGradient>
+  <linearGradient id="gSub" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a7865f"/><stop offset="1" stop-color="#8f7759"/></linearGradient>
+  <linearGradient id="gNap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5fb1e6"/><stop offset="1" stop-color="#215f93"/></linearGradient>
+  <linearGradient id="gRiv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6cc0ef"/><stop offset="1" stop-color="#2b78b4"/></linearGradient>
+  <linearGradient id="gPol" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9b59b6"/><stop offset=".6" stop-color="#9b59b6"/><stop offset="1" stop-color="#3fae5a"/></linearGradient>
+  <radialGradient id="gShadow"><stop offset="0" stop-color="#000" stop-opacity=".38"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+  <linearGradient id="bG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4cc27a"/><stop offset="1" stop-color="#1d6b3c"/></linearGradient>
+  <linearGradient id="bR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f26a50"/><stop offset="1" stop-color="#a1261a"/></linearGradient>
+  <linearGradient id="bB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5aa2f0"/><stop offset="1" stop-color="#1f4e9a"/></linearGradient>
+  <linearGradient id="gGlass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e6f7ff"/><stop offset="1" stop-color="#8fcdf0"/></linearGradient>
+  <radialGradient id="gRim" cx=".4" cy=".35"><stop offset="0" stop-color="#ffe680"/><stop offset="1" stop-color="#d9a300"/></radialGradient>
+  <linearGradient id="gTank" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#cfcfcf"/></linearGradient>
+  <radialGradient id="gMist"><stop offset="0" stop-color="#b276dc" stop-opacity=".8"/><stop offset="1" stop-color="#b276dc" stop-opacity="0"/></radialGradient>
+  <linearGradient id="gComp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a5230"/><stop offset="1" stop-color="#3e2514"/></linearGradient>
+  <linearGradient id="gCloudD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9aa6b2"/><stop offset="1" stop-color="#5d6874"/></linearGradient>
+  <linearGradient id="gCloudW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e2edf6"/></linearGradient>
+  <linearGradient id="gBark" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5a3c22"/><stop offset="1" stop-color="#8a6240"/></linearGradient>
+  <radialGradient id="gVig" cx=".5" cy=".45" r=".75"><stop offset=".6" stop-color="#140a00" stop-opacity="0"/><stop offset="1" stop-color="#140a00" stop-opacity=".3"/></radialGradient>
+  <linearGradient id="gRay" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff8d6" stop-opacity=".9"/><stop offset="1" stop-color="#fff8d6" stop-opacity="0"/></linearGradient>
+  <linearGradient id="gMount" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9c6dc"/><stop offset="1" stop-color="#cfe0ea"/></linearGradient>
+  <linearGradient id="gWarm" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd27a" stop-opacity=".22"/><stop offset=".5" stop-color="#ffd27a" stop-opacity="0"/></linearGradient>
+  <linearGradient id="gSkyM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b6e0fa"/><stop offset="1" stop-color="#eef8ff"/></linearGradient>
+  <pattern id="pComp" width="7" height="7" patternUnits="userSpaceOnUse"><rect width="7" height="7" fill="#4a2e16"/><circle cx="2" cy="2" r="1.5" fill="#5f3d1f"/><circle cx="5.5" cy="5.5" r="1.5" fill="#5f3d1f"/></pattern>
+</defs></svg>
+
+<div class="wrap">
+  <div class="top">
+    <div>
+      <span class="niveau">SVT 6e · Séance 3 – La structure du sol · Activité 4</span>
+      <h1>Protéger le sol</h1>
+    </div>
+    <div class="probleme"><b>Problématique</b>Pourquoi le sol est-il un milieu fragile&nbsp;?</div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab t0 on" role="tab" data-tab="0"><span>1</span>L'agriculture qui abîme le sol</button>
+    <button class="tab t1" role="tab" data-tab="1"><span>2</span>Une agriculture qui protège le sol</button>
+  </div>
+
+  <div class="panel p0" id="p0">
+    <div class="consigne">
+      <span>Clique sur les <b>numéros</b> du schéma pour découvrir comment l'agriculture abîme le sol.</span>
+      <span class="compteur" id="cpt0">Découverts : 0 / 6</span>
+    </div>
+    <div class="scene-box"><svg class="scene" id="s0" viewBox="0 0 1200 720" role="img" aria-label="Coupe d'un paysage agricole qui abîme le sol"></svg></div>
+    <div class="btns" id="bt0"></div>
+  </div>
+
+  <div class="panel p1" id="p1" hidden>
+    <div class="intro"><b>L'agroécologie</b> : une façon de cultiver qui s'appuie sur la nature (haies, êtres vivants du sol, plantes qui couvrent le sol) plutôt que sur les produits chimiques et les machines très lourdes.</div>
+    <div class="consigne">
+      <span>Clique sur les <b>numéros</b> : chaque numéro répond au problème qui porte le même numéro dans l'onglet 1.</span>
+      <span class="compteur" id="cpt1">Découverts : 0 / 6</span>
+    </div>
+    <div class="scene-box"><svg class="scene" id="s1" viewBox="0 0 1200 720" role="img" aria-label="Coupe d'un paysage cultivé en agroécologie"></svg></div>
+    <div class="btns" id="bt1"></div>
+  </div>
+  <footer>SVT 6e – Le sol, un milieu fragile</footer>
+</div>
+
+<div class="mbg" id="mbg">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mt">
+    <div class="mh" id="mh"><span class="mnum" id="mnum">1</span><h2 id="mt"></h2><button class="mx" id="mx" aria-label="Fermer">×</button></div>
+    <div class="manim" id="manim"></div>
+    <p class="cap" id="mcap"></p>
+    <div class="cards" id="mcards"></div>
+    <div class="mf"><button id="mprev">← Précédent</button><button id="mnext">Suivant →</button></div>
+  </div>
+</div>
+
+<script>
+(function(){
+/* ================= outils ================= */
+var seed=11;
+function R(){seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
+function rnd(a,b){return a+R()*(b-a);}
+function f(n){return (+n).toFixed(1);}
+function $(id){return document.getElementById(id);}
+function bz(t){var u=1-t;return[u*u*u*120+3*u*u*t*220+3*u*t*t*300+t*t*t*400,u*u*u*400+3*u*u*t*395+3*u*t*t*320+t*t*t*300];}
+function surfY(x){if(x<=120)return 400;if(x>=400)return 300;var lo=0,hi=1;for(var i=0;i<30;i++){var m=(lo+hi)/2;if(bz(m)[0]<x)lo=m;else hi=m;}return bz((lo+hi)/2)[1];}
+function band(top,bot){var d='M0,'+f(top(0));for(var x=10;x<=1200;x+=10)d+=' L'+x+','+f(top(x));for(x=1200;x>=0;x-=10)d+=' L'+x+','+f(bot(x));return d+'Z';}
+function dl(){return 'animation-delay:'+(-rnd(0,4)).toFixed(2)+'s';}
+
+/* textures (motifs générés) */
+(function(){
+  var s='';
+  function tex(id,size,n,cols,r1,r2){var p='<pattern id="'+id+'" width="'+size+'" height="'+size+'" patternUnits="userSpaceOnUse">';
+    for(var i=0;i<n;i++)p+='<ellipse cx="'+f(rnd(0,size))+'" cy="'+f(rnd(0,size))+'" rx="'+f(rnd(r1,r2))+'" ry="'+f(rnd(r1,r2)*.7)+'" fill="'+cols[i%cols.length]+'"/>';return p+'</pattern>';}
+  s+=tex('tHum',90,70,['rgba(255,190,120,.18)','rgba(0,0,0,.3)','rgba(190,110,40,.35)','rgba(255,255,255,.08)'],.8,3);
+  s+=tex('tTer',110,90,['rgba(255,230,190,.16)','rgba(40,20,5,.22)','rgba(255,255,255,.09)','rgba(120,70,30,.3)'],.8,3.5);
+  s+=tex('tNap',90,16,['rgba(255,255,255,.12)','rgba(10,40,80,.12)'],3,8);
+  $('defs').insertAdjacentHTML('beforeend',s);
+})();
+
+/* ================= petits dessins ================= */
+function wheat(x,y,h,col,ear){
+  col=col||'#5aa83c';
+  var s='<g class="sway" style="animation-delay:'+(-rnd(0,3)).toFixed(2)+'s"><path d="M'+x+','+y+' q-2,'+f(-h/2)+' 0,'+f(-h)+'" stroke="'+col+'" stroke-width="2.6" fill="none"/>'+
+  '<path d="M'+x+','+f(y-h*.3)+' q-13,-4 -19,-15 q11,3 19,11z" fill="'+col+'"/><path d="M'+x+','+f(y-h*.55)+' q13,-4 18,-16 q-10,3 -18,12z" fill="'+col+'"/>';
+  if(ear!==false){for(var k=0;k<6;k++){var ey=y-h-4-k*4.2,ex=x+(k%2?2.6:-2.6);s+='<ellipse cx="'+f(ex)+'" cy="'+f(ey)+'" rx="2.6" ry="4" fill="#e2b748" stroke="#b98a22" stroke-width=".6" transform="rotate('+(k%2?22:-22)+' '+f(ex)+' '+f(ey)+')"/>';}
+    s+='<path d="M'+x+','+f(y-h-26)+' l-3,-9 M'+x+','+f(y-h-26)+' l3,-9 M'+(x-3)+','+f(y-h-12)+' l-7,-7 M'+(x+3)+','+f(y-h-16)+' l7,-7" stroke="#d1a43a" stroke-width=".8"/>';}
+  return s+'</g>';
+}
+function rootTree(x,y,len,ang,depth,bent){
+  if(depth===0||len<3)return '';
+  var a=bent&&depth<3?ang+(R()<.5?1.3:-1.3):ang;
+  var x2=x+Math.sin(a)*len,y2=y+Math.cos(a)*len;
+  if(bent&&y2>334){y2=334;}
+  var s='<path d="M'+f(x)+','+f(y)+' Q'+f((x+x2)/2+rnd(-3,3))+','+f((y+y2)/2)+' '+f(x2)+','+f(y2)+'" stroke-width="'+f(depth*.55+.4)+'"/>';
+  s+=rootTree(x2,y2,len*.72,a+rnd(-.45,.45),depth-1,bent);
+  if(R()<.75)s+=rootTree(x2,y2,len*.6,a+rnd(-1,1),depth-1,bent);
+  return s;
+}
+function roots(x,y,len,depth,bent){return '<g stroke="#f1e0b8" fill="none" opacity=".85" stroke-linecap="round">'+rootTree(x,y,len,0,depth||4,bent)+'</g>';}
+function worm(x,y,r,cls){
+  return '<g class="'+(cls||'')+'" transform="translate('+f(x)+','+f(y)+') rotate('+(r||0)+')"><g class="wig" style="animation-delay:'+(-rnd(0,2)).toFixed(2)+'s"><path d="M0,0 c5,-7 10,-7 15,0 s10,7 15,0 s10,-7 15,0" stroke="#d9707f" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M0,0 c5,-7 10,-7 15,0 s10,7 15,0 s10,-7 15,0" stroke="#f3a3b0" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M20,-1 v4" stroke="#c75b6b" stroke-width="5"/><circle cx="45" cy="0" r="3.6" fill="#e8909e"/></g></g>';
+}
+function deadWorm(x,y){return '<g transform="translate('+x+','+y+')"><path d="M0,0 c8,-2 14,4 10,10 s-14,4 -14,-4" stroke="#8f8f8f" stroke-width="6" stroke-linecap="round" fill="none"/><path d="M0,0 c8,-2 14,4 10,10" stroke="#b5b5b5" stroke-width="2.5" fill="none"/></g>';}
+function louse(x,y,cls){return '<g class="'+(cls||'')+'" transform="translate('+f(x)+','+f(y)+')"><g class="walk" style="'+dl()+'"><path d="M-6,4 l-2,4 M-2,5 l-1,4 M2,5 l1,4 M6,4 l2,4" stroke="#4d555c" stroke-width="1"/><ellipse rx="11" ry="6.5" fill="#7d8790"/><ellipse cx="-1" cy="-2" rx="8" ry="3" fill="#9aa4ad"/><path d="M-6,-6v12M-2,-6.5v13M2,-6.5v13M6,-6v12" stroke="#5c646b" stroke-width="1"/><path d="M10,-2 l7,-5 M10,2 l7,5" stroke="#5c646b" stroke-width="1.2"/></g></g>';}
+function spring(x,y,cls){return '<g class="'+(cls||'')+'" transform="translate('+f(x)+','+f(y)+')"><g class="hop" style="animation-delay:'+(-rnd(0,2)).toFixed(2)+'s"><ellipse rx="4.5" ry="2.4" fill="#f5f2ea"/><circle cx="4.5" cy="-1" r="1.8" fill="#f5f2ea"/><path d="M5,-2 l3,-3" stroke="#ddd" stroke-width=".7"/></g></g>';}
+function centi(x,y,cls){var s='';for(var i=0;i<10;i++){s+='M'+(i*5+3)+',0 l-2,-6 M'+(i*5+3)+',0 l-2,6 ';}
+  return '<g class="'+(cls||'')+'" transform="translate('+f(x)+','+f(y)+')"><g class="walk" style="'+dl()+'"><path d="'+s+'" stroke="#8a4a16" stroke-width="1.2"/><path d="M0,0 h52" stroke="#b5651d" stroke-width="5" stroke-linecap="round"/><path d="M0,0 h52" stroke="#d88a3e" stroke-width="2" stroke-dasharray="3 2"/><path d="M52,0 l6,-5 M52,0 l6,5" stroke="#8a4a16" stroke-width="1.2"/></g></g>';}
+function ant(x,y,cls){return '<g class="'+(cls||'')+'" transform="translate('+f(x)+','+f(y)+')"><g class="walk" style="'+dl()+'"><path d="M-3,0 l-4,5 M0,0 l0,6 M3,0 l4,5 M-3,0 l-4,-5 M0,0 l0,-6 M3,0 l4,-5" stroke="#1d1d1d" stroke-width="1.1"/><circle cx="-6" r="3.4" fill="#1d1d1d"/><circle cx="0" r="2.4" fill="#1d1d1d"/><circle cx="6" r="2.8" fill="#1d1d1d"/></g></g>';}
+function lady(x,y,s){return '<g transform="translate('+f(x)+','+f(y)+') scale('+(s||1)+')"><circle cx="4.6" cy="0" r="2.3" fill="#1d1d1d"/><circle r="4.8" fill="#e53935"/><path d="M0,-4.8V4.8" stroke="#1d1d1d" stroke-width=".8"/><circle cx="-2" cy="-2" r="1.1" fill="#1d1d1d"/><circle cx="2" cy="2" r="1.1" fill="#1d1d1d"/><circle cx="-2" cy="2.2" r=".9" fill="#1d1d1d"/><circle cx="-1.5" cy="-3" r="1" fill="#fff" opacity=".6"/></g>';}
+function flower(x,y,c,h){h=h||14;return '<g class="sway" style="animation-delay:'+(-rnd(0,3)).toFixed(2)+'s"><path d="M'+x+','+y+' v'+(-h)+'" stroke="#4f9e36" stroke-width="1.6"/><g transform="translate('+x+','+(y-h)+')"><circle cx="-2.6" r="2.8" fill="'+c+'"/><circle cx="2.6" r="2.8" fill="'+c+'"/><circle cy="-2.6" r="2.8" fill="'+c+'"/><circle cy="2.6" r="2.8" fill="'+c+'"/><circle r="1.8" fill="#ffd54f"/></g></g>';}
+function tuft(x,y,c){c=c||'#5aa64a';return '<path class="sway" style="animation-delay:'+(-rnd(0,3)).toFixed(2)+'s" d="M'+f(x)+','+f(y)+' q-4,-7 -6,-13 M'+f(x)+','+f(y)+' q0,-9 1,-16 M'+f(x)+','+f(y)+' q4,-6 7,-12" stroke="'+c+'" stroke-width="2.2" fill="none" stroke-linecap="round"/>';}
+function bush(x,y,r){var s='';var g=['#2f7d32','#3f9a3c','#4fb049','#3a8c37'];
+  s+='<ellipse cx="'+x+'" cy="'+(y+2)+'" rx="'+(r*1.6)+'" ry="5" fill="url(#gShadow)"/>';
+  s+='<circle cx="'+(x-r*.7)+'" cy="'+(y-r*.6)+'" r="'+(r*.75)+'" fill="'+g[0]+'"/><circle cx="'+(x+r*.7)+'" cy="'+(y-r*.6)+'" r="'+(r*.75)+'" fill="'+g[0]+'"/><circle cx="'+x+'" cy="'+(y-r*1.1)+'" r="'+r+'" fill="'+g[1]+'"/><circle cx="'+(x-r*.3)+'" cy="'+(y-r*1.4)+'" r="'+(r*.55)+'" fill="'+g[2]+'"/><circle cx="'+(x+r*.4)+'" cy="'+(y-r*.9)+'" r="'+(r*.4)+'" fill="'+g[2]+'" opacity=".8"/>';
+  return s;}
+function tree(x,y,h,r){return '<ellipse cx="'+x+'" cy="'+(y+2)+'" rx="'+(r*1.3)+'" ry="6" fill="url(#gShadow)"/><path d="M'+(x-5)+','+y+' L'+(x-3)+','+(y-h)+' L'+(x+3)+','+(y-h)+' L'+(x+5)+','+y+'Z" fill="url(#gBark)"/><path d="M'+x+','+(y-h*.6)+' l-12,-14 M'+x+','+(y-h*.7)+' l10,-12" stroke="#6b4a2a" stroke-width="3"/>'+
+  '<circle cx="'+(x-r*.55)+'" cy="'+(y-h-r*.1)+'" r="'+(r*.7)+'" fill="#2f7d32"/><circle cx="'+(x+r*.55)+'" cy="'+(y-h)+'" r="'+(r*.7)+'" fill="#2f7d32"/><circle cx="'+x+'" cy="'+(y-h-r*.55)+'" r="'+(r*.85)+'" fill="#43a047"/><circle cx="'+(x-r*.25)+'" cy="'+(y-h-r*.8)+'" r="'+(r*.45)+'" fill="#66bb6a"/>';}
+function cloud(x,y,sc,dark){var c=dark?'url(#gCloudD)':'url(#gCloudW)';return '<g transform="translate('+x+','+y+') scale('+sc+')"><circle cx="-38" cy="2" r="28" fill="'+c+'"/><circle cx="4" cy="-14" r="38" fill="'+c+'"/><circle cx="46" cy="2" r="26" fill="'+c+'"/><rect x="-66" y="0" width="138" height="30" rx="15" fill="'+c+'"/>'+''+'</g>';}
+function bird(y,t,d,sc){return '<g class="fly" style="--t:'+t+'s;animation-delay:'+d+'s"><g transform="translate(0,'+y+') scale('+sc+')"><path class="flap" d="M-12,0 Q-6,-8 0,0 Q6,-8 12,0" stroke="#2b2b2b" stroke-width="2.4" fill="none" stroke-linecap="round"/></g></g>';}
+function butterfly(x,y,c,path,dur){return '<g transform="translate('+x+','+y+')"><g><animateMotion dur="'+dur+'s" repeatCount="indefinite" path="'+path+'"/><g class="wing"><ellipse cx="-4" cy="-3" rx="5" ry="6" fill="'+c+'"/><ellipse cx="4" cy="-3" rx="5" ry="6" fill="'+c+'"/><ellipse cx="-3" cy="4" rx="3.5" ry="4" fill="'+c+'"/><ellipse cx="3" cy="4" rx="3.5" ry="4" fill="'+c+'"/></g><rect x="-.8" y="-6" width="1.6" height="12" rx=".8" fill="#333"/></g></g>';}
+function cow(x,y,sc,flip){return '<g transform="translate('+x+','+y+') scale('+(flip?-sc:sc)+','+sc+')"><ellipse cx="0" cy="1" rx="36" ry="5" fill="url(#gShadow)"/>'+
+  '<rect x="-24" y="-18" width="7" height="19" rx="2" fill="#f1f1f1" stroke="#555"/><rect x="-14" y="-18" width="7" height="19" rx="2" fill="#e6e6e6" stroke="#555"/><rect x="12" y="-18" width="7" height="19" rx="2" fill="#f1f1f1" stroke="#555"/><rect x="21" y="-18" width="7" height="19" rx="2" fill="#e6e6e6" stroke="#555"/>'+
+  '<g class="swish"><path d="M-30,-42 q-9,10 -6,24" stroke="#555" stroke-width="2" fill="none"/><ellipse cx="-36" cy="-17" rx="2.5" ry="4" fill="#444"/></g><path d="M-31,-46 Q-33,-20 -24,-15 L26,-15 Q33,-20 31,-42 Q28,-50 0,-50 Q-28,-50 -31,-46Z" fill="#fafafa" stroke="#555" stroke-width="1.5"/>'+
+  '<path d="M-18,-46 q9,4 4,15 q-11,2 -13,-6z" fill="#3a3a3a"/><path d="M6,-48 q13,0 10,13 q-9,4 -15,-4z" fill="#3a3a3a"/><ellipse cx="9" cy="-15" rx="6" ry="4" fill="#f4a6b8"/>'+
+  '<g class="graze" style="animation-delay:'+(-rnd(0,5)).toFixed(1)+'s"><path d="M24,-42 L34,-42 L38,-34 L28,-30Z" fill="#fafafa"/><ellipse cx="40" cy="-38" rx="12" ry="9" fill="#fafafa" stroke="#555" stroke-width="1.5"/><ellipse cx="49" cy="-34" rx="6.5" ry="5.5" fill="#f4a6b8" stroke="#555"/><circle cx="40" cy="-41" r="1.7" fill="#222"/><ellipse cx="31" cy="-46" rx="5" ry="2.5" fill="#fafafa" stroke="#555"/><path d="M37,-47 l-1,-5 M43,-47 l2,-5" stroke="#c9b98f" stroke-width="2.5" stroke-linecap="round"/></g></g>';}
+
+function crawler(d,dur,beg){return '<g opacity="0"><animateMotion dur="'+f(dur)+'s" begin="'+f(beg)+'s" repeatCount="indefinite" rotate="auto" path="'+d+'"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.9;1" dur="'+f(dur)+'s" begin="'+f(beg)+'s" repeatCount="indefinite"/><g class="wig"><path d="M-22,0 c4,-5 8,-5 11,0 s7,5 11,0 s7,-5 11,0 s7,5 11,0" stroke="#d9707f" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M-22,0 c4,-5 8,-5 11,0 s7,5 11,0 s7,-5 11,0 s7,5 11,0" stroke="#f3a3b0" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="22" cy="0" r="3.8" fill="#e8909e"/></g></g>';}
+function bee(x,y,path,dur){return '<g transform="translate('+x+','+y+')"><g><animateMotion dur="'+dur+'s" repeatCount="indefinite" path="'+path+'"/><ellipse class="wing" cx="-1" cy="-4" rx="3.5" ry="2.4" fill="#fff" opacity=".85"/><ellipse rx="4.5" ry="3.2" fill="#fdd835"/><path d="M-1.5,-3v6M1.5,-3v6" stroke="#333" stroke-width="1.3"/><circle cx="4.5" r="1.8" fill="#333"/></g></g>';}
+function wheel(cx,cy,r){
+  var s='<g transform="translate('+cx+','+cy+')"><g class="spin"><circle r="'+r+'" fill="#1c1c1c"/><circle r="'+(r-3.5)+'" fill="none" stroke="#3a3a3a" stroke-width="6" stroke-dasharray="5 4"/><circle r="'+f(r*.56)+'" fill="url(#gRim)" stroke="#b8860b" stroke-width="2"/>';
+  for(var k=0;k<5;k++){var a=k*72*Math.PI/180;s+='<circle cx="'+f(Math.cos(a)*r*.33)+'" cy="'+f(Math.sin(a)*r*.33)+'" r="'+f(r*.06+.6)+'" fill="#8a6a0a"/>';}
+  return s+'<circle r="'+f(r*.14)+'" fill="#8a6a0a"/></g></g>';
+}
+function tractor(body,dark,o){
+  var s='<ellipse cx="'+(o.boom?20:o.seeder?30:62)+'" cy="2" rx="'+(o.boom?150:o.seeder?120:100)+'" ry="7" fill="url(#gShadow)"/>';
+  if(o.boom){
+    s+='<rect x="-66" y="-84" width="60" height="40" rx="14" fill="url(#gTank)" stroke="#999" stroke-width="2"/><rect x="-46" y="-90" width="18" height="7" rx="2" fill="#bbb"/><text x="-36" y="-60" text-anchor="middle" font-size="8" font-weight="800" fill="#8e44ad">PESTICIDE</text><path d="M-56,-56 h40" stroke="#8e44ad" stroke-width="2"/>';
+    s+='<rect x="-104" y="-36" width="104" height="5" rx="2" fill="#666"/><rect x="-14" y="-48" width="5" height="14" fill="#666"/>';
+    [-98,-78,-58,-38,-18].forEach(function(n){
+      s+='<ellipse class="mist" style="animation-delay:'+(-rnd(0,1)).toFixed(2)+'s" cx="'+n+'" cy="-12" rx="17" ry="17" fill="url(#gMist)"/>';
+      s+='<rect x="'+(n-2)+'" y="-32" width="4" height="5" fill="#444"/>';
+      for(var k=0;k<3;k++)s+='<circle class="fall" style="--d:28px;animation-delay:'+(-rnd(0,1.3)).toFixed(2)+'s" cx="'+f(n+rnd(-9,9))+'" cy="-27" r="1.9" fill="#8e44ad"/>';
+    });
+  }
+  if(o.seeder){
+    s+='<rect x="-74" y="-46" width="70" height="20" rx="4" fill="#ffb300" stroke="#b37a00" stroke-width="2"/><text x="-39" y="-32" text-anchor="middle" font-size="8.5" font-weight="800" fill="#6d4a00">SEMOIR</text><rect x="-10" y="-40" width="12" height="5" fill="#666"/>';
+    [-62,-40,-18].forEach(function(n){s+='<g transform="translate('+n+',-14)"><g class="spinc"><circle r="11" fill="#9e9e9e" stroke="#616161" stroke-width="2"/><path d="M-11,0H11M0,-11V11" stroke="#616161" stroke-width="1.5"/></g></g><circle class="fall" style="--d:14px;animation-delay:'+(-rnd(0,1.3)).toFixed(2)+'s" cx="'+(n+8)+'" cy="-4" r="2" fill="#ffd54f"/>';});
+  }
+  s+='<g class="bob">';
+  s+='<rect x="98" y="-100" width="7" height="36" rx="2" fill="#3a3a3a"/><rect x="96" y="-104" width="11" height="6" rx="2" fill="#555"/>';
+  for(var i=0;i<3;i++)s+='<circle class="smoke" style="animation-delay:'+(-i*.8)+'s" cx="101" cy="-108" r="6" fill="#c8c8c8"/>';
+  s+='<path d="M44,-34 L44,-62 Q46,-71 57,-71 L120,-71 Q132,-71 134,-59 L136,-34Z" fill="url(#'+body+')"/>';
+  s+='<path d="M56,-66 L120,-66" stroke="#fff" stroke-opacity=".35" stroke-width="4" stroke-linecap="round"/>';
+  s+='<rect x="126" y="-64" width="10" height="28" rx="2" fill="#2b2b2b"/><path d="M127,-60h8M127,-55h8M127,-50h8M127,-45h8M127,-40h8" stroke="#666" stroke-width="1.3"/>';
+  s+='<ellipse cx="134" cy="-68" rx="4" ry="3" fill="#fff6b0" stroke="#888"/>';
+  s+='<rect x="-2" y="-64" width="64" height="30" rx="4" fill="url(#'+body+')"/>';
+  s+='<path d="M0,-58 L0,-126 Q0,-132 6,-132 L54,-132 Q60,-132 60,-126 L62,-58Z" fill="url(#'+body+')"/>';
+  s+='<rect x="-6" y="-139" width="74" height="10" rx="4" fill="#2b2b2b"/>';
+  s+='<path d="M7,-124 L53,-124 L55,-80 L7,-80Z" fill="url(#gGlass)" stroke="#fff" stroke-width="2"/>';
+  s+='<circle cx="32" cy="-100" r="8.5" fill="#f1c27d"/><path d="M22,-104 a10,7 0 0 1 20,0z" fill="'+dark+'"/><rect x="21" y="-104" width="26" height="3" rx="1" fill="'+dark+'"/><path d="M20,-80 q12,-12 24,0z" fill="#3b6ea5"/>';
+  s+='<path d="M14,-122 L26,-122 L12,-90 L9,-90Z" fill="#fff" opacity=".5"/>';
+  s+='<path d="M60,-120 h9 v10" stroke="#333" stroke-width="2" fill="none"/><rect x="66" y="-112" width="6" height="10" rx="2" fill="#333"/>';
+  s+='<rect x="8" y="-42" width="18" height="4" fill="#333"/>';
+  s+='<path d="M-18,-40 a40,40 0 0 1 80,0" fill="none" stroke="'+dark+'" stroke-width="11" stroke-linecap="round"/>';
+  s+=wheel(22,-37,37)+wheel(114,-22,22);
+  s+='</g>';
+  s+='<ellipse class="glow" cx="146" cy="-68" rx="14" ry="7" fill="#fff6b0"/>';
+  if(o.ballast){for(var q=0;q<4;q++)s+='<circle class="dust" style="animation-delay:'+(-q*.35)+'s" cx="-14" cy="-6" r="8" fill="#a88a66"/>';}
+  if(o.ballast)s+='<rect x="137" y="-62" width="12" height="28" rx="2" fill="#7a7a7a"/><rect x="149" y="-62" width="6" height="28" rx="2" fill="#555"/>';
+  return s;
+}
+
+/* ================= scènes ================= */
+function scene(ok){
+  var s='',x,y,i;
+  // ciel, soleil, nuages, collines lointaines
+  s+='<rect width="1200" height="470" fill="url(#gSky)"/>';[[-760,330,-640,420],[-520,470,-400,480],[-300,480,-200,470]].forEach(function(r,k){s+='<polygon class="ray" style="animation-delay:'+(-k*2)+'s" points="1100,80 '+(1100+r[0])+','+(80+r[1])+' '+(1100+r[2])+','+(80+r[3])+'" fill="url(#gRay)"/>';});s+='<path d="M380,302 L380,252 L460,214 L530,240 L615,192 L700,236 L790,204 L870,242 L960,198 L1050,238 L1130,212 L1200,232 L1200,302Z" fill="url(#gMount)"/><path d="M600,204 L615,192 L630,204 L622,202 L615,208 L608,202Z M945,210 L960,198 L975,210 L967,208 L960,214 L953,208Z" fill="#fff" opacity=".85"/>';
+  s+='<circle cx="1100" cy="80" r="120" fill="url(#gGlow)"/><g transform="translate(1100,80)"><g class="rays" stroke="#ffd34d" stroke-width="5" stroke-linecap="round" opacity=".9"><path d="M0,-66V-52M0,52V66M-66,0H-52M52,0H66M-47,-47l10,10M37,37l10,10M47,-47l-10,10M-37,37l-10,10"/></g><circle r="42" fill="url(#gSun)"/></g>';
+  s+='<g class="cloud" style="--ct:60s">'+cloud(470,46,.45)+cloud(820,40,.4)+'</g><g class="cloud">'+cloud(620,76,1)+cloud(900,132,.6)+'</g>';
+  s+=bird(60,26,-3,1)+bird(78,26,-4,.8)+bird(48,34,-18,.9);
+  s+='<path d="M380,300 C470,232 560,250 640,240 C720,228 800,258 880,236 C980,214 1100,248 1200,232 L1200,302 L380,302Z" fill="url(#gFar)"/>';
+  for(i=0;i<22;i++){x=rnd(420,1190);y=255+rnd(0,25);s+='<ellipse cx="'+f(x)+'" cy="'+f(y)+'" rx="'+f(rnd(5,9))+'" ry="'+f(rnd(5,8))+'" fill="#7fae6c" opacity=".8"/>';}
+  s+='<g transform="translate(690,262)"><rect x="0" y="-16" width="26" height="18" fill="#efe5d2"/><path d="M-3,-16 L13,-28 L29,-16Z" fill="#b5523b"/><rect x="30" y="-12" width="22" height="14" fill="#b5523b"/><path d="M28,-12 L41,-22 L54,-12Z" fill="#8a3a28"/><rect x="10" y="-10" width="6" height="6" fill="#6aa9d6"/></g>';
+  s+='<path d="M380,302 C500,272 640,288 760,276 C880,266 1000,288 1200,270 L1200,305 L380,305Z" fill="url(#gMid)"/>';
+  for(x=400;x<1190;x+=18)s+='<path d="M'+x+',301 L'+(x+34)+',286" stroke="#c9dc8a" stroke-width="5" opacity=".45"/>';for(x=390;x<1200;x+=14)s+='<path d="M'+x+',301 l-2,-6 M'+x+',301 l2,-7" stroke="#6ea85a" stroke-width="1.5"/>';
+
+  // couches du sol
+  var H=ok?42:28;
+  var hb=function(x){return surfY(x)+(!ok&&x<400?14:H)+3*Math.sin(x/37)+2*Math.sin(x/11);};
+  var tb=function(x){return 560+8*Math.sin(x/53)+5*Math.sin(x/19);};
+  var sb=function(x){return 648+6*Math.sin(x/41);};
+  s+='<rect x="0" y="600" width="1200" height="120" fill="url(#gNap)"/><rect x="0" y="600" width="1200" height="120" fill="url(#tNap)"/>';
+  s+='<path d="'+band(tb,sb)+'" fill="url(#gSub)"/>';
+  for(i=0;i<120;i++){x=rnd(0,1200);y=rnd(tb(x)+8,sb(x)-6);var rx=rnd(6,15);s+='<ellipse cx="'+f(x)+'" cy="'+f(y)+'" rx="'+f(rx)+'" ry="'+f(rx*.62)+'" fill="'+['#bdb5a8','#aca499','#c8c1b6','#a39b8f'][i%4]+'" stroke="#857c70" stroke-width="1"/><ellipse cx="'+f(x-rx*.3)+'" cy="'+f(y-rx*.25)+'" rx="'+f(rx*.35)+'" ry="'+f(rx*.18)+'" fill="#fff" opacity=".35"/>';}
+  s+='<path d="'+band(hb,tb)+'" fill="url(#gTer)"/><path d="'+band(hb,tb)+'" fill="url(#tTer)"/>';
+  for(i=0;i<40;i++){x=rnd(0,1200);y=rnd(hb(x)+20,tb(x)-6);s+='<ellipse cx="'+f(x)+'" cy="'+f(y)+'" rx="'+f(rnd(2,5))+'" ry="'+f(rnd(1.5,3.5))+'" fill="#b9ada0" stroke="#8a7f72" stroke-width=".6"/>';}
+  s+='<path d="'+band(surfY,hb)+'" fill="url(#gHum)"/><path d="'+band(surfY,hb)+'" fill="url(#tHum)"/>';
+  s+='<path d="M0,'+f(surfY(0))+(function(){var d='';for(var x=10;x<=1200;x+=10)d+=' L'+x+','+f(surfY(x));return d;})()+'" stroke="#'+(ok?'4f8f34':'5b3a1e')+'" stroke-width="'+(ok?4:2.5)+'" fill="none"/>';
+  for(i=0;i<26;i++){x=rnd(10,1190);s+='<circle class="tw" style="animation-delay:'+(-rnd(0,2.4)).toFixed(2)+'s" cx="'+f(x)+'" cy="'+f(rnd(sb(x)+8,712))+'" r="'+f(rnd(1.5,3))+'" fill="#fff"/>';}s+='<g fill="none" stroke="#bfe6ff" stroke-width="3" opacity=".7"><path class="wave" d="M0,676 Q30,670 60,676 T120,676 T180,676 T240,676 T300,676 T360,676 T420,676 T480,676 T540,676 T600,676 T660,676 T720,676 T780,676 T840,676 T900,676 T960,676 T1020,676 T1080,676 T1140,676 T1200,676"/></g>';
+
+  if(!ok){
+    s+='<rect x="420" y="650" width="440" height="70" fill="url(#gPol)" class="blink"/>';
+    s+='<path d="M828,304 L1092,304 L1092,404 Q1090,440 1040,442 L880,442 Q830,440 828,404Z" fill="url(#pComp)"/><path d="M828,404 Q830,440 880,442 L1040,442 Q1090,440 1092,404" stroke="#2c1a0b" stroke-width="2" fill="none" stroke-dasharray="6 4"/>';
+  }
+
+  // vie et racines sous terre
+  var u='';
+  for(i=0;i<(ok?170:90);i++){x=rnd(10,1190);y=rnd(340,550);if(!ok&&x>820&&x<1100&&y<450)continue;if(y<hb(x)+6)continue;u+='<ellipse cx="'+f(x)+'" cy="'+f(y)+'" rx="'+f(rnd(2,5))+'" ry="'+f(rnd(1.5,3))+'" fill="#d1b088" opacity=".45"/>';}
+  if(!ok){
+    for(i=0;i<16;i++){x=rnd(440,700);u+='<circle class="sink" style="--d:'+rnd(150,325).toFixed(0)+'px;animation-delay:'+(-rnd(0,7)).toFixed(2)+'s" cx="'+f(x)+'" cy="334" r="4" fill="#a55cc9" stroke="#fff" stroke-opacity=".5"/>';}
+    for(i=0;i<10;i++){x=rnd(715,830);u+='<circle class="sink" style="--d:'+rnd(150,325).toFixed(0)+'px;animation-delay:'+(-rnd(0,7)).toFixed(2)+'s" cx="'+f(x)+'" cy="334" r="4" fill="#4cc46a" stroke="#fff" stroke-opacity=".5"/>';}
+    u+=deadWorm(585,500)+deadWorm(650,430)+deadWorm(760,470)+ant(500,395)+spring(690,520);
+    for(x=430;x<=700;x+=26)u+=roots(x,302,14+rnd(0,6),4);
+    for(x=716;x<=826;x+=26)u+=roots(x,302,15+rnd(0,6),4);
+    for(x=846;x<=1076;x+=46)u+=roots(x,302,12,3,true);
+    [880,960,1040].forEach(function(px,k){u+='<g class="press" style="animation-delay:'+(k*.2)+'s"><path d="M'+px+',318 v36 m-10,-12 l10,14 l10,-14" stroke="#ff6b4a" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>';});
+    u+=worm(250,470,20)+louse(200,452);
+  }else{
+    // galeries de vers de terre
+    var nc=0;for(i=0;i<16;i++){x=rnd(150,1180);y=hb(x)+rnd(4,30);var d='M'+f(x)+','+f(y);for(var k=0;k<4;k++){x+=rnd(-25,25);y+=rnd(18,36);d+=' Q'+f(x+rnd(-15,15))+','+f(y-10)+' '+f(x)+','+f(y);}if(y<550){u+='<path d="'+d+'" stroke="#2e1b0d" stroke-width="8" fill="none" stroke-linecap="round" opacity=".42"/>';if(nc++<7)u+=crawler(d,rnd(8,13),-rnd(0,8));}}
+    // mycélium
+    for(i=0;i<10;i++){x=rnd(150,1150);y=rnd(380,520);u+='<path d="M'+f(x)+','+f(y)+' l'+f(rnd(10,20))+','+f(rnd(-8,8))+' l'+f(rnd(8,16))+','+f(rnd(-8,8))+' m-14,0 l'+f(rnd(-4,4))+','+f(rnd(8,14))+'" stroke="#f3efe3" stroke-width="1.2" fill="none" opacity=".7"/>';}
+    for(x=430;x<=700;x+=26)u+=roots(x,302,24+rnd(0,10),5);
+    for(x=846;x<=1076;x+=26)u+=roots(x,302,24+rnd(0,10),5);
+    for(x=150;x<=390;x+=30)u+=roots(x,surfY(x)+2,16+rnd(0,8),4);
+    u+=roots(268,surfY(268),34,5)+roots(282,surfY(282),30,5);
+    var cr=[[180,440],[330,410],[470,380],[540,460],[610,410],[690,500],[760,380],[820,470],[900,400],[980,470],[1050,390],[1140,450],[400,520],[860,530]];
+    cr.forEach(function(p,k){u+=worm(p[0],p[1],rnd(-25,25));});
+    [[230,420],[520,350],[700,360],[880,360],[1020,350],[1160,370],[620,530],[310,500]].forEach(function(p){u+=louse(p[0],p[1]);});
+    for(i=0;i<16;i++){x=rnd(150,1180);u+=spring(x,rnd(hb(x)+10,540));}
+    [[260,520],[580,520],[940,510],[1100,520]].forEach(function(p){u+=centi(p[0],p[1]);});
+    [[440,350],[660,450],[930,450],[1080,470],[350,460],[760,520]].forEach(function(p){u+=ant(p[0],p[1]);});
+    [180,260,340,480,620,900,1000].forEach(function(px,k){u+='<g class="infil" style="animation-delay:'+(-k*.3)+'s"><path d="M'+px+','+f(surfY(px)+20)+' v18 m-7,-7 l7,8 l7,-8" stroke="#3fa7f0" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>';});
+    // feuille tirée dans une galerie
+    u+='<ellipse rx="6" ry="3" fill="#d07a2a" opacity="0"><animateMotion dur="6s" repeatCount="indefinite" path="M600,304 Q596,330 606,350 T600,390"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.8;1" dur="6s" repeatCount="indefinite"/></ellipse>';
+  }
+  // vie sous la haie (les deux)
+  u+='<path d="M1110,340 q20,40 60,30 q30,-8 20,50 M1140,420 q-20,30 0,70" stroke="#2e1b0d" stroke-width="9" fill="none" stroke-linecap="round" opacity=".42"/>';
+  u+=crawler('M1110,340 q20,40 60,30 q30,-8 20,50',9,0)+worm(1105,380,10)+worm(1135,470,-15)+worm(1150,530,5)+louse(1170,345)+spring(1120,440)+spring(1180,490)+centi(1110,510)+ant(1175,410);
+  u+=roots(1130,302,34,5)+roots(1176,302,32,5);
+  s+=u;
+
+  // rivière
+  s+='<path d="M0,392 L116,392 Q124,420 104,446 L0,446Z" fill="url(#gRiv)"/>';
+  if(!ok)s+='<ellipse cx="78" cy="412" rx="46" ry="13" fill="#8b5a2b" class="blink"/>';
+  else s+='<g class="swim"><g transform="translate(20,420)"><ellipse rx="9" ry="4.5" fill="#ff8f3a"/><path d="M-8,0 l-7,-5 v10z" fill="#ff8f3a"/><circle cx="5" cy="-1" r="1.2" fill="#222"/></g></g><g class="swim" style="animation-delay:-3s"><g transform="translate(40,434)"><ellipse rx="7" ry="3.5" fill="#c0c8d0"/><path d="M-6,0 l-6,-4 v8z" fill="#c0c8d0"/></g></g>';
+  s+='<path d="M8,398 h30 M56,402 h28" stroke="#e1f4ff" stroke-width="2.5" class="shine"/><path class="ripple" d="M4,412 h100 M10,428 h88" stroke="#d6f0ff" stroke-width="2" opacity=".6"/>';
+  for(x=104;x<=126;x+=5)s+='<path class="sway" d="M'+x+',400 q-2,-14 1,-'+(20+x%3*5)+'" stroke="#4f8f3a" stroke-width="2" fill="none"/>';
+  s+='<rect x="108" y="372" width="3" height="14" rx="1.5" fill="#7b4a2a"/>';
+
+  // surface
+  var g='';
+  if(!ok){
+    for(x=430;x<=700;x+=26)g+=wheat(x,301,36+rnd(-3,3));
+    for(x=716;x<=826;x+=26)g+=wheat(x,301,38+rnd(-3,3));
+    for(x=846;x<=1076;x+=46)g+=wheat(x,301,18,'#b0a83c',false);
+    g+='<rect x="830" y="296" width="262" height="9" rx="4" fill="#3a2412"/>';
+    g+='<ellipse cx="885" cy="300" rx="24" ry="4.5" fill="#7cc4ef" class="shine"/><ellipse cx="1010" cy="300" rx="30" ry="4.5" fill="#7cc4ef" class="shine" style="animation-delay:-1s"/>';
+    g+='<g transform="translate(816,300)"><ellipse cx="0" cy="1" rx="22" ry="4" fill="url(#gShadow)"/><path d="M-18,0 l3,-46 q15,-6 30,0 l3,46z" fill="#ead9aa" stroke="#a8925d" stroke-width="2"/><path d="M-15,-40 q15,-5 30,0" stroke="#a8925d" fill="none"/><text x="0" y="-20" text-anchor="middle" font-size="8.5" font-weight="700" fill="#c0681a" transform="rotate(-90 0 -20)">ENGRAIS</text></g>';
+    g+='<g transform="translate(775,300)"><ellipse cx="0" cy="1" rx="30" ry="4" fill="url(#gShadow)"/><path d="M-22,-64 h44 l-15,32 h-14z" fill="#e67e22" stroke="#a5581a" stroke-width="2"/><path d="M-18,-60 h36" stroke="#fff" stroke-opacity=".4" stroke-width="3"/><rect x="-3" y="-32" width="6" height="18" fill="#666"/><g transform="translate(0,-14)"><ellipse rx="16" ry="3.5" fill="#999"/></g><rect x="-24" y="-12" width="48" height="5" fill="#666"/>'+'<circle cx="-18" cy="-6" r="6.5" fill="#222"/><circle cx="18" cy="-6" r="6.5" fill="#222"/><circle cx="-18" cy="-6" r="2.5" fill="#ccc"/><circle cx="18" cy="-6" r="2.5" fill="#ccc"/>';
+    for(i=0;i<16;i++){var dx=rnd(-75,75),dy=rnd(-2,12);g+='<circle class="throw" style="--dx:'+dx.toFixed(0)+'px;--dy:'+dy.toFixed(0)+'px;animation-delay:'+(-rnd(0,1.6)).toFixed(2)+'s" cx="0" cy="-16" r="2.6" fill="#fff" stroke="#c9a" stroke-width=".6"/>';}
+    g+='</g>';
+    [0.35,0.55,0.75,0.9].forEach(function(t){var a=bz(t),b=bz(t-0.14);g+='<path d="M'+f(a[0])+','+f(a[1]+4)+' Q'+f((a[0]+b[0])/2+6)+','+f((a[1]+b[1])/2+12)+' '+f(b[0])+','+f(b[1]+5)+'" stroke="#1a0e06" stroke-width="4" fill="none" opacity=".75"/>';});
+    [[180,392],[236,378],[310,338],[360,314],[150,398]].forEach(function(p){g+='<ellipse cx="'+p[0]+'" cy="'+f(surfY(p[0])-2)+'" rx="5" ry="3" fill="#b8b0a4" stroke="#857c70"/>';});
+    g+='<path d="M380,300 l-8,-14 l6,2 l-2,-12 M390,302 l4,-10" stroke="#8a7a5a" stroke-width="1.6" fill="none"/>';
+  }else{
+    // colline couverte : herbe, fleurs, haie au milieu de la pente, vaches
+    for(x=122;x<=400;x+=7)g+=tuft(x,surfY(x)+1,R()<.5?'#5aa64a':'#4c9a3e');
+    for(i=0;i<14;i++){x=rnd(130,395);g+=flower(x,surfY(x)+1,['#fff','#ffd54f','#e57373','#9575cd'][i%4],rnd(8,14));}
+    for(x=122;x<=172;x+=4)g+='<path class="sway" d="M'+x+','+f(surfY(x)+1)+' q-3,-12 0,-24" stroke="#3f8f34" stroke-width="2" fill="none"/>';
+    g+=bush(258,surfY(258)+2,15)+bush(284,surfY(284)+2,17)+bush(308,surfY(308)+2,14);
+    g+=cow(345,surfY(345)+3,.75)+cow(196,surfY(196)+3,.62,true);
+    // culture + trèfle + coccinelles
+    for(x=430;x<=700;x+=26)g+=wheat(x,301,36+rnd(-3,3));
+    for(x=438;x<=700;x+=13)g+='<g><circle cx="'+(x-3)+'" cy="297" r="3.4" fill="#43a047"/><circle cx="'+(x+3)+'" cy="297" r="3.4" fill="#4caf50"/><circle cx="'+x+'" cy="293" r="3.4" fill="#66bb6a"/>'+(x%39===0?'<circle cx="'+x+'" cy="288" r="3" fill="#fff"/>':'')+'</g>';
+    [[456,272],[534,262],[612,276],[664,266]].forEach(function(p){g+=lady(p[0],p[1],1.1);});
+    // bande fleurie + nichoir
+    for(x=704;x<=742;x+=5)g+=flower(x,301,['#e53935','#1e88e5','#fff','#fdd835'][Math.floor(x/5)%4],rnd(14,26));
+    g+='<rect x="722" y="226" width="4" height="76" fill="#6b4a2a"/><rect x="712" y="208" width="24" height="24" rx="2" fill="#a1683a" stroke="#6b4a2a"/><path d="M708,210 L724,196 L740,210Z" fill="#7b4a2a"/><circle cx="724" cy="220" r="4.5" fill="#3a2412"/>';
+    g+=bee(712,270,'M0,0 c20,-20 40,10 20,20 s-30,-10 -20,-20z',4)+bee(730,262,'M0,0 c-20,-14 -30,14 -10,20 s30,-6 10,-20z',5)+bee(240,330,'M0,0 c20,-16 40,8 20,18 s-30,-8 -20,-18z',4.5)+butterfly(720,250,'#ff9800','M0,0 c30,-30 60,10 90,-10 s40,30 0,40 s-60,-10 -90,-30z',9)+butterfly(600,240,'#42a5f5','M0,0 c-30,-20 -60,10 -80,-10 s-20,30 10,30 s50,0 70,-20z',11)+butterfly(1000,250,'#ec407a','M0,0 c30,-20 50,20 70,0 s-10,30 -40,25 s-30,-5 -30,-25z',10);
+    // compost
+    g+='<g transform="translate(792,300)"><ellipse cx="0" cy="2" rx="52" ry="6" fill="url(#gShadow)"/><path d="M-48,0 Q-44,-40 -6,-46 Q34,-48 48,0Z" fill="url(#gComp)"/>'+
+      '<path d="M-30,-20 l12,-4 M-10,-34 l14,2 M10,-24 l14,-6 M-22,-8 l10,3 M18,-10 l12,2 M-2,-14 l8,-6" stroke="#e8c45a" stroke-width="2.4" stroke-linecap="round"/><circle cx="-14" cy="-26" r="3" fill="#e67e22"/><circle cx="20" cy="-32" r="3" fill="#7cb342"/><circle cx="4" cy="-8" r="2.6" fill="#d84315"/>';
+    for(i=0;i<3;i++)g+='<path class="steam" style="animation-delay:'+(-i)+'s" d="M'+(-14+i*14)+',-46 q-5,-8 0,-14 q5,-6 0,-12" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/>';
+    g+='<rect x="-26" y="-74" width="52" height="16" rx="8" fill="#fff" opacity=".92"/><text x="0" y="-62" text-anchor="middle" font-size="10.5" font-weight="700" fill="#6b3d14">Compost</text></g>';
+    // champ 2 : culture variée en bonne santé
+    for(x=846;x<=1076;x+=26)g+=wheat(x,301,40+rnd(-3,3),'#4a9e36');
+  }
+  // haie de droite (les deux)
+  g+=tree(1130,302,52,26)+tree(1182,302,60,28)+bush(1104,302,15);
+  g+='<circle cx="1120" cy="236" r="3" fill="#e74c3c"/><circle cx="1170" cy="226" r="3" fill="#e74c3c"/><circle cx="1192" cy="210" r="3" fill="#e74c3c"/>';
+  for(x=1090;x<1200;x+=7)g+=tuft(x,302);
+  s+=g;
+
+  // tracteurs
+  if(!ok){
+    [0,-2,-4].forEach(function(dd){s+='<ellipse class="drift2" style="animation-delay:'+dd+'s" cx="500" cy="262" rx="60" ry="22" fill="url(#gMist)"/>';});s+='<g transform="translate(540,300) scale(.95)"><g class="drive" style="--dist:60px;--t:7s;--rot:100deg">'+tractor('bG','#1d5e36',{boom:true})+'</g></g>';
+    s+='<g transform="translate(870,300) scale(1.3)"><g class="drive" style="--dist:34px;--t:9s;--rot:56deg">'+tractor('bR','#8e2418',{ballast:true})+'</g></g>';
+    s+='<g transform="translate(930,98)"><rect x="-62" y="-17" width="124" height="28" rx="14" fill="#fff" stroke="#b3261e" stroke-width="2"/><text x="0" y="3" text-anchor="middle" font-size="14" font-weight="800" fill="#b3261e">Très lourd !</text></g>';
+  }else{
+    s+='<g transform="translate(920,300) scale(.78)"><g class="drive" style="--dist:36px;--t:8s;--rot:56deg">'+tractor('bB','#173b75',{seeder:true})+'</g></g>';
+    s+='<g transform="translate(960,190)"><rect x="-80" y="-15" width="160" height="26" rx="13" fill="#fff" stroke="#1f4e9a" stroke-width="2"/><text x="0" y="3" text-anchor="middle" font-size="13" font-weight="800" fill="#1f4e9a">Léger · pneus larges</text></g>';
+  }
+
+  // nuage + pluie
+  s+=cloud(262,104,1.25,!ok);
+  for(x=175;x<=375;x+=11){var y0=140+rnd(0,25);s+='<line class="rain" style="--d:'+(surfY(x)-y0-12).toFixed(0)+'px;animation-delay:'+(-rnd(0,.9)).toFixed(2)+'s" x1="'+x+'" y1="'+y0.toFixed(0)+'" x2="'+(x-2)+'" y2="'+(y0+11).toFixed(0)+'" stroke="#3f97d8" stroke-width="2.5" stroke-linecap="round"/>'+'<ellipse class="splash" style="animation-delay:'+(-rnd(0,.9)).toFixed(2)+'s" cx="'+(x-2)+'" cy="'+f(surfY(x)-1)+'" rx="6" ry="1.8" fill="none" stroke="#a9dbf8" stroke-width="1.5"/>';}
+  if(!ok)for(i=0;i<12;i++){s+='<circle r="'+rnd(3,5.5).toFixed(1)+'" fill="#9c6a3a" stroke="#5c3a1a" stroke-width=".8" opacity="0"><animateMotion dur="3.6s" repeatCount="indefinite" begin="'+(i*0.3).toFixed(1)+'s" path="M396,'+(296+rnd(-2,2)).toFixed(0)+' C300,316 222,392 124,396 L70,404 L20,412"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="3.6s" repeatCount="indefinite" begin="'+(i*0.3).toFixed(1)+'s"/></circle>';}
+
+  s+='<rect width="1200" height="720" fill="url(#gWarm)" pointer-events="none"/><rect width="1200" height="720" fill="url(#gVig)" pointer-events="none"/>';
+  // étiquettes
+  s+='<text class="slbl" x="406" y="'+(ok?326:321)+'">Humus</text><text class="slbl" x="12" y="505">Sol (terre)</text><text class="slbl" x="12" y="612">Sous-sol caillouteux</text><text class="slbl" x="12" y="700">Nappe d\'eau souterraine</text><text class="slbl" x="14" y="384">Rivière</text>';
+  return s;
+}
+
+/* ================= contenus ================= */
+var T=[[
+{lab:'Pesticides',t:'Les pesticides',c:'#8e44ad',x:640,y:146,anim:aPest,
+ cap:'Le pesticide tombe aussi sur le sol et descend avec la pluie.',
+ cards:[["L'action de l'agriculteur","Il pulvérise des <b>pesticides</b> pour tuer les ravageurs des cultures."],
+ ["Ce qui arrive au sol","Le produit tombe aussi sur le sol et s'y infiltre : le sol est <b>pollué</b>."],
+ ["Les conséquences","Les êtres vivants <b>utiles</b> du sol meurent. La <b>nappe d'eau</b> peut être polluée."]],
+ prot:"Remplacer les pesticides par des animaux qui mangent les ravageurs (coccinelles)."},
+{lab:'Engrais',t:'Les engrais',c:'#e67e22',x:770,y:192,anim:aEngr,
+ cap:'Le surplus d\'engrais part vers la nappe et la rivière.',
+ cards:[["L'action de l'agriculteur","Il répand des <b>engrais</b> pour faire pousser les plantes."],
+ ["Ce qui arrive au sol","Les plantes n'absorbent pas tout : le <b>surplus</b> est emporté par la pluie."],
+ ["Les conséquences","L'eau est <b>polluée</b> et des <b>algues vertes</b> envahissent les rivières."]],
+ prot:"Mettre juste ce qu'il faut, et utiliser du <b>compost</b> ou du <b>fumier</b>."},
+{lab:'Tassement',t:'Le tassement du sol',c:'#c0392b',x:960,y:392,anim:function(){return aTass(false);},
+ cap:'Sol aéré : l\'eau passe. Sol tassé : l\'eau reste en surface.',
+ cards:[["L'action de l'agriculteur","Il utilise des machines <b>très lourdes</b> (plusieurs tonnes)."],
+ ["Ce qui arrive au sol","Les roues <b>écrasent</b> le sol : il n'y a plus de place pour l'air et l'eau."],
+ ["Les conséquences","Les racines et les vers n'y passent plus. L'eau fait des <b>flaques</b> et ruisselle."]],
+ prot:"Utiliser des machines plus légères et ne pas rouler sur un sol mouillé."},
+{lab:'Biodiversité',t:'La disparition de la biodiversité du sol',c:'#16a085',x:560,y:470,anim:function(){return aBio(true);},after:bioAfter,
+ cap:'Compare un sol vivant et un sol abîmé.',
+ cards:[["Un sol plein de vie","Vers de terre, cloportes, champignons, bactéries… Une cuillère de sol contient plus d'êtres vivants qu'il n'y a d'humains sur Terre !"],
+ ["Ce qui les fait disparaître","Les <b>pesticides</b>, le <b>tassement</b> et le <b>labour</b>."],
+ ["Les conséquences","Moins d'<b>humus</b> et moins de galeries : le sol <b>s'appauvrit</b>."]],
+ prot:"Moins de pesticides, moins de labour, des haies et des restes de plantes sur le sol."},
+{lab:'Érosion',t:'L\'érosion du sol',c:'#a0522d',x:250,y:262,anim:function(){return aEros(false);},after:erosAfter,
+ cap:'Compare un sol nu et un sol couvert sous la pluie.',
+ cards:[["L'action de l'agriculteur","Il laisse le sol <b>nu</b> après la récolte et arrache des <b>haies</b>."],
+ ["Ce qui arrive au sol","Sans racines, la pluie <b>emporte</b> la terre, surtout dans les pentes."],
+ ["Les conséquences","La terre <b>fertile</b> part dans les rivières. Le sol devient moins épais."]],
+ prot:"Couvrir le sol de plantes toute l'année et planter des haies."},
+{lab:'Formation du sol',t:'Un sol se forme très lentement',c:'#2c5aa0',x:300,y:604,anim:aTemps,after:tempsAfter,
+ cap:'Combien de temps pour fabriquer 1 cm de sol ?',
+ cards:[["Comment se forme un sol ?","La <b>roche</b> se fragmente et se mélange à l'<b>humus</b> fabriqué par les êtres vivants."],
+ ["Combien de temps ?","<b>Plusieurs centaines d'années</b> pour seulement <b>1 cm</b> de sol."],
+ ["Le problème","Le sol s'abîme <b>beaucoup plus vite</b> qu'il ne se forme."]],
+ prot:"En prendre soin : un sol détruit ne se reforme pas à l'échelle d'une vie."}
+],[
+{lab:'Alliés naturels',t:'Des alliés contre les ravageurs',c:'#8e44ad',x:600,y:150,anim:aLady,
+ cap:'La coccinelle mange les pucerons : pas besoin de pesticide.',
+ cards:[["Ce que fait l'agriculteur","Il garde des <b>haies</b> et des <b>fleurs</b> qui abritent des coccinelles et des oiseaux. Ils mangent les ravageurs."],
+ ["Ce que ça change pour le sol","Pas de pesticides : le sol et la nappe d'eau restent <b>propres</b>."],
+ ["Les avantages","Une coccinelle mange <b>des dizaines de pucerons</b> par jour !"]]},
+{lab:'Compost & fumier',t:'Nourrir le sol naturellement',c:'#e67e22',x:792,y:196,anim:aCompost,
+ cap:'Les vers de terre entraînent le compost dans le sol.',
+ cards:[["Ce que fait l'agriculteur","Il apporte du <b>fumier</b> ou du <b>compost</b> au lieu des engrais chimiques."],
+ ["Ce que ça change pour le sol","Les êtres vivants du sol le transforment en <b>humus</b>."],
+ ["Les avantages","La nourriture est libérée <b>lentement</b> : presque rien ne part dans l'eau."]]},
+{lab:'Machines légères',t:'Moins écraser le sol',c:'#c0392b',x:960,y:420,anim:function(){return aTass(true);},
+ cap:'Machine lourde : le sol est écrasé. Machine légère : l\'eau s\'infiltre.',
+ cards:[["Ce que fait l'agriculteur","Il utilise des machines <b>légères</b> aux <b>pneus larges</b> et ne roule pas sur un sol mouillé."],
+ ["Ce que ça change pour le sol","Le sol reste <b>aéré</b> : il garde ses espaces pour l'air et l'eau."],
+ ["Les avantages","L'eau <b>s'infiltre</b>, les racines et les vers de terre circulent bien."]]},
+{lab:'Sol vivant',t:'Un sol plein de vie',c:'#16a085',x:560,y:480,anim:function(){return aBio(false);},
+ cap:'Les vers de terre tirent les feuilles mortes dans leurs galeries.',
+ cards:[["Ce que fait l'agriculteur","Pas de pesticides, peu de labour, et il laisse les <b>restes de plantes</b> sur le sol."],
+ ["Ce que ça change pour le sol","Les êtres vivants sont <b>nombreux</b> : ils fabriquent l'humus et creusent des galeries."],
+ ["Les avantages","Le sol est aéré et <b>fertile</b>."]]},
+{lab:'Sol couvert & haies',t:'Un sol toujours couvert',c:'#a0522d',x:250,y:240,anim:function(){return aEros(true);},after:erosAfter,
+ cap:'Compare : sur un sol couvert, la pluie n\'emporte plus la terre.',
+ cards:[["Ce que fait l'agriculteur","Il ne laisse jamais le sol <b>nu</b> : il sème des plantes après la récolte et plante des <b>haies</b>."],
+ ["Ce que ça change pour le sol","Les <b>racines retiennent la terre</b> comme un filet."],
+ ["Les avantages","La terre reste dans le champ et la <b>rivière reste claire</b>."]]},
+{lab:'Cultures variées',t:'Changer de culture chaque année',c:'#2c5aa0',x:470,y:205,anim:aRot,after:rotAfter,
+ cap:'Chaque année, une plante différente, avec des racines différentes.',
+ cards:[["Ce que fait l'agriculteur","Il change de plante chaque année : blé, puis trèfle, puis maïs. C'est la <b>rotation des cultures</b>."],
+ ["Ce que ça change pour le sol","Les racines différentes <b>aèrent</b> tout le sol ; le trèfle l'<b>enrichit</b>."],
+ ["Les avantages","Les ravageurs ne retrouvent plus leur plante : ils sont <b>moins nombreux</b>."]]}
+]];
+
+/* ================= onglets, repères, boutons ================= */
+[0,1].forEach(function(tb){
+  var svg=$('s'+tb),hot='',btns='';
+  seed=tb?29:11;
+  svg.innerHTML=scene(tb===1);
+  T[tb].forEach(function(d,i){
+    var w=d.lab.length*8.6+24;
+    hot+='<g class="hot" id="h'+tb+'-'+i+'" tabindex="0" role="button" aria-label="'+(i+1)+' : '+d.lab+'" data-t="'+tb+'" data-i="'+i+'" transform="translate('+d.x+','+d.y+')"><g class="in" style="animation-delay:'+(.3+i*.12).toFixed(2)+'s">'+
+     '<circle r="36" fill="'+d.c+'" class="glow"/><circle r="25" fill="none" stroke="'+d.c+'" stroke-width="5" class="pulse"/><circle cy="3" r="26" fill="#000" opacity=".22"/>'+
+     '<g class="disc"><circle r="25" fill="#fff" stroke="'+d.c+'" stroke-width="5"/><text y="9" text-anchor="middle" font-size="26" font-weight="800" fill="'+d.c+'">'+(i+1)+'</text></g>'+
+     '<g transform="translate(0,45)"><rect x="'+(-w/2)+'" y="-14" width="'+w+'" height="27" rx="13.5" fill="'+d.c+'" stroke="#fff" stroke-width="2"/><text y="5" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">'+d.lab+'</text></g>'+
+     '<g class="check"><circle cx="20" cy="-20" r="10" fill="#2e9e4f" stroke="#fff" stroke-width="2"/><path d="M15,-20 l4,4 l7,-8" stroke="#fff" stroke-width="2.6" fill="none"/></g></g></g>';
+    btns+='<button style="background:'+d.c+'" data-t="'+tb+'" data-i="'+i+'" id="b'+tb+'-'+i+'"><span class="n" style="color:'+d.c+'">'+(i+1)+'</span>'+d.lab+'</button>';
+  });
+  svg.insertAdjacentHTML('beforeend',hot);$('bt'+tb).innerHTML=btns;
+});
+function showTab(tb){
+  [0,1].forEach(function(k){$('p'+k).hidden=k!==tb;document.querySelector('.tab.t'+k).classList.toggle('on',k===tb);});
+}
+document.querySelectorAll('.tab').forEach(function(b){b.onclick=function(){showTab(+b.getAttribute('data-tab'));};});
+
+/* ================= fenêtre ================= */
+var cur=[0,0],vus=[{},{}],timer=null,iv=null,last=null;
+function open(tb,i){
+  cur=[tb,i];var d=T[tb][i];
+  if($('p'+tb).hidden)showTab(tb);
+  vus[tb][i]=true;$('h'+tb+'-'+i).classList.add('vu');$('b'+tb+'-'+i).classList.add('vu');
+  var n=Object.keys(vus[tb]).length,c=$('cpt'+tb);c.textContent=n<6?'Découverts : '+n+' / 6':'Bravo, tu as tout découvert !';c.classList.toggle('fini',n===6);
+  $('mh').style.background=d.c;$('mnum').textContent=i+1;$('mnum').classList.remove('go');void $('mnum').offsetWidth;$('mnum').classList.add('go');$('mnum').style.color=d.c;$('mt').textContent=d.t;
+  stopTimer();$('manim').innerHTML=d.anim();$('mcap').textContent=d.cap;
+  var h='';d.cards.forEach(function(k){h+='<div class="card"><h3 style="color:'+d.c+'">'+k[0]+'</h3>'+k[1]+'</div>';});
+  if(tb===0)h+='<div class="card prot"><div><h3>Comment protéger le sol ?</h3>'+d.prot+'</div><button class="link" id="mlink">Voir la solution n° '+(i+1)+' →</button></div>';
+  else h+='<div class="card prot pb"><div><h3>Ça répond au problème n° '+(i+1)+'</h3>'+T[0][i].t+'</div><button class="link" id="mlink">← Voir le problème n° '+(i+1)+'</button></div>';
+  $('mcards').innerHTML=h;
+  $('mlink').onclick=function(){open(1-tb,i);};
+  if(d.after)d.after();
+  if(!$('mbg').classList.contains('open')){last=document.activeElement;$('mbg').classList.add('open');}
+  $('mx').focus();$('mbg').querySelector('.modal').scrollTop=0;
+}
+function close(){stopTimer();$('mbg').classList.remove('open');$('manim').innerHTML='';if(last&&last.focus)last.focus();}
+function stopTimer(){if(timer){cancelAnimationFrame(timer);timer=null;}if(iv){clearInterval(iv);iv=null;}}
+document.addEventListener('click',function(e){var t=e.target.closest('[data-i]');if(t&&!$('mbg').contains(t))open(+t.getAttribute('data-t'),+t.getAttribute('data-i'));});
+document.addEventListener('keydown',function(e){
+  if(!$('mbg').classList.contains('open')){var t=e.target.closest&&e.target.closest('.hot');if(t&&(e.key==='Enter'||e.key===' ')){e.preventDefault();open(+t.getAttribute('data-t'),+t.getAttribute('data-i'));}return;}
+  if(e.key==='Escape')close();if(e.key==='ArrowRight')open(cur[0],(cur[1]+1)%6);if(e.key==='ArrowLeft')open(cur[0],(cur[1]+5)%6);
+});
+$('mx').onclick=close;
+$('mbg').addEventListener('click',function(e){if(e.target===this)close();});
+$('mprev').onclick=function(){open(cur[0],(cur[1]+5)%6);};
+$('mnext').onclick=function(){open(cur[0],(cur[1]+1)%6);};
+
+/* ================= mini-animations ================= */
+function V(inner,cls){return '<svg viewBox="0 0 400 230" class="'+(cls||'')+'">'+inner+'</svg>';}
+function sky(h,sun){
+  var s='<rect width="400" height="'+h+'" fill="url(#gSkyM)"/>';
+  if(sun!==false)s+='<circle cx="372" cy="26" r="36" fill="url(#gGlow)"/><g transform="translate(372,26)"><g class="rays" stroke="#ffd34d" stroke-width="2.5" stroke-linecap="round"><path d="M0,-24V-18M0,18V24M-24,0H-18M18,0H24M-17,-17l4,4M13,13l4,4M17,-17l-4,4M-13,13l-4,4"/></g><circle r="13" fill="url(#gSun)"/></g>';
+  s+='<g class="cloud" style="--ct:20s"><g transform="translate(-40,0)">'+cloud(90,24,.3)+'</g></g>';
+  return s;
+}
+function soilBase(npCls,noSun){
+  var s=sky(122,!noSun)+'<rect y="120" width="400" height="82" fill="url(#gTer)"/><rect y="120" width="400" height="82" fill="url(#tTer)"/><rect y="120" width="400" height="14" fill="url(#gHum)"/><rect y="120" width="400" height="14" fill="url(#tHum)"/>';
+  for(var i=0;i<9;i++){var x=rnd(10,390),y=rnd(148,192),r=rnd(3,6);s+='<ellipse cx="'+f(x)+'" cy="'+f(y)+'" rx="'+f(r)+'" ry="'+f(r*.65)+'" fill="#b9ada0" stroke="#8a7f72" stroke-width=".6"/>';}
+  s+='<rect y="200" width="400" height="30" '+(npCls?'class="'+npCls+'"':'fill="#4aa3df"')+'/><rect y="200" width="400" height="30" fill="url(#tNap)"/>'+
+  '<path class="wave" d="M0,208 Q25,204 50,208 T100,208 T150,208 T200,208 T250,208 T300,208 T350,208 T400,208" stroke="#d6f0ff" stroke-width="2" fill="none" opacity=".7"/>';
+  return s;
+}
+function spreader(){
+  var s='<ellipse cx="0" cy="1" rx="30" ry="4" fill="url(#gShadow)"/><path d="M-22,-64 h44 l-15,32 h-14z" fill="#e67e22" stroke="#a5581a" stroke-width="2"/><path d="M-18,-60 h36" stroke="#fff" stroke-opacity=".4" stroke-width="3"/><text x="0" y="-46" text-anchor="middle" font-size="8" font-weight="800" fill="#fff">ENGRAIS</text><rect x="-3" y="-32" width="6" height="18" fill="#666"/><ellipse cx="0" cy="-14" rx="16" ry="3.5" fill="#999"/><rect x="-24" y="-12" width="48" height="5" fill="#666"/><circle cx="-18" cy="-6" r="6.5" fill="#222"/><circle cx="18" cy="-6" r="6.5" fill="#222"/><circle cx="-18" cy="-6" r="2.5" fill="#ccc"/><circle cx="18" cy="-6" r="2.5" fill="#ccc"/>';
+  for(var i=0;i<16;i++){var dx=rnd(-70,70),dy=rnd(-2,10);s+='<circle class="throw" style="--dx:'+dx.toFixed(0)+'px;--dy:'+dy.toFixed(0)+'px;animation-delay:'+(-rnd(0,1.6)).toFixed(2)+'s" cx="0" cy="-16" r="2.6" fill="#fff" stroke="#c9a" stroke-width=".6"/>';}
+  return s;
+}
+function fish(x,y,c,cls){return '<g class="'+(cls||'')+'"><g transform="translate('+x+','+y+')"><ellipse rx="9" ry="4.5" fill="'+c+'"/><path d="M-8,0 l-7,-5 v10z" fill="'+c+'"/><circle cx="5" cy="-1" r="1.2" fill="#222"/></g></g>';}
+
+function aPest(){
+  var s=soilBase('np',true)+'<text x="200" y="222" text-anchor="middle" class="lbl">Nappe d\'eau souterraine</text>';
+  for(var x=24;x<=390;x+=26)s+=wheat(x,121,30);
+  s+='<g transform="translate(150,121) scale(.62)"><g class="drive" style="--dist:170px;--t:6s;--rot:260deg">'+tractor('bG','#1d5e36',{boom:true})+'</g></g>';
+  for(var i=0;i<16;i++)s+='<circle class="sink" style="--d:'+rnd(60,80).toFixed(0)+'px;animation-delay:'+(-rnd(0,7)).toFixed(2)+'s" cx="'+rnd(60,360).toFixed(0)+'" cy="126" r="3.2" fill="#b56ad6" stroke="#fff" stroke-opacity=".5"/>';
+  s+='<g transform="translate(210,168)"><g class="wig"><path class="wormP" d="M0,0 c6,-8 12,-8 18,0 s12,8 18,0 s12,-8 18,0" stroke-width="7" stroke-linecap="round" fill="none"/></g></g>';
+  s+='<g class="die">'+lady(340,92,1.5)+'</g><g class="die" style="animation-delay:-2s">'+lady(60,96,1.3)+'</g>';
+  return V(s+'<text x="8" y="150" class="lbl">Sol</text>');
+}
+function aEngr(){
+  var s=soilBase('np2')+'<text x="170" y="222" text-anchor="middle" class="lbl">Nappe d\'eau souterraine</text>';
+  s+='<path d="M330,120 h70 v40 h-60 q-10,0 -10,-14z" fill="#4aa3df"/><path class="ripple" d="M336,128 h60" stroke="#d6f0ff" stroke-width="2"/><text x="366" y="112" text-anchor="middle" class="lbd">Rivière</text>';
+  s+=fish(360,142,'#ff8f3a','fishd');
+  for(var i=0;i<8;i++)s+='<ellipse class="algae" style="animation-delay:'+(-i*.15)+'s" cx="'+(342+i*7.5)+'" cy="158" rx="5.5" ry="'+(7+i%3*4)+'" fill="#2fbf4a" opacity=".9"/>';
+  s+='<g transform="translate(34,121)"><ellipse cx="0" cy="1" rx="26" ry="4" fill="url(#gShadow)"/><path d="M-24,0 l4,-62 q20,-8 40,0 l4,62z" fill="#ead9aa" stroke="#a8925d" stroke-width="2"/><path d="M-20,-56 q20,-7 40,0" stroke="#a8925d" fill="none"/><text x="0" y="-26" text-anchor="middle" font-size="9" font-weight="700" fill="#c0681a">ENGRAIS</text></g>';
+  for(var x=80;x<=315;x+=30)s+='<g class="grow">'+wheat(x,121,34)+'</g>';
+  s+='<g transform="translate(110,121)"><g class="drive" style="--dist:170px;--t:5s">'+spreader()+'</g></g>';
+  for(i=0;i<18;i++){var cx=rnd(80,320),toR=i%2===0;s+='<circle class="drift" style="--dx:'+(toR?(350-cx+rnd(0,30)):rnd(-20,20)).toFixed(0)+'px;--dy:'+(toR?rnd(6,26):rnd(55,75)).toFixed(0)+'px;animation-delay:'+(-rnd(0,8)).toFixed(2)+'s" cx="'+cx.toFixed(0)+'" cy="128" r="3.3" fill="#58d36f" stroke="#fff" stroke-opacity=".5"/>';}
+  return V(s+'<text x="8" y="186" class="lbl">Surplus d\'engrais</text>');
+}
+function grains(ox,fat,air){
+  var s='';for(var y=72;y<=208;y+=24)for(var x=ox+14;x<=ox+182;x+=26){s+='<circle '+(fat?'class="fat" ':'')+'cx="'+(x+rnd(-4,4)).toFixed(0)+'" cy="'+(y+rnd(-3,3)).toFixed(0)+'" r="'+rnd(8.5,10.5).toFixed(1)+'" fill="'+(R()<.5?'#8a5a33':'#9c6b40')+'" stroke="#6d4426" stroke-width=".8"/>';}
+  if(air)for(y=84;y<=200;y+=24)for(x=ox+27;x<=ox+170;x+=26){if(R()<.6)s+='<circle class="'+air+'" style="animation-delay:'+(air==='tw'?(-rnd(0,2.4)).toFixed(2)+'s':'0s')+'" cx="'+f(x+rnd(-2,2))+'" cy="'+f(y+rnd(-2,2))+'" r="2.6" fill="#fff" opacity=".85"/>';}
+  return s;
+}
+function wheelMini(r,wide){
+  var s='<g class="wrot"><circle r="'+r+'" fill="#1c1c1c"/><circle r="'+(r-5)+'" fill="none" stroke="#444" stroke-width="5" stroke-dasharray="7 6"/><circle r="'+f(r*.5)+'" fill="url(#gRim)" stroke="#b8860b" stroke-width="2"/>';
+  for(var k=0;k<5;k++){var a=k*72*Math.PI/180;s+='<circle cx="'+f(Math.cos(a)*r*.3)+'" cy="'+f(Math.sin(a)*r*.3)+'" r="2" fill="#8a6a0a"/>';}
+  return s+'</g>';
+}
+function aTass(good){
+  var s='<defs><clipPath id="cR"><rect x="205" y="0" width="195" height="230"/></clipPath><clipPath id="cL"><rect x="0" y="0" width="195" height="230"/></clipPath></defs>'+sky(60,false);
+  function aere(ox,withWheel){
+    var t='<rect x="'+ox+'" y="60" width="195" height="170" fill="#e9d7b5"/>'+grains(ox,false,'tw')+'<g clip-path="url(#'+(ox?'cR':'cL')+')">';
+    for(var i=0;i<4;i++)t+=tuft(ox+20+i*50,61);
+    for(i=0;i<9;i++)t+='<ellipse class="thru" style="animation-delay:'+(-rnd(0,2.6)).toFixed(2)+'s" cx="'+rnd(ox+15,ox+180).toFixed(0)+'" cy="60" rx="3" ry="4.5" fill="#2f8fd8"/>';
+    t+='<g stroke="#f3e2bb" fill="none" stroke-linecap="round">'+rootTree(ox+60,60,40,0,4).replace(/<path/g,'<path stroke-width="2"')+'</g>'+crawler('M'+(ox+10)+',190 Q'+(ox+60)+',150 '+(ox+110)+',170 T'+(ox+190)+',140',7,0);
+    if(withWheel)t+='<g class="roll"><g transform="translate('+ox+',24)"><ellipse cx="0" cy="37" rx="44" ry="4" fill="url(#gShadow)"/>'+wheelMini(36)+'</g></g>';
+    return t+'</g>';
+  }
+  function tasse(ox){
+    var t='<g clip-path="url(#'+(ox?'cR':'cL')+')">'+sky(230,false).replace('width="400"','x="'+ox+'" width="195"')+'<g class="squash"><rect x="'+ox+'" y="60" width="195" height="170" fill="#e9d7b5"/>'+grains(ox,true,'airout')+'</g><ellipse class="flaque" cx="'+(ox+97)+'" cy="118" rx="80" ry="6" fill="#4aa3df"/>';
+    for(var i=0;i<8;i++)t+='<ellipse class="stop" style="--d:'+rnd(70,76).toFixed(0)+'px;animation-delay:'+(i*.1).toFixed(1)+'s" cx="'+rnd(ox+20,ox+175).toFixed(0)+'" cy="40" rx="3" ry="4.5" fill="#2f8fd8"/>';
+    return t+'<g class="roll"><g transform="translate('+ox+',30)">'+wheelMini(30)+'<g class="press"><path d="M0,38 v14 m-7,-6 l7,8 l7,-8" stroke="#ff4d2e" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g></g></g></g>';
+  }
+  if(!good){s+=aere(0,false)+tasse(205);s+='<text x="97" y="20" text-anchor="middle" class="lbd">Sol aéré</text><text x="302" y="20" text-anchor="middle" class="lbd" style="fill:#b3261e">Sol tassé</text>';}
+  else{s+=tasse(0)+aere(205,true);s+='<text x="97" y="18" text-anchor="middle" class="lbd" style="fill:#b3261e">Machine lourde</text><text x="302" y="18" text-anchor="middle" class="lbd" style="fill:#1f7a3a">Machine légère, pneu large</text>';}
+  s+='<line x1="200" y1="0" x2="200" y2="230" stroke="#fff" stroke-width="10"/><text x="6" y="226" font-size="10" fill="#4a2e14">○ = air</text>';
+  return V(s);
+}
+function aBio(withToggle){
+  var s=sky(48,false)+'<rect class="sol" y="46" width="400" height="184" fill="#6b4423"/><rect y="46" width="400" height="184" fill="url(#tTer)"/><rect y="46" width="400" height="12" fill="url(#gHum)" opacity=".8"/>';
+  for(var x=4;x<400;x+=7)s+=tuft(x,48);
+  [[30,48],[95,49],[170,47],[260,49],[340,48]].forEach(function(p){s+='<ellipse cx="'+p[0]+'" cy="'+p[1]+'" rx="12" ry="4" fill="#c0702a" transform="rotate(-10 '+p[0]+' '+p[1]+')"/><path d="M'+(p[0]-10)+','+(p[1]+1)+' L'+(p[0]+10)+','+(p[1]-2)+'" stroke="#8a4a16" stroke-width=".8"/>';});
+  var g1='M40,60 q30,40 80,30 q40,-8 60,40',g2='M240,58 q-20,50 20,80 q30,20 70,10';
+  s+='<path class="crit2" d="'+g1+' '+g2.replace('M','M')+'" stroke="#2e1b0d" stroke-width="11" fill="none" stroke-linecap="round" opacity=".5"/>';
+  s+='<g class="crit2">'+crawler(g1,7,0)+crawler(g2,8,-3)+'</g>';
+  s+='<path class="crit2" d="M300,170 l20,-10 l15,8 m-15,-8 l5,-18 M120,200 l18,-6 l12,10 m-12,-10 l-4,-16 M200,100 l14,6 l10,-8 M60,130 l16,4 l8,-10" stroke="#f3efe3" stroke-width="1.5" fill="none" opacity=".75"/>';
+  s+='<g class="crit2"><path d="M146,48 v-10" stroke="#f3efe3" stroke-width="3"/><path d="M137,40 q9,-12 18,0z" fill="#c62828"/><circle cx="142" cy="37" r="1.5" fill="#fff"/><circle cx="149" cy="38" r="1.2" fill="#fff"/><path d="M356,48 v-7" stroke="#f3efe3" stroke-width="2.5"/><path d="M350,42 q6,-9 12,0z" fill="#a1887f"/></g>';
+  for(var i=0;i<14;i++)s+='<circle class="crit2 tw" style="animation-delay:'+(-rnd(0,2.4)).toFixed(2)+'s" cx="'+f(rnd(10,390))+'" cy="'+f(rnd(70,225))+'" r="1.6" fill="#ffe082"/>';
+  s+='<path d="M70,47 q-4,40 4,80 M230,47 q6,50 -6,100 M360,47 q-8,30 2,60" stroke="#f0dfb8" stroke-width="2" fill="none"/>';
+  s+='<ellipse rx="8" ry="3.5" fill="#d07a2a" class="crit2"><animateMotion dur="5s" repeatCount="indefinite" path="'+g2+'"/><animate attributeName="opacity" values="1;1;0" keyTimes="0;.8;1" dur="5s" repeatCount="indefinite"/></ellipse>';
+  s+=worm(40,95,10,'crit')+worm(240,150,-8,'crit keep')+worm(130,195,5,'crit')+worm(320,95,15,'crit');
+  s+=louse(120,62,'crit')+louse(300,62,'crit')+louse(210,80,'crit');
+  s+=spring(80,150,'crit')+spring(190,122,'crit keep')+spring(355,175,'crit')+spring(280,208,'crit');
+  s+=centi(20,205,'crit')+centi(300,128,'crit')+ant(160,82,'crit keep')+ant(370,140,'crit');
+  if(!withToggle)return V(s,'bio');
+  return '<div class="tog"><button class="on" id="tb1">Sol vivant</button><button id="tb2">Sol abîmé</button></div>'+V(s,'bio')+'<p class="cap" id="bcount" style="font-style:normal;font-weight:700">Petits animaux visibles : 15</p>';
+}
+function bioAfter(){
+  var svg=document.querySelector('#manim .bio');
+  $('tb1').onclick=function(){svg.classList.remove('abime');this.classList.add('on');$('tb2').classList.remove('on');$('bcount').textContent='Petits animaux visibles : 15';};
+  $('tb2').onclick=function(){svg.classList.add('abime');this.classList.add('on');$('tb1').classList.remove('on');$('bcount').textContent='Petits animaux visibles : 3 (moins de galeries, moins d\'humus)';};
+}
+function aEros(covered){
+  var s=sky(230,false)+cloud(120,30,.95,true);
+  function sy(x){return x<=320?70+x/320*120:190;}
+  for(var x=40;x<=220;x+=10){var y0=58+rnd(0,8),dd=(-rnd(0,.9)).toFixed(2);s+='<line class="rain" style="--d:'+(sy(x)-y0-10).toFixed(0)+'px;animation-delay:'+dd+'s" x1="'+x+'" y1="'+y0.toFixed(0)+'" x2="'+(x-2)+'" y2="'+(y0+9).toFixed(0)+'" stroke="#2f8fd8" stroke-width="2.4" stroke-linecap="round"/><ellipse class="splash" style="animation-delay:'+dd+'s" cx="'+(x-2)+'" cy="'+f(sy(x)-6)+'" rx="5" ry="1.6" fill="none" stroke="#2f8fd8" stroke-width="1.3"/>';}
+  s+='<polygon points="0,70 320,190 320,230 0,230" fill="url(#gTer)"/><polygon points="0,70 320,190 320,230 0,230" fill="url(#tTer)"/><path d="M0,70 L320,190" stroke="#2a180a" stroke-width="12"/>';
+  for(var i=0;i<8;i++){x=rnd(20,300);var y=rnd(sy(x)+25,225);s+='<ellipse cx="'+f(x)+'" cy="'+f(y)+'" rx="5" ry="3" fill="#b9ada0" stroke="#8a7f72" stroke-width=".6"/>';}
+  s+='<rect class="river" x="318" y="184" width="82" height="46" fill="#4aa3df"/><path class="ripple" d="M324,196 h70 M330,210 h60" stroke="#d6f0ff" stroke-width="2" opacity=".7"/><text x="360" y="224" text-anchor="middle" class="lbl">Rivière</text>';
+  s+='<g class="nu"><path d="M80,104 q30,6 50,22 M170,136 q25,4 45,20 M240,162 q20,4 40,16" stroke="#1d1209" stroke-width="3" fill="none"/><path class="ripple" d="M0,66 L318,182 L392,198" stroke="#9a6a3a" stroke-width="5" fill="none" opacity=".8"/>';
+  for(i=0;i<12;i++)s+='<circle r="'+rnd(3,5).toFixed(1)+'" fill="#b07a42" stroke="#5c3a1a" stroke-width=".6" opacity="0"><animateMotion dur="3s" repeatCount="indefinite" begin="'+(i*.25).toFixed(2)+'s" path="M10,70 L318,184 L392,200"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="3s" repeatCount="indefinite" begin="'+(i*.25).toFixed(2)+'s"/></circle>';
+  s+='<text x="20" y="160" class="lbl">La terre est emportée !</text></g><g class="cvg">';
+  for(x=6;x<=312;x+=8)s+=tuft(x,sy(x)-4,R()<.5?'#4f9e36':'#5aa64a');
+  for(i=0;i<8;i++){x=rnd(20,300);s+=flower(x,sy(x)-4,['#fff','#ffd54f','#e57373'][i%3],10);}
+  for(x=30;x<=300;x+=40){var y2=sy(x);s+='<g stroke="#f0dfb8" fill="none" stroke-linecap="round">'+rootTree(x,y2+4,14,0,4).replace(/<path/g,'<path stroke-width="1.6"')+'</g>';}
+  s+=bush(296,180,13);
+  [60,150,240].forEach(function(x,k){var y=sy(x)+10;s+='<g class="infil" style="animation-delay:'+(-k*.5)+'s"><path d="M'+x+','+y.toFixed(0)+' v16 m-6,-6 l6,7 l6,-7" stroke="#2f8fd8" stroke-width="3" fill="none" stroke-linecap="round"/></g>';});
+  s+=fish(350,206,'#ff8f3a','swim');
+  s+='<text x="20" y="160" class="lbl">Les racines retiennent la terre</text></g>';
+  return '<div class="tog"><button '+(covered?'':'class="on" ')+'id="te1">Sol nu</button><button '+(covered?'class="on" ':'')+'id="te2">Sol couvert de plantes</button></div>'+V(s,'eros'+(covered?' cv':''));
+}
+function erosAfter(){
+  var svg=document.querySelector('#manim .eros');
+  $('te1').onclick=function(){svg.classList.remove('cv');this.classList.add('on');$('te2').classList.remove('on');};
+  $('te2').onclick=function(){svg.classList.add('cv');this.classList.add('on');$('te1').classList.remove('on');};
+}
+function aTemps(){
+  var s=sky(230,true)+'<g id="tStorm" opacity="0">'+cloud(200,34,1.1,true)+'<polygon id="tBolt" points="214,58 200,86 212,86 198,116 226,78 213,78 224,58" fill="#fff59d" opacity="0"/>';
+  for(var x=110;x<=290;x+=12){var y0=66+rnd(0,8);s+='<line class="rain" style="--d:'+(140-y0).toFixed(0)+'px;animation-delay:'+(-rnd(0,.9)).toFixed(2)+'s" x1="'+x+'" y1="'+y0.toFixed(0)+'" x2="'+(x-2)+'" y2="'+(y0+9).toFixed(0)+'" stroke="#2f8fd8" stroke-width="2.4"/>';}
+  s+='</g><g id="tLeaves">';
+  for(var i=0;i<6;i++)s+='<ellipse class="leaf" style="--dy:'+f(rnd(70,95))+'px;animation-delay:'+(-rnd(0,4)).toFixed(2)+'s" cx="'+f(rnd(80,320))+'" cy="60" rx="6" ry="3" fill="'+['#d07a2a','#c0a030','#a0522d'][i%3]+'"/>';
+  s+='</g><rect x="60" y="160" width="280" height="70" fill="#a7a7a7"/><rect x="60" y="160" width="280" height="70" fill="url(#tNap)" opacity=".6"/><path d="M90,175 l20,15 l-8,20 M200,170 l-15,25 l20,15 M280,180 l20,10 l-5,22 M140,200 l14,-8" stroke="#7b7b7b" stroke-width="3" fill="none"/><text x="200" y="215" text-anchor="middle" class="lbl">Roche</text>';
+  s+='<rect id="tLay" x="60" y="160" width="280" height="0" fill="#6b4423"/><rect id="tLayT" x="60" y="160" width="280" height="0" fill="url(#tTer)"/><rect id="tHumL" x="60" y="160" width="280" height="0" fill="#2f1d0e"/>';
+  s+='<g id="tSprout" transform="translate(200,160) scale(0)"><path d="M0,0 q-2,-14 0,-26" stroke="#4f9e36" stroke-width="3" fill="none"/><path d="M0,-14 q-12,-4 -16,-14 q10,2 16,10z M0,-20 q12,-4 15,-14 q-9,2 -15,10z" fill="#5aa83c"/></g>';
+  s+='<g stroke="#4a2e14" stroke-width="2"><line x1="352" y1="100" x2="352" y2="160"/><line x1="346" y1="100" x2="358" y2="100"/><line x1="346" y1="160" x2="358" y2="160"/></g><text x="366" y="134" class="lbd">1 cm</text>';
+  s+='<rect x="120" y="44" width="160" height="7" rx="3.5" fill="#fff" opacity=".7"/><rect id="tBar" x="120" y="44" width="0" height="7" rx="3.5" fill="#2c5aa0"/>';
+  s+='<text id="tCount" x="200" y="34" text-anchor="middle" font-size="26" font-weight="800" fill="#2c5aa0" style="paint-order:stroke;stroke:#fff;stroke-width:4px">0 an</text><text id="tMsg" x="200" y="88" text-anchor="middle" class="lbd" style="paint-order:stroke;stroke:#fff;stroke-width:4px"></text>';
+  return V(s)+'<div class="tog"><button id="tReplay">Rejouer ↻</button></div>';
+}
+function tempsAfter(){
+  var lay=$('tLay'),layT=$('tLayT'),hum=$('tHumL'),spr=$('tSprout'),bar=$('tBar'),bolt=$('tBolt'),lv=$('tLeaves'),cnt=$('tCount'),msg=$('tMsg'),st=$('tStorm'),t0=null;
+  function setH(h){[lay,layT].forEach(function(r){r.setAttribute('height',h.toFixed(1));r.setAttribute('y',(160-h).toFixed(1));});var hh=Math.min(h,8);hum.setAttribute('height',hh.toFixed(1));hum.setAttribute('y',(160-h).toFixed(1));spr.setAttribute('transform','translate(200,'+(160-h).toFixed(1)+') scale('+(h/60).toFixed(2)+')');}
+  function frame(ts){
+    if(!t0)t0=ts;var t=(ts-t0)/1000,h;
+    if(t<6){var k=t/6;h=60*k;cnt.textContent=Math.round(500*k)+' ans';msg.textContent='Le sol se forme…';st.setAttribute('opacity',0);bar.setAttribute('width',(160*k).toFixed(1));lv.setAttribute('opacity',1);}
+    else if(t<7.5){h=60;cnt.textContent='≈ 500 ans pour 1 cm !';msg.textContent='';bar.setAttribute('width',160);}
+    else if(t<10){var q=Math.min(1,(t-7.5)/2);h=60*(1-q);st.setAttribute('opacity',Math.min(1,(t-7.5)*3));bolt.setAttribute('opacity',Math.sin(t*23)>.75?1:0);lv.setAttribute('opacity',0);cnt.textContent='';msg.textContent='';}
+    else{h=0;st.setAttribute('opacity',1);bolt.setAttribute('opacity',0);msg.setAttribute('y',124);msg.textContent='Sur un sol nu, la pluie peut l\'emporter en quelques années !';}
+    setH(h);
+    if(t<10.2)timer=requestAnimationFrame(frame);else timer=null;
+  }
+  function go(){stopTimer();t0=null;msg.setAttribute('y',88);timer=requestAnimationFrame(frame);}
+  $('tReplay').onclick=go;go();
+}
+function aLady(){
+  var s=soilBase()+'<text x="200" y="222" text-anchor="middle" class="lbl">Nappe d\'eau propre</text>';
+  s+='<path d="M200,122 q-4,-50 0,-100" stroke="#4f9e36" stroke-width="5" fill="none"/><path d="M200,90 q-30,-6 -44,-30 q24,6 44,22z M200,62 q30,-6 42,-30 q-22,6 -42,22z" fill="#5aa83c"/>';
+  var ys=[108,96,84,72,60,48,38];
+  ys.forEach(function(y,k){var fr=((122-y)/100*.8).toFixed(3);var x=k%2?206:193;s+='<g><ellipse cx="'+x+'" cy="'+y+'" rx="3.4" ry="2.4" fill="#9ccc65" stroke="#689f38" stroke-width=".7"/><path d="M'+(x-2)+','+(y+2)+' l-2,2 M'+(x+2)+','+(y+2)+' l2,2" stroke="#689f38" stroke-width=".6"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;'+fr+';'+(+fr+.01).toFixed(3)+';1" dur="8s" repeatCount="indefinite"/></g>';});
+  s+='<g><animateTransform attributeName="transform" type="translate" values="0,0;0,-100;0,-100" keyTimes="0;.8;1" dur="8s" repeatCount="indefinite"/><g transform="translate(200,122) rotate(-90)">'+lady(0,0,2.2)+'</g></g>';
+  s+='<g transform="translate(120,60)"><g><animateMotion dur="7s" repeatCount="indefinite" path="M0,0 c40,-30 90,-10 120,10 s40,40 0,40 s-100,-10 -120,-50z"/><g class="wing"><ellipse cx="-5" cy="-4" rx="6" ry="3" fill="#fff" opacity=".7"/><ellipse cx="5" cy="-4" rx="6" ry="3" fill="#fff" opacity=".7"/></g>'+lady(0,0,1.3)+'</g></g>';
+  s+=bush(50,121,16)+bush(350,121,18)+worm(250,165,-5)+crawler('M20,190 Q100,150 170,175 T330,160',9,0)+louse(140,150)+spring(320,160);
+  for(var x=110;x<=170;x+=10)s+=flower(x,121,['#e53935','#1e88e5','#fdd835'][(x/10)%3],18);
+  s+=bee(130,90,'M0,0 c20,-20 40,10 20,20 s-30,-10 -20,-20z',4);
+  return V(s);
+}
+function aCompost(){
+  var s=soilBase()+'<text x="200" y="222" text-anchor="middle" class="lbl">Nappe d\'eau propre</text>';
+  s+='<g class="thick"><rect y="120" width="400" height="14" fill="url(#gHum)"/><rect y="120" width="400" height="14" fill="url(#tHum)"/></g>';
+  s+='<g transform="translate(90,121)"><ellipse cx="0" cy="2" rx="66" ry="5" fill="url(#gShadow)"/><path d="M-62,0 Q-56,-52 -8,-60 Q44,-62 62,0Z" fill="url(#gComp)"/><path d="M-36,-26 l14,-5 M-12,-44 l16,2 M14,-30 l16,-8 M-26,-10 l12,4 M24,-12 l14,2" stroke="#e8c45a" stroke-width="2.6" stroke-linecap="round"/><circle cx="-18" cy="-34" r="3.5" fill="#e67e22"/><circle cx="26" cy="-40" r="3.5" fill="#7cb342"/><circle cx="6" cy="-14" r="3" fill="#d84315"/>';
+  for(var i=0;i<3;i++)s+='<path class="steam" style="animation-delay:'+(-i)+'s" d="M'+(-16+i*16)+',-58 q-5,-8 0,-14 q5,-6 0,-12" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>';
+  s+='<text x="0" y="-20" text-anchor="middle" class="lbl">Compost</text></g>';
+  for(i=0;i<14;i++){var x=rnd(40,150);s+='<circle class="down" style="--dx:'+rnd(-10,150).toFixed(0)+'px;--dy:'+rnd(20,60).toFixed(0)+'px;animation-delay:'+(-rnd(0,8)).toFixed(2)+'s" cx="'+f(x)+'" cy="124" r="3" fill="'+['#e67e22','#7cb342','#8d6e63'][i%3]+'"/>';}
+  for(var x2=180;x2<=310;x2+=32)s+='<g class="grow">'+wheat(x2,121,38)+'</g>';
+  s+=cow(362,121,.5,true);
+  s+=crawler('M60,130 Q90,160 140,170 T260,180',8,0)+crawler('M120,128 Q100,170 160,190',6,-3)+worm(300,150,-5);
+  return V(s);
+}
+function aRot(){
+  var s=sky(122)+'<rect y="120" width="400" height="110" fill="url(#gTer)"/><rect y="120" width="400" height="110" fill="url(#tTer)"/><rect y="120" width="400" height="16" fill="url(#gHum)"/><rect y="120" width="400" height="16" fill="url(#tHum)"/>';
+  s+='<text id="ryr" x="200" y="30" text-anchor="middle" font-size="20" font-weight="800" fill="#2c5aa0" style="paint-order:stroke;stroke:#fff;stroke-width:4px"></text><g id="rdots"></g>';
+  var g0='',r0='',g1='',r1='',g2='',r2='';
+  for(var x=40;x<=360;x+=40){
+    g0+=wheat(x,121,40);r0+='<g stroke="#f1e0b8" fill="none" stroke-width="1.5">'+[-12,-6,0,6,12].map(function(d){return '<path d="M'+x+',122 q'+d+',20 '+(d*1.6)+',40"/>';}).join('')+'</g>';
+    g1+='<g><circle cx="'+(x-6)+'" cy="112" r="7" fill="#43a047"/><circle cx="'+(x+6)+'" cy="112" r="7" fill="#4caf50"/><circle cx="'+x+'" cy="102" r="7" fill="#66bb6a"/><circle cx="'+x+'" cy="94" r="5" fill="#f8bbd0"/></g>';
+    r1+='<path d="M'+x+',122 v60 m0,-40 l-10,10 m10,5 l10,10" stroke="#f1e0b8" stroke-width="2.5" fill="none"/><circle cx="'+(x-8)+'" cy="152" r="2.6" fill="#ff8a80"/><circle cx="'+(x+8)+'" cy="160" r="2.6" fill="#ff8a80"/><circle class="rise" style="animation-delay:'+(-rnd(0,3)).toFixed(2)+'s" cx="'+(x+8)+'" cy="160" r="2.5" fill="#b3e5fc"/>';
+    g2+='<path d="M'+x+',121 v-70" stroke="#4f9e36" stroke-width="5"/><path d="M'+x+',100 q-22,-6 -30,-24 M'+x+',80 q22,-6 30,-24 M'+x+',64 q-18,-4 -24,-18" stroke="#5aa83c" stroke-width="5" fill="none" stroke-linecap="round"/><ellipse cx="'+(x+5)+'" cy="78" rx="5" ry="12" fill="#f9d14b"/>';
+    r2+='<path d="M'+x+',122 q-14,30 -18,70 M'+x+',122 q14,30 18,70 M'+x+',122 v80" stroke="#f1e0b8" stroke-width="2.4" fill="none"/>';
+  }
+  s+='<g class="yr y0"><g class="gr">'+g0+'</g><g class="grr">'+r0+'</g><text x="200" y="215" text-anchor="middle" class="lbl">Racines courtes</text></g>';
+  s+='<g class="yr y1"><g class="gr">'+g1+'</g><g class="grr">'+r1+'</g><text x="200" y="215" text-anchor="middle" class="lbl">Le trèfle enrichit le sol</text></g>';
+  s+='<g class="yr y2"><g class="gr">'+g2+'</g><g class="grr">'+r2+'</g><text x="200" y="215" text-anchor="middle" class="lbl">Racines profondes</text></g>';
+  s+=crawler('M10,200 Q90,170 180,190 T390,180',10,0);
+  return V(s,'rot y0');
+}
+function rotAfter(){
+  var svg=document.querySelector('#manim .rot'),lab=$('ryr'),dots=$('rdots'),n=0,L=['Année 1 : blé','Année 2 : trèfle','Année 3 : maïs'];
+  function step(){
+    svg.setAttribute('class','rot y'+n);lab.textContent=L[n];
+    var d='';for(var k=0;k<3;k++)d+='<circle cx="'+(184+k*16)+'" cy="44" r="5" fill="'+(k===n?'#2c5aa0':'#fff')+'" stroke="#2c5aa0" stroke-width="1.5"/>';dots.innerHTML=d;
+    svg.querySelectorAll('.y'+n+' .gr, .y'+n+' .grr').forEach(function(e){e.style.animation='none';void e.getBoundingClientRect();e.style.animation='';});
+    n=(n+1)%3;
+  }
+  step();iv=setInterval(step,3000);
+}
+})();
+</script>
+</body>
+</html>

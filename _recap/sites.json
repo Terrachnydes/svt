@@ -7,7 +7,7 @@
   "Orientation 3e",
   "Le sol"
  ],
- "derniere_maj": "2026-11-19",
+ "derniere_maj": "2026-11-21",
  "sites": [
   {
    "titre": "Inondations et canicules",
@@ -187,6 +187,14 @@
    "artifact": "https://claude.ai/artifact/XR8XL66f6Eiitd2Cnqhvxt",
    "version": "1794865021-c15a",
    "verifie": "2026-11-17"
+  },
+  {
+   "titre": "Protéger le sol",
+   "theme": "Le sol",
+   "fichier": "proteger-le-sol.html",
+   "artifact": null,
+   "version": null,
+   "verifie": "2026-11-21"
   }
  ],
  "ignores": [
