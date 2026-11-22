@@ -327,12 +327,14 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .duo2{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr);gap:12px;align-items:start}
 #prog .carte2{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
 #prog .carte2 h3{margin:0 0 8px;font-size:15px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#prog .site-carte .apercu2{max-width:260px}
+#prog .duo2.duo-site{grid-template-columns:280px minmax(0,1fr)}
 #prog .apercu2{display:block;width:100%;padding:0;border:1px solid var(--line);border-radius:10px;background:var(--thumb);cursor:pointer;overflow:hidden;aspect-ratio:16/10}
 #prog .apercu2 img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
 #prog .apercu2 span{font-size:48px}
 #prog .apercu2:hover{outline:3px solid var(--accent)}
 #prog .tag2{font-size:11.5px;font-weight:700;border-radius:6px;padding:1px 6px;background:#fdf0c8;color:#7a5a00}
-@media (max-width:900px){#prog .duo2{grid-template-columns:1fr}}
+@media (max-width:900px){#prog .duo2,#prog .duo2.duo-site{grid-template-columns:1fr}}
 @media (max-width:480px){#prog .eleves{grid-template-columns:1fr 1fr}#prog table.sv .nom{min-width:110px;max-width:130px}#prog .barre .fin{margin-left:0}}
 </style>
 
@@ -1864,20 +1866,21 @@ ${A ? `<span class="sep2"></span>
     <div class="attente" hidden></div>
     ${!A ? '<div class="info">Aucune activité pour cette classe.</div>' : `
     <div class="carte2 plan-carte"><h3>Plan de classe <span class="sous">${enCours ? '<span class="pt co" style="display:inline-block"></span> présent · <span class="pt abs" style="display:inline-block"></span> pas connecté' : ''}</span></h3>${eleves}</div></div>${journeeHtml}</div>
-    <div class="duo2">
+    <div class="duo2 duo-site">
+      <div class="carte2 site-carte">
+        <h3>${st ? esc(st.titre) : 'Site'}</h3>
+        ${st ? `<button type="button" class="apercu2" data-acote="${esc(st.url)}" title="Ouvrir le site à côté">${st.apercu ? `<img src="${esc(st.apercu)}" alt="">` : '<span>🌐</span>'}</button>
+        <div class="actions" style="margin-top:6px">
+          <button class="bouton petit" type="button" data-acote="${esc(st.url)}" title="Ouvre le site dans une fenêtre à côté">↗ Ouvrir le site</button>
+          <a class="bouton leger petit" href="${lienSite(k, st)}" target="_blank" rel="noopener" title="Ouvre une conversation Claude pour modifier ce site">✦ Modifier le site avec Claude</a>
+        </div>` : '<div class="sous">Pas de site associé.</div>'}
+        <div class="liens" style="margin-top:6px">${META[k] && META[k].act ? `<a href="${esc(META[k].act)}" target="_blank" rel="noopener">📄 Doc activité</a>` : ''}${META[k] && META[k].cor ? `<a href="${esc(META[k].cor)}" target="_blank" rel="noopener">✅ Doc correction</a>` : ''}</div>
+      </div>
       <div class="carte2">
         <h3>Consignes ${V.publiee ? '' : '<span class="tag2">brouillon, pas encore publié</span>'}${V.publiee && differe ? '<span class="tag2">brouillon modifié non publié</span>' : ''}${k ? `<button class="bouton leger petit" type="button" data-atelier="${esc(k)}" style="margin-left:auto">✦ Modifier avec Claude</button>` : ''}</h3>
         ${cs.map(c => `<p class="cons"><b>${esc(c.lettre)}</b> · ${esc(c.texte)}</p>`).join('') || '<div class="sous">Pas de consignes dans la progression : les élèves voient celles du Doc activité.</div>'}
         <h3 style="margin-top:14px">Correction <span class="sous">${Object.keys(bar).length ? total(bar) + ' pts' : ''}</span></h3>
         ${Object.entries(bar).map(([l, v]) => `<p class="cons"><b>${esc(l)}</b> · ${esc(v.max)} pts${A.reussite && A.reussite[l] != null ? ` <span class="sous">(réussite ${A.reussite[l]} %)</span>` : ''}</p>${criteres(v).map(x => `<div class="crit">${x.points ? `<i>${esc(x.points)} pt · </i>` : ''}${esc(x.texte)}</div>`).join('')}`).join('') || '<div class="sous">Pas de barème dans la progression.</div>'}
-        <div class="liens" style="margin-top:10px">${META[k] && META[k].act ? `<a href="${esc(META[k].act)}" target="_blank" rel="noopener">📄 Doc activité</a>` : ''}${META[k] && META[k].cor ? `<a href="${esc(META[k].cor)}" target="_blank" rel="noopener">✅ Doc correction</a>` : ''}</div>
-      </div>
-      <div class="carte2">
-        <h3>${st ? esc(st.titre) : 'Document'}</h3>
-        ${st ? `<button type="button" class="apercu2" data-acote="${esc(st.url)}" title="Ouvrir le site à côté">${st.apercu ? `<img src="${esc(st.apercu)}" alt="">` : '<span>🌐</span>'}</button>
-        <div class="actions" style="margin-top:10px"><button class="bouton" type="button" data-acote="${esc(st.url)}">⧉ Ouvrir le site à côté</button>
-        <a class="bouton leger" href="${esc(st.url)}" target="_blank" rel="noopener">Ouvrir dans un onglet ↗</a></div>
-        <div class="sous" style="margin-top:6px">Claude interdit d'afficher un autre site à l'intérieur de la page : « à côté » ouvre une fenêtre sur la moitié droite de l'écran.</div>` : '<div class="sous">Pas de site associé à cette activité.</div>'}
       </div>
     </div>`}`;
   majAttente();
