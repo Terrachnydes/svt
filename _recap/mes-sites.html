@@ -238,6 +238,8 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .ic .fa{background:#fde2c8;color:#9a3412}
 #prog .ic .ar{background:#fbdcd8;color:#9b2c20}
 #prog .ic .en{background:#fdf0c8;color:#7a5a00}
+#prog .tg{display:inline-block;font-size:12px;font-weight:600;border-radius:6px;padding:1px 7px;background:var(--thumb);color:var(--muted)}
+#prog .tg.bon{background:#d6f0e4;color:#14603f}#prog .tg.moyen{background:#fdf0c8;color:#7a5a00}#prog .tg.faible{background:#fbdcd8;color:#9b2c20}
 #prog .prf{display:inline-block;font-size:10.5px;font-weight:700;background:#e8e1f7;color:#5b3fa0;border-radius:5px;padding:0 4px;margin-left:4px;vertical-align:1px}
 #prog td.def{text-align:left;font-size:13px;color:var(--muted);max-width:340px;overflow:hidden;text-overflow:ellipsis}
 #prog td.app{text-align:left;font-size:13px;max-width:520px;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
@@ -1215,6 +1217,12 @@ const EDT_SECOURS = {   // copie de EDT_CLASSES (CorrectionAuto.js) si la synchr
   4: [['08:30', '5G', 'A'], ['08:30', '5I', 'B'], ['09:28', '4H', 'A'], ['09:28', '4G', 'B'], ['10:40', '5H', ''], ['13:05', '4G', ''], ['14:03', '4I', ''], ['15:15', '6H', 'A'], ['15:15', '6J', 'B'], ['16:13', '6I', 'B']],
   5: [['08:30', '6H', ''], ['09:28', '3G', 'A'], ['09:28', '6I', 'B'], ['10:40', '3G', 'A'], ['10:40', '4I', 'B'], ['13:05', '3H', ''], ['14:03', '6J', ''], ['15:15', '3I', '']]
 };
+const COMP_POS = ['Exemplaire', 'Moteur', 'Dynamique', 'Sérieux', 'Agréable', 'Participatif', 'Calme', 'Discret'];
+const COMP_NEG = ['Réservé', 'Passif', 'Distrait', 'Bavard', 'Agité', 'Perturbateur', 'Insolent', 'Avachi'];
+const TRAVAIL = { Non: ['Régulier', 'bon', 'Rend ses activités'], Abs: ['Irrégulier', 'moyen', 'Plus de 30 % des activités non rendues'], 'Abs+': ['Peu de travail', 'faible', 'Plus de la moitié des activités non rendues'] };
+const tagComp = c => c ? `<span class="tg ${COMP_NEG.includes(c) ? 'faible' : COMP_POS.includes(c) ? 'bon' : ''}">${esc(c)}</span>` : '';
+const tagTravail = t => { const x = TRAVAIL[t]; return x ? `<span class="tg ${x[1]}" title="${esc(x[2])}">${esc(x[0])}</span>` : (t ? `<span class="tg">${esc(t)}</span>` : ''); };
+const tagProfil = p => p ? `<span class="prf" title="${esc(PROFILS[p] || '')}">${esc(p)}</span>` : '';
 const PROFILS = { D: 'Évaluation aménagée', NE: 'Non évalué', M: 'Travail à la maison', T: 'Avec un tuteur' };
 const ETATS = { '-': 'pas ouverte', o: 'ouverte, pas encore rendue', r: 'a répondu', c: 'corrigée (pas encore affichée)', v: 'correction vue', x: 'correction reçue (absent)', a: 'absent' };
 
@@ -1417,19 +1425,22 @@ function dessinerSuivi() {
   const codes = [];
   vues.forEach(c => ((SV.classes[c].periodes[svPer] || {}).devoirs || []).forEach(d => { if (!codes.includes(d.code)) codes.push(d.code); }));
   codes.sort(ordreCode);
+  if (codes[0] === 'A') codes.shift();   // la note d'attitude a sa propre colonne, après le comportement
 
-  const lignes = [], toutesMoy = {}, toutesGen = [];
+  const lignes = [], toutesMoy = {}, toutesGen = [], toutesAtt = [];
   vues.forEach(cl => {
     const C = SV.classes[cl], P = C.periodes[svPer] || { devoirs: [] }, ids = Object.keys(SV.eleves[cl] || {}).sort(ordreEleves);
-    const moyCl = {}, gen = [];
+    const moyCl = {}, gen = [], att = [];
     ids.forEach(id => {
-      const p = SV.eleves[cl][id].p[svPer]; gen.push(p ? num(p.moy) : null);
+      const p = SV.eleves[cl][id].p[svPer]; gen.push(p ? num(p.moy) : null); att.push(p ? num(p.notes.A) : null);
       codes.forEach(k => { const n = noteEleve(cl, id, k, svPer); if (!n.nc && n.v != null) (moyCl[k] = moyCl[k] || []).push(n.v); });
     });
     codes.forEach(k => { (toutesMoy[k] = toutesMoy[k] || []).push(...(moyCl[k] || [])); });
-    toutesGen.push(...gen);
-    const mg = moyenne(gen);
+    toutesGen.push(...gen); toutesAtt.push(...att);
+    const mg = moyenne(gen), ma = moyenne(att), dA = (P.devoirs || []).find(x => x.code === 'A');
     lignes.push(`<tr class="rcl"><td class="nom"><button class="bouton leger petit" type="button" data-pcl="${cl}">${cl} · ${ids.length} élèves ⚙</button></td>
+      <td colspan="3" class="sous">${ids.filter(id => SV.eleves[cl][id].profil).length} profil(s) particulier(s)</td>
+      ${dA ? celluleClasse(cl, P, 'A', ma) : `<td><span class="n ${classeNote(ma)}">${fr(ma)}</span></td>`}
       <td><span class="n ${classeNote(mg)}">${fr(mg)}</span></td>
       ${codes.map(k => celluleClasse(cl, P, k, moyenne(moyCl[k] || []))).join('')}
       <td class="def">${esc(defautsClasse(cl).slice(0, 2).map(d => d[0] + ' ×' + d[1]).join(' · '))}</td>
@@ -1437,7 +1448,10 @@ function dessinerSuivi() {
     ids.forEach(id => {
       const E = SV.eleves[cl][id], p = E.p[svPer] || {};
       const m = num(p.moy);
-      lignes.push(`<tr class="el"><td class="nom" data-pel="${cl}|${id}" title="${esc(id)}">${esc(nomEleve(id))}${E.profil ? `<span class="prf" title="${esc(PROFILS[E.profil] || '')}">${esc(E.profil)}</span>` : ''}</td>
+      const nA = num((p.notes || {}).A);
+      lignes.push(`<tr class="el"><td class="nom" data-pel="${cl}|${id}" title="${esc(id)}">${esc(nomEleve(id))}</td>
+        <td>${tagProfil(E.profil)}</td><td>${tagComp(E.comportement)}</td><td>${tagTravail(E.assiduite)}</td>
+        <td><span class="n ${classeNote(nA)}">${fr(nA)}</span></td>
         <td><span class="n ${classeNote(m)}">${fr(m)}</span></td>
         ${codes.map(k => { const n = noteEleve(cl, id, k, svPer); return `<td title="${esc(n.nc ? 'Note non comptée (facultative ou sous le seuil du profil)' : n.titre || '')}"><span class="n ${n.nc ? 'nc' : n.v == null ? 'vide' : classeNote(n.v)}">${esc(n.txt)}</span></td>`; }).join('')}
         <td class="def" title="${esc((E.defauts || []).map(d => d[0] + ' ×' + d[1]).join('\n'))}">${esc((E.defauts || []).slice(0, 2).map(d => d[0] + ' ×' + d[1]).join(' · '))}</td>
@@ -1445,7 +1459,8 @@ function dessinerSuivi() {
     });
   });
   const mn = moyenne(toutesGen);
-  if (vues.length > 1) lignes.push(`<tr class="niv"><td class="nom">Niveau ${NOMS[svNiv]}</td><td><span class="n ${classeNote(mn)}">${fr(mn)}</span></td>
+  const mAt = moyenne(toutesAtt);
+  if (vues.length > 1) lignes.push(`<tr class="niv"><td class="nom">Niveau ${NOMS[svNiv]}</td><td colspan="3"></td><td><span class="n ${classeNote(mAt)}">${fr(mAt)}</span></td><td><span class="n ${classeNote(mn)}">${fr(mn)}</span></td>
     ${codes.map(k => { const m = moyenne(toutesMoy[k] || []); return `<td><span class="n ${classeNote(m)}">${fr(m)}</span></td>`; }).join('')}<td class="def"></td><td></td></tr>`);
 
   $('#sv-main').innerHTML = `
@@ -1459,7 +1474,7 @@ function dessinerSuivi() {
     ${blocNoms()}
     <div class="attente" hidden></div>
     <div class="sous">Clique sur une case de classe pour publier sur Pronote, corriger, rendre facultative ou arrêter une activité ; sur un élève pour ses statistiques et son appréciation. <span class="n nc">12</span> = note non comptée · · = ouverte non rendue · ✎ = rendue, pas corrigée.</div>
-    ${vues.length ? `<div class="tabl"><table class="sv"><thead><tr><th class="nom">Élève</th><th>Moy.</th>${codes.map(k => `<th>${esc(k)}</th>`).join('')}<th>Défauts fréquents</th><th>Appréciation T${svPer}</th></tr></thead>
+    ${vues.length ? `<div class="tabl"><table class="sv"><thead><tr><th class="nom">Élève</th><th title="Profil particulier (D, NE, M, T)">Profil</th><th>Comportement</th><th title="Activités rendues ou non">Travail</th><th title="Note d'attitude (A)">Attitude</th><th>Moy.</th>${codes.map(k => `<th>${esc(k)}</th>`).join('')}<th>Défauts fréquents</th><th>Appréciation T${svPer}</th></tr></thead>
       <tbody>${lignes.join('')}</tbody></table></div>` : '<div class="info">Aucune classe avec des élèves à ce niveau.</div>'}`;
   majAttente();
 }
