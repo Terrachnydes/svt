@@ -273,9 +273,12 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .duo2{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr);gap:12px;align-items:start}
 #prog .carte2{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
 #prog .carte2 h3{margin:0 0 8px;font-size:15px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-#prog .cadre{width:100%;height:min(80vh,820px);border:1px solid var(--line);border-radius:10px;background:var(--thumb)}
+#prog .apercu2{display:block;width:100%;padding:0;border:1px solid var(--line);border-radius:10px;background:var(--thumb);cursor:pointer;overflow:hidden;aspect-ratio:16/10}
+#prog .apercu2 img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+#prog .apercu2 span{font-size:48px}
+#prog .apercu2:hover{outline:3px solid var(--accent)}
 #prog .tag2{font-size:11.5px;font-weight:700;border-radius:6px;padding:1px 6px;background:#fdf0c8;color:#7a5a00}
-@media (max-width:900px){#prog .duo2{grid-template-columns:1fr}#prog .cadre{height:60vh}}
+@media (max-width:900px){#prog .duo2{grid-template-columns:1fr}}
 @media (max-width:480px){#prog .eleves{grid-template-columns:1fr 1fr}#prog table.sv .nom{min-width:110px;max-width:130px}#prog .barre .fin{margin-left:0}}
 </style>
 
@@ -1716,8 +1719,11 @@ function dessinerActivite() {
         <div class="liens" style="margin-top:10px">${META[k] && META[k].act ? `<a href="${esc(META[k].act)}" target="_blank" rel="noopener">📄 Doc activité</a>` : ''}${META[k] && META[k].cor ? `<a href="${esc(META[k].cor)}" target="_blank" rel="noopener">✅ Doc correction</a>` : ''}</div>
       </div>
       <div class="carte2">
-        <h3>${st ? esc(st.titre) : 'Document'} ${st ? `<a class="sous" href="${esc(st.url)}" target="_blank" rel="noopener">ouvrir dans un onglet ↗</a>` : ''}</h3>
-        ${st ? `<iframe class="cadre" src="${esc(st.url)}" title="Site de l'activité" loading="lazy"></iframe>` : '<div class="sous">Pas de site associé à cette activité.</div>'}
+        <h3>${st ? esc(st.titre) : 'Document'}</h3>
+        ${st ? `<button type="button" class="apercu2" data-acote="${esc(st.url)}" title="Ouvrir le site à côté">${st.apercu ? `<img src="${esc(st.apercu)}" alt="">` : '<span>🌐</span>'}</button>
+        <div class="actions" style="margin-top:10px"><button class="bouton" type="button" data-acote="${esc(st.url)}">⧉ Ouvrir le site à côté</button>
+        <a class="bouton leger" href="${esc(st.url)}" target="_blank" rel="noopener">Ouvrir dans un onglet ↗</a></div>
+        <div class="sous" style="margin-top:6px">Claude interdit d'afficher un autre site à l'intérieur de la page : « à côté » ouvre une fenêtre sur la moitié droite de l'écran.</div>` : '<div class="sous">Pas de site associé à cette activité.</div>'}
       </div>
     </div>`}`;
   majAttente();
@@ -1726,8 +1732,16 @@ function dessinerActivite() {
 // ---------- Événements des deux onglets ----------
 $('#prog').addEventListener('click', e => {
   const t = e.target;
-  const b = t.closest('[data-svniv],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv]');
+  const b = t.closest('[data-svniv],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote]');
   if (!b) return;
+  if (b.dataset.acote) {
+    // Fenêtre sur la moitié droite de l'écran (les sites ne peuvent pas être intégrés dans la page Claude)
+    const L = Math.round(screen.availWidth / 2), H = screen.availHeight;
+    const w = window.open(b.dataset.acote, 'site-activite', `popup=yes,left=${L + (screen.availLeft || 0)},top=${screen.availTop || 0},width=${L},height=${H}`);
+    if (!w) window.open(b.dataset.acote, '_blank', 'noopener');
+    else try { w.focus(); } catch (e) {}
+    return;
+  }
   if (b.dataset.svniv) { svNiv = b.dataset.svniv; svCl = ''; svPer = ''; dessinerSuivi(); }
   else if (b.dataset.pact) { const [cl, k] = b.dataset.pact.split('|'); popActivite(b, cl, k); }
   else if (b.dataset.op) { const [cl, k] = b.dataset.k.split('|'); operation(b.dataset.op, cl, k); }
