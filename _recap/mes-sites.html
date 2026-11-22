@@ -214,6 +214,10 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .ac-tete .l1{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
 #prog .ac-tete h2{font-size:1.05rem!important;margin:0;cursor:help}
 #prog .chips2{display:flex;flex-wrap:wrap;gap:4px;margin-left:auto}
+#prog .minuteur{font-weight:700;font-size:15px;font-variant-numeric:tabular-nums;border:2px solid var(--line);border-radius:9px;padding:3px 12px;background:var(--bg);white-space:nowrap}
+#prog .minuteur.lecture{border-color:#4f7bd9;background:#eef3fd;color:#1e40af}
+#prog .minuteur.activite{border-color:#2e9e5b;background:#eaf7ef;color:#14603f}
+#prog .minuteur.correction{border-color:#d9a400;background:#fdf6dc;color:#7a5a00}
 #prog .sep2{width:1px;align-self:stretch;background:var(--line);margin:0 2px}
 #prog .barre .pub.mini{position:static;margin:0}
 #prog .c2{font-size:12.5px;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:2px 7px;white-space:nowrap}
@@ -1319,7 +1323,8 @@ async function sauverPlan(cl, plan) {
 }
 function planClasse(cl) {
   const p = PLANS[cl] || (SV.classes[cl] || {}).plan;
-  const plan = Array.from({ length: 6 }, (_, r) => Array.from({ length: 7 }, (_, c) => ((p || [])[r] || [])[c] || ''));
+  // 6 rangées du cahier + une 7e rangée avec une seule place, à gauche (sous la dernière place de la colonne de gauche)
+  const plan = Array.from({ length: 7 }, (_, r) => Array.from({ length: 7 }, (_, c) => ((p || [])[r] || [])[c] || ''));
   return plan;
 }
 async function chargerConnectes() {
@@ -1718,7 +1723,8 @@ function journee() {
 }
 function creneauxDuJour() {
   const h = heureParis();
-  if (CO && CO.maj && CO.creneaux && String(CO.maj).slice(0, 10) === new Date().toISOString().slice(0, 10)) return CO.creneaux.slice().sort();
+  const dateParis = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(CO && CO.maj ? new Date(CO.maj) : new Date(0));
+  if (CO && CO.maj && CO.creneaux && dateParis === h.date) return CO.creneaux.slice().sort();
   const sem = semaineAB();
   return (EDT_SECOURS[h.jour] || []).filter(c => !c[2] || c[2] === sem).map(c => [c[0], c[1]]);
 }
@@ -1764,6 +1770,31 @@ function prepMeta(cl, code) {
   return k;
 }
 
+// Minuteur du cours (même découpage que le cahier élève : 17 min lecture, 30 min activité, 8 min correction)
+function etatMinuteur(debut) {
+  if (!debut) return { cls: '', txt: 'Pas de cours' };
+  const p = {}; new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Paris', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).formatToParts(new Date()).forEach(x => p[x.type] = x.value);
+  const t = (+p.hour * 60 + +p.minute) * 60 + +p.second, d0 = minutes(debut) * 60;
+  const mmss = x => String(Math.floor(x / 60)).padStart(2, '0') + ':' + String(x % 60).padStart(2, '0');
+  const d = t - d0;
+  if (d < -60 * 60) return { cls: '', txt: '⏳ Prochain cours à ' + debut };
+  if (d < 0) return { cls: '', txt: '⏳ Cours dans ' + mmss(-d) };
+  if (d < 17 * 60) return { cls: 'lecture', txt: '📖 Lecture · ' + mmss(17 * 60 - d) };
+  if (d < 47 * 60) return { cls: 'activite', txt: '✍️ Activité · ' + mmss(47 * 60 - d) };
+  if (d < 55 * 60) return { cls: 'correction', txt: '✅ Correction · ' + mmss(55 * 60 - d) };
+  return { cls: '', txt: 'Cours terminé (' + debut + ')' };
+}
+function minuteurHtml(cours) {
+  const e = etatMinuteur(cours && cours[0]);
+  return `<span id="ac-minuteur" class="minuteur ${e.cls}" data-debut="${cours ? esc(cours[0]) : ''}">${esc(e.txt)}</span>`;
+}
+setInterval(() => {
+  const m = document.getElementById('ac-minuteur');
+  if (!m || $('#ac-main').hidden) return;
+  const e = etatMinuteur(m.dataset.debut);
+  m.textContent = e.txt; m.className = 'minuteur ' + e.cls;
+}, 1000);
+
 function dessinerActivite() {
   if (!SV) return;
   const classes = Object.keys(SV.classes).filter(c => SV.classes[c].effectif).sort();
@@ -1796,8 +1827,10 @@ function dessinerActivite() {
   const plan = planClasse(acCl);
   let dernier = 5; while (dernier > 0 && plan[dernier].every(x => !x)) dernier--;
   const places = new Set();
-  const rangs = plan.slice(0, Math.min(6, dernier + 2)).map((r, ri) => r.map((id, c) => {
+  const nbRangs = 7;
+  const rangs = plan.slice(0, nbRangs).map((r, ri) => r.map((id, c) => {
     const sep = c === 1 || c === 5 ? '<div class="allee"></div>' : '';
+    if (ri === 6 && c > 0) return sep + '<div></div>';   // 7e rangée : seulement la place de gauche
     if (id && id !== '?' && SV.eleves[acCl][id]) { places.add(id); return sep + carte(id, `${ri}|${c}`); }
     return sep + `<div class="elv vide" data-place="${ri}|${c}" title="Place libre : clique pour y mettre un élève">${id === '?' ? '<small>?</small>' : ''}</div>`;
   }).join('')).join('');
@@ -1822,27 +1855,18 @@ function dessinerActivite() {
       <div class="grp"><select data-ac="cl" aria-label="Classe">${classes.map(c => `<option ${c === acCl ? 'selected' : ''}>${c}</option>`).join('')}</select>
       <select data-ac="code" aria-label="Activité" title="${esc(V.pb ? '❓ ' + V.pb : '')}">${acts.map(([c, a]) => `<option value="${c}" ${c === acCode ? 'selected' : ''}>${c} — ${esc(titreActivite(acCl, c, a).slice(0, 50))}${a.terminee ? ' ✓' : a.ouverte ? ' (ouverte)' : ''}</option>`).join('')}</select></div>
 ${A ? `<span class="sep2"></span>
-      ${leCours ? `<span class="phase ${ph.cls}">${esc(leCours[0])} · ${esc(ph.txt)}</span>` : ''}${k ? boutonEtat(k) : ''}
-      <span class="c2" title="Élèves ayant ouvert leur cahier pendant le cours">👥 ${enCours ? nbCo + '/' + ids.length : '—'}</span>
-      <span class="c2" title="Copies rendues">📝 ${A.repondu}/${ids.length}</span>
-      <span class="c2" title="Moyenne ${acCl} (${A.corriges} corrigée(s))">Moy. <span class="n ${classeNote(A.moy)}">${fr(A.moy)}</span></span>
-      ${mN ? `<span class="c2" title="Moyenne toutes classes (${esc(mN.nb)})">Niv. <span class="n ${classeNote(num(mN.moy))}">${esc(mN.moy)}</span></span>` : ''}
-      ${Object.keys(A.reussite || {}).length ? `<span class="c2" title="Réussite par consigne">${Object.entries(A.reussite).map(([l, v]) => l + ' ' + v + '%').join(' · ')}</span>` : ''}
-      <span class="sep2"></span>
-      <button class="bouton petit${A.ouverte ? ' leger' : ''}" type="button" data-op="${A.ouverte ? 'fermer' : 'ouvrir'}" data-k="${acCl}|${acCode}">${A.ouverte ? 'Refermer' : '🔓 Débloquer'}</button>
-      <button class="bouton leger petit${A.facForcee ? ' on' : ''}" type="button" data-op="fac" data-k="${acCl}|${acCode}">${A.facForcee ? '✓ Facultative' : A.facAuto ? 'Facultative (auto)' : 'Facultative'}</button>
-      <button class="bouton leger petit${A.arretee ? ' on' : ''}" type="button" data-op="arret" data-k="${acCl}|${acCode}">${A.arretee ? '■ Arrêtée' : '■ Arrêter'}</button>
-      <button class="bouton leger petit" type="button" data-op="corriger" data-k="${acCl}|${acCode}">✓ Corriger</button>
-      ${k ? `<button class="bouton petit" type="button" data-atelier="${esc(k)}">✦ Modifier avec Claude</button>${boutonPub(k, true)}` : ''}` : ''}
-      <span class="fin"></span>${blocNoms()}
-      <button class="bouton leger petit" type="button" data-actualiser="${acCl}" title="Connectés vus à ${CO && CO.maj ? new Date(CO.maj).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '—'} · copies relues le ${esc(SV.maj || '?')}">↻</button>
+      <button class="bouton petit${A.ouverte ? ' on' : ' leger'}" type="button" data-op="${A.ouverte ? 'fermer' : 'ouvrir'}" data-k="${acCl}|${acCode}" title="${A.ouverte ? 'Ouverte pour toute la classe : clique pour la refermer' : 'Ouvrir l\'activité à toute la classe'}">${A.ouverte ? '🔓 Ouverte' : '🔓 Forcer l\'ouverture'}</button>
+      <button class="bouton leger petit${A.arretee ? ' on' : ''}" type="button" data-op="arret" data-k="${acCl}|${acCode}">${A.arretee ? '■ Arrêtée' : '■ Arrêter l\'activité'}</button>
+      <button class="bouton leger petit${A.facForcee ? ' on' : ''}" type="button" data-op="fac" data-k="${acCl}|${acCode}">${A.facForcee ? '✓ Facultative' : A.facAuto ? 'Facultative (auto)' : 'Rendre facultative'}</button>
+      ${k ? `<button class="bouton petit${etat(k) === 'ok' ? ' leger' : ''}" type="button" data-pub="${esc(k)}" title="${esc(ETAT[etat(k)])}">${etat(k) === 'ok' ? '✓ Publiée' : '⬆ Publier'}</button>` : ''}` : ''}
+      <span class="fin"></span>${minuteurHtml(leCours)}
     </div>
     <div class="attente" hidden></div>
     ${!A ? '<div class="info">Aucune activité pour cette classe.</div>' : `
     <div class="carte2 plan-carte"><h3>Plan de classe <span class="sous">${enCours ? '<span class="pt co" style="display:inline-block"></span> présent · <span class="pt abs" style="display:inline-block"></span> pas connecté' : ''}</span></h3>${eleves}</div></div>${journeeHtml}</div>
     <div class="duo2">
       <div class="carte2">
-        <h3>Consignes ${V.publiee ? '' : '<span class="tag2">brouillon, pas encore publié</span>'}${V.publiee && differe ? '<span class="tag2">brouillon modifié non publié</span>' : ''}</h3>
+        <h3>Consignes ${V.publiee ? '' : '<span class="tag2">brouillon, pas encore publié</span>'}${V.publiee && differe ? '<span class="tag2">brouillon modifié non publié</span>' : ''}${k ? `<button class="bouton leger petit" type="button" data-atelier="${esc(k)}" style="margin-left:auto">✦ Modifier avec Claude</button>` : ''}</h3>
         ${cs.map(c => `<p class="cons"><b>${esc(c.lettre)}</b> · ${esc(c.texte)}</p>`).join('') || '<div class="sous">Pas de consignes dans la progression : les élèves voient celles du Doc activité.</div>'}
         <h3 style="margin-top:14px">Correction <span class="sous">${Object.keys(bar).length ? total(bar) + ' pts' : ''}</span></h3>
         ${Object.entries(bar).map(([l, v]) => `<p class="cons"><b>${esc(l)}</b> · ${esc(v.max)} pts${A.reussite && A.reussite[l] != null ? ` <span class="sous">(réussite ${A.reussite[l]} %)</span>` : ''}</p>${criteres(v).map(x => `<div class="crit">${x.points ? `<i>${esc(x.points)} pt · </i>` : ''}${esc(x.texte)}</div>`).join('')}`).join('') || '<div class="sous">Pas de barème dans la progression.</div>'}
