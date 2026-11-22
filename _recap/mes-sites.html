@@ -1801,9 +1801,8 @@ function dessinerActivite() {
     if (id && id !== '?' && SV.eleves[acCl][id]) { places.add(id); return sep + carte(id, `${ri}|${c}`); }
     return sep + `<div class="elv vide" data-place="${ri}|${c}" title="Place libre : clique pour y mettre un élève">${id === '?' ? '<small>?</small>' : ''}</div>`;
   }).join('')).join('');
-  const hors = ids.filter(id => !places.has(id));
   const eleves = `<div class="plan-defile"><div class="plan">${rangs}</div></div>
-    ${hors.length ? `<div class="hors"><b>Hors plan :</b> ${hors.map(id => carte(id)).join('')}</div>` : ''}`;
+`;
 
   // Ma journée : cours du jour dans l'ordre (ou prochain jour de cours), clic = affiche l'activité
   const jr = journee();
