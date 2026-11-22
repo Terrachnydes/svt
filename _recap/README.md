@@ -1,7 +1,7 @@
 # Synchro des sites SVT
 
 Ce dossier sert à garder à jour les sites d'Erwan sur GitHub Pages
-(`https://terrachnydes.github.io/svt/<fichier>`) et sa page récap
+(`https://svt-prevert.github.io/svt/<fichier>`) et sa page récap
 « Mes sites SVT » (https://claude.ai/artifact/BqXoxoAUJpBPUkC8mgAK3q).
 Il commence par `_`, donc GitHub Pages ne le publie pas.
 

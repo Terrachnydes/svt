@@ -335,7 +335,7 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
   <div id="gout"></div>
 </dialog>
 <script>
-const GH="https://terrachnydes.github.io/svt/";
+const GH="https://svt-prevert.github.io/svt/";
 const data=__DATA__;
 const url=f=>GH+encodeURIComponent(f);
 const esc=t=>t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
@@ -692,7 +692,7 @@ async function chargerTout() {
   $('#pg-maj').textContent = 'Sheet lu à ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 }
 
-const GH = 'https://terrachnydes.github.io/svt/';
+const GH = 'https://svt-prevert.github.io/svt/';
 function chargerSites() {
   ORIENTATION = [];
   data.forEach(([g, items]) => items.forEach(i => {
@@ -703,7 +703,7 @@ function chargerSites() {
 }
 function infoSite(url) {
   if (!url) return null;
-  const m = String(url).match(/terrachnydes\.github\.io\/svt\/([^?#]+)/i);
+  const m = String(url).match(/(?:terrachnydes|svt-prevert)\.github\.io\/svt\/([^?#]+)/i);
   if (!m) return { url, externe: true, titre: (String(url).match(/^https?:\/\/(?:www\.)?([^/]+)/i) || [, url])[1] };
   let f = m[1]; try { f = decodeURIComponent(f); } catch (e) {}
   const s = SITES[f] || {};
@@ -790,7 +790,7 @@ async function publier(k, bouton) {
 
 // Liste blanche du cahier : onglet Cours, colonne F à partir de F100 (F99 = « Liste blanche »)
 async function listeBlanche(url) {
-  if (!/terrachnydes\.github\.io\/svt\//i.test(url || '')) return '';
+  if (!/(?:terrachnydes|svt-prevert)\.github\.io\/svt\//i.test(url || '')) return '';
   const v = await lire('Cours!F100:F400');
   if (v.some(r => memeUrl(r[0], url))) return '';
   let i = v.findIndex(r => !String((r || [])[0] || '').trim());
@@ -1155,7 +1155,7 @@ function lienCreer(k) {
   const t = `Je veux créer un nouveau site SVT interactif pour ${contexte(k)}.\n` +
     (m.type === 'lien' ? '' : `Titre de l'activité : ${b.titre || '(à définir)'}\nProblématique : ${b.pb || '(à définir)'}\n` + (cs.length ? `Consignes actuelles :\n${cs.map(c => c.lettre + ' : ' + c.texte).join('\n')}\n` : '')) +
     `\nConstruis le site avec moi. Ne le mets pas en ligne tant que je ne dis pas « mets ce site en ligne ». Quand je le dis :\n` +
-    `1. fais la procédure « mets ce site en ligne » de _recap/README.md du dépôt Terrachnydes/svt (GitHub, page Mes sites SVT) ;\n` +
+    `1. fais la procédure « mets ce site en ligne » de _recap/README.md du dépôt svt-prevert/svt (GitHub, page Mes sites SVT) ;\n` +
     `2. ajoute l'adresse du site à la ${LISTE_BLANCHE} ;\n` +
     `3. range le site ici : dans le même Sheet, onglet « Activités », trouve la ligne dont la colonne A vaut « ${k} » (relis l'onglet si besoin) et écris l'adresse GitHub du site en colonne J` + (m.type === 'lien' ? ' et son titre en colonne F' : '') + `. Ne touche pas aux colonnes K à P (version publiée) : je publierai moi-même depuis la page Progression.\n\nLe site que je veux : `;
   return 'https://claude.ai/new?q=' + encodeURIComponent(t.slice(0, 7500));
@@ -1163,10 +1163,10 @@ function lienCreer(k) {
 function lienSite(k, st) {
   const b = brouillon(k), cs = js(b.cons, []);
   const t = `Je veux modifier mon site SVT « ${st.titre} », utilisé dans ${contexte(k)}.\n` +
-    `Site en ligne : ${st.url}\n` + (st.fichier ? `Fichier sur GitHub : dépôt Terrachnydes/svt, « ${st.fichier} »\n` : '') +
+    `Site en ligne : ${st.url}\n` + (st.fichier ? `Fichier sur GitHub : dépôt svt-prevert/svt, « ${st.fichier} »\n` : '') +
     (st.artifact ? `Artifact Claude du site : ${st.artifact}\n` : '') + (st.conversation ? `Conversation où le site a été créé : ${st.conversation}\n` : '') +
     (cs.length ? `\nConsignes de l'activité qui s'appuient sur ce site :\n${cs.map(c => c.lettre + ' : ' + c.texte).join('\n')}\n` : '') +
-    `\nUne fois la modification faite, sans me redemander : republie l'artifact du site s'il en a un, mets à jour « ${st.fichier || 'le fichier'} » dans Terrachnydes/svt (commit + push) comme décrit dans _recap/README.md, refais l'aperçu (python3 _recap/build_hub.py "${st.fichier || ''}") et republie la page « Mes sites SVT ». Vérifie que l'adresse est bien dans la ${LISTE_BLANCHE}. Préviens-moi si les consignes ne collent plus au site.\n\nCe que je veux changer : `;
+    `\nUne fois la modification faite, sans me redemander : republie l'artifact du site s'il en a un, mets à jour « ${st.fichier || 'le fichier'} » dans svt-prevert/svt (commit + push) comme décrit dans _recap/README.md, refais l'aperçu (python3 _recap/build_hub.py "${st.fichier || ''}") et republie la page « Mes sites SVT ». Vérifie que l'adresse est bien dans la ${LISTE_BLANCHE}. Préviens-moi si les consignes ne collent plus au site.\n\nCe que je veux changer : `;
   return 'https://claude.ai/new?q=' + encodeURIComponent(t.slice(0, 7500));
 }
 
