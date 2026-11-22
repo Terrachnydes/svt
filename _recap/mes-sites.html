@@ -200,6 +200,83 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .cache{display:none!important}
 #pg-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:30;max-width:90vw}
 #pg-toast.err{background:var(--rouge);color:#fff}
+/* ===== Interface prof : onglets « Suivi des élèves » et « Activité » ===== */
+#sv-main,#ac-main{max-width:1240px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+#sv-main[hidden],#ac-main[hidden],#pg-main[hidden]{display:none!important}
+#prog .barre{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+#prog .barre .grp{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+#prog .barre select{font:inherit;font-size:14px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);max-width:100%}
+#prog .barre .fin{margin-left:auto}
+#prog .noms{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-size:13px;color:var(--muted)}
+#prog .noms label.bouton{display:inline-flex;align-items:center}
+#prog .noms input[type=file]{display:none}
+#prog .attente{font-size:13px;color:#7a5a00;background:#fdf0c8;border-radius:8px;padding:4px 9px}
+#prog .tabl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;max-width:100%}
+#prog table.sv{border-collapse:separate;border-spacing:0;font-size:13px;min-width:100%}
+#prog table.sv th,#prog table.sv td{padding:4px 6px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums}
+#prog table.sv th{position:sticky;top:0;background:var(--surface);z-index:2;font-size:12px;color:var(--muted)}
+#prog table.sv .nom{position:sticky;left:0;background:var(--surface);z-index:1;text-align:left;min-width:150px;max-width:190px;overflow:hidden;text-overflow:ellipsis}
+#prog table.sv th.nom{z-index:3}
+#prog table.sv tr.rcl td{background:#eef6f1;font-weight:700}
+#prog table.sv tr.rcl td.nom{background:#e0efe6}
+#prog table.sv tr.niv td{background:#f3efe2;font-weight:700}
+#prog table.sv tr.niv td.nom{background:#ece5cf}
+#prog table.sv tr.el:hover td{background:#f6f9f7}
+#prog table.sv tr.el td.nom{cursor:pointer;color:var(--cl);font-weight:700}
+#prog table.sv tr.el td.nom:hover{text-decoration:underline}
+#prog .n{display:inline-block;min-width:30px;padding:1px 4px;border-radius:6px}
+#prog .n.bon{background:#d6f0e4;color:#14603f}
+#prog .n.moyen{background:#fdf0c8;color:#7a5a00}
+#prog .n.faible{background:#fbdcd8;color:#9b2c20}
+#prog .n.nc{background:none;color:var(--muted);text-decoration:line-through;font-style:italic}
+#prog .n.vide{color:#b9c2bc}
+#prog td.act{cursor:pointer}
+#prog td.act:hover{outline:2px solid var(--accent);outline-offset:-2px}
+#prog .ic{display:flex;gap:2px;justify-content:center;font-size:10.5px;line-height:1.2;margin-top:2px;font-weight:700}
+#prog .ic span{padding:0 3px;border-radius:4px}
+#prog .ic .pr{background:#dbe7ff;color:#1e40af}#prog .ic .pr.non{background:#eee;color:#999}
+#prog .ic .fa{background:#fde2c8;color:#9a3412}
+#prog .ic .ar{background:#fbdcd8;color:#9b2c20}
+#prog .ic .en{background:#fdf0c8;color:#7a5a00}
+#prog .prf{display:inline-block;font-size:10.5px;font-weight:700;background:#e8e1f7;color:#5b3fa0;border-radius:5px;padding:0 4px;margin-left:4px;vertical-align:1px}
+#prog td.def{text-align:left;font-size:12px;color:var(--muted);max-width:240px;overflow:hidden;text-overflow:ellipsis}
+#prog td.app{text-align:left;font-size:12px;max-width:320px;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+#prog td.app:hover{color:var(--cl)}
+#prog .pop{position:absolute;z-index:25;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.2);padding:10px;width:min(300px,calc(100vw - 24px));display:flex;flex-direction:column;gap:6px;font-size:13.5px}
+#prog .pop h4{margin:0 0 2px;font-size:14px}
+#prog .pop button{text-align:left}
+#prog .stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:6px 0 10px}
+#prog .stat div{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}
+#prog .stat b{display:block;font-size:18px}
+#prog .stat small{color:var(--muted);font-size:11.5px}
+#prog .chips{display:flex;flex-wrap:wrap;gap:4px}
+#prog .chip{font-size:12px;border:1px solid var(--line);border-radius:99px;padding:2px 8px;background:var(--bg)}
+#prog .barres div{display:flex;align-items:center;gap:8px;font-size:12.5px;margin:3px 0}
+#prog .barres i{flex:1;height:8px;border-radius:4px;background:var(--thumb);position:relative;overflow:hidden}
+#prog .barres i::after{content:"";position:absolute;inset:0 auto 0 0;width:var(--v);background:var(--accent)}
+/* Activité */
+#prog .ac-tete{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+#prog .ac-tete h2{margin:0;font-family:var(--display);font-size:1.35rem}
+#prog .phase{display:inline-block;font-size:12.5px;font-weight:700;border-radius:99px;padding:2px 10px;background:var(--thumb);color:var(--muted)}
+#prog .phase.lecture{background:#dbe7ff;color:#1e40af}
+#prog .phase.activite{background:#d6f0e4;color:#14603f}
+#prog .phase.correction{background:#fdf0c8;color:#7a5a00}
+#prog .actions{display:flex;flex-wrap:wrap;gap:6px}
+#prog .actions .on{background:var(--orange);border-color:var(--orange);color:#fff}
+#prog .eleves{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px}
+#prog .elv{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:6px 8px;font-size:13px;min-width:0}
+#prog .elv b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;font-weight:700}
+#prog .elv small{color:var(--muted);font-size:11.5px;white-space:nowrap}
+#prog .pt{width:10px;height:10px;border-radius:50%;background:#d5dbd7;flex:none}
+#prog .pt.co{background:#22a35a;box-shadow:0 0 0 3px rgba(34,163,90,.2)}
+#prog .pt.re{background:#e0a800}
+#prog .duo2{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr);gap:12px;align-items:start}
+#prog .carte2{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
+#prog .carte2 h3{margin:0 0 8px;font-size:15px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#prog .cadre{width:100%;height:min(70vh,620px);border:1px solid var(--line);border-radius:10px;background:var(--thumb)}
+#prog .tag2{font-size:11.5px;font-weight:700;border-radius:6px;padding:1px 6px;background:#fdf0c8;color:#7a5a00}
+@media (max-width:900px){#prog .duo2{grid-template-columns:1fr}#prog .cadre{height:60vh}}
+@media (max-width:480px){#prog .eleves{grid-template-columns:1fr 1fr}#prog table.sv .nom{min-width:110px;max-width:130px}#prog .barre .fin{margin-left:0}}
 </style>
 
 <div class="wrap">
@@ -209,6 +286,8 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
   <nav class="tabs" role="tablist">
     <button type="button" role="tab" id="t-sites" aria-selected="true" data-tab="sites">Mes sites</button>
     <button type="button" role="tab" id="t-prog" aria-selected="false" data-tab="progression">Progression SVT</button>
+    <button type="button" role="tab" id="t-suivi" aria-selected="false" data-tab="suivi">Suivi des élèves</button>
+    <button type="button" role="tab" id="t-act" aria-selected="false" data-tab="activite">Activité</button>
     <div id="pg-barre" hidden>
       <div class="filtres" id="pg-filtres"></div>
       <span class="sous" id="pg-maj"></span>
@@ -236,6 +315,8 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
   </div>
   <div id="prog" hidden>
     <div id="pg-main"><div class="info">Chargement…</div></div>
+    <div id="sv-main" hidden></div>
+    <div id="ac-main" hidden></div>
     <aside id="pg-pan"></aside>
     <div id="pg-toast" class="cache"></div>
   </div>
@@ -792,6 +873,7 @@ function afficher() {
   try { afficherSansGarde(); } finally { enRendu = false; }
   window.scrollTo(0, y);
   const d = $('#pg-main .defile'); if (d) d.scrollLeft = dx;
+  rafraichirProf();
 }
 function afficherSansGarde() {
   const nv = vue === 'Tous' ? NIVEAUX : [vue];
@@ -1113,6 +1195,558 @@ $('#pg-recharger').addEventListener('click', async () => { try { await chargerTo
 // ---------------------------------------------------------------------
 // Démarrage
 // ---------------------------------------------------------------------
+// =====================================================================
+// INTERFACE PROF : onglets « Suivi des élèves » et « Activité »
+// Données : petit classeur « interface prof » (id dans 'Règles IA'!B5), rempli par
+// Apps Script (InterfaceProf.js du dépôt cahier-numerique) :
+//   Suivi (résumé des classes, toutes les heures) · Commandes (actions demandées ici,
+//   traitées dans les 5 min) · Connectés (A1, toutes les 5 min en journée).
+// Les noms des élèves ne viennent jamais de Google : fichier eleves.csv chargé depuis l'ordinateur.
+// =====================================================================
+let IPID = '', SV = null, CO = null, ELEVES = {}, ENVOIS = [];
+let svNiv = '3', svPer = '', svCl = '', acCl = '', acCode = '', svTimer = null, acTimer = null;
+const EDT_SECOURS = {   // copie de EDT_CLASSES (CorrectionAuto.js) si la synchro n'a pas encore donné les créneaux du jour
+  1: [['08:30', '3H', 'A'], ['09:28', '4H', ''], ['10:40', '6I', ''], ['11:35', '6H', 'A'], ['11:35', '5H', 'B'], ['14:03', '3G', ''], ['16:13', '6G', 'B']],
+  2: [['08:30', '3H', 'A'], ['09:28', '5I', ''], ['10:40', '3I', 'A'], ['10:40', '6J', 'B'], ['11:35', '6G', ''], ['14:34', '5G', ''], ['15:46', '3I', 'A'], ['15:46', '6G', 'B']],
+  3: [],
+  4: [['08:30', '5G', 'A'], ['08:30', '5I', 'B'], ['09:28', '4H', 'A'], ['09:28', '4G', 'B'], ['10:40', '5H', ''], ['13:05', '4G', ''], ['14:03', '4I', ''], ['15:15', '6H', 'A'], ['15:15', '6J', 'B'], ['16:13', '6I', 'B']],
+  5: [['08:30', '6H', ''], ['09:28', '3G', 'A'], ['09:28', '6I', 'B'], ['10:40', '3G', 'A'], ['10:40', '4I', 'B'], ['13:05', '3H', ''], ['14:03', '6J', ''], ['15:15', '3I', '']]
+};
+const PROFILS = { D: 'Évaluation aménagée', NE: 'Non évalué', M: 'Travail à la maison', T: 'Avec un tuteur' };
+const ETATS = { '-': 'pas ouverte', o: 'ouverte, pas encore rendue', r: 'a répondu', c: 'corrigée (pas encore affichée)', v: 'correction vue', x: 'correction reçue (absent)', a: 'absent' };
+
+const num = x => { const v = parseFloat(String(x == null ? '' : x).replace(',', '.')); return isNaN(v) ? null : v; };
+const fr = v => v == null ? '–' : String(Math.round(v * 10) / 10).replace('.', ',');
+const classeNote = v => v == null ? 'vide' : v >= 14 ? 'bon' : v >= 10 ? 'moyen' : 'faible';
+const cleCode = c => { const m = String(c).match(/^S(\d+)\.(\d+)$/); return m ? [+m[1], +m[2]] : null; };
+const ordreCode = (a, b) => a === 'A' ? -1 : b === 'A' ? 1 : (cleCode(a) || [99, 9])[0] - (cleCode(b) || [99, 9])[0] || (cleCode(a) || [0, 9])[1] - (cleCode(b) || [0, 9])[1];
+const minutes = h => { const t = String(h).split(':'); return +t[0] * 60 + +t[1]; };
+const fA1 = (cl, r) => `'${cl}'!${r}`;
+
+// ---------- Connecteur : classeur de l'interface ----------
+async function lireIP(range) { return charge(await mcp.callTool('Google Sheets', 'get_values', { spreadsheetId: IPID, range })).values || []; }
+async function assurerIP() {
+  if (IPID) return true;
+  const v = await lire("'Règles IA'!B5").catch(() => []);
+  IPID = String(((v[0] || [])[0]) || '').trim();
+  return !!IPID;
+}
+async function chargerSuivi() {
+  const nb = (await lireIP('Suivi!A2:A6000')).length;
+  const parts = [];
+  for (let l = 2; l < 2 + nb; l += 80) parts.push(lireIP(`Suivi!A${l}:E${Math.min(l + 79, 1 + nb)}`));
+  const lignes = [].concat(...await Promise.all(parts));
+  const s = { classes: {}, eleves: {}, acts: {}, maj: '' };
+  lignes.forEach(r => {
+    const t = r[0], cl = String(r[1] || ''), k = String(r[2] || ''), d = js(r[3], null);
+    if (!d || !cl) return;
+    if (r[4] && (!s.maj || r[4] > s.maj)) s.maj = r[4];
+    if (t === 'classe') s.classes[cl] = d;
+    else if (t === 'eleve') (s.eleves[cl] = s.eleves[cl] || {})[k] = d;
+    else if (t === 'activite') (s.acts[cl] = s.acts[cl] || {})[k] = d;
+  });
+  SV = s;
+}
+async function chargerConnectes() {
+  try { CO = js(((await lireIP("'Connectés'!A1"))[0] || [])[0], {}) || {}; } catch (e) { CO = CO || {}; }
+}
+
+// ---------- Commandes (traitées par Apps Script dans les 5 min) ----------
+async function commande(cmd, classe, params, libelle) {
+  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  try {
+    await mcp.callTool('Google Sheets', 'append_values', { spreadsheetId: IPID, range: 'Commandes!A1',
+      values: [[id, maintenant(), cmd, classe || '', JSON.stringify(params || {}), 'en attente', '', '']] });
+    ENVOIS.push({ id, libelle: libelle || cmd, classe });
+    toast((libelle || 'Demande') + ' : envoyé. Appliqué dans les 5 minutes environ.');
+    majAttente(); suivreCommandes();
+  } catch (e) { toast(erreurMcp(e), true); }
+}
+let suiviCmd = null;
+function suivreCommandes() {
+  if (suiviCmd) return;
+  suiviCmd = setInterval(async () => {
+    if (!ENVOIS.length) { clearInterval(suiviCmd); suiviCmd = null; return; }
+    let v = [];
+    try { v = await lireIP('Commandes!A2:H600'); } catch (e) { return; }
+    let fini = false;
+    ENVOIS = ENVOIS.filter(c => {
+      const r = v.find(x => x[0] === c.id);
+      if (r && (r[5] === 'fait' || r[5] === 'erreur')) { toast(c.libelle + ' : ' + (r[6] || r[5]), r[5] === 'erreur'); fini = true; return false; }
+      return true;
+    });
+    majAttente();
+    if (fini) { try { await chargerSuivi(); rafraichirProf(); } catch (e) {} }
+  }, 30000);
+}
+function majAttente() {
+  document.querySelectorAll('#prog .attente').forEach(x => {
+    x.hidden = !ENVOIS.length;
+    x.textContent = `⏳ ${ENVOIS.length} demande${ENVOIS.length > 1 ? 's' : ''} en attente (${ENVOIS.map(c => c.libelle).join(', ')}) : appliqué par le cahier dans les 5 min`;
+  });
+}
+
+// ---------- Noms des élèves (eleves.csv, jamais envoyé nulle part) ----------
+const CLE_NOMS = 'profElevesCsv';
+function lireCsv(texte) {
+  texte = String(texte || '').replace(/^﻿/, '');
+  const lignes = texte.split(/\r?\n/).filter(l => l.trim());
+  if (!lignes.length) return {};
+  const sep = (lignes[0].match(/;/g) || []).length >= (lignes[0].match(/,/g) || []).length ? ';' : ',';
+  const cell = l => l.split(sep).map(x => x.trim().replace(/^"|"$/g, '').replace(/""/g, '"'));
+  const t = cell(lignes[0]).map(x => x.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''));
+  const i = n => t.indexOf(n);
+  const res = {};
+  lignes.slice(1).forEach(l => {
+    const c = cell(l), id = c[i('identifiant')];
+    if (id) res[id] = { nom: c[i('nom')] || '', prenom: c[i('prenom')] || '' };
+  });
+  return res;
+}
+try { ELEVES = lireCsv(localStorage.getItem(CLE_NOMS) || ''); } catch (e) { ELEVES = {}; }
+function nomEleve(id) { const e = ELEVES[id]; return e ? (e.prenom + ' ' + e.nom).trim() : id; }
+function ordreEleves(a, b) {
+  const x = ELEVES[a], y = ELEVES[b];
+  if (x && y) return (x.nom + x.prenom).localeCompare(y.nom + y.prenom, 'fr');
+  return a.localeCompare(b, 'fr', { numeric: true });
+}
+function blocNoms() {
+  const n = Object.keys(ELEVES).length;
+  let garde = false; try { garde = !!localStorage.getItem(CLE_NOMS); } catch (e) {}
+  return `<div class="noms">📇 ${n ? `<b>${n} noms chargés</b>` : 'Noms non chargés : identifiants affichés (3G-01…)'}
+    <label class="bouton leger petit">${n ? 'Recharger' : 'Charger'} eleves.csv<input type="file" accept=".csv,text/csv" data-csv></label>
+    <label><input type="checkbox" data-garder ${garde ? 'checked' : ''}> garder sur cet ordinateur</label>
+    <span class="sous">Le fichier reste sur l'ordinateur : rien n'est envoyé à Google.</span></div>`;
+}
+$('#prog').addEventListener('change', async e => {
+  if (e.target.matches('[data-csv]')) {
+    const f = e.target.files[0]; if (!f) return;
+    const txt = await f.text();
+    ELEVES = lireCsv(txt);
+    const g = $('#prog [data-garder]');
+    try { if (g && g.checked) localStorage.setItem(CLE_NOMS, txt); else localStorage.removeItem(CLE_NOMS); } catch (er) {}
+    toast(Object.keys(ELEVES).length + ' élèves chargés.');
+    rafraichirProf();
+  } else if (e.target.matches('[data-garder]')) {
+    try {
+      if (!e.target.checked) { localStorage.removeItem(CLE_NOMS); toast('Noms retirés de cet ordinateur (ils restent affichés jusqu\'à la fermeture).'); }
+      else toast('Recharge eleves.csv pour le garder sur cet ordinateur.');
+    } catch (er) {}
+  } else if (e.target.matches('[data-sv]')) {
+    const k = e.target.dataset.sv;
+    if (k === 'niv') { svNiv = e.target.value; svCl = ''; }
+    if (k === 'per') svPer = e.target.value;
+    if (k === 'cl') svCl = e.target.value;
+    dessinerSuivi();
+  } else if (e.target.matches('[data-ac]')) {
+    if (e.target.dataset.ac === 'cl') { acCl = e.target.value; acCode = ''; } else acCode = e.target.value;
+    dessinerActivite();
+  }
+});
+
+// ---------- Démarrage commun ----------
+let profPret = null;
+async function demarrerProf() {
+  if (profPret) return profPret;
+  profPret = (async () => {
+    chargerSites();
+    try { mcp = mcp || await window.claude?.use?.('mcp'); } catch (e) { mcp = null; }
+    try { sample = sample || await window.claude?.use?.('sample'); } catch (e) { sample = null; }
+    if (!mcp) throw new Error('Cet onglet fonctionne quand la page est ouverte dans Claude, avec le connecteur Google Sheets.');
+    const taches = [];
+    if (!Object.keys(COURS).length) taches.push(chargerTout());
+    if (!(await assurerIP())) throw new Error('Le classeur de l\'interface prof n\'existe pas encore. Il est créé tout seul par la synchro du cahier (moins de 5 min), ou tout de suite par le menu du Sheet : Correction IA → « Interface prof : créer / actualiser le résumé ».');
+    taches.push(chargerSuivi(), chargerConnectes());
+    await Promise.all(taches);
+  })();
+  try { await profPret; } catch (e) { profPret = null; throw e; }
+  return profPret;
+}
+function rafraichirProf() {
+  if (!$('#sv-main').hidden && SV) dessinerSuivi();
+  if (!$('#ac-main').hidden && SV) dessinerActivite();
+}
+async function ouvrirSuivi() {
+  if (!SV) $('#sv-main').innerHTML = '<div class="info">Chargement…</div>';
+  try { await demarrerProf(); dessinerSuivi(); } catch (e) { $('#sv-main').innerHTML = `<div class="info">${esc(e.message || erreurMcp(e))}</div>`; }
+}
+async function ouvrirActivite() {
+  if (!SV) $('#ac-main').innerHTML = '<div class="info">Chargement…</div>';
+  try { await demarrerProf(); dessinerActivite(); } catch (e) { $('#ac-main').innerHTML = `<div class="info">${esc(e.message || erreurMcp(e))}</div>`; return; }
+  clearInterval(acTimer);
+  acTimer = setInterval(async () => {
+    if ($('#ac-main').hidden) { clearInterval(acTimer); acTimer = null; return; }
+    await chargerConnectes();
+    if (!$('#ac-main').hidden && !document.querySelector('#prog .pop')) dessinerActivite();
+  }, 60000);
+}
+async function recharger(classe) {
+  try { await Promise.all([chargerSuivi(), chargerConnectes(), chargerTout()]); rafraichirProf(); toast('Données relues.'); }
+  catch (e) { toast(erreurMcp(e), true); }
+}
+
+// =====================================================================
+// SUIVI DES ÉLÈVES
+// =====================================================================
+const classesNiveau = n => Object.keys(SV.classes).filter(c => c[0] === n && SV.classes[c].effectif).sort();
+function periodeDefaut() {
+  const c = classesNiveau(svNiv)[0];
+  return (c && SV.classes[c].trimestre) || '1';
+}
+function noteEleve(cl, id, code, per) {
+  const e = (SV.eleves[cl] || {})[id], p = e && e.p[per];
+  const v = p && p.notes[code];
+  if (v != null && v !== '') return { v: num(v), txt: v };
+  const a = (SV.acts[cl] || {})[code], s = a && a.el[id];
+  if (s && s.length > 1 && /^[cv]/.test(s)) return { v: num(s.slice(1)), txt: s.slice(1), nc: true };   // note non comptée (facultative, profil…)
+  if (s && s[0] === 'o') return { v: null, txt: '·', titre: 'ouverte, pas encore rendue' };
+  if (s && s[0] === 'r') return { v: null, txt: '✎', titre: 'a répondu, pas encore corrigée' };
+  return { v: null, txt: '' };
+}
+function moyenne(vals) { const v = vals.filter(x => x != null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; }
+
+function dessinerSuivi() {
+  if (!SV) return;
+  const cls = classesNiveau(svNiv);
+  if (!svPer) svPer = periodeDefaut();
+  const vues = svCl && cls.includes(svCl) ? [svCl] : cls;
+  // Colonnes : union des devoirs de la période dans les classes affichées
+  const codes = [];
+  vues.forEach(c => ((SV.classes[c].periodes[svPer] || {}).devoirs || []).forEach(d => { if (!codes.includes(d.code)) codes.push(d.code); }));
+  codes.sort(ordreCode);
+
+  const lignes = [], toutesMoy = {}, toutesGen = [];
+  vues.forEach(cl => {
+    const C = SV.classes[cl], P = C.periodes[svPer] || { devoirs: [] }, ids = Object.keys(SV.eleves[cl] || {}).sort(ordreEleves);
+    const moyCl = {}, gen = [];
+    ids.forEach(id => {
+      const p = SV.eleves[cl][id].p[svPer]; gen.push(p ? num(p.moy) : null);
+      codes.forEach(k => { const n = noteEleve(cl, id, k, svPer); if (!n.nc && n.v != null) (moyCl[k] = moyCl[k] || []).push(n.v); });
+    });
+    codes.forEach(k => { (toutesMoy[k] = toutesMoy[k] || []).push(...(moyCl[k] || [])); });
+    toutesGen.push(...gen);
+    const mg = moyenne(gen);
+    lignes.push(`<tr class="rcl"><td class="nom"><button class="bouton leger petit" type="button" data-pcl="${cl}">${cl} · ${ids.length} élèves ⚙</button></td>
+      <td><span class="n ${classeNote(mg)}">${fr(mg)}</span></td>
+      ${codes.map(k => celluleClasse(cl, P, k, moyenne(moyCl[k] || []))).join('')}
+      <td class="def">${esc(defautsClasse(cl).slice(0, 2).map(d => d[0] + ' ×' + d[1]).join(' · '))}</td>
+      <td class="app" data-pcl="${cl}" title="${esc(P.appreciation || '')}">${esc(P.appreciation || 'Appréciation de classe à générer')}</td></tr>`);
+    ids.forEach(id => {
+      const E = SV.eleves[cl][id], p = E.p[svPer] || {};
+      const m = num(p.moy);
+      lignes.push(`<tr class="el"><td class="nom" data-pel="${cl}|${id}" title="${esc(id)}">${esc(nomEleve(id))}${E.profil ? `<span class="prf" title="${esc(PROFILS[E.profil] || '')}">${esc(E.profil)}</span>` : ''}</td>
+        <td><span class="n ${classeNote(m)}">${fr(m)}</span></td>
+        ${codes.map(k => { const n = noteEleve(cl, id, k, svPer); return `<td title="${esc(n.nc ? 'Note non comptée (facultative ou sous le seuil du profil)' : n.titre || '')}"><span class="n ${n.nc ? 'nc' : n.v == null ? 'vide' : classeNote(n.v)}">${esc(n.txt)}</span></td>`; }).join('')}
+        <td class="def" title="${esc((E.defauts || []).map(d => d[0] + ' ×' + d[1]).join('\n'))}">${esc((E.defauts || []).slice(0, 2).map(d => d[0] + ' ×' + d[1]).join(' · '))}</td>
+        <td class="app" data-pel="${cl}|${id}" title="${esc(p.app || '')}">${esc(p.app || '—')}</td></tr>`);
+    });
+  });
+  const mn = moyenne(toutesGen);
+  if (vues.length > 1) lignes.push(`<tr class="niv"><td class="nom">Niveau ${NOMS[svNiv]}</td><td><span class="n ${classeNote(mn)}">${fr(mn)}</span></td>
+    ${codes.map(k => { const m = moyenne(toutesMoy[k] || []); return `<td><span class="n ${classeNote(m)}">${fr(m)}</span></td>`; }).join('')}<td class="def"></td><td></td></tr>`);
+
+  $('#sv-main').innerHTML = `
+    <div class="barre">
+      <div class="filtres">${NIVEAUX.map(n => `<button type="button" aria-pressed="${n === svNiv}" data-svniv="${n}">${NOMS[n]}</button>`).join('')}</div>
+      <div class="grp"><select data-sv="per" aria-label="Trimestre">${[1, 2, 3].map(p => `<option value="${p}" ${String(p) === String(svPer) ? 'selected' : ''}>Trimestre ${p}</option>`).join('')}</select>
+      <select data-sv="cl" aria-label="Classe"><option value="">Toutes les classes</option>${cls.map(c => `<option ${c === svCl ? 'selected' : ''}>${c}</option>`).join('')}</select></div>
+      <button class="bouton leger" type="button" data-gen-niv>✦ Appréciations du niveau</button>
+      <span class="sous fin">Résumé du ${esc(SV.maj || '?')} · <button class="bouton leger petit" type="button" data-actualiser>↻ Actualiser</button></span>
+    </div>
+    ${blocNoms()}
+    <div class="attente" hidden></div>
+    <div class="sous">Clique sur une case de classe pour publier sur Pronote, corriger, rendre facultative ou arrêter une activité ; sur un élève pour ses statistiques et son appréciation. <span class="n nc">12</span> = note non comptée · · = ouverte non rendue · ✎ = rendue, pas corrigée.</div>
+    ${vues.length ? `<div class="tabl"><table class="sv"><thead><tr><th class="nom">Élève</th><th>Moy.</th>${codes.map(k => `<th>${esc(k)}</th>`).join('')}<th>Défauts fréquents</th><th>Appréciation T${svPer}</th></tr></thead>
+      <tbody>${lignes.join('')}</tbody></table></div>` : '<div class="info">Aucune classe avec des élèves à ce niveau.</div>'}`;
+  majAttente();
+}
+function celluleClasse(cl, P, k, m) {
+  const d = (P.devoirs || []).find(x => x.code === k), a = (SV.acts[cl] || {})[k];
+  if (!d && !a) return '<td></td>';
+  const ic = [];
+  if (d) ic.push(`<span class="pr${d.pronote ? '' : ' non'}" title="${d.pronote ? 'Envoyée sur Pronote' : 'Pas encore sur Pronote'}">P</span>`);
+  if (a) {
+    if (a.facForcee || a.facAuto) ic.push(`<span class="fa" title="Note facultative${a.facForcee ? ' (forcée)' : ''}">F</span>`);
+    if (a.arretee) ic.push('<span class="ar" title="Activité arrêtée">■</span>');
+    else if (a.ouverte && !a.terminee) ic.push(`<span class="en" title="En cours : ${a.repondu} rendue(s), ${a.corriges} corrigée(s)">${a.corriges}/${a.repondu || 0}</span>`);
+  }
+  return `<td class="act" data-pact="${cl}|${k}"><span class="n ${classeNote(m)}">${fr(m)}</span><div class="ic">${ic.join('')}</div></td>`;
+}
+function defautsClasse(cl) {
+  const t = {};
+  Object.values(SV.eleves[cl] || {}).forEach(e => (e.defauts || []).forEach(([f, n]) => t[f] = (t[f] || 0) + n));
+  return Object.entries(t).sort((a, b) => b[1] - a[1]);
+}
+
+// ---------- Menu d'une activité dans une classe ----------
+function fermerPop() { const p = $('#prog .pop'); if (p) p.remove(); }
+function ouvrirPop(cible, html) {
+  fermerPop();
+  const p = document.createElement('div'); p.className = 'pop'; p.innerHTML = html;
+  $('#prog').appendChild(p);
+  const r = cible.getBoundingClientRect(), base = $('#prog').getBoundingClientRect();
+  const larg = p.offsetWidth;
+  let x = r.left - base.left; if (r.left + larg > window.innerWidth - 12) x = window.innerWidth - 12 - larg - base.left;
+  p.style.left = Math.max(0, x) + 'px'; p.style.top = (r.bottom - base.top + 4) + 'px';
+}
+document.addEventListener('click', e => { if (!e.target.closest('#prog .pop,[data-pact]')) fermerPop(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') fermerPop(); });
+
+function popActivite(cible, cl, k) {
+  const P = SV.classes[cl].periodes[svPer] || {}, d = (P.devoirs || []).find(x => x.code === k), a = (SV.acts[cl] || {})[k];
+  const titre = a ? titreActivite(cl, k, a) : (k === 'A' ? 'Note d\'attitude' : '');
+  ouvrirPop(cible, `<h4>${cl} · ${esc(k)} ${titre ? '— ' + esc(titre) : ''}</h4>
+    ${a ? `<div class="sous">${a.repondu} copie(s) rendue(s) · ${a.corriges} corrigée(s) · moyenne ${fr(a.moy)}${Object.keys(a.reussite || {}).length ? '<br>Réussite : ' + Object.entries(a.reussite).map(([l, v]) => l + ' ' + v + ' %').join(' · ') : ''}</div>` : ''}
+    ${d ? `<button class="bouton leger" type="button" data-op="pronote" data-k="${cl}|${k}">${d.pronote ? '✓ Sur Pronote : retirer la coche' : '📤 Publier sur Pronote (coche la case du devoir)'}</button>` : ''}
+    ${a ? `<button class="bouton leger" type="button" data-op="corriger" data-k="${cl}|${k}">✓ Corriger les copies rendues maintenant</button>
+    <button class="bouton leger" type="button" data-op="fac" data-k="${cl}|${k}">${a.facForcee ? 'Retirer « facultative » (forcée)' : 'Rendre la note facultative'}${a.facAuto && !a.facForcee ? ' (déjà facultative : moyenne de classe < 8)' : ''}</button>
+    <button class="bouton leger" type="button" data-op="arret" data-k="${cl}|${k}">${a.arretee ? 'Annuler l\'arrêt' : '■ Arrêter l\'activité (les restants reçoivent la correction)'}</button>
+    <button class="bouton leger" type="button" data-op="voir" data-k="${cl}|${k}">➜ Ouvrir dans l'onglet Activité</button>` : ''}`);
+}
+async function operation(op, cl, k) {
+  fermerPop();
+  const a = (SV.acts[cl] || {})[k];
+  if (op === 'pronote') {
+    const P = SV.classes[cl].periodes[svPer], d = P.devoirs.find(x => x.code === k);
+    try {
+      await ecrire(fA1(cl, `${d.col}${P.ligneEntete - 1}`), [[!d.pronote]]);
+      d.pronote = !d.pronote;
+      toast(d.pronote ? `${cl} ${k} : coché, les notes partent sur Pronote à la prochaine synchro du bot.` : `${cl} ${k} : coche retirée.`);
+      rafraichirProf();
+    } catch (e) { toast(erreurMcp(e), true); }
+  } else if (op === 'corriger') commande('corriger', cl, {}, `Correction ${cl}`);
+  else if (op === 'fac') commande('facultative', cl, { ligne: a.ligne, valeur: !a.facForcee }, `${cl} ${k} facultative`);
+  else if (op === 'arret') {
+    if (!a.arretee && !confirm(`Arrêter ${k} en ${cl} ? Les élèves qui ne l'ont pas faite recevront la correction (sans note) et l'activité suivante.`)) return;
+    commande('arreter', cl, { ligne: a.ligne, valeur: !a.arretee }, `${cl} ${k} ${a.arretee ? 'reprise' : 'arrêtée'}`);
+  } else if (op === 'ouvrir' || op === 'fermer') commande(op, cl, { ligne: a.ligne }, `${cl} ${k} ${op === 'ouvrir' ? 'débloquée' : 'fermée'}`);
+  else if (op === 'voir') { acCl = cl; acCode = k; ongletVoir('activite'); try { history.replaceState(null, '', '#activite'); } catch (e) {} }
+}
+
+// ---------- Panneau élève / classe ----------
+function panneau(html) {
+  atelier = null;
+  $('#pg-pan').innerHTML = `<div class="p-tete"><button class="fermer" id="fermer" type="button">×</button>${html.tete}</div><div class="p-corps">${html.corps}</div>${html.pied ? `<div class="p-pied">${html.pied}</div>` : ''}`;
+  $('#pg-pan').classList.add('ouvert');
+  $('#fermer').addEventListener('click', fermerAtelier);
+}
+function panneauEleve(cl, id) {
+  const E = SV.eleves[cl][id], p = E.p[svPer] || {};
+  const codes = ((SV.classes[cl].periodes[svPer] || {}).devoirs || []).map(d => d.code);
+  Object.keys(SV.acts[cl] || {}).forEach(k => { if (!codes.includes(k) && (SV.acts[cl][k].el[id] || '-') !== '-' && SV.acts[cl][k].periode === String(svPer)) codes.push(k); });
+  codes.sort(ordreCode);
+  const notes = codes.map(k => { const n = noteEleve(cl, id, k, svPer); return n.txt ? `<span class="chip" title="${esc(titreActivite(cl, k, (SV.acts[cl] || {})[k]) || '')}">${esc(k)} : <span class="n ${n.nc ? 'nc' : classeNote(n.v)}">${esc(n.txt)}</span></span>` : ''; }).join('');
+  const max = Math.max(1, ...(E.defauts || []).map(d => d[1]));
+  panneau({
+    tete: `<div class="sous">${cl} · ${esc(id)}${E.profil ? ' · profil ' + esc(E.profil) + ' (' + esc(PROFILS[E.profil] || '') + ')' : ''}</div><h2>${esc(nomEleve(id))}</h2>
+      <div class="sous">${[E.comportement && 'Comportement : ' + E.comportement, E.resultats && 'Résultats : ' + E.resultats, E.assiduite && E.assiduite !== 'Non' && 'Assiduité : ' + E.assiduite].filter(Boolean).map(esc).join(' · ')}</div>`,
+    corps: `<div class="stat">${[1, 2, 3].map(t => { const m = num((E.p[t] || {}).moy); return `<div><b><span class="n ${classeNote(m)}">${fr(m)}</span></b><small>Trimestre ${t}</small></div>`; }).join('')}
+        ${E.consignes ? `<div><b>${E.consignes.taux} %</b><small>des points des consignes</small></div><div><b>${E.consignes.nulles}</b><small>consignes à 0 (non faites ou fausses)</small></div>` : ''}</div>
+      <div class="bloc"><h3>Notes du trimestre ${svPer}</h3><div class="chips">${notes || '<span class="sous">Aucune note.</span>'}</div></div>
+      <div class="bloc"><h3>Ce qui revient dans ses corrections <small>toutes les activités corrigées</small></h3>
+        <div class="barres">${(E.defauts || []).map(([f, n]) => `<div><span style="flex:2">${esc(f)}</span><i style="--v:${Math.round(100 * n / max)}%"></i><b>×${n}</b></div>`).join('') || '<span class="sous">Rien de récurrent pour l\'instant.</span>'}</div></div>
+      <div class="bloc"><h3>Appréciation du trimestre ${svPer} <small>bulletin (AD${p.ligne || ''})</small></h3>
+        <textarea class="regle" id="app-el" style="min-height:110px">${esc(p.app || '')}</textarea>
+        <div class="sous" style="margin-top:4px">Le prénom reste dans le texte pour Pronote. Pour la régénérer : bouton de la classe (⚙).</div></div>`,
+    pied: p.ligne ? `<button class="bouton" type="button" id="app-enr">Enregistrer l'appréciation</button>` : ''
+  });
+  if (p.ligne) $('#app-enr').addEventListener('click', async () => {
+    const t = $('#app-el').value.trim();
+    try { await ecrire(fA1(cl, 'AD' + p.ligne), [[t]]); p.app = t; toast('Appréciation enregistrée.'); dessinerSuivi(); }
+    catch (e) { toast(erreurMcp(e), true); }
+  });
+}
+function panneauClasse(cl) {
+  const C = SV.classes[cl], P = C.periodes[svPer] || {}, ids = Object.keys(SV.eleves[cl] || {});
+  const sans = ids.filter(id => !((SV.eleves[cl][id].p[svPer] || {}).app)).length;
+  const def = defautsClasse(cl), max = Math.max(1, ...def.map(d => d[1]));
+  const acts = Object.entries(SV.acts[cl] || {}).filter(([, a]) => a.periode === String(svPer) && a.moy != null).sort((x, y) => ordreCode(x[0], y[0]));
+  panneau({
+    tete: `<div class="sous">Classe · trimestre ${svPer}${String(C.trimestre) === String(svPer) ? ' (trimestre en cours)' : ''}</div><h2>${cl}</h2><div class="sous">${ids.length} élèves · ${sans} sans appréciation au T${svPer}</div>`,
+    corps: `<div class="bloc"><h3>Appréciations du bulletin</h3>
+        <div class="actions"><button class="bouton" type="button" data-gen="eleves">✦ Générer toutes les appréciations du T${svPer}</button>
+        <button class="bouton leger" type="button" data-gen="classe">Régénérer seulement l'appréciation de classe</button></div>
+        <div class="sous" style="margin-top:6px">Générées par le cahier (Mistral) avec tes règles, en 2 à 5 min. Elles remplacent celles du trimestre.</div></div>
+      <div class="bloc"><h3>Appréciation générale de la classe <small>AD${P.ligneEntete || ''}</small></h3>
+        <textarea class="regle" id="app-cl" style="min-height:90px">${esc(P.appreciation || '')}</textarea>
+        <div class="actions" style="margin-top:6px"><button class="bouton leger" type="button" id="app-cl-enr">Enregistrer</button></div></div>
+      <div class="bloc"><h3>Publier sur Pronote</h3>
+        <div class="sous">Notes : coche chaque devoir (case de la colonne dans le tableau). Appréciations : lance le bot sur ton PC :</div>
+        <div class="actions" style="margin-top:6px"><code style="background:var(--thumb);padding:4px 8px;border-radius:6px">go run . --appreciations=1</code><button class="bouton leger petit" type="button" id="cp-bot">Copier</button></div></div>
+      <div class="bloc"><h3>Ce qui revient le plus dans la classe</h3><div class="barres">${def.slice(0, 8).map(([f, n]) => `<div><span style="flex:2">${esc(f)}</span><i style="--v:${Math.round(100 * n / max)}%"></i><b>×${n}</b></div>`).join('') || '<span class="sous">—</span>'}</div></div>
+      <div class="bloc"><h3>Activités du trimestre</h3>${acts.map(([k, a]) => `<div class="crit"><i>${esc(k)} · ${fr(a.moy)}/20</i> · ${esc(titreActivite(cl, k, a))} ${Object.keys(a.reussite || {}).length ? '· ' + Object.entries(a.reussite).map(([l, v]) => l + ' ' + v + ' %').join(' · ') : ''}</div>`).join('') || '<span class="sous">—</span>'}</div>`
+  });
+  $('#pg-pan').querySelectorAll('[data-gen]').forEach(b => b.addEventListener('click', () => {
+    const seule = b.dataset.gen === 'classe';
+    if (!seule && !confirm(`Générer les appréciations du trimestre ${svPer} pour toute la ${cl} ? Celles déjà écrites seront remplacées.`)) return;
+    commande('appreciations', cl, { periode: +svPer, seulementClasse: seule }, `Appréciations ${cl} T${svPer}`);
+  }));
+  $('#app-cl-enr').addEventListener('click', async () => {
+    const t = $('#app-cl').value.trim();
+    try { await ecrire(fA1(cl, 'AD' + P.ligneEntete), [[t]]); P.appreciation = t; toast('Appréciation de classe enregistrée.'); dessinerSuivi(); } catch (e) { toast(erreurMcp(e), true); }
+  });
+  $('#cp-bot').addEventListener('click', () => { try { navigator.clipboard.writeText('go run . --appreciations=1'); toast('Commande copiée.'); } catch (e) {} });
+}
+
+// =====================================================================
+// ACTIVITÉ DU JOUR
+// =====================================================================
+function heureParis() {
+  const p = {}; new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', weekday: 'short', hourCycle: 'h23' })
+    .formatToParts(new Date()).forEach(x => p[x.type] = x.value);
+  return { date: `${p.year}-${p.month}-${p.day}`, jour: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(p.weekday), min: +p.hour * 60 + +p.minute };
+}
+function semaineAB() {
+  const h = heureParis(), d = new Date(h.date + 'T12:00:00Z');
+  const lundi = d.getTime() - ((h.jour + 6) % 7) * 864e5, ref = Date.UTC(2026, 10, 9, 12);
+  return ((Math.round((lundi - ref) / (7 * 864e5)) % 2) + 2) % 2 === 0 ? 'A' : 'B';
+}
+function creneauxDuJour() {
+  const h = heureParis();
+  if (CO && CO.maj && CO.creneaux && String(CO.maj).slice(0, 10) === new Date().toISOString().slice(0, 10)) return CO.creneaux.slice().sort();
+  const sem = semaineAB();
+  return (EDT_SECOURS[h.jour] || []).filter(c => !c[2] || c[2] === sem).map(c => [c[0], c[1]]);
+}
+// Cours en cours, sinon prochain cours du jour, sinon dernier cours du jour
+function coursDuMoment() {
+  const h = heureParis(), cr = creneauxDuJour();
+  const enCours = cr.filter(c => h.min >= minutes(c[0]) && h.min < minutes(c[0]) + 55);
+  if (enCours.length) return { c: enCours[enCours.length - 1], etat: 'en cours' };
+  const prochain = cr.find(c => minutes(c[0]) > h.min);
+  if (prochain) return { c: prochain, etat: 'prochain' };
+  return cr.length ? { c: cr[cr.length - 1], etat: 'terminé' } : null;
+}
+function phase(debut) {
+  const d = heureParis().min - minutes(debut);
+  if (d < 0) return { cls: '', txt: 'commence à ' + debut };
+  if (d < 17) return { cls: 'lecture', txt: `Lecture · encore ${17 - d} min` };
+  if (d < 47) return { cls: 'activite', txt: `Activité · encore ${47 - d} min` };
+  if (d < 55) return { cls: 'correction', txt: `Correction · encore ${55 - d} min` };
+  return { cls: '', txt: 'cours terminé' };
+}
+// Activité du cours = la plus récente ouverte et pas terminée (règle du cahier), sinon la dernière ouverte
+function activiteDuCours(cl) {
+  const acts = Object.entries(SV.acts[cl] || {}).sort((a, b) => b[1].ligne - a[1].ligne);
+  const x = acts.find(([, a]) => a.ouverte && !a.terminee && !a.arretee) || acts.find(([, a]) => a.ouverte) || acts[acts.length - 1];
+  return x ? x[0] : '';
+}
+function cleProg(cl, code) { const c = cleCode(code); return c ? `${cl[0]}e-S${c[0]}-A${c[1]}` : ''; }
+function versionPubliee(k) {
+  const r = ROWS[k];
+  if (r && r.v[15]) return { titre: r.v[10], pb: r.v[11], cons: r.v[12], cor: r.v[13], site: r.v[14], publiee: true };
+  return Object.assign(brouillon(k), { publiee: false });
+}
+function titreActivite(cl, code, a) {
+  const k = cleCode(code) ? prepMeta(cl, code) : '';
+  const v = k && META[k] ? versionPubliee(k) : null;
+  return (v && v.titre) || (a && a.titre ? a.titre.replace(/\s*Activité \d+\s*$/, '') : '');
+}
+function prepMeta(cl, code) {
+  const n = cl[0], c = cleCode(code), k = cleProg(cl, code);
+  if (!c || !COURS[n]) return k;
+  const s = COURS[n][c[0] - 1], a = s && s.activites[c[1] - 1];
+  if (s && a) META[k] = { type: 'activité', niveau: n, seance: s.numero, num: a.numero, doc: idDoc(a.act), act: a.act, cor: a.cor, seanceTitre: s.titre };
+  return k;
+}
+
+function dessinerActivite() {
+  if (!SV) return;
+  const classes = Object.keys(SV.classes).filter(c => SV.classes[c].effectif).sort();
+  const cm = coursDuMoment();
+  if (!acCl || !classes.includes(acCl)) acCl = cm && classes.includes(cm.c[1]) ? cm.c[1] : classes[0];
+  const acts = Object.entries(SV.acts[acCl] || {}).sort((a, b) => a[1].ligne - b[1].ligne);
+  if (!acCode || !(SV.acts[acCl] || {})[acCode]) acCode = activiteDuCours(acCl);
+  const A = (SV.acts[acCl] || {})[acCode];
+  const k = acCode ? prepMeta(acCl, acCode) : '';
+  const V = k ? versionPubliee(k) : {}, B = k ? brouillon(k) : {};
+  const cr = creneauxDuJour().filter(c => c[1] === acCl), h = heureParis();
+  const leCours = cr.find(c => h.min < minutes(c[0]) + 55) || cr[cr.length - 1];
+  const ph = leCours ? phase(leCours[0]) : null;
+
+  // Élèves de la classe + connexion
+  const vus = ((CO && CO.eleves) || {})[acCl] || {};
+  const ids = Object.keys(SV.eleves[acCl] || {}).sort(ordreEleves);
+  const co = id => { const t = vus[id]; if (!t) return ''; const d = h.min - minutes(t); return d <= 10 ? 'co' : 're'; };
+  const nbCo = ids.filter(id => co(id) === 'co').length;
+  const eleves = ids.map(id => {
+    const s = (A && A.el[id]) || '-', e = s[0], note = s.slice(1), E = SV.eleves[acCl][id];
+    return `<div class="elv" title="${esc(id + ' · ' + (ETATS[e] || '') + (vus[id] ? ' · vu à ' + vus[id] : ''))}"><span class="pt ${co(id)}"></span><b>${esc(nomEleve(id))}${E.profil ? `<span class="prf">${esc(E.profil)}</span>` : ''}</b><small>${note ? `<span class="n ${classeNote(num(note))}">${esc(note)}</span>` : esc({ o: 'ouverte', r: 'rendue', a: 'absent', x: 'absent', '-': '—' }[e] || '')}</small></div>`;
+  }).join('');
+
+  const cs = js(V.cons, []), bar = js(V.cor, {}), st = infoSite(V.site || '');
+  const mN = MOYENNES[k];
+  const differe = k && etat(k) !== 'ok';
+  $('#ac-main').innerHTML = `
+    <div class="barre">
+      <div class="grp"><select data-ac="cl" aria-label="Classe">${classes.map(c => `<option ${c === acCl ? 'selected' : ''}>${c}</option>`).join('')}</select>
+      <select data-ac="code" aria-label="Activité">${acts.map(([c, a]) => `<option value="${c}" ${c === acCode ? 'selected' : ''}>${c} — ${esc(titreActivite(acCl, c, a).slice(0, 50))}${a.terminee ? ' ✓' : a.ouverte ? ' (ouverte)' : ''}</option>`).join('')}</select></div>
+      <span class="sous">${cm ? `${cm.etat === 'en cours' ? 'En ce moment' : cm.etat === 'prochain' ? 'Prochain cours' : 'Dernier cours du jour'} : <b>${esc(cm.c[1])}</b> à ${esc(cm.c[0])}` : 'Pas de cours aujourd\'hui'}</span>
+      <span class="sous fin">Connectés : ${CO && CO.maj ? 'vus à ' + new Date(CO.maj).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '—'} · copies : ${esc(SV.maj || '?')}
+        <button class="bouton leger petit" type="button" data-actualiser="${acCl}">↻ Actualiser</button></span>
+    </div>
+    ${blocNoms()}
+    <div class="attente" hidden></div>
+    ${!A ? '<div class="info">Aucune activité pour cette classe.</div>' : `
+    <div class="ac-tete">
+      <div class="sous">${acCl} · ${esc(acCode)}${leCours ? ` · cours de ${esc(leCours[0])} <span class="phase ${ph.cls}">${esc(ph.txt)}</span>` : ''} ${k ? boutonEtat(k) : ''}</div>
+      <h2>${esc(V.titre || titreActivite(acCl, acCode, A) || 'Titre à définir')}</h2>
+      ${V.pb ? `<div class="sous">❓ ${esc(V.pb)}</div>` : ''}
+      <div class="stat">
+        <div><b>${nbCo}/${ids.length}</b><small>connectés (10 dernières min)</small></div>
+        <div><b>${A.repondu}/${ids.length}</b><small>copies rendues</small></div>
+        <div><b><span class="n ${classeNote(A.moy)}">${fr(A.moy)}</span></b><small>moyenne ${acCl} (${A.corriges} corrigée${A.corriges > 1 ? 's' : ''})</small></div>
+        ${mN ? `<div><b><span class="n ${classeNote(num(mN.moy))}">${esc(mN.moy)}</span></b><small>moyenne toutes classes (${esc(mN.nb)})</small></div>` : ''}
+        ${Object.keys(A.reussite || {}).length ? `<div><b style="font-size:13px">${Object.entries(A.reussite).map(([l, v]) => l + ' ' + v + ' %').join(' · ')}</b><small>réussite par consigne</small></div>` : ''}
+      </div>
+      <div class="actions">
+        <button class="bouton${A.ouverte ? ' leger' : ''}" type="button" data-op="${A.ouverte ? 'fermer' : 'ouvrir'}" data-k="${acCl}|${acCode}">${A.ouverte ? 'Refermer l\'activité' : '🔓 Débloquer pour toute la classe'}</button>
+        <button class="bouton leger${A.facForcee ? ' on' : ''}" type="button" data-op="fac" data-k="${acCl}|${acCode}">${A.facForcee ? '✓ Facultative (forcée)' : A.facAuto ? 'Facultative (auto) · forcer' : 'Rendre facultative'}</button>
+        <button class="bouton leger${A.arretee ? ' on' : ''}" type="button" data-op="arret" data-k="${acCl}|${acCode}">${A.arretee ? '■ Arrêtée · annuler' : '■ Arrêter l\'activité'}</button>
+        <button class="bouton leger" type="button" data-op="corriger" data-k="${acCl}|${acCode}">✓ Corriger maintenant</button>
+        ${k ? `<button class="bouton" type="button" data-atelier="${esc(k)}">✦ Modifier consignes · correction</button>${boutonPub(k, true)}` : ''}
+      </div>
+    </div>
+    <div class="carte2"><h3>Élèves <span class="sous"><span class="pt co" style="display:inline-block"></span> connecté · <span class="pt re" style="display:inline-block"></span> vu il y a plus de 10 min</span></h3><div class="eleves">${eleves}</div></div>
+    <div class="duo2">
+      <div class="carte2">
+        <h3>Consignes ${V.publiee ? '' : '<span class="tag2">brouillon, pas encore publié</span>'}${V.publiee && differe ? '<span class="tag2">brouillon modifié non publié</span>' : ''}</h3>
+        ${cs.map(c => `<p class="cons"><b>${esc(c.lettre)}</b> · ${esc(c.texte)}</p>`).join('') || '<div class="sous">Pas de consignes dans la progression : les élèves voient celles du Doc activité.</div>'}
+        <h3 style="margin-top:14px">Correction <span class="sous">${Object.keys(bar).length ? total(bar) + ' pts' : ''}</span></h3>
+        ${Object.entries(bar).map(([l, v]) => `<p class="cons"><b>${esc(l)}</b> · ${esc(v.max)} pts${A.reussite && A.reussite[l] != null ? ` <span class="sous">(réussite ${A.reussite[l]} %)</span>` : ''}</p>${criteres(v).map(x => `<div class="crit">${x.points ? `<i>${esc(x.points)} pt · </i>` : ''}${esc(x.texte)}</div>`).join('')}`).join('') || '<div class="sous">Pas de barème dans la progression.</div>'}
+        <div class="liens" style="margin-top:10px">${META[k] && META[k].act ? `<a href="${esc(META[k].act)}" target="_blank" rel="noopener">📄 Doc activité</a>` : ''}${META[k] && META[k].cor ? `<a href="${esc(META[k].cor)}" target="_blank" rel="noopener">✅ Doc correction</a>` : ''}</div>
+      </div>
+      <div class="carte2">
+        <h3>${st ? esc(st.titre) : 'Document'} ${st ? `<a class="sous" href="${esc(st.url)}" target="_blank" rel="noopener">ouvrir dans un onglet ↗</a>` : ''}</h3>
+        ${st ? `<iframe class="cadre" src="${esc(st.url)}" title="Site de l'activité" loading="lazy"></iframe>` : '<div class="sous">Pas de site associé à cette activité.</div>'}
+      </div>
+    </div>`}`;
+  majAttente();
+}
+
+// ---------- Événements des deux onglets ----------
+$('#prog').addEventListener('click', e => {
+  const t = e.target;
+  const b = t.closest('[data-svniv],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv]');
+  if (!b) return;
+  if (b.dataset.svniv) { svNiv = b.dataset.svniv; svCl = ''; svPer = ''; dessinerSuivi(); }
+  else if (b.dataset.pact) { const [cl, k] = b.dataset.pact.split('|'); popActivite(b, cl, k); }
+  else if (b.dataset.op) { const [cl, k] = b.dataset.k.split('|'); operation(b.dataset.op, cl, k); }
+  else if (b.dataset.pel) { const [cl, id] = b.dataset.pel.split('|'); panneauEleve(cl, id); }
+  else if (b.dataset.pcl) panneauClasse(b.dataset.pcl);
+  else if (b.dataset.actualiser !== undefined) {
+    const cl = b.dataset.actualiser;
+    commande('actualiser', cl, {}, cl ? 'Relecture de la ' + cl : 'Relecture de toutes les classes');
+    recharger();
+  } else if (b.dataset.genNiv !== undefined) {
+    const cls = classesNiveau(svNiv);
+    if (!confirm(`Générer les appréciations du trimestre ${svPer} pour ${cls.join(', ')} ? Celles déjà écrites seront remplacées.`)) return;
+    cls.forEach(cl => commande('appreciations', cl, { periode: +svPer }, `Appréciations ${cl} T${svPer}`));
+  }
+});
+
+// ---------------------------------------------------------------------
+// Démarrage (Progression)
+// ---------------------------------------------------------------------
 let demarre = false;
 async function demarrer() {
   if (demarre) return; demarre = true;
@@ -1124,19 +1758,29 @@ async function demarrer() {
   catch (e) { demarre = false; $('#pg-main').innerHTML = `<div class="info">${esc(erreurMcp(e))}</div>`; $('#pg-maj').textContent = ''; }
 }
 window.__progression = { demarrer };
+window.__prof = { suivi: ouvrirSuivi, activite: ouvrirActivite };
 })();
 
-/* ===== Onglets (Mes sites / Progression SVT), mémorisés dans l'adresse (#progression) ===== */
+/* ===== Onglets (Mes sites / Progression SVT / Suivi des élèves / Activité), mémorisés dans l'adresse ===== */
+const ONGLETS=["sites","progression","suivi","activite"];
+function ongletHash(){const h=location.hash.slice(1);return ONGLETS.includes(h)?h:"sites"}
 function ongletVoir(t){
-  const p=t==="progression";
+  if(!ONGLETS.includes(t))t="sites";
+  const p=t!=="sites";
   document.getElementById("tab-sites").hidden=p;document.getElementById("tab-sites").style.display=p?"none":"flex";
-  document.getElementById("prog").hidden=!p;document.querySelector(".wrap").classList.toggle("large",p);document.getElementById("pg-barre").hidden=!p;
-  document.querySelectorAll(".tabs > button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===(p?"progression":"sites"))));
-  if(p)window.__progression.demarrer();
+  document.getElementById("prog").hidden=!p;document.querySelector(".wrap").classList.toggle("large",t==="progression");
+  document.getElementById("pg-barre").hidden=t!=="progression";
+  document.getElementById("pg-main").hidden=t!=="progression";
+  document.getElementById("sv-main").hidden=t!=="suivi";
+  document.getElementById("ac-main").hidden=t!=="activite";
+  document.querySelectorAll(".tabs > button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===t)));
+  if(t==="progression")window.__progression.demarrer();
+  else if(t==="suivi")window.__prof.suivi();
+  else if(t==="activite")window.__prof.activite();
 }
 document.querySelectorAll(".tabs > button").forEach(b=>b.addEventListener("click",()=>{
-  try{history.replaceState(null,"",b.dataset.tab==="progression"?"#progression":"#sites")}catch(_){location.hash=b.dataset.tab}
+  try{history.replaceState(null,"","#"+b.dataset.tab)}catch(_){location.hash=b.dataset.tab}
   ongletVoir(b.dataset.tab)}));
-addEventListener("hashchange",()=>ongletVoir(location.hash==="#progression"?"progression":"sites"));
-ongletVoir(location.hash==="#progression"?"progression":"sites");
+addEventListener("hashchange",()=>ongletVoir(ongletHash()));
+ongletVoir(ongletHash());
 </script>

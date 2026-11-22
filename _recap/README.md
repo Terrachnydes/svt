@@ -69,3 +69,14 @@ Un site créé depuis « + Créer un site » se range en écrivant son adresse e
 Le cahier des élèves (dépôt cahier-numerique, `lirePublie_` dans Affichage.js) lit les colonnes K-P : une activité publiée remplace titre, problématique, consignes, site et correction des Docs ; la correction automatique utilise le barème publié (`baremePublieTexte_`) ; les liens publiés s'ajoutent aux liens de tous les niveaux. Envoi aux élèves par la synchro (toutes les 5 min).
 
 La page déclare les capacités `mcp` (bouton de synchro : Claude Code Remote `fire_trigger` ; onglet Progression : Google Sheets `get_values`, `append_values`, `update_values`), `sample` (consignes et progression), `db` et `user` (organisation des catégories) : ne pas les retirer en republiant (republier SANS passer `capabilities` les conserve).
+
+## Onglets « Suivi des élèves » et « Activité » (interface prof)
+
+Adresses `#suivi` et `#activite`. Ils lisent un petit classeur à part, « Cahier numérique — interface prof »,
+dont l'identifiant est dans le Sheet principal en `'Règles IA'!B5`. Il est rempli par Apps Script
+(`src/InterfaceProf.js` du dépôt cahier-numerique) :
+- `Suivi` : A type (classe / eleve / activite) · B classe · C clé · D données JSON · E mis à jour. Refait toutes les heures et après chaque commande.
+- `Commandes` : la page y ajoute une ligne (A id · B date · C commande · D classe · E paramètres JSON · F « en attente »). La synchro des 5 min la traite : `ouvrir` / `fermer` / `facultative` / `arreter` (paramètre `ligne` = 1re ligne du bloc), `corriger`, `appreciations` (`periode`, `seulementClasse`), `actualiser`.
+- `Connectés` : A1 = JSON (élèves vus ces 15 dernières min, créneaux du jour), toutes les 5 min en journée.
+Écritures directes dans le Sheet principal : case Pronote d'un devoir (ligne 39/71/103) et appréciations (colonne AD).
+Les noms des élèves viennent du fichier `eleves.csv` chargé dans la page (jamais envoyé à Google ; option « garder sur cet ordinateur »).
