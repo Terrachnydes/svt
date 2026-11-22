@@ -273,12 +273,25 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .pt.co{background:#22a35a;box-shadow:0 0 0 3px rgba(34,163,90,.2)}
 #prog .pt.abs{background:#d93a2b;box-shadow:0 0 0 3px rgba(217,58,43,.18)}
 #prog .plan-defile{overflow-x:auto;max-width:100%}
-#prog .plan{display:grid;grid-template-columns:minmax(120px,1fr) 18px repeat(4,minmax(120px,1fr)) 18px repeat(2,minmax(120px,1fr));gap:8px 6px;min-width:900px}
-#prog .plan .elv{flex-direction:row;padding:8px 9px}
-#prog .plan .elv b{display:flex;flex-direction:column;line-height:1.2}
-#prog .elv .nf{color:var(--muted);font-weight:600;font-size:11.5px;overflow:hidden;text-overflow:ellipsis}
+#prog .plan{display:grid;grid-template-columns:minmax(92px,1fr) 14px repeat(4,minmax(92px,1fr)) 14px repeat(2,minmax(92px,1fr));gap:4px;min-width:720px;max-width:1100px}
+#prog .plan .elv,#prog .hors .elv{padding:3px 6px;font-size:12.5px;gap:5px;border-radius:7px;cursor:pointer}
+#prog .plan .elv:hover,#prog .hors .elv:hover{outline:2px solid var(--accent)}
+#prog .plan .elv b{font-size:12.5px}
+#prog .plan .elv small,#prog .hors .elv small{font-size:11px}
+#prog .plan .n,#prog .hors .n{min-width:22px;padding:0 3px}
+#prog .plan .pt,#prog .hors .pt{width:8px;height:8px}
+#prog .hors{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:8px;font-size:12.5px}
+#prog .hors .elv{flex:0 0 auto;max-width:200px}
+#prog .journee{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-left:auto;font-size:13px}
+#prog .journee>b{margin-right:4px}
+#prog .jc{font:inherit;font-size:12.5px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:8px;padding:4px 8px;cursor:pointer;white-space:nowrap}
+#prog .jc span{color:var(--muted)}
+#prog .jc.passe{opacity:.55}
+#prog .jc.maint{border-color:var(--accent);box-shadow:0 0 0 2px rgba(34,163,90,.2)}
+#prog .jc.choisi{background:var(--accent);border-color:var(--accent);color:#fff}#prog .jc.choisi span{color:#e6f4ec}
+#prog .elv .nf{color:var(--muted);font-weight:600;font-size:11px}
 #prog .plan .prf{margin-left:0;align-self:flex-start}
-#prog .elv.vide{background:transparent;border-style:dashed;min-height:44px;justify-content:center}
+#prog .elv.vide{background:transparent;border-style:dashed;min-height:26px;justify-content:center;cursor:pointer}
 #prog .duo2{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr);gap:12px;align-items:start}
 #prog .carte2{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
 #prog .carte2 h3{margin:0 0 8px;font-size:15px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -1215,7 +1228,7 @@ $('#pg-recharger').addEventListener('click', async () => { try { await chargerTo
 //   traitées dans les 5 min) · Connectés (A1, toutes les 5 min en journée).
 // Les noms des élèves ne viennent jamais de Google : fichier eleves.csv chargé depuis l'ordinateur.
 // =====================================================================
-let IPID = '', SV = null, CO = null, ELEVES = {}, ENVOIS = [];
+let IPID = '', SV = null, CO = null, ELEVES = {}, ENVOIS = [], PLANS = {};
 let svNiv = '3', svPer = '', svCl = '', acCl = '', acCode = '', svTimer = null, acTimer = null;
 const EDT_SECOURS = {   // copie de EDT_CLASSES (CorrectionAuto.js) si la synchro n'a pas encore donné les créneaux du jour
   1: [['08:30', '3H', 'A'], ['09:28', '4H', ''], ['10:40', '6I', ''], ['11:35', '6H', 'A'], ['11:35', '5H', 'B'], ['14:03', '3G', ''], ['16:13', '6G', 'B']],
@@ -1264,6 +1277,22 @@ async function chargerSuivi() {
     else if (t === 'activite') (s.acts[cl] = s.acts[cl] || {})[k] = d;
   });
   SV = s;
+}
+// Plans de classe modifiés dans la page (onglet Plans du classeur de l'interface, identifiants seulement)
+const CLASSES_PLAN = ['3G', '3H', '3I', '3J', '4G', '4H', '4I', '4J', '5G', '5H', '5I', '5J', '6G', '6H', '6I', '6J'];
+async function chargerPlans() {
+  try { (await lireIP('Plans!A2:B17')).forEach(r => { const p = js(r[1], null); if (r[0] && Array.isArray(p)) PLANS[r[0]] = p; }); } catch (e) {}
+}
+async function sauverPlan(cl, plan) {
+  const i = CLASSES_PLAN.indexOf(cl); if (i < 0) return;
+  PLANS[cl] = plan;
+  try { await mcp.callTool('Google Sheets', 'update_values', { spreadsheetId: IPID, range: `Plans!A${i + 2}:C${i + 2}`, values: [[cl, JSON.stringify(plan), maintenant()]] }); toast('Plan de classe enregistré.'); }
+  catch (e) { toast(erreurMcp(e), true); }
+}
+function planClasse(cl) {
+  const p = PLANS[cl] || (SV.classes[cl] || {}).plan;
+  const plan = Array.from({ length: 6 }, (_, r) => Array.from({ length: 7 }, (_, c) => ((p || [])[r] || [])[c] || ''));
+  return plan;
 }
 async function chargerConnectes() {
   try { CO = js(((await lireIP("'Connectés'!A1"))[0] || [])[0], {}) || {}; } catch (e) { CO = CO || {}; }
@@ -1374,7 +1403,7 @@ async function demarrerProf() {
     const taches = [];
     if (!Object.keys(COURS).length) taches.push(chargerTout());
     if (!(await assurerIP())) throw new Error('Le classeur de l\'interface prof n\'existe pas encore. Il est créé tout seul par la synchro du cahier (moins de 5 min), ou tout de suite par le menu du Sheet : Correction IA → « Interface prof : créer / actualiser le résumé ».');
-    taches.push(chargerSuivi(), chargerConnectes());
+    taches.push(chargerSuivi(), chargerConnectes(), chargerPlans());
     await Promise.all(taches);
   })();
   try { await profPret; } catch (e) { profPret = null; throw e; }
@@ -1514,7 +1543,23 @@ function ouvrirPop(cible, html) {
   let x = r.left - base.left; if (r.left + larg > window.innerWidth - 12) x = window.innerWidth - 12 - larg - base.left;
   p.style.left = Math.max(0, x) + 'px'; p.style.top = (r.bottom - base.top + 4) + 'px';
 }
-document.addEventListener('click', e => { if (!e.target.closest('#prog .pop,[data-pact]')) fermerPop(); });
+document.addEventListener('click', e => { if (!e.target.closest('#prog .pop,[data-pact],[data-place]')) fermerPop(); });
+// Choix de l'élève d'une place (échange si l'élève choisi est déjà assis ailleurs)
+function popPlace(cible, cl, place) {
+  const [r, c] = place.split('|').map(Number), plan = planClasse(cl), actuel = plan[r][c];
+  const ids = Object.keys(SV.eleves[cl] || {}).sort(ordreEleves);
+  ouvrirPop(cible, `<h4>Place rangée ${r + 1}, table ${c + 1}</h4>
+    <select data-choix-place>${['<option value="">— place vide —</option>'].concat(ids.map(id => `<option value="${esc(id)}" ${id === actuel ? 'selected' : ''}>${esc(nomEleve(id))}${plan.some(l => l.includes(id)) && id !== actuel ? ' (déjà placé)' : ''}</option>`)).join('')}</select>
+    <div class="sous">Si l'élève est déjà assis ailleurs, les deux échangent leurs places.</div>`);
+  const sel = $('#prog .pop [data-choix-place]');
+  sel.focus();
+  sel.addEventListener('change', () => {
+    const id = sel.value;
+    plan.forEach((l, i) => l.forEach((x, j) => { if (id && x === id) plan[i][j] = actuel && actuel !== '?' ? actuel : ''; }));
+    plan[r][c] = id;
+    fermerPop(); sauverPlan(cl, plan); dessinerActivite();
+  });
+}
 document.addEventListener('keydown', e => { if (e.key === 'Escape') fermerPop(); });
 
 function popActivite(cible, cl, k) {
@@ -1626,6 +1671,24 @@ function semaineAB() {
   const lundi = d.getTime() - ((h.jour + 6) % 7) * 864e5, ref = Date.UTC(2026, 10, 9, 12);
   return ((Math.round((lundi - ref) / (7 * 864e5)) % 2) + 2) % 2 === 0 ? 'A' : 'B';
 }
+function semaineDe(dateIso) {
+  const d = new Date(dateIso + 'T12:00:00Z'), j = d.getUTCDay();
+  const lundi = d.getTime() - ((j + 6) % 7) * 864e5, ref = Date.UTC(2026, 10, 9, 12);
+  return ((Math.round((lundi - ref) / (7 * 864e5)) % 2) + 2) % 2 === 0 ? 'A' : 'B';
+}
+// Cours du jour ; s'il n'y en a pas (week-end, mercredi…), ceux du prochain jour de cours
+function journee() {
+  const cr = creneauxDuJour();
+  if (cr.length) return { titre: 'Aujourd\'hui', cours: cr, aujourdhui: true };
+  const JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+  const t0 = new Date(heureParis().date + 'T12:00:00Z').getTime();
+  for (let k = 1; k <= 7; k++) {
+    const d = new Date(t0 + k * 864e5), iso = d.toISOString().slice(0, 10), sem = semaineDe(iso);
+    const l = (EDT_SECOURS[d.getUTCDay()] || []).filter(c => !c[2] || c[2] === sem).map(c => [c[0], c[1]]);
+    if (l.length) return { titre: (k === 1 ? 'Demain' : JOURS[d.getUTCDay()].replace(/^./, x => x.toUpperCase())) + ' (sem. ' + sem + ')', cours: l, aujourdhui: false };
+  }
+  return { titre: 'Ma journée', cours: [], aujourdhui: false };
+}
 function creneauxDuJour() {
   const h = heureParis();
   if (CO && CO.maj && CO.creneaux && String(CO.maj).slice(0, 10) === new Date().toISOString().slice(0, 10)) return CO.creneaux.slice().sort();
@@ -1696,26 +1759,32 @@ function dessinerActivite() {
   const enCours = debut != null && h.min >= debut - 10 && h.min < debut + 60;
   const pres = id => { if (!enCours) return ''; const t = vus[id]; return t && minutes(t) >= debut - 10 && minutes(t) <= h.min + 1 ? 'co' : 'abs'; };
   const nbCo = ids.filter(id => pres(id) === 'co').length;
-  const carte = id => {
+  const carte = (id, place) => {
     const s = (A && A.el[id]) || '-', e = s[0], note = s.slice(1), E = SV.eleves[acCl][id];
     const nm = ELEVES[id], titre = id + ' · ' + (ETATS[e] || '') + (vus[id] ? ' · cahier ouvert à ' + vus[id] : (enCours ? ' · pas connecté' : ''));
-    return `<div class="elv" title="${esc(titre)}"><span class="pt ${pres(id)}"></span><b>${nm ? `${esc(nm.prenom)} <small class="nf">${esc(nm.nom)}</small>` : esc(id)}${E.profil ? `<span class="prf">${esc(E.profil)}</span>` : ''}</b><small>${note ? `<span class="n ${classeNote(num(note))}">${esc(note)}</span>` : esc({ o: 'ouverte', r: 'rendue', a: 'absent', x: 'absent', '-': '—' }[e] || '')}</small></div>`;
+    return `<div class="elv"${place ? ` data-place="${place}"` : ''} title="${esc(titre)}"><span class="pt ${pres(id)}"></span><b>${nm ? `${esc(nm.prenom)} <small class="nf">${esc(nm.nom)}</small>` : esc(id)}${E.profil ? `<span class="prf">${esc(E.profil)}</span>` : ''}</b><small>${note ? `<span class="n ${classeNote(num(note))}">${esc(note)}</span>` : esc({ o: 'ouverte', r: 'rendue', a: 'absent', x: 'absent', '-': '—' }[e] || '')}</small></div>`;
   };
-  // Plan de classe du cahier (I1:AU6) : 6 rangées × 7 places, tables [1] · [4] · [2]
-  let plan = SV.classes[acCl].plan;
-  if (plan) { plan = plan.slice(); while (plan.length && plan[plan.length - 1].every(x => !x)) plan.pop(); if (!plan.length) plan = null; }
-  let eleves;
-  if (plan) {
-    const places = new Set();
-    const rangs = plan.map(r => r.map((id, c) => {
-      const sep = c === 1 || c === 5 ? '<div class="allee"></div>' : '';
-      if (id && id !== '?' && SV.eleves[acCl][id]) { places.add(id); return sep + carte(id); }
-      return sep + `<div class="elv vide">${id === '?' ? '<small>nom non reconnu</small>' : ''}</div>`;
-    }).join('')).join('');
-    const hors = ids.filter(id => !places.has(id));
-    eleves = `<div class="plan-defile"><div class="plan">${rangs}</div></div>
-      ${hors.length ? `<h3 style="margin-top:12px">Hors plan</h3><div class="eleves">${hors.map(carte).join('')}</div>` : ''}`;
-  } else eleves = `<div class="eleves">${ids.map(carte).join('')}</div>`;
+  // Plan de classe : celui modifié ici (onglet Plans) sinon celui du cahier (I1:AU6). Tables [1] · [4] · [2].
+  // Clic sur une place → liste déroulante pour y mettre un autre élève (échange de places).
+  const plan = planClasse(acCl);
+  let dernier = 5; while (dernier > 0 && plan[dernier].every(x => !x)) dernier--;
+  const places = new Set();
+  const rangs = plan.slice(0, Math.min(6, dernier + 2)).map((r, ri) => r.map((id, c) => {
+    const sep = c === 1 || c === 5 ? '<div class="allee"></div>' : '';
+    if (id && id !== '?' && SV.eleves[acCl][id]) { places.add(id); return sep + carte(id, `${ri}|${c}`); }
+    return sep + `<div class="elv vide" data-place="${ri}|${c}" title="Place libre : clique pour y mettre un élève">${id === '?' ? '<small>?</small>' : ''}</div>`;
+  }).join('')).join('');
+  const hors = ids.filter(id => !places.has(id));
+  const eleves = `<div class="plan-defile"><div class="plan">${rangs}</div></div>
+    ${hors.length ? `<div class="hors"><b>Hors plan :</b> ${hors.map(id => carte(id)).join('')}</div>` : ''}`;
+
+  // Ma journée : cours du jour dans l'ordre (ou prochain jour de cours), clic = affiche l'activité
+  const jr = journee();
+  const journeeHtml = `<div class="journee"><b>${esc(jr.titre)}</b>${jr.cours.map(c => {
+    const code = activiteDuCours(c[1]), a = (SV.acts[c[1]] || {})[code];
+    const etat = jr.aujourdhui ? (h.min >= minutes(c[0]) + 55 ? ' passe' : h.min >= minutes(c[0]) - 10 ? ' maint' : '') : '';
+    return `<button type="button" class="jc${etat}${c[1] === acCl ? ' choisi' : ''}" data-jour="${esc(c[1])}|${esc(code)}" title="${esc(a ? titreActivite(c[1], code, a) : '')}"><span>${esc(c[0])}</span> <b>${esc(c[1])}</b> ${esc(code || '—')}</button>`;
+  }).join('') || '<span class="sous">Aucun cours</span>'}</div>`;
 
   const cs = js(V.cons, []), bar = js(V.cor, {}), st = infoSite(V.site || '');
   const mN = MOYENNES[k];
@@ -1724,8 +1793,8 @@ function dessinerActivite() {
     <div class="barre">
       <div class="grp"><select data-ac="cl" aria-label="Classe">${classes.map(c => `<option ${c === acCl ? 'selected' : ''}>${c}</option>`).join('')}</select>
       <select data-ac="code" aria-label="Activité">${acts.map(([c, a]) => `<option value="${c}" ${c === acCode ? 'selected' : ''}>${c} — ${esc(titreActivite(acCl, c, a).slice(0, 50))}${a.terminee ? ' ✓' : a.ouverte ? ' (ouverte)' : ''}</option>`).join('')}</select></div>
-      <span class="sous">${cm ? `${cm.etat === 'en cours' ? 'En ce moment' : cm.etat === 'prochain' ? 'Prochain cours' : 'Dernier cours du jour'} : <b>${esc(cm.c[1])}</b> à ${esc(cm.c[0])}` : 'Pas de cours aujourd\'hui'}</span>
-      <span class="sous fin">Connectés : ${CO && CO.maj ? 'vus à ' + new Date(CO.maj).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '—'} · copies : ${esc(SV.maj || '?')}
+      ${journeeHtml}
+      <span class="sous">Connectés : ${CO && CO.maj ? 'vus à ' + new Date(CO.maj).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '—'} · copies : ${esc(SV.maj || '?')}
         <button class="bouton leger petit" type="button" data-actualiser="${acCl}">↻ Actualiser</button></span>
     </div>
     ${blocNoms()}
@@ -1750,7 +1819,7 @@ function dessinerActivite() {
         ${k ? `<button class="bouton" type="button" data-atelier="${esc(k)}">✦ Modifier consignes · correction</button>${boutonPub(k, true)}` : ''}
       </div>
     </div>
-    <div class="carte2"><h3>${plan ? 'Plan de classe' : 'Élèves'} <span class="sous">${enCours ? '<span class="pt co" style="display:inline-block"></span> présent (cahier ouvert) · <span class="pt abs" style="display:inline-block"></span> pas connecté' : 'Pastilles de présence affichées pendant le cours'}</span></h3>${eleves}</div>
+    <div class="carte2"><h3>Plan de classe <span class="sous">${enCours ? '<span class="pt co" style="display:inline-block"></span> présent (cahier ouvert) · <span class="pt abs" style="display:inline-block"></span> pas connecté' : 'Pastilles de présence affichées pendant le cours'} · clique sur une place pour changer d'élève</span></h3>${eleves}</div>
     <div class="duo2">
       <div class="carte2">
         <h3>Consignes ${V.publiee ? '' : '<span class="tag2">brouillon, pas encore publié</span>'}${V.publiee && differe ? '<span class="tag2">brouillon modifié non publié</span>' : ''}</h3>
@@ -1773,8 +1842,10 @@ function dessinerActivite() {
 // ---------- Événements des deux onglets ----------
 $('#prog').addEventListener('click', e => {
   const t = e.target;
-  const b = t.closest('[data-svniv],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote]');
+  const b = t.closest('[data-svniv],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place]');
   if (!b) return;
+  if (b.dataset.jour) { const [cl, code] = b.dataset.jour.split('|'); acCl = cl; acCode = code; dessinerActivite(); return; }
+  if (b.dataset.place) { popPlace(b, acCl, b.dataset.place); return; }
   if (b.dataset.acote) {
     // Fenêtre sur la moitié droite de l'écran (les sites ne peuvent pas être intégrés dans la page Claude)
     const L = Math.round(screen.availWidth / 2), H = screen.availHeight;
