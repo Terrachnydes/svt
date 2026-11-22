@@ -1,6 +1,10 @@
 <!doctype html>
 <html lang="fr">
 <head>
+<!-- mention-auteur -->
+<!-- © M. Gavens, professeur de SVT — Tous droits réservés. Reproduction interdite sans autorisation. -->
+<meta name="author" content="M. Gavens, professeur de SVT">
+<meta name="copyright" content="© M. Gavens — Tous droits réservés">
 <!-- sans-memoire --><script>/* Aucune memoire : le site repart de zero a chaque ouverture */try{localStorage.clear();sessionStorage.clear()}catch(e){}</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1737,5 +1741,6 @@ $('#btnPrint').addEventListener('click', () => window.print());
 $('#btnReset').addEventListener('click', () => { if (confirm('Tout recommencer ? Toutes tes réponses seront effacées.')) { ST = blank(); save(); RA.seen = {}; renderHome(); toast('Nouvelle partie : bonne chasse aux fossiles !', true); } });
 renderHome();
 </script>
+<div data-mention-auteur style="all:initial;display:block;box-sizing:border-box;order:9999;flex:0 0 auto;width:100%;max-width:1240px;margin:8px auto 4px;padding:4px 12px;text-align:center;font:12px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#6b7280;overflow-wrap:anywhere">© M. Gavens, professeur de SVT — Tous droits réservés. Reproduction interdite sans autorisation.</div>
 </body>
 </html>

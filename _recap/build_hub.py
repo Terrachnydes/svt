@@ -99,6 +99,12 @@ def main():
         p_ = os.path.join(REPO, s_["fichier"])
         if os.path.exists(p_) and sans_memoire.traite(p_) == "ajouté":
             print("mémoire désactivée :", s_["fichier"])
+    # Mention d'auteur sur chaque site (voir mention_auteur.py)
+    import mention_auteur
+    for s_ in cfg["sites"]:
+        p_ = os.path.join(REPO, s_["fichier"])
+        if os.path.exists(p_) and mention_auteur.traite(p_) == "ajouté":
+            print("mention d'auteur ajoutée :", s_["fichier"])
     a_faire = set(a for a in sys.argv[1:] if a.endswith(".html"))
     for s in cfg["sites"]:
         if not os.path.exists(os.path.join(APERCUS, slug(s["fichier"]) + ".webp")):
