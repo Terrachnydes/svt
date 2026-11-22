@@ -214,6 +214,8 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .ac-tete .l1{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
 #prog .ac-tete h2{font-size:1.05rem!important;margin:0;cursor:help}
 #prog .chips2{display:flex;flex-wrap:wrap;gap:4px;margin-left:auto}
+#prog .sep2{width:1px;align-self:stretch;background:var(--line);margin:0 2px}
+#prog .barre .pub.mini{position:static;margin:0}
 #prog .c2{font-size:12.5px;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:2px 7px;white-space:nowrap}
 #prog .c2 .n{min-width:0;padding:0 3px}
 #prog .actions .petit{font-size:12.5px}
@@ -1808,31 +1810,26 @@ function dessinerActivite() {
   $('#ac-main').innerHTML = `
     <div class="barre">
       <div class="grp"><select data-ac="cl" aria-label="Classe">${classes.map(c => `<option ${c === acCl ? 'selected' : ''}>${c}</option>`).join('')}</select>
-      <select data-ac="code" aria-label="Activité">${acts.map(([c, a]) => `<option value="${c}" ${c === acCode ? 'selected' : ''}>${c} — ${esc(titreActivite(acCl, c, a).slice(0, 50))}${a.terminee ? ' ✓' : a.ouverte ? ' (ouverte)' : ''}</option>`).join('')}</select></div>
+      <select data-ac="code" aria-label="Activité" title="${esc(V.pb ? '❓ ' + V.pb : '')}">${acts.map(([c, a]) => `<option value="${c}" ${c === acCode ? 'selected' : ''}>${c} — ${esc(titreActivite(acCl, c, a).slice(0, 50))}${a.terminee ? ' ✓' : a.ouverte ? ' (ouverte)' : ''}</option>`).join('')}</select></div>
+${A ? `<span class="sep2"></span>
+      ${leCours ? `<span class="phase ${ph.cls}">${esc(leCours[0])} · ${esc(ph.txt)}</span>` : ''}${k ? boutonEtat(k) : ''}
+      <span class="c2" title="Élèves ayant ouvert leur cahier pendant le cours">👥 ${enCours ? nbCo + '/' + ids.length : '—'}</span>
+      <span class="c2" title="Copies rendues">📝 ${A.repondu}/${ids.length}</span>
+      <span class="c2" title="Moyenne ${acCl} (${A.corriges} corrigée(s))">Moy. <span class="n ${classeNote(A.moy)}">${fr(A.moy)}</span></span>
+      ${mN ? `<span class="c2" title="Moyenne toutes classes (${esc(mN.nb)})">Niv. <span class="n ${classeNote(num(mN.moy))}">${esc(mN.moy)}</span></span>` : ''}
+      ${Object.keys(A.reussite || {}).length ? `<span class="c2" title="Réussite par consigne">${Object.entries(A.reussite).map(([l, v]) => l + ' ' + v + '%').join(' · ')}</span>` : ''}
+      <span class="sep2"></span>
+      <button class="bouton petit${A.ouverte ? ' leger' : ''}" type="button" data-op="${A.ouverte ? 'fermer' : 'ouvrir'}" data-k="${acCl}|${acCode}">${A.ouverte ? 'Refermer' : '🔓 Débloquer'}</button>
+      <button class="bouton leger petit${A.facForcee ? ' on' : ''}" type="button" data-op="fac" data-k="${acCl}|${acCode}">${A.facForcee ? '✓ Facultative' : A.facAuto ? 'Facultative (auto)' : 'Facultative'}</button>
+      <button class="bouton leger petit${A.arretee ? ' on' : ''}" type="button" data-op="arret" data-k="${acCl}|${acCode}">${A.arretee ? '■ Arrêtée' : '■ Arrêter'}</button>
+      <button class="bouton leger petit" type="button" data-op="corriger" data-k="${acCl}|${acCode}">✓ Corriger</button>
+      ${k ? `<button class="bouton petit" type="button" data-atelier="${esc(k)}">✦ Modifier avec Claude</button>${boutonPub(k, true)}` : ''}` : ''}
       ${journeeHtml}
       ${blocNoms()}
       <button class="bouton leger petit" type="button" data-actualiser="${acCl}" title="Connectés vus à ${CO && CO.maj ? new Date(CO.maj).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '—'} · copies relues le ${esc(SV.maj || '?')}">↻</button>
     </div>
     <div class="attente" hidden></div>
     ${!A ? '<div class="info">Aucune activité pour cette classe.</div>' : `
-    <div class="ac-tete">
-      <div class="l1"><h2 title="${esc(V.pb ? '❓ ' + V.pb : '')}">${esc(acCode)} · ${esc(V.titre || titreActivite(acCl, acCode, A) || 'Titre à définir')}</h2>
-        ${leCours ? `<span class="phase ${ph.cls}">${esc(leCours[0])} · ${esc(ph.txt)}</span>` : ''} ${k ? boutonEtat(k) : ''}
-        <span class="chips2">
-          <span class="c2" title="Élèves ayant ouvert leur cahier pendant le cours">👥 ${enCours ? nbCo + '/' + ids.length : '—'}</span>
-          <span class="c2" title="Copies rendues">📝 ${A.repondu}/${ids.length}</span>
-          <span class="c2" title="Moyenne ${acCl} (${A.corriges} corrigée(s))">Moy. <span class="n ${classeNote(A.moy)}">${fr(A.moy)}</span></span>
-          ${mN ? `<span class="c2" title="Moyenne toutes classes (${esc(mN.nb)})">Niv. <span class="n ${classeNote(num(mN.moy))}">${esc(mN.moy)}</span></span>` : ''}
-          ${Object.keys(A.reussite || {}).length ? `<span class="c2" title="Réussite par consigne">${Object.entries(A.reussite).map(([l, v]) => l + ' ' + v + '%').join(' · ')}</span>` : ''}
-        </span></div>
-      <div class="actions">
-        <button class="bouton petit${A.ouverte ? ' leger' : ''}" type="button" data-op="${A.ouverte ? 'fermer' : 'ouvrir'}" data-k="${acCl}|${acCode}">${A.ouverte ? 'Refermer' : '🔓 Débloquer'}</button>
-        <button class="bouton leger petit${A.facForcee ? ' on' : ''}" type="button" data-op="fac" data-k="${acCl}|${acCode}">${A.facForcee ? '✓ Facultative' : A.facAuto ? 'Facultative (auto)' : 'Facultative'}</button>
-        <button class="bouton leger petit${A.arretee ? ' on' : ''}" type="button" data-op="arret" data-k="${acCl}|${acCode}">${A.arretee ? '■ Arrêtée' : '■ Arrêter'}</button>
-        <button class="bouton leger petit" type="button" data-op="corriger" data-k="${acCl}|${acCode}">✓ Corriger</button>
-        ${k ? `<button class="bouton petit" type="button" data-atelier="${esc(k)}">✦ Modifier avec Claude</button>${boutonPub(k, true)}` : ''}
-      </div>
-    </div>
     <div class="carte2"><h3>Plan de classe <span class="sous">${enCours ? '<span class="pt co" style="display:inline-block"></span> présent · <span class="pt abs" style="display:inline-block"></span> pas connecté' : ''}</span></h3>${eleves}</div>
     <div class="duo2">
       <div class="carte2">
