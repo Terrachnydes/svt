@@ -201,7 +201,24 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #pg-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:30;max-width:90vw}
 #pg-toast.err{background:var(--rouge);color:#fff}
 /* ===== Interface prof : onglets « Suivi des élèves » et « Activité » ===== */
-#sv-main,#ac-main{max-width:none;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+#sv-main,#ac-main{max-width:none;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+.wrap.prof{padding-block:6px 24px;gap:8px}
+.wrap.prof header{display:none}
+.wrap.prof .tabs>button{padding:6px 12px;font-size:.92rem}
+#prog .barre{padding:6px 8px!important;gap:6px 8px!important;border-radius:10px!important}
+#prog .barre select{padding:4px 6px!important;font-size:13px!important}
+#prog .barre .filtres button{padding:3px 10px;font-size:13px}
+#prog .noms{display:inline-flex;gap:6px;align-items:center}
+#prog .noms label.sous{font-size:12px;display:inline-flex;gap:3px;align-items:center}
+#prog .ac-tete{padding:8px 12px!important;gap:6px!important;border-radius:10px!important}
+#prog .ac-tete .l1{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+#prog .ac-tete h2{font-size:1.05rem!important;margin:0;cursor:help}
+#prog .chips2{display:flex;flex-wrap:wrap;gap:4px;margin-left:auto}
+#prog .c2{font-size:12.5px;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:2px 7px;white-space:nowrap}
+#prog .c2 .n{min-width:0;padding:0 3px}
+#prog .actions .petit{font-size:12.5px}
+#prog .carte2{padding:8px 12px!important;border-radius:10px!important}
+#prog .carte2 h3{font-size:14px!important;margin:0 0 6px!important}
 #sv-main[hidden],#ac-main[hidden],#pg-main[hidden]{display:none!important}
 #prog .barre{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
 #prog .barre .grp{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
@@ -212,8 +229,8 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .noms input[type=file]{display:none}
 #prog .attente{font-size:13px;color:#7a5a00;background:#fdf0c8;border-radius:8px;padding:4px 9px}
 #prog .tabl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;max-width:100%}
-#prog table.sv{border-collapse:separate;border-spacing:0;font-size:14px;min-width:100%}
-#prog table.sv th,#prog table.sv td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums}
+#prog table.sv{border-collapse:separate;border-spacing:0;font-size:13.5px;min-width:100%}
+#prog table.sv th,#prog table.sv td{padding:3px 8px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums}
 #prog table.sv th{position:sticky;top:0;background:var(--surface);z-index:2;font-size:12px;color:var(--muted)}
 #prog table.sv .nom{position:sticky;left:0;background:var(--surface);z-index:1;text-align:left;min-width:190px;max-width:260px;overflow:hidden;text-overflow:ellipsis}
 #prog table.sv th.nom{z-index:3}
@@ -282,9 +299,9 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .plan .pt,#prog .hors .pt{width:8px;height:8px}
 #prog .hors{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:8px;font-size:12.5px}
 #prog .hors .elv{flex:0 0 auto;max-width:200px}
-#prog .journee{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-left:auto;font-size:13px}
+#prog .journee{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-left:auto;font-size:12.5px}
 #prog .journee>b{margin-right:4px}
-#prog .jc{font:inherit;font-size:12.5px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:8px;padding:4px 8px;cursor:pointer;white-space:nowrap}
+#prog .jc{font:inherit;font-size:12px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:7px;padding:2px 7px;cursor:pointer;white-space:nowrap}
 #prog .jc span{color:var(--muted)}
 #prog .jc.passe{opacity:.55}
 #prog .jc.maint{border-color:var(--accent);box-shadow:0 0 0 2px rgba(34,163,90,.2)}
@@ -1360,10 +1377,9 @@ function ordreEleves(a, b) {
 function blocNoms() {
   const n = Object.keys(ELEVES).length;
   let garde = false; try { garde = !!localStorage.getItem(CLE_NOMS); } catch (e) {}
-  return `<div class="noms">📇 ${n ? `<b>${n} noms chargés</b>` : 'Noms non chargés : identifiants affichés (3G-01…)'}
-    <label class="bouton leger petit">${n ? 'Recharger' : 'Charger'} eleves.csv<input type="file" accept=".csv,text/csv" data-csv></label>
-    <label><input type="checkbox" data-garder ${garde ? 'checked' : ''}> garder sur cet ordinateur</label>
-    <span class="sous">Le fichier reste sur l'ordinateur : rien n'est envoyé à Google.</span></div>`;
+  return `<span class="noms" title="Le fichier eleves.csv reste sur l'ordinateur : rien n'est envoyé à Google.">
+    <label class="bouton leger petit">📇 ${n ? n + ' noms' : 'Charger eleves.csv'}<input type="file" accept=".csv,text/csv" data-csv></label>
+    <label class="sous"><input type="checkbox" data-garder ${garde ? 'checked' : ''}> garder</label></span>`;
 }
 $('#prog').addEventListener('change', async e => {
   if (e.target.matches('[data-csv]')) {
@@ -1504,12 +1520,12 @@ function dessinerSuivi() {
       <div class="filtres">${NIVEAUX.map(n => `<button type="button" aria-pressed="${n === svNiv}" data-svniv="${n}">${NOMS[n]}</button>`).join('')}</div>
       <div class="grp"><select data-sv="per" aria-label="Trimestre">${[1, 2, 3].map(p => `<option value="${p}" ${String(p) === String(svPer) ? 'selected' : ''}>Trimestre ${p}</option>`).join('')}</select>
       <select data-sv="cl" aria-label="Classe"><option value="">Toutes les classes</option>${cls.map(c => `<option ${c === svCl ? 'selected' : ''}>${c}</option>`).join('')}</select></div>
-      <button class="bouton leger" type="button" data-gen-niv>✦ Appréciations du niveau</button>
-      <span class="sous fin">Résumé du ${esc(SV.maj || '?')} · <button class="bouton leger petit" type="button" data-actualiser>↻ Actualiser</button></span>
+      <button class="bouton leger petit" type="button" data-gen-niv>✦ Appréciations du niveau</button>
+      <span class="fin"></span>${blocNoms()}
+      <span class="sous" title="Clique sur une case de classe : publier sur Pronote, corriger, facultative, arrêter. Clique sur un élève : statistiques et appréciation. Barré = note non comptée · · = ouverte non rendue · ✎ = rendue, pas corrigée.">ⓘ</span>
+      <button class="bouton leger petit" type="button" data-actualiser title="Résumé du ${esc(SV.maj || '?')}">↻</button>
     </div>
-    ${blocNoms()}
     <div class="attente" hidden></div>
-    <div class="sous">Clique sur une case de classe pour publier sur Pronote, corriger, rendre facultative ou arrêter une activité ; sur un élève pour ses statistiques et son appréciation. <span class="n nc">12</span> = note non comptée · · = ouverte non rendue · ✎ = rendue, pas corrigée.</div>
     ${vues.length ? `<div class="tabl"><table class="sv"><thead><tr><th class="nom">Élève</th><th title="Profil particulier (D, NE, M, T)">Profil</th><th>Comportement</th><th title="Activités rendues ou non">Travail</th><th title="Note d'attitude (A)">Attitude</th><th>Moy.</th>${codes.map(k => `<th>${esc(k)}</th>`).join('')}<th>Défauts fréquents</th><th>Appréciation T${svPer}</th></tr></thead>
       <tbody>${lignes.join('')}</tbody></table></div>` : '<div class="info">Aucune classe avec des élèves à ce niveau.</div>'}`;
   majAttente();
@@ -1794,32 +1810,30 @@ function dessinerActivite() {
       <div class="grp"><select data-ac="cl" aria-label="Classe">${classes.map(c => `<option ${c === acCl ? 'selected' : ''}>${c}</option>`).join('')}</select>
       <select data-ac="code" aria-label="Activité">${acts.map(([c, a]) => `<option value="${c}" ${c === acCode ? 'selected' : ''}>${c} — ${esc(titreActivite(acCl, c, a).slice(0, 50))}${a.terminee ? ' ✓' : a.ouverte ? ' (ouverte)' : ''}</option>`).join('')}</select></div>
       ${journeeHtml}
-      <span class="sous">Connectés : ${CO && CO.maj ? 'vus à ' + new Date(CO.maj).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '—'} · copies : ${esc(SV.maj || '?')}
-        <button class="bouton leger petit" type="button" data-actualiser="${acCl}">↻ Actualiser</button></span>
+      ${blocNoms()}
+      <button class="bouton leger petit" type="button" data-actualiser="${acCl}" title="Connectés vus à ${CO && CO.maj ? new Date(CO.maj).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '—'} · copies relues le ${esc(SV.maj || '?')}">↻</button>
     </div>
-    ${blocNoms()}
     <div class="attente" hidden></div>
     ${!A ? '<div class="info">Aucune activité pour cette classe.</div>' : `
     <div class="ac-tete">
-      <div class="sous">${acCl} · ${esc(acCode)}${leCours ? ` · cours de ${esc(leCours[0])} <span class="phase ${ph.cls}">${esc(ph.txt)}</span>` : ''} ${k ? boutonEtat(k) : ''}</div>
-      <h2>${esc(V.titre || titreActivite(acCl, acCode, A) || 'Titre à définir')}</h2>
-      ${V.pb ? `<div class="sous">❓ ${esc(V.pb)}</div>` : ''}
-      <div class="stat">
-        <div><b>${enCours ? nbCo + '/' + ids.length : '—'}</b><small>${enCours ? 'présents (cahier ouvert pendant le cours)' : 'présents : pendant le cours seulement'}</small></div>
-        <div><b>${A.repondu}/${ids.length}</b><small>copies rendues</small></div>
-        <div><b><span class="n ${classeNote(A.moy)}">${fr(A.moy)}</span></b><small>moyenne ${acCl} (${A.corriges} corrigée${A.corriges > 1 ? 's' : ''})</small></div>
-        ${mN ? `<div><b><span class="n ${classeNote(num(mN.moy))}">${esc(mN.moy)}</span></b><small>moyenne toutes classes (${esc(mN.nb)})</small></div>` : ''}
-        ${Object.keys(A.reussite || {}).length ? `<div><b style="font-size:13px">${Object.entries(A.reussite).map(([l, v]) => l + ' ' + v + ' %').join(' · ')}</b><small>réussite par consigne</small></div>` : ''}
-      </div>
+      <div class="l1"><h2 title="${esc(V.pb ? '❓ ' + V.pb : '')}">${esc(acCode)} · ${esc(V.titre || titreActivite(acCl, acCode, A) || 'Titre à définir')}</h2>
+        ${leCours ? `<span class="phase ${ph.cls}">${esc(leCours[0])} · ${esc(ph.txt)}</span>` : ''} ${k ? boutonEtat(k) : ''}
+        <span class="chips2">
+          <span class="c2" title="Élèves ayant ouvert leur cahier pendant le cours">👥 ${enCours ? nbCo + '/' + ids.length : '—'}</span>
+          <span class="c2" title="Copies rendues">📝 ${A.repondu}/${ids.length}</span>
+          <span class="c2" title="Moyenne ${acCl} (${A.corriges} corrigée(s))">Moy. <span class="n ${classeNote(A.moy)}">${fr(A.moy)}</span></span>
+          ${mN ? `<span class="c2" title="Moyenne toutes classes (${esc(mN.nb)})">Niv. <span class="n ${classeNote(num(mN.moy))}">${esc(mN.moy)}</span></span>` : ''}
+          ${Object.keys(A.reussite || {}).length ? `<span class="c2" title="Réussite par consigne">${Object.entries(A.reussite).map(([l, v]) => l + ' ' + v + '%').join(' · ')}</span>` : ''}
+        </span></div>
       <div class="actions">
-        <button class="bouton${A.ouverte ? ' leger' : ''}" type="button" data-op="${A.ouverte ? 'fermer' : 'ouvrir'}" data-k="${acCl}|${acCode}">${A.ouverte ? 'Refermer l\'activité' : '🔓 Débloquer pour toute la classe'}</button>
-        <button class="bouton leger${A.facForcee ? ' on' : ''}" type="button" data-op="fac" data-k="${acCl}|${acCode}">${A.facForcee ? '✓ Facultative (forcée)' : A.facAuto ? 'Facultative (auto) · forcer' : 'Rendre facultative'}</button>
-        <button class="bouton leger${A.arretee ? ' on' : ''}" type="button" data-op="arret" data-k="${acCl}|${acCode}">${A.arretee ? '■ Arrêtée · annuler' : '■ Arrêter l\'activité'}</button>
-        <button class="bouton leger" type="button" data-op="corriger" data-k="${acCl}|${acCode}">✓ Corriger maintenant</button>
-        ${k ? `<button class="bouton" type="button" data-atelier="${esc(k)}">✦ Modifier consignes · correction</button>${boutonPub(k, true)}` : ''}
+        <button class="bouton petit${A.ouverte ? ' leger' : ''}" type="button" data-op="${A.ouverte ? 'fermer' : 'ouvrir'}" data-k="${acCl}|${acCode}">${A.ouverte ? 'Refermer' : '🔓 Débloquer'}</button>
+        <button class="bouton leger petit${A.facForcee ? ' on' : ''}" type="button" data-op="fac" data-k="${acCl}|${acCode}">${A.facForcee ? '✓ Facultative' : A.facAuto ? 'Facultative (auto)' : 'Facultative'}</button>
+        <button class="bouton leger petit${A.arretee ? ' on' : ''}" type="button" data-op="arret" data-k="${acCl}|${acCode}">${A.arretee ? '■ Arrêtée' : '■ Arrêter'}</button>
+        <button class="bouton leger petit" type="button" data-op="corriger" data-k="${acCl}|${acCode}">✓ Corriger</button>
+        ${k ? `<button class="bouton petit" type="button" data-atelier="${esc(k)}">✦ Modifier avec Claude</button>${boutonPub(k, true)}` : ''}
       </div>
     </div>
-    <div class="carte2"><h3>Plan de classe <span class="sous">${enCours ? '<span class="pt co" style="display:inline-block"></span> présent (cahier ouvert) · <span class="pt abs" style="display:inline-block"></span> pas connecté' : 'Pastilles de présence affichées pendant le cours'} · clique sur une place pour changer d'élève</span></h3>${eleves}</div>
+    <div class="carte2"><h3>Plan de classe <span class="sous">${enCours ? '<span class="pt co" style="display:inline-block"></span> présent · <span class="pt abs" style="display:inline-block"></span> pas connecté' : ''}</span></h3>${eleves}</div>
     <div class="duo2">
       <div class="carte2">
         <h3>Consignes ${V.publiee ? '' : '<span class="tag2">brouillon, pas encore publié</span>'}${V.publiee && differe ? '<span class="tag2">brouillon modifié non publié</span>' : ''}</h3>
@@ -1894,7 +1908,7 @@ function ongletVoir(t){
   if(!ONGLETS.includes(t))t="sites";
   const p=t!=="sites";
   document.getElementById("tab-sites").hidden=p;document.getElementById("tab-sites").style.display=p?"none":"flex";
-  document.getElementById("prog").hidden=!p;document.querySelector(".wrap").classList.toggle("large",t!=="sites");
+  document.getElementById("prog").hidden=!p;document.querySelector(".wrap").classList.toggle("large",t!=="sites");document.querySelector(".wrap").classList.toggle("prof",t==="suivi"||t==="activite");
   document.getElementById("pg-barre").hidden=t!=="progression";
   document.getElementById("pg-main").hidden=t!=="progression";
   document.getElementById("sv-main").hidden=t!=="suivi";
