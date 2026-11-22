@@ -309,12 +309,12 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .ac-gauche{display:flex;flex-direction:column;gap:8px;min-width:0}
 #prog .journee-col{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;position:sticky;top:8px}
 #prog .journee-col h3{margin:0 0 2px;font-size:14px}
-#prog .journee-col .jc{display:grid;grid-template-columns:44px 30px 1fr;gap:6px;align-items:center;text-align:left;width:100%;padding:6px 8px;font-size:13px;white-space:normal}
+#prog .journee-col .jc{display:grid;grid-template-columns:44px auto 1fr;gap:6px;align-items:center;text-align:left;width:100%;padding:6px 8px;font-size:13px;white-space:normal}
 #prog .journee-col .jc .h{color:var(--muted);font-variant-numeric:tabular-nums}
 #prog .journee-col .jc.choisi .h,#prog .journee-col .jc.choisi .a{color:#fff}
 #prog .journee-col .jc.passe.choisi{opacity:.8}
 #prog .journee-col .jc .a{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
-@media (max-width:900px){#prog .ac-haut{grid-template-columns:1fr}#prog .journee-col{order:-1;position:static;flex-direction:row;flex-wrap:wrap}#prog .journee-col h3{width:100%}#prog .journee-col .jc{width:auto;grid-template-columns:auto auto;max-width:100%}#prog .journee-col .jc .a{display:none}}
+@media (max-width:900px){#prog .ac-haut{grid-template-columns:1fr}#prog .journee-col{order:-1;position:static;flex-direction:row;flex-wrap:wrap}#prog .journee-col h3{width:100%}#prog .journee-col .jc{width:auto;grid-template-columns:auto auto;max-width:100%}#prog .journee-col .jc .a{display:none}#prog .jl .jc{flex:0 1 auto}}
 #prog .journee>b{margin-right:4px}
 #prog .jc{font:inherit;font-size:12px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:7px;padding:2px 7px;cursor:pointer;white-space:nowrap}
 #prog .jc span{color:var(--muted)}
@@ -327,8 +327,19 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .duo2{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr);gap:12px;align-items:start}
 #prog .carte2{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
 #prog .carte2 h3{margin:0 0 8px;font-size:15px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-#prog .site-carte .apercu2{max-width:260px}
-#prog .duo2.duo-site{grid-template-columns:280px minmax(0,1fr)}
+#prog .duo2.duo-site{grid-template-columns:360px minmax(0,1fr)}
+#prog .apercu3{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;aspect-ratio:16/10;background:var(--thumb);max-width:340px}
+#prog .apercu3 img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;cursor:pointer}
+#prog .apercu3 .vide3{display:grid;place-items:center;height:100%;font-size:48px;cursor:pointer}
+#prog .apercu3 .sur{position:absolute;left:0;right:0;bottom:0;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;padding:8px;background:linear-gradient(transparent,rgba(0,0,0,.55))}
+#prog .apercu3 .bouton.blanc{background:#fff;color:var(--fg);border-color:#fff}
+#prog .jl{display:flex;gap:4px;align-items:stretch}
+#prog .jl .jc{flex:1;min-width:0}
+#prog .journee-col .jc.vide{grid-template-columns:44px 1fr}
+#prog .jc.vide{opacity:.55;background:var(--thumb);cursor:default;border-style:dashed}
+#prog .jplus{flex:none;width:28px;border:1px solid var(--line);border-radius:7px;background:var(--bg);cursor:pointer;font-weight:700;color:var(--muted)}
+#prog .jplus:hover{border-color:var(--accent);color:var(--accent)}
+#prog .dg{font-size:10px;margin-left:3px;background:#e8e1f7;color:#5b3fa0;border-radius:4px;padding:0 3px}
 #prog .apercu2{display:block;width:100%;padding:0;border:1px solid var(--line);border-radius:10px;background:var(--thumb);cursor:pointer;overflow:hidden;aspect-ratio:16/10}
 #prog .apercu2 img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
 #prog .apercu2 span{font-size:48px}
@@ -1262,7 +1273,7 @@ $('#pg-recharger').addEventListener('click', async () => { try { await chargerTo
 //   traitées dans les 5 min) · Connectés (A1, toutes les 5 min en journée).
 // Les noms des élèves ne viennent jamais de Google : fichier eleves.csv chargé depuis l'ordinateur.
 // =====================================================================
-let IPID = '', SV = null, CO = null, ELEVES = {}, ENVOIS = [], PLANS = {};
+let IPID = '', SV = null, CO = null, ELEVES = {}, ENVOIS = [], PLANS = {}, MODIFS = {}, MODIFS_LIGNES = [];
 let svNiv = '3', svPer = '', svCl = '', acCl = '', acCode = '', svTimer = null, acTimer = null;
 const EDT_SECOURS = {   // copie de EDT_CLASSES (CorrectionAuto.js) si la synchro n'a pas encore donné les créneaux du jour
   1: [['08:30', '3H', 'A'], ['09:28', '4H', ''], ['10:40', '6I', ''], ['11:35', '6H', 'A'], ['11:35', '5H', 'B'], ['14:03', '3G', ''], ['16:13', '6G', 'B']],
@@ -1328,6 +1339,28 @@ function planClasse(cl) {
   // 6 rangées du cahier + une 7e rangée avec une seule place, à gauche (sous la dernière place de la colonne de gauche)
   const plan = Array.from({ length: 7 }, (_, r) => Array.from({ length: 7 }, (_, c) => ((p || [])[r] || [])[c] || ''));
   return plan;
+}
+// Changements d'emploi du temps faits dans la page (onglet Journée : A « j2026-11-23 » · B JSON {heure: {cl, g}} · C date)
+// cl = '' : pas cours à cette heure ; g = '1' / '2' : demi-groupe (3e et 6e)
+async function chargerModifs() {
+  try {
+    const v = await lireIP("'Journée'!A2:B400");
+    MODIFS_LIGNES = v.map(r => String(r[0] || ''));
+    v.forEach(r => { const d = String(r[0] || '').replace(/^j/, ''); const m = js(r[1], null); if (d && m) MODIFS[d] = m; });
+  } catch (e) {}
+}
+async function sauverModifs(date) {
+  let i = MODIFS_LIGNES.indexOf('j' + date);
+  if (i < 0) { i = MODIFS_LIGNES.length; MODIFS_LIGNES.push('j' + date); }
+  try { await mcp.callTool('Google Sheets', 'update_values', { spreadsheetId: IPID, range: `'Journée'!A${i + 2}:C${i + 2}`, values: [['j' + date, JSON.stringify(MODIFS[date] || {}), maintenant()]] }); toast('Emploi du temps du jour modifié.'); }
+  catch (e) { toast(erreurMcp(e), true); }
+}
+// Applique les changements d'un jour à ses créneaux : [[heure, classe, demi-groupe], …]
+function appliquerModifs(date, base) {
+  const m = MODIFS[date] || {}, t = {};
+  base.forEach(c => { t[c[0]] = [c[0], c[1], c[2] || '']; });
+  Object.keys(m).forEach(hh => { if (m[hh] && m[hh].cl) t[hh] = [hh, m[hh].cl, m[hh].g || '']; else delete t[hh]; });
+  return Object.values(t).sort((a, b) => a[0].localeCompare(b[0]));
 }
 async function chargerConnectes() {
   try { CO = js(((await lireIP("'Connectés'!A1"))[0] || [])[0], {}) || {}; } catch (e) { CO = CO || {}; }
@@ -1437,7 +1470,7 @@ async function demarrerProf() {
     const taches = [];
     if (!Object.keys(COURS).length) taches.push(chargerTout());
     if (!(await assurerIP())) throw new Error('Le classeur de l\'interface prof n\'existe pas encore. Il est créé tout seul par la synchro du cahier (moins de 5 min), ou tout de suite par le menu du Sheet : Correction IA → « Interface prof : créer / actualiser le résumé ».');
-    taches.push(chargerSuivi(), chargerConnectes(), chargerPlans());
+    taches.push(chargerSuivi(), chargerConnectes(), chargerPlans(), chargerModifs());
     await Promise.all(taches);
   })();
   try { await profPret; } catch (e) { profPret = null; throw e; }
@@ -1577,7 +1610,30 @@ function ouvrirPop(cible, html) {
   let x = r.left - base.left; if (r.left + larg > window.innerWidth - 12) x = window.innerWidth - 12 - larg - base.left;
   p.style.left = Math.max(0, x) + 'px'; p.style.top = (r.bottom - base.top + 4) + 'px';
 }
-document.addEventListener('click', e => { if (!e.target.closest('#prog .pop,[data-pact],[data-place]')) fermerPop(); });
+document.addEventListener('click', e => { if (!e.target.closest('#prog .pop,[data-pact],[data-place],[data-jplus]')) fermerPop(); });
+// Changer la classe d'une heure (changement dans la journée) ; demi-groupe possible en 3e et 6e
+function popHeure(cible, date, hh) {
+  const jr = journee(), actuel = (jr.lignes.find(c => c[0] === hh) || [hh, '', ''])[1], g0 = (jr.lignes.find(c => c[0] === hh) || [])[2] || '';
+  const classes = Object.keys(SV.classes).filter(c => SV.classes[c].effectif).sort();
+  ouvrirPop(cible, `<h4>${esc(hh)} · quelle classe ?</h4>
+    <select data-heure-cl><option value="">— pas cours —</option>${classes.map(c => `<option ${c === actuel ? 'selected' : ''}>${c}</option>`).join('')}</select>
+    <div data-heure-g class="grp" style="display:flex;gap:8px;flex-wrap:wrap">
+      ${[['', 'Classe entière'], ['1', '½ groupe 1'], ['2', '½ groupe 2']].map(([v, l]) => `<label><input type="radio" name="dg" value="${v}" ${v === g0 ? 'checked' : ''}> ${l}</label>`).join('')}</div>
+    <div class="actions"><button class="bouton petit" type="button" data-heure-ok>Valider</button>
+    ${(MODIFS[date] || {})[hh] ? '<button class="bouton leger petit" type="button" data-heure-annuler>Revenir à l\'emploi du temps</button>' : ''}</div>`);
+  const pop = $('#prog .pop'), sel = pop.querySelector('[data-heure-cl]'), gdiv = pop.querySelector('[data-heure-g]');
+  const majG = () => { gdiv.style.display = /^[36]/.test(sel.value) ? 'flex' : 'none'; };
+  majG(); sel.addEventListener('change', majG);
+  pop.querySelector('[data-heure-ok]').addEventListener('click', () => {
+    const cl = sel.value, g = /^[36]/.test(cl) ? ((pop.querySelector('input[name=dg]:checked') || {}).value || '') : '';
+    (MODIFS[date] = MODIFS[date] || {})[hh] = { cl, g };
+    fermerPop(); sauverModifs(date);
+    if (cl) { acCl = cl; acCode = activiteDuCours(cl); }
+    dessinerActivite();
+  });
+  const an = pop.querySelector('[data-heure-annuler]');
+  if (an) an.addEventListener('click', () => { delete MODIFS[date][hh]; fermerPop(); sauverModifs(date); dessinerActivite(); });
+}
 // Choix de l'élève d'une place (échange si l'élève choisi est déjà assis ailleurs)
 function popPlace(cible, cl, place) {
   const [r, c] = place.split('|').map(Number), plan = planClasse(cl), actuel = plan[r][c];
@@ -1711,24 +1767,33 @@ function semaineDe(dateIso) {
   return ((Math.round((lundi - ref) / (7 * 864e5)) % 2) + 2) % 2 === 0 ? 'A' : 'B';
 }
 // Cours du jour ; s'il n'y en a pas (week-end, mercredi…), ceux du prochain jour de cours
-function journee() {
-  const cr = creneauxDuJour();
-  if (cr.length) return { titre: 'Aujourd\'hui', cours: cr, aujourdhui: true };
-  const JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
-  const t0 = new Date(heureParis().date + 'T12:00:00Z').getTime();
-  for (let k = 1; k <= 7; k++) {
-    const d = new Date(t0 + k * 864e5), iso = d.toISOString().slice(0, 10), sem = semaineDe(iso);
-    const l = (EDT_SECOURS[d.getUTCDay()] || []).filter(c => !c[2] || c[2] === sem).map(c => [c[0], c[1]]);
-    if (l.length) return { titre: (k === 1 ? 'Demain' : JOURS[d.getUTCDay()].replace(/^./, x => x.toUpperCase())) + ' (sem. ' + sem + ')', cours: l, aujourdhui: false };
-  }
-  return { titre: 'Ma journée', cours: [], aujourdhui: false };
+const HEURES_STD = ['08:30', '09:28', '10:40', '11:35', '13:05', '14:03', '15:15', '16:13'];
+function edtDuJour(dateIso) {
+  const d = new Date(dateIso + 'T12:00:00Z'), sem = semaineDe(dateIso);
+  return (EDT_SECOURS[d.getUTCDay()] || []).filter(c => !c[2] || c[2] === sem).map(c => [c[0], c[1]]);
 }
 function creneauxDuJour() {
   const h = heureParis();
   const dateParis = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(CO && CO.maj ? new Date(CO.maj) : new Date(0));
-  if (CO && CO.maj && CO.creneaux && dateParis === h.date) return CO.creneaux.slice().sort();
-  const sem = semaineAB();
-  return (EDT_SECOURS[h.jour] || []).filter(c => !c[2] || c[2] === sem).map(c => [c[0], c[1]]);
+  const base = CO && CO.maj && CO.creneaux && dateParis === h.date ? CO.creneaux : edtDuJour(h.date);
+  return appliquerModifs(h.date, base);
+}
+// Journée affichée : aujourd'hui s'il y a cours (ou des changements), sinon le prochain jour de cours.
+// Toutes les heures de la journée (gris si pas cours) ; les heures des cours remplacent l'heure type qui les chevauche.
+function journee() {
+  const h = heureParis(), JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+  let date = h.date, cours = creneauxDuJour(), titre = 'Aujourd\'hui', auj = true;
+  if (!cours.length && !Object.keys(MODIFS[date] || {}).length) {
+    const t0 = new Date(h.date + 'T12:00:00Z').getTime();
+    for (let k = 1; k <= 7; k++) {
+      const d = new Date(t0 + k * 864e5), iso = d.toISOString().slice(0, 10), l = appliquerModifs(iso, edtDuJour(iso));
+      if (l.length) { date = iso; cours = l; auj = false; titre = (k === 1 ? 'Demain' : JOURS[d.getUTCDay()].replace(/^./, x => x.toUpperCase())) + ' (sem. ' + semaineDe(iso) + ')'; break; }
+    }
+  }
+  const heures = cours.map(c => c[0]);
+  HEURES_STD.forEach(hh => { if (!heures.some(x => Math.abs(minutes(x) - minutes(hh)) < 55)) heures.push(hh); });
+  heures.sort();
+  return { titre, date, aujourdhui: auj, lignes: heures.map(hh => cours.find(c => c[0] === hh) || [hh, '', '']) };
 }
 // Cours en cours, sinon prochain cours du jour, sinon dernier cours du jour
 function coursDuMoment() {
@@ -1816,8 +1881,8 @@ function dessinerActivite() {
   const vus = ((CO && CO.eleves) || {})[acCl] || {};
   const ids = Object.keys(SV.eleves[acCl] || {}).sort(ordreEleves);
   const debut = leCours ? minutes(leCours[0]) : null;
-  const enCours = debut != null && h.min >= debut - 10 && h.min < debut + 60;
-  const pres = id => { if (!enCours) return ''; const t = vus[id]; return t && minutes(t) >= debut - 10 && minutes(t) <= h.min + 1 ? 'co' : 'abs'; };
+  const enCours = debut != null && h.min >= debut - 10 && h.min < debut + 60, demiGroupe = leCours ? leCours[2] || '' : '';
+  const pres = id => { if (!enCours) return ''; const t = vus[id]; return t && minutes(t) >= debut - 10 && minutes(t) <= h.min + 1 ? 'co' : (demiGroupe ? '' : 'abs'); };
   const nbCo = ids.filter(id => pres(id) === 'co').length;
   const carte = (id, place) => {
     const s = (A && A.el[id]) || '-', e = s[0], note = s.slice(1), E = SV.eleves[acCl][id];
@@ -1841,12 +1906,13 @@ function dessinerActivite() {
 
   // Ma journée : cours du jour dans l'ordre (ou prochain jour de cours), clic = affiche l'activité
   const jr = journee();
-  const journeeHtml = `<aside class="journee-col"><h3>🗓 ${esc(jr.titre)}</h3>${jr.cours.map(c => {
-    const code = activiteDuCours(c[1]), a = (SV.acts[c[1]] || {})[code];
-    const etat = jr.aujourdhui ? (h.min >= minutes(c[0]) + 55 ? ' passe' : h.min >= minutes(c[0]) - 10 ? ' maint' : '') : '';
-    const ti = a ? titreActivite(c[1], code, a) : '';
-    return `<button type="button" class="jc${etat}${c[1] === acCl ? ' choisi' : ''}" data-jour="${esc(c[1])}|${esc(code)}" title="${esc(ti)}"><span class="h">${esc(c[0])}</span><b>${esc(c[1])}</b><span class="a">${esc(code || '—')}${ti ? ' · ' + esc(ti) : ''}</span></button>`;
-  }).join('') || '<span class="sous">Aucun cours</span>'}</aside>`;
+  const journeeHtml = `<aside class="journee-col"><h3>🗓 ${esc(jr.titre)}</h3>${jr.lignes.map(c => {
+    const passe = jr.aujourdhui && h.min >= minutes(c[0]) + 55, maint = jr.aujourdhui && !passe && h.min >= minutes(c[0]) - 10;
+    const plus = `<button type="button" class="jplus" data-jplus="${esc(jr.date)}|${esc(c[0])}" title="Changer la classe de cette heure">${c[1] ? '✎' : '+'}</button>`;
+    if (!c[1]) return `<div class="jl"><div class="jc vide${passe ? ' passe' : ''}"><span class="h">${esc(c[0])}</span><span class="a">pas cours</span></div>${plus}</div>`;
+    const code = activiteDuCours(c[1]), a = (SV.acts[c[1]] || {})[code], ti = a ? titreActivite(c[1], code, a) : '';
+    return `<div class="jl"><button type="button" class="jc${passe ? ' passe' : maint ? ' maint' : ''}${c[1] === acCl ? ' choisi' : ''}" data-jour="${esc(c[1])}|${esc(code)}" title="${esc(ti)}"><span class="h">${esc(c[0])}</span><b>${esc(c[1])}${c[2] ? `<small class="dg">½G${esc(c[2])}</small>` : ''}</b><span class="a">${esc(code || '—')}${ti ? ' · ' + esc(ti) : ''}</span></button>${plus}</div>`;
+  }).join('')}</aside>`;
 
   const cs = js(V.cons, []), bar = js(V.cor, {}), st = infoSite(V.site || '');
   const mN = MOYENNES[k];
@@ -1869,17 +1935,17 @@ ${A ? `<span class="sep2"></span>
     <div class="duo2 duo-site">
       <div class="carte2 site-carte">
         <h3>${st ? esc(st.titre) : 'Site'}</h3>
-        ${st ? `<button type="button" class="apercu2" data-acote="${esc(st.url)}" title="Ouvrir le site à côté">${st.apercu ? `<img src="${esc(st.apercu)}" alt="">` : '<span>🌐</span>'}</button>
-        <div class="actions" style="margin-top:6px">
-          <button class="bouton petit" type="button" data-acote="${esc(st.url)}" title="Ouvre le site dans une fenêtre à côté">↗ Ouvrir le site</button>
-          <a class="bouton leger petit" href="${lienSite(k, st)}" target="_blank" rel="noopener" title="Ouvre une conversation Claude pour modifier ce site">✦ Modifier le site avec Claude</a>
-        </div>` : '<div class="sous">Pas de site associé.</div>'}
+        ${st ? `<div class="apercu3">${st.apercu ? `<img src="${esc(st.apercu)}" alt="" data-acote="${esc(st.url)}">` : `<div class="vide3" data-acote="${esc(st.url)}">🌐</div>`}
+          <div class="sur">
+            <button class="bouton petit" type="button" data-acote="${esc(st.url)}" title="Ouvre le site dans une fenêtre à côté">↗ Ouvrir</button>
+            <a class="bouton petit blanc" href="${lienSite(k, st)}" target="_blank" rel="noopener" title="Ouvre une conversation Claude pour modifier ce site">✦ Modifier avec Claude</a>
+          </div></div>` : '<div class="sous">Pas de site associé.</div>'}
         <div class="liens" style="margin-top:6px">${META[k] && META[k].act ? `<a href="${esc(META[k].act)}" target="_blank" rel="noopener">📄 Doc activité</a>` : ''}${META[k] && META[k].cor ? `<a href="${esc(META[k].cor)}" target="_blank" rel="noopener">✅ Doc correction</a>` : ''}</div>
       </div>
       <div class="carte2">
-        <h3>Consignes ${V.publiee ? '' : '<span class="tag2">brouillon, pas encore publié</span>'}${V.publiee && differe ? '<span class="tag2">brouillon modifié non publié</span>' : ''}${k ? `<button class="bouton leger petit" type="button" data-atelier="${esc(k)}" style="margin-left:auto">✦ Modifier avec Claude</button>` : ''}</h3>
+        <h3>Consignes ${V.publiee ? '' : '<span class="tag2">brouillon, pas encore publié</span>'}${V.publiee && differe ? '<span class="tag2">brouillon modifié non publié</span>' : ''}${k ? `<button class="bouton leger petit" type="button" data-atelier="${esc(k)}" style="margin-left:auto" title="Discuter avec Claude ici, dans la page">✦ Modifier avec Claude</button>` : ''}</h3>
         ${cs.map(c => `<p class="cons"><b>${esc(c.lettre)}</b> · ${esc(c.texte)}</p>`).join('') || '<div class="sous">Pas de consignes dans la progression : les élèves voient celles du Doc activité.</div>'}
-        <h3 style="margin-top:14px">Correction <span class="sous">${Object.keys(bar).length ? total(bar) + ' pts' : ''}</span></h3>
+        <h3 style="margin-top:14px">Correction <span class="sous">${Object.keys(bar).length ? total(bar) + ' pts' : ''}</span>${k ? `<button class="bouton leger petit" type="button" data-atelier="${esc(k)}" style="margin-left:auto" title="Discuter avec Claude ici, dans la page">✦ Modifier avec Claude</button>` : ''}</h3>
         ${Object.entries(bar).map(([l, v]) => `<p class="cons"><b>${esc(l)}</b> · ${esc(v.max)} pts${A.reussite && A.reussite[l] != null ? ` <span class="sous">(réussite ${A.reussite[l]} %)</span>` : ''}</p>${criteres(v).map(x => `<div class="crit">${x.points ? `<i>${esc(x.points)} pt · </i>` : ''}${esc(x.texte)}</div>`).join('')}`).join('') || '<div class="sous">Pas de barème dans la progression.</div>'}
       </div>
     </div>`}`;
@@ -1889,9 +1955,10 @@ ${A ? `<span class="sep2"></span>
 // ---------- Événements des deux onglets ----------
 $('#prog').addEventListener('click', e => {
   const t = e.target;
-  const b = t.closest('[data-svniv],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place]');
+  const b = t.closest('[data-svniv],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place],[data-jplus]');
   if (!b) return;
   if (b.dataset.jour) { const [cl, code] = b.dataset.jour.split('|'); acCl = cl; acCode = code; dessinerActivite(); return; }
+  if (b.dataset.jplus) { const [d, hh] = b.dataset.jplus.split('|'); popHeure(b, d, hh); return; }
   if (b.dataset.place) { popPlace(b, acCl, b.dataset.place); return; }
   if (b.dataset.acote) {
     // Fenêtre sur la moitié droite de l'écran (les sites ne peuvent pas être intégrés dans la page Claude)
