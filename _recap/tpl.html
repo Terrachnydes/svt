@@ -271,7 +271,14 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .elv small{color:var(--muted);font-size:11.5px;white-space:nowrap}
 #prog .pt{width:10px;height:10px;border-radius:50%;background:#d5dbd7;flex:none}
 #prog .pt.co{background:#22a35a;box-shadow:0 0 0 3px rgba(34,163,90,.2)}
-#prog .pt.re{background:#e0a800}
+#prog .pt.abs{background:#d93a2b;box-shadow:0 0 0 3px rgba(217,58,43,.18)}
+#prog .plan-defile{overflow-x:auto;max-width:100%}
+#prog .plan{display:grid;grid-template-columns:minmax(120px,1fr) 18px repeat(4,minmax(120px,1fr)) 18px repeat(2,minmax(120px,1fr));gap:8px 6px;min-width:900px}
+#prog .plan .elv{flex-direction:row;padding:8px 9px}
+#prog .plan .elv b{display:flex;flex-direction:column;line-height:1.2}
+#prog .elv .nf{color:var(--muted);font-weight:600;font-size:11.5px;overflow:hidden;text-overflow:ellipsis}
+#prog .plan .prf{margin-left:0;align-self:flex-start}
+#prog .elv.vide{background:transparent;border-style:dashed;min-height:44px;justify-content:center}
 #prog .duo2{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr);gap:12px;align-items:start}
 #prog .carte2{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
 #prog .carte2 h3{margin:0 0 8px;font-size:15px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -1681,15 +1688,34 @@ function dessinerActivite() {
   const leCours = cr.find(c => h.min < minutes(c[0]) + 55) || cr[cr.length - 1];
   const ph = leCours ? phase(leCours[0]) : null;
 
-  // Élèves de la classe + connexion
+  // Élèves de la classe + présence : pendant le cours (10 min avant → 5 min après), vert = a ouvert son
+  // cahier depuis le début du cours, rouge = pas encore connecté. Hors cours : pas de pastille.
   const vus = ((CO && CO.eleves) || {})[acCl] || {};
   const ids = Object.keys(SV.eleves[acCl] || {}).sort(ordreEleves);
-  const co = id => { const t = vus[id]; if (!t) return ''; const d = h.min - minutes(t); return d <= 10 ? 'co' : 're'; };
-  const nbCo = ids.filter(id => co(id) === 'co').length;
-  const eleves = ids.map(id => {
+  const debut = leCours ? minutes(leCours[0]) : null;
+  const enCours = debut != null && h.min >= debut - 10 && h.min < debut + 60;
+  const pres = id => { if (!enCours) return ''; const t = vus[id]; return t && minutes(t) >= debut - 10 && minutes(t) <= h.min + 1 ? 'co' : 'abs'; };
+  const nbCo = ids.filter(id => pres(id) === 'co').length;
+  const carte = id => {
     const s = (A && A.el[id]) || '-', e = s[0], note = s.slice(1), E = SV.eleves[acCl][id];
-    return `<div class="elv" title="${esc(id + ' · ' + (ETATS[e] || '') + (vus[id] ? ' · vu à ' + vus[id] : ''))}"><span class="pt ${co(id)}"></span><b>${esc(nomEleve(id))}${E.profil ? `<span class="prf">${esc(E.profil)}</span>` : ''}</b><small>${note ? `<span class="n ${classeNote(num(note))}">${esc(note)}</span>` : esc({ o: 'ouverte', r: 'rendue', a: 'absent', x: 'absent', '-': '—' }[e] || '')}</small></div>`;
-  }).join('');
+    const nm = ELEVES[id], titre = id + ' · ' + (ETATS[e] || '') + (vus[id] ? ' · cahier ouvert à ' + vus[id] : (enCours ? ' · pas connecté' : ''));
+    return `<div class="elv" title="${esc(titre)}"><span class="pt ${pres(id)}"></span><b>${nm ? `${esc(nm.prenom)} <small class="nf">${esc(nm.nom)}</small>` : esc(id)}${E.profil ? `<span class="prf">${esc(E.profil)}</span>` : ''}</b><small>${note ? `<span class="n ${classeNote(num(note))}">${esc(note)}</span>` : esc({ o: 'ouverte', r: 'rendue', a: 'absent', x: 'absent', '-': '—' }[e] || '')}</small></div>`;
+  };
+  // Plan de classe du cahier (I1:AU6) : 6 rangées × 7 places, tables [1] · [4] · [2]
+  let plan = SV.classes[acCl].plan;
+  if (plan) { plan = plan.slice(); while (plan.length && plan[plan.length - 1].every(x => !x)) plan.pop(); if (!plan.length) plan = null; }
+  let eleves;
+  if (plan) {
+    const places = new Set();
+    const rangs = plan.map(r => r.map((id, c) => {
+      const sep = c === 1 || c === 5 ? '<div class="allee"></div>' : '';
+      if (id && id !== '?' && SV.eleves[acCl][id]) { places.add(id); return sep + carte(id); }
+      return sep + `<div class="elv vide">${id === '?' ? '<small>nom non reconnu</small>' : ''}</div>`;
+    }).join('')).join('');
+    const hors = ids.filter(id => !places.has(id));
+    eleves = `<div class="plan-defile"><div class="plan">${rangs}</div></div>
+      ${hors.length ? `<h3 style="margin-top:12px">Hors plan</h3><div class="eleves">${hors.map(carte).join('')}</div>` : ''}`;
+  } else eleves = `<div class="eleves">${ids.map(carte).join('')}</div>`;
 
   const cs = js(V.cons, []), bar = js(V.cor, {}), st = infoSite(V.site || '');
   const mN = MOYENNES[k];
@@ -1710,7 +1736,7 @@ function dessinerActivite() {
       <h2>${esc(V.titre || titreActivite(acCl, acCode, A) || 'Titre à définir')}</h2>
       ${V.pb ? `<div class="sous">❓ ${esc(V.pb)}</div>` : ''}
       <div class="stat">
-        <div><b>${nbCo}/${ids.length}</b><small>connectés (10 dernières min)</small></div>
+        <div><b>${enCours ? nbCo + '/' + ids.length : '—'}</b><small>${enCours ? 'présents (cahier ouvert pendant le cours)' : 'présents : pendant le cours seulement'}</small></div>
         <div><b>${A.repondu}/${ids.length}</b><small>copies rendues</small></div>
         <div><b><span class="n ${classeNote(A.moy)}">${fr(A.moy)}</span></b><small>moyenne ${acCl} (${A.corriges} corrigée${A.corriges > 1 ? 's' : ''})</small></div>
         ${mN ? `<div><b><span class="n ${classeNote(num(mN.moy))}">${esc(mN.moy)}</span></b><small>moyenne toutes classes (${esc(mN.nb)})</small></div>` : ''}
@@ -1724,7 +1750,7 @@ function dessinerActivite() {
         ${k ? `<button class="bouton" type="button" data-atelier="${esc(k)}">✦ Modifier consignes · correction</button>${boutonPub(k, true)}` : ''}
       </div>
     </div>
-    <div class="carte2"><h3>Élèves <span class="sous"><span class="pt co" style="display:inline-block"></span> connecté · <span class="pt re" style="display:inline-block"></span> vu il y a plus de 10 min</span></h3><div class="eleves">${eleves}</div></div>
+    <div class="carte2"><h3>${plan ? 'Plan de classe' : 'Élèves'} <span class="sous">${enCours ? '<span class="pt co" style="display:inline-block"></span> présent (cahier ouvert) · <span class="pt abs" style="display:inline-block"></span> pas connecté' : 'Pastilles de présence affichées pendant le cours'}</span></h3>${eleves}</div>
     <div class="duo2">
       <div class="carte2">
         <h3>Consignes ${V.publiee ? '' : '<span class="tag2">brouillon, pas encore publié</span>'}${V.publiee && differe ? '<span class="tag2">brouillon modifié non publié</span>' : ''}</h3>
