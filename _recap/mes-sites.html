@@ -278,6 +278,9 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .n.faible{background:#fbdcd8;color:#9b2c20}
 #prog .n.nc{background:none;color:var(--muted);text-decoration:line-through;font-style:italic}
 #prog .n.vide{color:#b9c2bc}
+#prog td.avant-arr{background:repeating-linear-gradient(135deg,transparent 0 6px,rgba(0,0,0,.04) 6px 12px)}
+#prog td.arr-ici .n::before{content:'↦ ';color:#2b6cb0;font-weight:700}
+#prog td[data-arr]{cursor:pointer}
 #prog td.act{cursor:pointer}
 #prog td.act:hover{outline:2px solid var(--accent);outline-offset:-2px}
 #prog .ic{display:flex;gap:2px;justify-content:center;font-size:10.5px;line-height:1.2;margin-top:2px;font-weight:700}
@@ -1841,7 +1844,10 @@ function dessinerSuivi() {
         <td>${tagProfil(E.profil)}</td><td>${tagComp(E.comportement)}</td><td>${tagTravail(E.resultats, E.assiduite)}</td>
         <td><span class="n n-moy ${classeNote(m)}">${fr(m)}</span></td>
         <td><span class="n ${classeNote(nA)}">${fr(nA)}</span></td>
-        ${codes.map(k => { const n = noteEleve(cl, id, k, svPer); return `<td title="${esc(n.nc ? 'Note non comptée (facultative ou sous le seuil du profil)' : n.titre || '')}"><span class="n ${n.nc ? 'nc' : n.v == null ? 'vide' : classeNote(n.v)}">${esc(n.txt)}</span></td>`; }).join('')}
+        ${codes.map(k => { const n = noteEleve(cl, id, k, svPer), arr = (SV.eleves[cl][id] || {}).arrivee || '';
+          const avant = arr && ordreCode(k, arr) < 0, ici = arr && k === arr;
+          const titre = avant ? `Pas encore dans la classe (arrivé(e) à partir de ${arr})` : ici ? `Arrivé(e) dans la classe à partir de ${arr}` : n.nc ? 'Note non comptée (facultative ou sous le seuil du profil)' : n.titre || '';
+          return `<td class="${avant ? 'avant-arr' : ici ? 'arr-ici' : ''}" data-arr="${cl}|${id}|${k}" title="${esc(titre + (titre ? ' · ' : '') + 'Clic : date d\'arrivée')}"><span class="n ${n.nc ? 'nc' : n.v == null ? 'vide' : classeNote(n.v)}">${esc(n.txt)}</span></td>`; }).join('')}
         <td class="app" data-pel="${cl}|${id}" data-bulle="${esc(p.app || '')}">${esc(p.app || '—')}</td></tr>`);
     });
   });
@@ -1999,6 +2005,29 @@ function popActivite(cible, cl, k) {
     <button class="bouton leger" type="button" data-op="arret" data-k="${cl}|${k}">${a.arretee ? 'Annuler l\'arrêt' : '■ Arrêter l\'activité (les restants reçoivent la correction)'}</button>
     <button class="bouton leger" type="button" data-op="voir" data-k="${cl}|${k}">➜ Ouvrir dans l'onglet Activité</button>` : ''}`);
 }
+// Élève arrivé en cours d'année : clic sur une note → « arrivé(e) à partir de ce devoir ».
+// Enregistré en colonne L (L9:L38) de la feuille de classe : le cahier ne compte plus les devoirs
+// d'avant l'arrivée comme des absences (assiduité, profil, appréciations).
+function popArrivee(cible, cl, id, k) {
+  const E = SV.eleves[cl][id] || {}, arr = E.arrivee || '';
+  ouvrirPop(cible, `<h4>${esc(nomEleve(id))} · ${esc(k)}</h4>
+    <div class="sous">${arr ? `Arrivé(e) dans la classe à partir de <b>${esc(arr)}</b>.` : 'Élève présent(e) depuis le début de l\'année.'}</div>
+    ${arr !== k ? `<button class="bouton leger" type="button" data-arrset="${cl}|${id}|${k}">↦ Arrivé(e) dans la classe à partir de ${esc(k)}</button>` : ''}
+    ${arr ? `<button class="bouton leger" type="button" data-arrset="${cl}|${id}|">Retirer la date d'arrivée</button>` : ''}
+    <div class="sous" style="margin-top:6px">Les devoirs d'avant l'arrivée ne comptent pas comme des absences. Pris en compte à la prochaine génération des appréciations.</div>`);
+}
+async function definirArrivee(cl, id, k) {
+  fermerPop();
+  const E = SV.eleves[cl][id];
+  if (!E || !E.ligneRef) { toast('Ligne de l\'élève introuvable : clique sur ↻ puis réessaie.', true); return; }
+  try {
+    await ecrire(fA1(cl, 'L' + E.ligneRef), [[k]]);
+    E.arrivee = k;
+    toast(k ? `${nomEleve(id)} : arrivé(e) à partir de ${k}.` : `${nomEleve(id)} : date d'arrivée retirée.`);
+    dessinerSuivi();
+  } catch (e) { toast(erreurMcp(e), true); }
+}
+
 async function operation(op, cl, k) {
   fermerPop();
   const a = (SV.acts[cl] || {})[k];
@@ -2405,7 +2434,7 @@ $('#prog').addEventListener('click', e => {
   if (ao) { const g = ao.closest('.att'); document.querySelectorAll('#prog .att.ouvert').forEach(x => { if (x !== g) x.classList.remove('ouvert'); }); g.classList.toggle('ouvert'); return; }
   const at = t.closest('[data-att]');
   if (at) { const [cl, id, d] = at.dataset.att.split('|'); changerAttitude(cl, id, +d); return; }
-  const b = t.closest('[data-svniv],[data-svcl],[data-svper],[data-cloturer],[data-genall],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place],[data-jplus],[data-jnav],[data-oeil]');
+  const b = t.closest('[data-svniv],[data-svcl],[data-svper],[data-cloturer],[data-genall],[data-arr],[data-arrset],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place],[data-jplus],[data-jnav],[data-oeil]');
   if (!b) return;
   if (b.dataset.jour) { const [cl, code] = b.dataset.jour.split('|'); acCl = cl; acCode = code; dessinerActivite(); return; }
   if (b.dataset.jplus) { const [d, hh] = b.dataset.jplus.split('|'); popHeure(b, d, hh); return; }
@@ -2437,6 +2466,8 @@ $('#prog').addEventListener('click', e => {
     b.disabled = true;
     commande('cloturer', '', { periode: t }, `Clôture du T${t}`);
   }
+  else if (b.dataset.arr) { const [cl, id, k] = b.dataset.arr.split('|'); popArrivee(b, cl, id, k); }
+  else if (b.dataset.arrset !== undefined) { const [cl, id, k] = b.dataset.arrset.split('|'); definirArrivee(cl, id, k); }
   else if (b.dataset.genall) {
     const t = +b.dataset.genall;
     if (b.dataset.confirme !== '1') {   // 2 clics : les fenêtres de confirmation sont bloquées dans la page
