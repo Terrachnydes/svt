@@ -369,6 +369,9 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .jc.vide{opacity:.55;background:var(--thumb);cursor:default;border-style:dashed}
 #prog .jplus{flex:none;width:28px;border:1px solid var(--line);border-radius:7px;background:var(--bg);cursor:pointer;font-weight:700;color:var(--muted)}
 #prog .jplus:hover{border-color:var(--accent);color:var(--accent)}
+#prog .journee-col h3{display:flex;align-items:center;gap:6px}#prog .journee-col h3 .t{flex:1}
+#prog .jnav{width:26px;height:24px;border:1px solid var(--line);border-radius:6px;background:var(--bg);cursor:pointer;font-weight:800;color:var(--fg);line-height:1}
+#prog .jnav:hover{border-color:var(--accent);color:var(--accent)}
 #prog .dg{font-size:10px;margin-left:3px;background:#e8e1f7;color:#5b3fa0;border-radius:4px;padding:0 3px}
 #prog .apercu2{display:block;width:100%;padding:0;border:1px solid var(--line);border-radius:10px;background:var(--thumb);cursor:pointer;overflow:hidden;aspect-ratio:16/10}
 #prog .apercu2 img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
@@ -1790,7 +1793,27 @@ function ouvrirPop(cible, html) {
   let x = r.left - base.left; if (r.left + larg > window.innerWidth - 12) x = window.innerWidth - 12 - larg - base.left;
   p.style.left = Math.max(0, x) + 'px'; p.style.top = (r.bottom - base.top + 4) + 'px';
 }
-document.addEventListener('click', e => { if (!e.target.closest('#prog .pop,[data-pact],[data-place],[data-jplus]')) fermerPop(); });
+document.addEventListener('click', e => { if (!e.target.closest('#prog .pop,[data-pact],[data-place],[data-jplus],[data-oeil]')) fermerPop(); });
+// Aperçu : cahier de l'élève n° 30 de la classe (identifiant + code lus dans le bloc activité de la feuille)
+const CAHIER_URL = 'https://script.google.com/macros/s/AKfycbyrPE5UScnPcqV20LvqP3PjUBOu_3iXwhR3yshbfDmPcSzG1_seXV8THf2vLLjoqeJr5w/exec';
+const CODES_30 = {};
+async function popApercu(cible, cl) {
+  const id = cl + '-30';
+  ouvrirPop(cible, `<h4>Cahier de ${esc(id)}</h4><div class="sous">Recherche du code…</div>`);
+  try {
+    if (!CODES_30[cl]) {
+      const v = await lire(fA1(cl, 'B130:C220'));
+      const l = v.find(x => String((x || [])[0] || '').trim() === id);
+      if (!l || !l[1]) throw new Error('Pas d\'élève ' + id + ' dans la feuille ' + cl + '.');
+      CODES_30[cl] = String(l[1]).trim();
+    }
+    const code = CODES_30[cl], url = CAHIER_URL + '#eleve=' + encodeURIComponent(id) + '&code=' + encodeURIComponent(code);
+    const pop = $('#prog .pop'); if (!pop) return;
+    pop.innerHTML = `<h4>Cahier de ${esc(id)}</h4>
+      <a class="bouton petit" href="${esc(url)}" target="_blank" rel="noopener">👁 Ouvrir le cahier</a>
+      <div class="sous" style="margin-top:6px">Identifiant <b>${esc(id)}</b> · code <b>${esc(code)}</b><br>(connexion automatique une fois le cahier mis à jour ; sinon tape-les)</div>`;
+  } catch (e) { const pop = $('#prog .pop'); if (pop) pop.innerHTML = `<div class="sous">${esc(e.message || erreurMcp(e))}</div>`; }
+}
 // Changer la classe d'une heure (changement dans la journée) ; demi-groupe possible en 3e et 6e
 function popHeure(cible, date, hh) {
   const jr = journee(), actuel = (jr.lignes.find(c => c[0] === hh) || [hh, '', ''])[1], g0 = (jr.lignes.find(c => c[0] === hh) || [])[2] || '';
@@ -1960,8 +1983,28 @@ function creneauxDuJour() {
 }
 // Journée affichée : aujourd'hui s'il y a cours (ou des changements), sinon le prochain jour de cours.
 // Toutes les heures de la journée (gris si pas cours) ; les heures des cours remplacent l'heure type qui les chevauche.
+let jrDate = null;   // journée choisie avec les flèches (null = aujourd'hui / prochain jour de cours)
+const JOURS_FR = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+// Prochain (sens 1) ou précédent (sens -1) jour avec des cours, à partir de iso (7 jours max)
+function jourDeCours(iso, sens) {
+  const t0 = new Date(iso + 'T12:00:00Z').getTime();
+  for (let k = 1; k <= 7; k++) {
+    const d = new Date(t0 + sens * k * 864e5).toISOString().slice(0, 10);
+    if (appliquerModifs(d, edtDuJour(d)).length || Object.keys(MODIFS[d] || {}).length) return d;
+  }
+  return null;
+}
 function journee() {
-  const h = heureParis(), JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+  const h = heureParis(), JOURS = JOURS_FR;
+  if (jrDate && jrDate <= h.date) jrDate = null;
+  if (jrDate) {
+    const d = new Date(jrDate + 'T12:00:00Z'), demain = new Date(new Date(h.date + 'T12:00:00Z').getTime() + 864e5).toISOString().slice(0, 10);
+    const cours = appliquerModifs(jrDate, edtDuJour(jrDate)), heures = cours.map(c => c[0]);
+    HEURES_STD.forEach(hh => { if (!heures.some(x => Math.abs(minutes(x) - minutes(hh)) < 55)) heures.push(hh); });
+    heures.sort();
+    const titre = (jrDate === demain ? 'Demain' : JOURS[d.getUTCDay()].replace(/^./, x => x.toUpperCase()) + ' ' + d.getUTCDate() + '/' + (d.getUTCMonth() + 1)) + ' (sem. ' + semaineDe(jrDate) + ')';
+    return { titre, date: jrDate, aujourdhui: false, choisi: true, lignes: heures.map(hh => cours.find(c => c[0] === hh) || [hh, '', '']) };
+  }
   let date = h.date, cours = creneauxDuJour(), titre = 'Aujourd\'hui', auj = true;
   if (!cours.length && !Object.keys(MODIFS[date] || {}).length) {
     const t0 = new Date(h.date + 'T12:00:00Z').getTime();
@@ -2089,12 +2132,13 @@ function dessinerActivite() {
 
   // Ma journée : cours du jour dans l'ordre (ou prochain jour de cours), clic = affiche l'activité
   const jr = journee();
-  const journeeHtml = `<aside class="journee-col"><h3>🗓 ${esc(jr.titre)}</h3>${jr.lignes.map(c => {
+  const journeeHtml = `<aside class="journee-col"><h3>${jr.choisi ? `<button type="button" class="jnav" data-jnav="-1" title="Journée précédente">‹</button>` : ''}<span class="t">🗓 ${esc(jr.titre)}</span><button type="button" class="jnav" data-jnav="1" title="Journée suivante">›</button></h3>${jr.lignes.map(c => {
     const passe = jr.aujourdhui && h.min >= minutes(c[0]) + 55, maint = jr.aujourdhui && !passe && h.min >= minutes(c[0]) - 10;
     const plus = `<button type="button" class="jplus" data-jplus="${esc(jr.date)}|${esc(c[0])}" title="Changer la classe de cette heure">${c[1] ? '✎' : '+'}</button>`;
     if (!c[1]) return `<div class="jl"><div class="jc vide${passe ? ' passe' : ''}"><span class="h">${esc(c[0])}</span><span class="a">pas cours</span></div>${plus}</div>`;
     const code = activiteDuCours(c[1]), a = (SV.acts[c[1]] || {})[code], ti = a ? titreActivite(c[1], code, a) : '';
-    return `<div class="jl"><button type="button" class="jc${passe ? ' passe' : maint ? ' maint' : ''}${c[1] === acCl ? ' choisi' : ''}" data-jour="${esc(c[1])}|${esc(code)}" title="${esc(ti)}"><span class="h">${esc(c[0])}</span><b>${esc(c[1])}${c[2] ? `<small class="dg">½G${esc(c[2])}</small>` : ''}</b><span class="a">${esc(code || '—')}${ti ? ' · ' + esc(ti) : ''}</span></button>${plus}</div>`;
+    const oeil = `<button type="button" class="jplus" data-oeil="${esc(c[1])}" title="Voir le cahier de l'élève n° 30 de la ${esc(c[1])} (aperçu de l'activité)">👁</button>`;
+    return `<div class="jl"><button type="button" class="jc${passe ? ' passe' : maint ? ' maint' : ''}${c[1] === acCl ? ' choisi' : ''}" data-jour="${esc(c[1])}|${esc(code)}" title="${esc(ti)}"><span class="h">${esc(c[0])}</span><b>${esc(c[1])}${c[2] ? `<small class="dg">½G${esc(c[2])}</small>` : ''}</b><span class="a">${esc(code || '—')}${ti ? ' · ' + esc(ti) : ''}</span></button>${plus}${oeil}</div>`;
   }).join('')}</aside>`;
 
   const cs = js(B.cons, []), bar = js(B.cor, {}), st = infoSite(V.site || '');   // brouillon affiché et modifiable ici ; « Mettre à jour » le publie
@@ -2194,10 +2238,15 @@ $('#prog').addEventListener('click', e => {
   if (mj) { mettreAJourActivite(mj); return; }
   const at = t.closest('[data-att]');
   if (at) { const [cl, id, d] = at.dataset.att.split('|'); changerAttitude(cl, id, +d); return; }
-  const b = t.closest('[data-svniv],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place],[data-jplus]');
+  const b = t.closest('[data-svniv],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place],[data-jplus],[data-jnav],[data-oeil]');
   if (!b) return;
   if (b.dataset.jour) { const [cl, code] = b.dataset.jour.split('|'); acCl = cl; acCode = code; dessinerActivite(); return; }
   if (b.dataset.jplus) { const [d, hh] = b.dataset.jplus.split('|'); popHeure(b, d, hh); return; }
+  if (b.dataset.jnav) {
+    const base = journee().date, d = jourDeCours(base, +b.dataset.jnav);
+    jrDate = d && d > heureParis().date ? d : null; dessinerActivite(); return;
+  }
+  if (b.dataset.oeil) { popApercu(b, b.dataset.oeil); return; }
   if (b.dataset.place) { popPlace(b, acCl, b.dataset.place); return; }
   if (b.dataset.acote) {
     // Fenêtre sur la moitié droite de l'écran (les sites ne peuvent pas être intégrés dans la page Claude)
