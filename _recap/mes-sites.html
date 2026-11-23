@@ -248,6 +248,7 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog table.sv tr.el td.nom{cursor:pointer;color:var(--cl);font-weight:700}
 #prog table.sv tr.el td.nom:hover{text-decoration:underline}
 #prog .n{display:inline-block;min-width:30px;padding:1px 4px;border-radius:6px}
+#prog .n.moy{font-weight:800;font-size:1.12em}
 #prog .n.bon{background:#d6f0e4;color:#14603f}
 #prog .n.moyen{background:#fdf0c8;color:#7a5a00}
 #prog .n.faible{background:#fbdcd8;color:#9b2c20}
@@ -1592,8 +1593,8 @@ function dessinerSuivi() {
     const mg = moyenne(gen), ma = moyenne(att), dA = (P.devoirs || []).find(x => x.code === 'A');
     lignes.push(`<tr class="rcl"><td class="nom"><button class="bouton leger petit" type="button" data-pcl="${cl}">${cl} · ${ids.length} élèves ⚙</button></td>
       <td colspan="3" class="sous">${ids.filter(id => SV.eleves[cl][id].profil).length} profil(s) particulier(s)</td>
+      <td><span class="n moy ${classeNote(mg)}">${fr(mg)}</span></td>
       ${dA ? celluleClasse(cl, P, 'A', ma) : `<td><span class="n ${classeNote(ma)}">${fr(ma)}</span></td>`}
-      <td><span class="n ${classeNote(mg)}">${fr(mg)}</span></td>
       ${codes.map(k => celluleClasse(cl, P, k, moyenne(moyCl[k] || []))).join('')}
       <td class="app" data-pcl="${cl}" data-bulle="${esc(P.appreciation || '')}">${esc(P.appreciation || 'Appréciation de classe à générer')}</td></tr>`);
     ids.forEach(id => {
@@ -1602,15 +1603,15 @@ function dessinerSuivi() {
       const nA = num((p.notes || {}).A);
       lignes.push(`<tr class="el"><td class="nom ${genreEleve(id)}" data-pel="${cl}|${id}" title="${esc(id)}">${esc(nomEleve(id))}</td>
         <td>${tagProfil(E.profil)}</td><td>${tagComp(E.comportement)}</td><td>${tagTravail(E.resultats, E.assiduite)}</td>
+        <td><span class="n moy ${classeNote(m)}">${fr(m)}</span></td>
         <td><span class="n ${classeNote(nA)}">${fr(nA)}</span></td>
-        <td><span class="n ${classeNote(m)}">${fr(m)}</span></td>
         ${codes.map(k => { const n = noteEleve(cl, id, k, svPer); return `<td title="${esc(n.nc ? 'Note non comptée (facultative ou sous le seuil du profil)' : n.titre || '')}"><span class="n ${n.nc ? 'nc' : n.v == null ? 'vide' : classeNote(n.v)}">${esc(n.txt)}</span></td>`; }).join('')}
         <td class="app" data-pel="${cl}|${id}" data-bulle="${esc(p.app || '')}">${esc(p.app || '—')}</td></tr>`);
     });
   });
   const mn = moyenne(toutesGen);
   const mAt = moyenne(toutesAtt);
-  if (vues.length > 1) lignes.push(`<tr class="niv"><td class="nom">Niveau ${NOMS[svNiv]}</td><td colspan="3"></td><td><span class="n ${classeNote(mAt)}">${fr(mAt)}</span></td><td><span class="n ${classeNote(mn)}">${fr(mn)}</span></td>
+  if (vues.length > 1) lignes.push(`<tr class="niv"><td class="nom">Niveau ${NOMS[svNiv]}</td><td colspan="3"></td><td><span class="n moy ${classeNote(mn)}">${fr(mn)}</span></td><td><span class="n ${classeNote(mAt)}">${fr(mAt)}</span></td>
     ${codes.map(k => { const m = moyenne(toutesMoy[k] || []); return `<td><span class="n ${classeNote(m)}">${fr(m)}</span></td>`; }).join('')}<td></td></tr>`);
 
   $('#sv-main').innerHTML = `
@@ -1624,7 +1625,7 @@ function dessinerSuivi() {
       <button class="bouton leger petit" type="button" data-actualiser title="Résumé du ${esc(SV.maj || '?')}">↻</button>
     </div>
     <div class="attente" hidden></div>
-    ${vues.length ? `<div class="tabl"><table class="sv"><thead><tr><th class="nom">Élève</th><th title="Profil particulier (D, NE, M, T)">Profil</th><th>Comportement</th><th title="Profil de résultats du trimestre (+ activités manquantes si besoin)">Travail</th><th title="Note d'attitude (A)">Attitude</th><th>Moy.</th>${codes.map(k => `<th>${esc(k)}</th>`).join('')}<th>Appréciation T${svPer}</th></tr></thead>
+    ${vues.length ? `<div class="tabl"><table class="sv"><thead><tr><th class="nom">Élève</th><th title="Profil particulier (D, NE, M, T)">Profil</th><th>Comportement</th><th title="Profil de résultats du trimestre (+ activités manquantes si besoin)">Travail</th><th>Moy.</th><th title="Note d'attitude (A)">Attitude</th>${codes.map(k => `<th>${esc(k)}</th>`).join('')}<th>Appréciation T${svPer}</th></tr></thead>
       <tbody>${lignes.join('')}</tbody></table></div>` : '<div class="info">Aucune classe avec des élèves à ce niveau.</div>'}`;
   majAttente();
 }
