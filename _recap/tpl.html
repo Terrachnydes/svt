@@ -1439,19 +1439,36 @@ function majAttente() {
 // ---------- Noms des élèves (eleves.csv, jamais envoyé nulle part) ----------
 const CLE_NOMS = 'profElevesCsv';
 function lireCsv(texte) {
-  texte = String(texte || '').replace(/^﻿/, '');
-  const lignes = texte.split(/\r?\n/).filter(l => l.trim());
+  texte = String(texte || '').replace(/^﻿/, '').replace(/\u0000/g, '');
+  const lignes = texte.split(/\r?\n|\r/).filter(l => l.trim());
   if (!lignes.length) return {};
-  const sep = (lignes[0].match(/;/g) || []).length >= (lignes[0].match(/,/g) || []).length ? ';' : ',';
-  const cell = l => l.split(sep).map(x => x.trim().replace(/^"|"$/g, '').replace(/""/g, '"'));
-  const t = cell(lignes[0]).map(x => x.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''));
-  const i = n => t.indexOf(n);
+  const compte = c => (lignes[0].split(c).length - 1);
+  const sep = [';', ',', '\t'].sort((a, b) => compte(b) - compte(a))[0];
+  const cell = l => l.split(sep).map(x => x.trim().replace(/^"|"$/g, '').replace(/""/g, '"').trim());
+  const norm = x => x.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z]/g, '');
+  const MOTIF = /^[3-6][A-Z]-\d{2}$/;
+  const t = cell(lignes[0]).map(norm);
+  const cherche = (...n) => t.findIndex(x => n.some(m => x.startsWith(m)));
+  let iId = cherche('identifiant', 'id'), iNom = cherche('nom'), iPre = cherche('prenom', 'pr'), iGen = cherche('genre', 'sexe');
+  let debut = 1;
+  if (iId < 0) {   // pas d'en-tête reconnu : colonnes dans l'ordre de l'export (identifiant ; classe ; nom ; prénom ; genre)
+    const c0 = cell(lignes[0]);
+    iId = c0.findIndex(x => MOTIF.test(x)); if (iId < 0) return {};
+    iNom = iId + 2; iPre = iId + 3; iGen = iId + 4; debut = 0;
+  }
   const res = {};
-  lignes.slice(1).forEach(l => {
-    const c = cell(l), id = c[i('identifiant')];
-    if (id) res[id] = { nom: c[i('nom')] || '', prenom: c[i('prenom')] || '', genre: c[i('genre')] || '' };
+  lignes.slice(debut).forEach(l => {
+    const c = cell(l), id = (c[iId] || '').toUpperCase();
+    if (id) res[id] = { nom: iNom >= 0 ? c[iNom] || '' : '', prenom: iPre >= 0 ? c[iPre] || '' : '', genre: iGen >= 0 ? c[iGen] || '' : '' };
   });
   return res;
+}
+// Décode le fichier quel que soit l'enregistrement (UTF-8, UTF-16 « Texte Unicode » d'Excel, ANSI Windows)
+async function texteFichier(f) {
+  const b = new Uint8Array(await f.arrayBuffer());
+  if (b[0] === 0xFF && b[1] === 0xFE) return new TextDecoder('utf-16le').decode(b);
+  if (b[0] === 0xFE && b[1] === 0xFF) return new TextDecoder('utf-16be').decode(b);
+  try { return new TextDecoder('utf-8', { fatal: true }).decode(b); } catch (e) { return new TextDecoder('windows-1252').decode(b); }
 }
 // Noms gardés sur CET ordinateur à deux endroits du navigateur (localStorage + IndexedDB) :
 // si l'un est vidé, l'autre prend le relais. Rien n'est envoyé nulle part.
@@ -1501,10 +1518,17 @@ function blocNoms() {
 $('#prog').addEventListener('change', async e => {
   if (e.target.matches('[data-csv]')) {
     const f = e.target.files[0]; if (!f) return;
-    const txt = await f.text();
-    ELEVES = lireCsv(txt);
+    const txt = await texteFichier(f);
+    const lus = lireCsv(txt);
+    if (/^PK/.test(txt) || !Object.keys(lus).length) {
+      toast(/^PK/.test(txt) ? 'Ce fichier est un classeur Excel : choisis eleves.csv (export du menu RGPD).'
+        : 'Aucun élève reconnu dans ce fichier. 1re ligne lue : « ' + String(txt).split(/\r?\n/)[0].slice(0, 80) + ' »', true);
+      e.target.value = ''; return;
+    }
+    ELEVES = lus;
     garderNoms(txt);
     toast(Object.keys(ELEVES).length + ' élèves chargés et gardés sur cet ordinateur.');
+    e.target.value = '';
     rafraichirProf();
   } else if (e.target.matches('[data-sv]')) {
     const k = e.target.dataset.sv;
