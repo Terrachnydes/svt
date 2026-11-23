@@ -1426,7 +1426,7 @@ async function commande(cmd, classe, params, libelle) {
   try {
     await mcp.callTool('Google Sheets', 'append_values', { spreadsheetId: IPID, range: 'Commandes!A1',
       values: [[id, maintenant(), cmd, classe || '', JSON.stringify(params || {}), 'en attente', '', '']] });
-    ENVOIS.push({ id, libelle: libelle || cmd, classe });
+    ENVOIS.push({ id, libelle: libelle || cmd, classe, cmd });
     toast((libelle || 'Demande') + ' : envoyé. Appliqué dans les 5 minutes environ.');
     majAttente(); suivreCommandes();
   } catch (e) { toast(erreurMcp(e), true); }
@@ -1449,9 +1449,10 @@ function suivreCommandes() {
   }, 30000);
 }
 function majAttente() {
+  const L = ENVOIS.filter(c => c.cmd !== 'actualiser');   // les relectures (« Mettre à jour ») ont leur compte à rebours
   document.querySelectorAll('#prog .attente').forEach(x => {
-    x.hidden = !ENVOIS.length;
-    x.textContent = `⏳ ${ENVOIS.length} demande${ENVOIS.length > 1 ? 's' : ''} en attente (${ENVOIS.map(c => c.libelle).join(', ')}) : appliqué par le cahier dans les 5 min`;
+    x.hidden = !L.length;
+    x.textContent = `⏳ ${L.length} demande${L.length > 1 ? 's' : ''} en attente (${L.map(c => c.libelle).join(', ')}) : appliqué par le cahier dans les 5 min`;
   });
 }
 
@@ -2181,7 +2182,7 @@ ${A ? `<span class="sep2"></span>
       <div class="s">Séance ${esc(String(META[k] ? META[k].seance : (cleCode(acCode) || [''])[0]))}${(() => { const t = (META[k] && META[k].seanceTitre) || String(A.titre || '').replace(/^Séance\s*\d+\s*/i, '').replace(/\s*Activité\s*\d+\s*$/i, ''); return t ? ' · ' + esc(t) : ''; })()}</div>
       <h2>Activité ${esc(String(META[k] ? META[k].num : (cleCode(acCode) || ['', ''])[1]))}${V.titre ? ' · ' + esc(V.titre) : ''}</h2>
       <div class="pb">❓ ${V.pb ? esc(V.pb) : '<i>Problématique à définir</i>'}</div></div>
-      <button class="bouton${differe ? ' orange' : ''}" type="button" data-majact="${esc(k)}" data-cl="${acCl}" title="${differe ? 'Les élèves n\'ont pas encore la dernière version (consignes, barème, correction) : clique pour la publier' : 'Relit les données de la page et demande au cahier de refaire le résumé de la ' + acCl}">↻ Mettre à jour</button>${compteur(k)}
+      <button class="bouton${differe ? ' orange' : ''}" type="button" data-majact="${esc(k)}" data-cl="${acCl}" title="${differe ? 'Les élèves n\'ont pas encore la dernière version (consignes, barème, correction) : clique pour la publier' : 'Relit les données de la page et demande au cahier de refaire le résumé de la ' + acCl}">↻ Mettre à jour</button>${compteur(k || acCl)}
     </div>
     <div class="duo2 duo-site">
       <div class="carte2 site-carte">
@@ -2257,7 +2258,10 @@ setInterval(() => {
 async function mettreAJourActivite(b) {
   const k = b.dataset.majact, cl = b.dataset.cl;
   b.disabled = true;
-  if (k && etat(k) !== 'ok') { await publier(k, null); if (etat(k) === 'ok') FIN_MAJ[k] = Date.now() + 5 * 60 * 1000; }   // les élèves reçoivent la dernière version
+  FIN_MAJ[k || cl] = Date.now() + 5 * 60 * 1000;   // compte à rebours à chaque clic, affiché tout de suite
+  const ancien = b.parentNode && b.parentNode.querySelector('.cpt-maj'); if (ancien) ancien.remove();
+  b.insertAdjacentHTML('afterend', compteur(k || cl));
+  if (k && etat(k) !== 'ok') await publier(k, null);   // les élèves reçoivent la dernière version
   commande('actualiser', cl, {}, 'Relecture de la ' + cl);
   await recharger();
 }
