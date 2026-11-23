@@ -251,6 +251,9 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog table.sv tr.el td.nom:hover{text-decoration:underline}
 #prog .n{display:inline-block;min-width:30px;padding:1px 4px;border-radius:6px}
 #prog .n.n-moy{font-weight:800;font-size:1.12em}
+#prog .tcl{display:flex;align-items:center;gap:10px;padding:4px 0}
+#prog .tcl .cl-nom{font-size:26px;font-weight:800;color:var(--fg);line-height:1}
+#prog .tcl .n.n-moy{font-size:17px;padding:2px 7px}
 #prog .n.bon{background:#d6f0e4;color:#14603f}
 #prog .n.moyen{background:#fdf0c8;color:#7a5a00}
 #prog .n.faible{background:#fbdcd8;color:#9b2c20}
@@ -1519,7 +1522,14 @@ function rafraichirProf() {
 }
 async function ouvrirSuivi() {
   if (!SV) $('#sv-main').innerHTML = '<div class="info">Chargement…</div>';
-  try { await demarrerProf(); dessinerSuivi(); } catch (e) { $('#sv-main').innerHTML = `<div class="info">${esc(e.message || erreurMcp(e))}</div>`; }
+  try { await demarrerProf(); dessinerSuivi(); } catch (e) { $('#sv-main').innerHTML = `<div class="info">${esc(e.message || erreurMcp(e))}</div>`; return; }
+  // Relecture toutes les 3 min tant que l'onglet est ouvert : nouvelles notes et moyennes à jour
+  clearInterval(svTimer);
+  svTimer = setInterval(async () => {
+    if ($('#sv-main').hidden) { clearInterval(svTimer); svTimer = null; return; }
+    try { await chargerSuivi(); } catch (e) { return; }
+    if (!$('#sv-main').hidden && !document.querySelector('#prog .pop')) dessinerSuivi();
+  }, 180000);
 }
 async function ouvrirActivite() {
   if (!SV) $('#ac-main').innerHTML = '<div class="info">Chargement…</div>';
@@ -1593,7 +1603,7 @@ function dessinerSuivi() {
     codes.forEach(k => { (toutesMoy[k] = toutesMoy[k] || []).push(...(moyCl[k] || [])); });
     toutesGen.push(...gen); toutesAtt.push(...att);
     const mg = moyenne(gen), ma = moyenne(att), dA = (P.devoirs || []).find(x => x.code === 'A');
-    lignes.push(`<tr class="rcl"><td class="nom"><button class="bouton leger petit" type="button" data-pcl="${cl}">${cl} · ${ids.length} élèves ⚙</button></td>
+    lignes.push(`<tr class="rcl"><td class="nom"><div class="tcl"><span class="cl-nom">${cl}</span><span class="n n-moy ${classeNote(mg)}" title="Moyenne de la classe (T${svPer})">${fr(mg)}</span><button class="bouton leger petit" type="button" data-pcl="${cl}">${ids.length} élèves ⚙</button></div></td>
       <td colspan="3" class="sous">${ids.filter(id => SV.eleves[cl][id].profil).length} profil(s) particulier(s)</td>
       <td><span class="n n-moy ${classeNote(mg)}">${fr(mg)}</span></td>
       ${dA ? celluleClasse(cl, P, 'A', ma) : `<td><span class="n ${classeNote(ma)}">${fr(ma)}</span></td>`}
