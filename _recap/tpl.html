@@ -335,7 +335,7 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .ac-gauche{display:flex;flex-direction:column;gap:8px;min-width:0}
 #prog .journee-col{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;position:sticky;top:8px}
 #prog .journee-col h3{margin:0 0 2px;font-size:14px}
-@media (min-width:901px){#prog .journee-col{margin-top:-62px;z-index:2}}   /* emploi du temps remonté sur la barre des onglets : moins de vide sous le plan */
+@media (min-width:901px){#prog .journee-col{margin-top:-52px;z-index:2}#prog .journee-col.ajuste .jl{flex:1 1 0;min-height:0}#prog .journee-col.ajuste .jl>*{min-height:0}#prog .journee-col.ajuste .jc{padding-top:0;padding-bottom:0;align-content:center}}   /* emploi du temps remonté sur la barre des onglets : moins de vide sous le plan */
 #prog .journee-col .jc{display:grid;grid-template-columns:44px auto 1fr;gap:6px;align-items:center;text-align:left;width:100%;padding:6px 8px;font-size:13px;white-space:normal}
 #prog .journee-col .jc .h{color:var(--muted);font-variant-numeric:tabular-nums}
 #prog .journee-col .jc.choisi .h,#prog .journee-col .jc.choisi .a{color:#fff}
@@ -2266,6 +2266,7 @@ ${A ? `<span class="sep2"></span>
         ${Object.entries(bar).map(([l, v]) => `<p class="cons"><b>${esc(l)}</b> · <span class="edx" data-edx="cor|${esc(l)}|max">${esc(v.max)}</span> pts${A.reussite && A.reussite[l] != null ? ` <span class="sous">(réussite ${A.reussite[l]} %)</span>` : ''}</p>${criteres(v).map((x, j) => `<div class="crit"><i><span class="edx" data-edx="cor|${esc(l)}|${j}|points">${esc(x.points || '?')}</span> pt · </i><span class="edx" data-edx="cor|${esc(l)}|${j}|texte">${esc(x.texte)}</span></div>`).join('')}`).join('') || '<div class="sous">Pas de barème dans la progression.</div>'}
       </div>
     </div>`}`;
+  ajusterJournee();
   majAttente();
 }
 
@@ -2307,6 +2308,18 @@ $('#prog').addEventListener('focusout', async e => {
   if (!ch) { ed.textContent = ed.dataset.avant || ''; toast('Valeur non valable (un nombre est attendu pour les points).', true); return; }
   if (await sauver(k, ch, 'Enregistré. « Mettre à jour » le publie pour les élèves.', true)) dessinerActivite();
 });
+// Emploi du temps (à droite) : même bas que le plan de classe, les lignes se partagent la hauteur
+function ajusterJournee() {
+  requestAnimationFrame(() => {
+    const j = document.querySelector('#ac-main .journee-col'), p = document.querySelector('#ac-main .plan-carte');
+    if (!j || !p) return;
+    j.classList.remove('ajuste'); j.style.height = '';
+    if (innerWidth <= 900) return;
+    const h = p.getBoundingClientRect().bottom - j.getBoundingClientRect().top;
+    if (h > 120) { j.style.height = h + 'px'; j.classList.add('ajuste'); }
+  });
+}
+addEventListener('resize', () => { if (!$('#ac-main').hidden) ajusterJournee(); });
 // Compte à rebours de 5 min après une publication (temps de la synchro du cahier vers les élèves)
 const FIN_MAJ = {};
 function compteur(k) {
