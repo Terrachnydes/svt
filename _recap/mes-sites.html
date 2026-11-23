@@ -1794,19 +1794,19 @@ function ouvrirPop(cible, html) {
   p.style.left = Math.max(0, x) + 'px'; p.style.top = (r.bottom - base.top + 4) + 'px';
 }
 document.addEventListener('click', e => { if (!e.target.closest('#prog .pop,[data-pact],[data-place],[data-jplus],[data-oeil]')) fermerPop(); });
-// Aperçu : cahier de l'élève n° 30 de la classe (identifiant + code lus dans le bloc activité de la feuille)
+// Aperçu : cahier de l'élève n° 1 de la classe (identifiant + code lus dans le bloc activité de la feuille)
 const CAHIER_URL = 'https://script.google.com/macros/s/AKfycbyrPE5UScnPcqV20LvqP3PjUBOu_3iXwhR3yshbfDmPcSzG1_seXV8THf2vLLjoqeJr5w/exec';
-const CODES_30 = {}, CODES_30_EN_COURS = {};
-// Lien direct (un clic) vers le cahier de l'élève n° 30, connecté automatiquement ; code chargé en arrière-plan
+const CODES_01 = {}, CODES_01_EN_COURS = {};
+// Lien direct (un clic) vers le cahier de l'élève n° 1, connecté automatiquement ; code chargé en arrière-plan
 function lienApercu(cl) {
-  const id = cl + '-30', code = CODES_30[cl];
+  const id = cl + '-01', code = CODES_01[cl];
   if (!code) {
-    if (!CODES_30_EN_COURS[cl]) {
-      CODES_30_EN_COURS[cl] = true;
+    if (!CODES_01_EN_COURS[cl]) {
+      CODES_01_EN_COURS[cl] = true;
       lire(fA1(cl, 'B130:C220')).then(v => {
         const l = v.find(x => String((x || [])[0] || '').trim() === id);
-        if (l && l[1]) { CODES_30[cl] = String(l[1]).trim(); document.querySelectorAll(`[data-oeil="${cl}"]`).forEach(b => { b.outerHTML = lienApercu(cl); }); }
-      }).catch(() => { CODES_30_EN_COURS[cl] = false; });
+        if (l && l[1]) { CODES_01[cl] = String(l[1]).trim(); document.querySelectorAll(`[data-oeil="${cl}"]`).forEach(b => { b.outerHTML = lienApercu(cl); }); }
+      }).catch(() => { CODES_01_EN_COURS[cl] = false; });
     }
     return `<button type="button" class="jplus" data-oeil="${esc(cl)}" title="Chargement du cahier de ${esc(id)}…">👁</button>`;
   }
@@ -1814,16 +1814,16 @@ function lienApercu(cl) {
   return `<a class="jplus" style="display:grid;place-items:center;text-decoration:none" href="${esc(url)}" target="_blank" rel="noopener" title="Ouvrir le cahier de ${esc(id)} (vue élève), connecté automatiquement">👁</a>`;
 }
 async function popApercu(cible, cl) {
-  const id = cl + '-30';
+  const id = cl + '-01';
   ouvrirPop(cible, `<h4>Cahier de ${esc(id)}</h4><div class="sous">Recherche du code…</div>`);
   try {
-    if (!CODES_30[cl]) {
+    if (!CODES_01[cl]) {
       const v = await lire(fA1(cl, 'B130:C220'));
       const l = v.find(x => String((x || [])[0] || '').trim() === id);
       if (!l || !l[1]) throw new Error('Pas d\'élève ' + id + ' dans la feuille ' + cl + '.');
-      CODES_30[cl] = String(l[1]).trim();
+      CODES_01[cl] = String(l[1]).trim();
     }
-    const code = CODES_30[cl], url = CAHIER_URL + '#eleve=' + encodeURIComponent(id) + '&code=' + encodeURIComponent(code);
+    const code = CODES_01[cl], url = CAHIER_URL + '#eleve=' + encodeURIComponent(id) + '&code=' + encodeURIComponent(code);
     const pop = $('#prog .pop'); if (!pop) return;
     pop.innerHTML = `<h4>Cahier de ${esc(id)}</h4>
       <a class="bouton petit" href="${esc(url)}" target="_blank" rel="noopener">👁 Ouvrir le cahier</a>
