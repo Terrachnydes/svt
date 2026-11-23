@@ -1491,6 +1491,8 @@ function oublierNoms() {
   idbNoms('effacer').catch(() => {});
 }
 try { ELEVES = lireCsv(localStorage.getItem(CLE_NOMS) || ''); } catch (e) { ELEVES = {}; }
+// Noms gardés avec des accents illisibles (fichier lu autrefois dans le mauvais encodage) : on le signale
+setTimeout(() => { if (Object.values(ELEVES).some(e => /\uFFFD/.test(e.nom + e.prenom)) && typeof toast === 'function') toast('Accents illisibles dans les noms gardés : recharge eleves.csv une fois pour les corriger.', true); }, 1500);
 // localStorage vidé ? On reprend la copie IndexedDB (et on recopie dans localStorage).
 if (!Object.keys(ELEVES).length) idbNoms('lire').then(txt => {
   if (!txt || Object.keys(ELEVES).length) return;
@@ -1584,7 +1586,12 @@ async function ouvrirSuivi() {
 }
 async function ouvrirActivite() {
   if (!SV) $('#ac-main').innerHTML = '<div class="info">Chargement…</div>';
-  try { await demarrerProf(); dessinerActivite(); } catch (e) { $('#ac-main').innerHTML = `<div class="info">${esc(e.message || erreurMcp(e))}</div>`; return; }
+  try {
+    const deja = !!profPret;
+    await demarrerProf();
+    if (deja) await chargerConnectes();   // présences relues à chaque ouverture de l'onglet (pas celles du chargement de la page)
+    dessinerActivite();
+  } catch (e) { $('#ac-main').innerHTML = `<div class="info">${esc(e.message || erreurMcp(e))}</div>`; return; }
   clearInterval(acTimer);
   acTimer = setInterval(async () => {
     if ($('#ac-main').hidden) { clearInterval(acTimer); acTimer = null; return; }
