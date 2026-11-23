@@ -353,6 +353,7 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .carte2 h3{margin:0 0 8px;font-size:15px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 #prog .duo2.duo-site{grid-template-columns:360px minmax(0,1fr)}
 #prog .ac-titres{margin:14px 0 10px;padding:10px 14px;border-left:4px solid var(--accent);background:var(--surface);border-radius:8px;overflow-wrap:anywhere}
+#prog .ac-titres{display:flex;align-items:center;gap:12px;flex-wrap:wrap}#prog .ac-titres .txt{flex:1;min-width:0}
 #prog .ac-titres .s{font-size:13px;color:var(--muted);font-weight:600}
 #prog .ac-titres h2{margin:2px 0 4px;font-size:19px;line-height:1.25}
 #prog .ac-titres .pb{font-size:15px;font-style:italic;line-height:1.35}
@@ -2110,10 +2111,11 @@ ${A ? `<span class="sep2"></span>
     <div class="attente" hidden></div>
     ${!A ? '<div class="info">Aucune activité pour cette classe.</div>' : `
     <div class="carte2 plan-carte"><h3>Plan de classe <span class="sous">${enCours ? '<span class="pt co" style="display:inline-block"></span> présent · <span class="pt abs" style="display:inline-block"></span> pas connecté · <b>' + nbCo + ' présent' + (nbCo > 1 ? 's' : '') + ' / ' + ids.length + '</b>' : ''}</span></h3>${eleves}</div></div>${journeeHtml}</div>
-    <div class="ac-titres">
+    <div class="ac-titres"><div class="txt">
       <div class="s">Séance ${esc(String(META[k] ? META[k].seance : (cleCode(acCode) || [''])[0]))}${(() => { const t = (META[k] && META[k].seanceTitre) || String(A.titre || '').replace(/^Séance\s*\d+\s*/i, '').replace(/\s*Activité\s*\d+\s*$/i, ''); return t ? ' · ' + esc(t) : ''; })()}</div>
       <h2>Activité ${esc(String(META[k] ? META[k].num : (cleCode(acCode) || ['', ''])[1]))}${V.titre ? ' · ' + esc(V.titre) : ''}</h2>
-      <div class="pb">❓ ${V.pb ? esc(V.pb) : '<i>Problématique à définir</i>'}</div>
+      <div class="pb">❓ ${V.pb ? esc(V.pb) : '<i>Problématique à définir</i>'}</div></div>
+      <button class="bouton" type="button" data-actualiser="${acCl}" title="Relit tout de suite les données de la page, et demande au cahier de refaire le résumé de la ${acCl} (dans les 5 min)">↻ Mettre à jour</button>
     </div>
     <div class="duo2 duo-site">
       <div class="carte2 site-carte">
