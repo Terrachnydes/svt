@@ -328,6 +328,11 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .carte2{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
 #prog .carte2 h3{margin:0 0 8px;font-size:15px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 #prog .duo2.duo-site{grid-template-columns:360px minmax(0,1fr)}
+#prog .ac-titres{margin:14px 0 10px;padding:10px 14px;border-left:4px solid var(--accent);background:var(--surface);border-radius:8px;overflow-wrap:anywhere}
+#prog .ac-titres .s{font-size:13px;color:var(--muted);font-weight:600}
+#prog .ac-titres h2{margin:2px 0 4px;font-size:19px;line-height:1.25}
+#prog .ac-titres .pb{font-size:15px;font-style:italic;line-height:1.35}
+@media (max-width:500px){#prog .ac-titres h2{font-size:17px}#prog .ac-titres .pb{font-size:14px}}
 #prog .apercu3{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;aspect-ratio:16/10;background:var(--thumb);max-width:340px}
 #prog .apercu3 img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;cursor:pointer}
 #prog .apercu3 .vide3{display:grid;place-items:center;height:100%;font-size:48px;cursor:pointer}
@@ -1935,6 +1940,11 @@ ${A ? `<span class="sep2"></span>
     <div class="attente" hidden></div>
     ${!A ? '<div class="info">Aucune activité pour cette classe.</div>' : `
     <div class="carte2 plan-carte"><h3>Plan de classe <span class="sous">${enCours ? '<span class="pt co" style="display:inline-block"></span> présent · <span class="pt abs" style="display:inline-block"></span> pas connecté' + (CO && CO.maj ? ' · relevé à ' + new Date(CO.maj).toLocaleTimeString('fr-FR', { timeZone: 'Europe/Paris', hour: '2-digit', minute: '2-digit' }) + ' (toutes les 5 min)' : '') : ''}</span></h3>${eleves}</div></div>${journeeHtml}</div>
+    <div class="ac-titres">
+      <div class="s">Séance ${esc(String(META[k] ? META[k].seance : (cleCode(acCode) || [''])[0]))}${(() => { const t = (META[k] && META[k].seanceTitre) || String(A.titre || '').replace(/^Séance\s*\d+\s*/i, '').replace(/\s*Activité\s*\d+\s*$/i, ''); return t ? ' · ' + esc(t) : ''; })()}</div>
+      <h2>Activité ${esc(String(META[k] ? META[k].num : (cleCode(acCode) || ['', ''])[1]))}${V.titre ? ' · ' + esc(V.titre) : ''}</h2>
+      <div class="pb">❓ ${V.pb ? esc(V.pb) : '<i>Problématique à définir</i>'}</div>
+    </div>
     <div class="duo2 duo-site">
       <div class="carte2 site-carte">
         <h3>${st ? esc(st.titre) : 'Site'}</h3>
