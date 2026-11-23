@@ -633,8 +633,8 @@ const E={
   moutons:animal("moutons","mouton","Élevage de moutons","sheep","4 à 7 L par jour"),
 
   centrale:{sec:"indus",title:"Centrale électrique",icon:"bolt",
-    c1:{title:"Eau prélevée et eau consommée",unit:"pour refroidir les centrales, en France",long:true,rows:[{k:"p",l:"Eau prélevée (pompée dans le fleuve)",i:"wave",v:700,t:"≈ 700 L par habitant et par jour",c:"var(--water)"},{k:"c",l:"Eau consommée (évaporée par les tours)",i:"bolt",v:20,t:"≈ 20 L par habitant et par jour"}],foot:"Le reste retourne au fleuve, un peu plus chaud."},
-    c2:frBars("energie"),src:"SDES 2010-2019 ; EDF (centrale de Belleville-sur-Loire, étude ACV 2022)."},
+    c1:frBars("energie"),
+    text:"<b>Pourquoi faut-il de l’eau pour produire de l’électricité ?</b> Dans une centrale, la chaleur (du nucléaire, du gaz ou du charbon) fait bouillir de l’eau. La vapeur fait tourner une turbine reliée à un alternateur, qui produit l’électricité. Il faut ensuite refroidir cette vapeur pour la retransformer en eau liquide : on utilise pour cela beaucoup d’eau pompée dans le fleuve. Une partie de cette eau s’évapore par les tours de refroidissement (c’est le panache blanc) : c’est l’eau consommée.",src:"SDES 2010-2019 ; EDF (centrale de Belleville-sur-Loire, étude ACV 2022)."},
   usine:{sec:"indus",title:"Usine de fabrication",icon:"factory",kpi:{n:"≈ 110 L",u:"prélevés chaque jour en France pour l’industrie, si on les partage entre tous les habitants",x:"L’eau sert à refroidir, laver, fabriquer et transformer les matières premières."},
     c1:{title:"Eau cachée dans quelques objets",unit:"litres par objet (empreinte eau)",rows:[{k:"jean",l:"Un jean (de la culture du coton aux lavages à la maison)",i:"jean",v:3800,t:"≈ 3 800 L"},{k:"ts",l:"Un T-shirt en coton (250 g)",i:"shirt",v:2500,t:"≈ 2 500 L"}],foot:"L’essentiel de cette eau a servi à faire pousser le coton. La fabrication en usine en représente une petite partie."},
     c2:{title:"Quelle part ?",rows:P.indus},
