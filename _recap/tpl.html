@@ -1834,7 +1834,6 @@ function dessinerSuivi() {
       <div class="filtres">${[1, 2, 3].map(p => `<button type="button" aria-pressed="${String(p) === String(svPer)}" data-svper="${p}" title="Trimestre ${p}">T${p}</button>`).join('')}</div>
       <span class="sep2"></span>
       ${NIVEAUX.map(n => `<div class="filtres">${classesNiveau(n).map(c => `<button type="button" aria-pressed="${c === svCl}" data-svcl="${c}">${c}</button>`).join('')}</div>`).join('')}
-      </div><div class="lg">
       ${(() => { const t = +((SV.classes[svCl] || {}).trimestre || 1); return t < 3 ? `<button class="bouton leger petit" type="button" data-cloturer="${t}" title="Toutes les classes passent au T${t + 1}. Les activités du T${t} qui ne sont pas terminées (sans note, demi-groupe pas passé, copies à corriger) passent entières au T${t + 1}.">🔒 Clôturer le T${t}</button>` : ''; })()}
       <span class="fin"></span>${blocNoms()}
       <span class="sous" title="Clique sur une case de classe : publier sur Pronote, corriger, facultative, arrêter. Clique sur un élève : statistiques et appréciation. Barré = note non comptée · · = ouverte non rendue · ✎ = rendue, pas corrigée.">ⓘ</span>
