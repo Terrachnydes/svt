@@ -262,7 +262,14 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .ic .ar{background:#fbdcd8;color:#9b2c20}
 #prog .ic .en{background:#fdf0c8;color:#7a5a00}
 #prog .tg{display:inline-block;font-size:12px;font-weight:600;border-radius:6px;padding:1px 7px;background:var(--thumb);color:var(--muted)}
-#prog .tg.bon{background:#d6f0e4;color:#14603f}#prog .tg.moyen{background:#fdf0c8;color:#7a5a00}#prog .tg.faible{background:#fbdcd8;color:#9b2c20}
+#prog .tg.bon{background:#d6f0e4;color:#14603f}
+/* Comportement : positif = bleu-vert, calme/réservé = jaune, négatif = rouge-marron */
+#prog .tg.cp1{background:#cdeee6;color:#0b5e4e}#prog .tg.cp2{background:#d3ecf3;color:#0f5670}#prog .tg.cp3{background:#d9f1df;color:#1d6436}
+#prog .tg.cp4{background:#d6e6f7;color:#1c4f86}#prog .tg.cp5{background:#e1f3ec;color:#2a6b57}#prog .tg.cp6{background:#dcecf0;color:#2c5f6b}
+#prog .tg.cj1{background:#fff3c4;color:#7a5c00}#prog .tg.cj2{background:#fbe9b0;color:#6e5200}#prog .tg.cj3{background:#f6e3a1;color:#6b4d00}#prog .tg.cj4{background:#efdc9a;color:#5e4500}
+#prog .tg.cr1{background:#f9d9cf;color:#8f2f17}#prog .tg.cr2{background:#f4cfc6;color:#8a2a1e}#prog .tg.cr3{background:#ecd2c3;color:#7a3a1c}#prog .tg.cr4{background:#e8c4b8;color:#6e2414}#prog .tg.cr5{background:#e3bfb0;color:#5c1f10}
+/* Genre (eleves.csv) : bleu garçons, rose filles */
+#prog table.sv tr.el td.nom.g-m,#prog .elv b.g-m{color:#1f62b8}#prog table.sv tr.el td.nom.g-f,#prog .elv b.g-f{color:#c2367a}#prog .tg.moyen{background:#fdf0c8;color:#7a5a00}#prog .tg.faible{background:#fbdcd8;color:#9b2c20}
 #prog .prf{display:inline-block;font-size:10.5px;font-weight:700;background:#e8e1f7;color:#5b3fa0;border-radius:5px;padding:0 4px;margin-left:4px;vertical-align:1px}
 #prog td.def{text-align:left;font-size:13px;color:var(--muted);max-width:340px;overflow:hidden;text-overflow:ellipsis}
 #prog td.app{text-align:left;font-size:13px;max-width:520px;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
@@ -1290,7 +1297,10 @@ const EDT_SECOURS = {   // copie de EDT_CLASSES (CorrectionAuto.js) si la synchr
 const COMP_POS = ['Exemplaire', 'Moteur', 'Dynamique', 'Sérieux', 'Agréable', 'Participatif', 'Calme', 'Discret'];
 const COMP_NEG = ['Réservé', 'Passif', 'Distrait', 'Bavard', 'Agité', 'Perturbateur', 'Insolent', 'Avachi'];
 const TRAVAIL = { Non: ['Régulier', 'bon', 'Rend ses activités'], Abs: ['Irrégulier', 'moyen', 'Plus de 30 % des activités non rendues'], 'Abs+': ['Peu de travail', 'faible', 'Plus de la moitié des activités non rendues'] };
-const tagComp = c => c ? `<span class="tg ${COMP_NEG.includes(c) ? 'faible' : COMP_POS.includes(c) ? 'bon' : ''}">${esc(c)}</span>` : '';
+const COUL_COMP = { Exemplaire: 'cp1', Moteur: 'cp2', 'Sérieux': 'cp4', Dynamique: 'cp3', 'Agréable': 'cp5', Participatif: 'cp6',
+  Calme: 'cj1', Discret: 'cj2', 'Réservé': 'cj3', Passif: 'cj4', Avachi: 'cj4',
+  Bavard: 'cr1', 'Agité': 'cr2', Distrait: 'cr3', Perturbateur: 'cr4', Insolent: 'cr5' };
+const tagComp = c => c ? `<span class="tg ${COUL_COMP[c] || (COMP_NEG.includes(c) ? 'faible' : COMP_POS.includes(c) ? 'bon' : '')}">${esc(c)}</span>` : '';
 const tagTravail = t => { const x = TRAVAIL[t]; return x ? `<span class="tg ${x[1]}" title="${esc(x[2])}">${esc(x[0])}</span>` : (t ? `<span class="tg">${esc(t)}</span>` : ''); };
 const tagProfil = p => p ? `<span class="prf" title="${esc(PROFILS[p] || '')}">${esc(p)}</span>` : '';
 const PROFILS = { D: 'Évaluation aménagée', NE: 'Non évalué', M: 'Travail à la maison', T: 'Avec un tuteur' };
@@ -1419,11 +1429,13 @@ function lireCsv(texte) {
   const res = {};
   lignes.slice(1).forEach(l => {
     const c = cell(l), id = c[i('identifiant')];
-    if (id) res[id] = { nom: c[i('nom')] || '', prenom: c[i('prenom')] || '' };
+    if (id) res[id] = { nom: c[i('nom')] || '', prenom: c[i('prenom')] || '', genre: c[i('genre')] || '' };
   });
   return res;
 }
 try { ELEVES = lireCsv(localStorage.getItem(CLE_NOMS) || ''); } catch (e) { ELEVES = {}; }
+// Classe CSS du genre : F → fille (rose), M/G/H → garçon (bleu)
+function genreEleve(id) { const g = String((ELEVES[id] || {}).genre || '').trim().toUpperCase()[0]; return g === 'F' ? 'g-f' : g === 'M' || g === 'G' || g === 'H' ? 'g-m' : ''; }
 function nomEleve(id) { const e = ELEVES[id]; return e ? (e.prenom + ' ' + e.nom).trim() : id; }
 function ordreEleves(a, b) {
   const x = ELEVES[a], y = ELEVES[b];
@@ -1560,7 +1572,7 @@ function dessinerSuivi() {
       const E = SV.eleves[cl][id], p = E.p[svPer] || {};
       const m = num(p.moy);
       const nA = num((p.notes || {}).A);
-      lignes.push(`<tr class="el"><td class="nom" data-pel="${cl}|${id}" title="${esc(id)}">${esc(nomEleve(id))}</td>
+      lignes.push(`<tr class="el"><td class="nom ${genreEleve(id)}" data-pel="${cl}|${id}" title="${esc(id)}">${esc(nomEleve(id))}</td>
         <td>${tagProfil(E.profil)}</td><td>${tagComp(E.comportement)}</td><td>${tagTravail(E.assiduite)}</td>
         <td><span class="n ${classeNote(nA)}">${fr(nA)}</span></td>
         <td><span class="n ${classeNote(m)}">${fr(m)}</span></td>
@@ -1898,7 +1910,7 @@ function dessinerActivite() {
   const carte = (id, place) => {
     const s = (A && A.el[id]) || '-', e = s[0], note = s.slice(1), E = SV.eleves[acCl][id];
     const nm = ELEVES[id], titre = id + ' · ' + (ETATS[e] || '') + (vus[id] ? ' · cahier ouvert à ' + vus[id] : (enCours ? ' · pas connecté' : ''));
-    return `<div class="elv"${place ? ` data-place="${place}"` : ''} title="${esc(titre)}"><span class="pt ${pres(id)}"></span><b>${nm ? `${esc(nm.prenom)} <small class="nf">${esc(nm.nom)}</small>` : esc(id)}${E.profil ? `<span class="prf">${esc(E.profil)}</span>` : ''}</b><small>${note ? `<span class="n ${classeNote(num(note))}">${esc(note)}</span>` : esc({ o: 'ouverte', r: 'rendue', a: 'absent', x: 'absent', '-': '—' }[e] || '')}</small></div>`;
+    return `<div class="elv"${place ? ` data-place="${place}"` : ''} title="${esc(titre)}"><span class="pt ${pres(id)}"></span><b class="${genreEleve(id)}">${nm ? `${esc(nm.prenom)} <small class="nf">${esc(nm.nom)}</small>` : esc(id)}${E.profil ? `<span class="prf">${esc(E.profil)}</span>` : ''}</b><small>${note ? `<span class="n ${classeNote(num(note))}">${esc(note)}</span>` : esc({ o: 'ouverte', r: 'rendue', a: 'absent', x: 'absent', '-': '—' }[e] || '')}</small></div>`;
   };
   // Plan de classe : celui modifié ici (onglet Plans) sinon celui du cahier (I1:AU6). Tables [1] · [4] · [2].
   // Clic sur une place → liste déroulante pour y mettre un autre élève (échange de places).
