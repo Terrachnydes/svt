@@ -1631,7 +1631,7 @@ async function recharger(classe) {
 // La colonne A des blocs période est une formule qui lit le tableau Référence (O9:Q38 : P1, P2, P3).
 // On écrit donc dans O / P / Q, sur la ligne de l'élève dans D9:D38, pour le trimestre en cours (N7).
 const COL_ATT = { 1: 'O', 2: 'P', 3: 'Q' }, LIGNES_REF = {}, ATT_ATTENTE = {}, ATT_LOCAL = {};
-const ATT_DEPART = 15;   // note de départ si l'élève n'a pas encore de note d'attitude
+const ATT_DEPART = per => +per >= 2 ? 20 : 15;   // note de départ si l'élève n'a pas encore de note d'attitude (20 à partir du T2)
 const perCourante = cl => String((SV.classes[cl] || {}).trimestre || '1');
 function noteAttitude(cl, id) { const p = (((SV.eleves[cl] || {})[id] || {}).p || {})[perCourante(cl)]; return num(((p || {}).notes || {}).A); }
 function ctrlAttitude(cl, id) {
@@ -1653,7 +1653,7 @@ function poserAttitude(cl, id, per, v) {
 }
 function changerAttitude(cl, id, delta) {
   const per = perCourante(cl), k = cl + '|' + id;
-  let v = noteAttitude(cl, id); v = Math.max(0, Math.min(20, Math.round(v == null ? ATT_DEPART : v) + delta));
+  let v = noteAttitude(cl, id); v = Math.max(0, Math.min(20, Math.round(v == null ? ATT_DEPART(per) : v) + delta));
   poserAttitude(cl, id, per, v);
   ATT_LOCAL[k + '|' + per] = v;   // gardée jusqu'à ce que le résumé du cahier ait la même valeur
   document.querySelectorAll(`[data-attv="${k}"]`).forEach(x => { x.textContent = fr(v); x.className = 'n ' + classeNote(v); });
