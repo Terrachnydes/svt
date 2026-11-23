@@ -2405,7 +2405,7 @@ $('#prog').addEventListener('click', e => {
   if (ao) { const g = ao.closest('.att'); document.querySelectorAll('#prog .att.ouvert').forEach(x => { if (x !== g) x.classList.remove('ouvert'); }); g.classList.toggle('ouvert'); return; }
   const at = t.closest('[data-att]');
   if (at) { const [cl, id, d] = at.dataset.att.split('|'); changerAttitude(cl, id, +d); return; }
-  const b = t.closest('[data-svniv],[data-svcl],[data-svper],[data-cloturer],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place],[data-jplus],[data-jnav],[data-oeil]');
+  const b = t.closest('[data-svniv],[data-svcl],[data-svper],[data-cloturer],[data-genall],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place],[data-jplus],[data-jnav],[data-oeil]');
   if (!b) return;
   if (b.dataset.jour) { const [cl, code] = b.dataset.jour.split('|'); acCl = cl; acCode = code; dessinerActivite(); return; }
   if (b.dataset.jplus) { const [d, hh] = b.dataset.jplus.split('|'); popHeure(b, d, hh); return; }
