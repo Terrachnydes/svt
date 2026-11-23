@@ -351,7 +351,14 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .elv .att button{width:20px;height:20px;padding:0;border:1px solid var(--line);border-radius:5px;background:var(--surface);color:var(--fg);font-weight:800;font-size:13px;line-height:1;cursor:pointer}
 #prog .elv .att button:hover{background:var(--accent-soft);border-color:var(--accent)}
 #prog .elv .att .n{min-width:24px;text-align:center;padding:0 3px;font-weight:700}
-#prog .elv .att .n{display:none}#prog .elv .att:hover .n{display:inline-block}   /* note visible seulement au survol de − / + */
+#prog .elv .att button{display:none}#prog .elv .att.ouvert button{display:inline-block}   /* − / + seulement après un clic sur la note */
+#prog .elv .att .n{cursor:pointer}
+#prog .elv.deux{flex-direction:column;align-items:stretch;gap:5px;padding:7px 9px}
+#prog .elv .l1,#prog .elv .l2{display:flex;align-items:center;gap:6px;min-width:0}
+#prog .elv .l2{gap:4px;flex-wrap:wrap}
+#prog .elv .l2 .tg{cursor:pointer;border:0;font:inherit;font-size:11px;font-weight:700;padding:1px 6px;border-radius:999px}
+#prog .elv .l2 .tg.vide{background:var(--bg);color:var(--muted)}
+#prog .elv select.compsel{font:inherit;font-size:12px;max-width:120px;padding:1px 2px;border-radius:6px}
 #prog .elv .nf{color:var(--muted);font-weight:600;font-size:11px}
 #prog .plan .prf{margin-left:0;align-self:flex-start}
 #prog .elv.vide{background:transparent;border-style:dashed;min-height:26px;justify-content:center;cursor:pointer}
@@ -1623,7 +1630,7 @@ async function ouvrirActivite() {
   acTimer = setInterval(async () => {
     if ($('#ac-main').hidden) { clearInterval(acTimer); acTimer = null; return; }
     await chargerConnectes();
-    if (!$('#ac-main').hidden && !document.querySelector('#prog .pop') && !document.querySelector('#ac-main .edx[contenteditable="true"]')) dessinerActivite();
+    if (!$('#ac-main').hidden && !document.querySelector('#prog .pop') && !document.querySelector('#ac-main .edx[contenteditable="true"]') && !document.querySelector('#ac-main select.compsel, #ac-main .att.ouvert')) dessinerActivite();
   }, 60000);
 }
 async function recharger(classe) {
@@ -1643,7 +1650,7 @@ const perCourante = cl => String((SV.classes[cl] || {}).trimestre || '1');
 function noteAttitude(cl, id) { const p = (((SV.eleves[cl] || {})[id] || {}).p || {})[perCourante(cl)]; return num(((p || {}).notes || {}).A); }
 function ctrlAttitude(cl, id) {
   const v = noteAttitude(cl, id), k = cl + '|' + id;
-  return `<small class="att" title="Note d'attitude du trimestre ${perCourante(cl)}"><button type="button" data-att="${k}|-1">−</button><span class="n ${classeNote(v)}" data-attv="${k}">${fr(v)}</span><button type="button" data-att="${k}|1">+</button></small>`;
+  return `<small class="att" title="Note d'attitude du trimestre ${perCourante(cl)}"><button type="button" data-att="${k}|-1">−</button><span class="n ${classeNote(v)}" data-attv="${k}" data-attouv="1" title="Note d'attitude : cliquer pour modifier">${fr(v)}</span><button type="button" data-att="${k}|1">+</button></small>`;
 }
 async function ligneRef(cl, id) {
   if (!LIGNES_REF[cl]) {
@@ -1674,7 +1681,37 @@ function changerAttitude(cl, id, delta) {
     } catch (e) { toast(e.message || erreurMcp(e), true); }
   }, 1200);   // plusieurs clics rapides = une seule écriture
 }
+// ---------- Comportement (J9:J38) : clic sur l'étiquette → liste déroulante ----------
+const COMPORTEMENTS = ['Exemplaire', 'Moteur', 'Dynamique', 'Sérieux', 'Agréable', 'Participatif', 'Calme', 'Discret', 'Réservé', 'Passif', 'Distrait', 'Bavard', 'Agité', 'Perturbateur', 'Insolent'];
+const COMP_LOCAL = {};
+function tagCompModif(cl, id, c) {
+  return `<button type="button" class="tg ${c ? (COUL_COMP[c] || '') : 'vide'}" data-comp="${cl}|${id}" title="Comportement : cliquer pour modifier">${esc(c || '+ comport.')}</button>`;
+}
+function ouvrirComp(b) {
+  const [cl, id] = b.dataset.comp.split('|'), E = (SV.eleves[cl] || {})[id] || {};
+  b.outerHTML = `<select class="compsel" data-compsel="${cl}|${id}" aria-label="Comportement"><option value="">—</option>${COMPORTEMENTS.map(c => `<option ${c === E.comportement ? 'selected' : ''}>${c}</option>`).join('')}</select>`;
+  const sel = document.querySelector(`#prog select[data-compsel="${cl}|${id}"]`);
+  if (!sel) return;
+  sel.focus();
+  sel.addEventListener('blur', () => { if (sel.isConnected) sel.outerHTML = tagCompModif(cl, id, (SV.eleves[cl][id] || {}).comportement); });
+  sel.addEventListener('change', async () => {
+    const v = sel.value, E2 = SV.eleves[cl][id];
+    E2.comportement = v; COMP_LOCAL[cl + '|' + id] = v;
+    sel.outerHTML = tagCompModif(cl, id, v);
+    try {
+      const l = await ligneRef(cl, id);
+      if (!l) throw new Error('Élève introuvable dans la feuille ' + cl);
+      await ecrire(fA1(cl, 'J' + l), [[v]]);
+      toast(`Comportement de ${nomEleve(id)} : ${v || '—'}`);
+    } catch (e) { toast(e.message || erreurMcp(e), true); }
+  });
+}
 function reappliquerAttitudes() {
+  Object.entries(COMP_LOCAL).forEach(([k, v]) => {
+    const [cl, id] = k.split('|'), E = (SV.eleves[cl] || {})[id];
+    if (!E) return;
+    if ((E.comportement || '') === v) delete COMP_LOCAL[k]; else E.comportement = v;
+  });
   Object.entries(ATT_LOCAL).forEach(([k, v]) => {
     const [cl, id, per] = k.split('|');
     const p = (((SV.eleves[cl] || {})[id] || {}).p || {})[per];
@@ -2142,7 +2179,7 @@ function dessinerActivite() {
   const carte = (id, place) => {
     const s = (A && A.el[id]) || '-', e = s[0], note = s.slice(1), E = SV.eleves[acCl][id];
     const nm = ELEVES[id], titre = id + ' · ' + (ETATS[e] || '') + (vus[id] ? ' · cahier ouvert à ' + vus[id] : (enCours ? ' · pas connecté' : ''));
-    return `<div class="elv"${place ? ` data-place="${place}"` : ''} title="${esc(titre)}"><span class="pt ${pres(id)}"></span><b class="${genreEleve(id)}">${nm ? `${esc(nm.prenom)} <small class="nf">${esc(nm.nom)}</small>` : esc(id)}${E.profil ? `<span class="prf">${esc(E.profil)}</span>` : ''}</b>${(m => `<span class="n mg ${classeNote(m)}" title="Moyenne générale du trimestre ${perCourante(acCl)}">${fr(m)}</span>`)(num(((E.p || {})[perCourante(acCl)] || {}).moy))}${ctrlAttitude(acCl, id)}</div>`;
+    return `<div class="elv deux"${place ? ` data-place="${place}"` : ''} title="${esc(titre)}"><div class="l1"><span class="pt ${pres(id)}"></span><b class="${genreEleve(id)}">${nm ? `${esc(nm.prenom)} <small class="nf">${esc(nm.nom)}</small>` : esc(id)}${E.profil ? `<span class="prf">${esc(E.profil)}</span>` : ''}</b></div><div class="l2">${(m => `<span class="n mg ${classeNote(m)}" title="Moyenne générale du trimestre ${perCourante(acCl)}">${fr(m)}</span>`)(num(((E.p || {})[perCourante(acCl)] || {}).moy))}${tagCompModif(acCl, id, E.comportement)}${ctrlAttitude(acCl, id)}</div></div>`;
   };
   // Plan de classe : celui modifié ici (onglet Plans) sinon celui du cahier (I1:AU6). Tables [1] · [4] · [2].
   // Clic sur une place → liste déroulante pour y mettre un autre élève (échange de places).
@@ -2281,6 +2318,11 @@ $('#prog').addEventListener('click', e => {
   const t = e.target;
   const mj = t.closest('[data-majact]');
   if (mj) { mettreAJourActivite(mj); return; }
+  if (t.closest('select.compsel')) return;
+  const cp = t.closest('[data-comp]');
+  if (cp) { ouvrirComp(cp); return; }
+  const ao = t.closest('[data-attouv]');
+  if (ao) { const g = ao.closest('.att'); document.querySelectorAll('#prog .att.ouvert').forEach(x => { if (x !== g) x.classList.remove('ouvert'); }); g.classList.toggle('ouvert'); return; }
   const at = t.closest('[data-att]');
   if (at) { const [cl, id, d] = at.dataset.att.split('|'); changerAttitude(cl, id, +d); return; }
   const b = t.closest('[data-svniv],[data-svcl],[data-svper],[data-cloturer],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place],[data-jplus],[data-jnav],[data-oeil]');
