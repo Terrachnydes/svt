@@ -1709,6 +1709,9 @@ function moyenne(vals) { const v = vals.filter(x => x != null); return v.length 
 
 function dessinerSuivi() {
   if (!SV) return;
+  // Toujours une classe choisie (plus de vue « niveau entier »)
+  if (!svCl || !SV.classes[svCl] || !SV.classes[svCl].effectif) { svCl = classesNiveau(svNiv)[0] || Object.keys(SV.classes).filter(c => SV.classes[c].effectif).sort()[0] || ''; }
+  if (svCl) svNiv = svCl[0];
   const cls = classesNiveau(svNiv);
   if (!svPer) svPer = periodeDefaut();
   const vues = svCl && cls.includes(svCl) ? [svCl] : cls;
@@ -1756,9 +1759,7 @@ function dessinerSuivi() {
     <div class="barre">
       <div class="filtres">${[1, 2, 3].map(p => `<button type="button" aria-pressed="${String(p) === String(svPer)}" data-svper="${p}" title="Trimestre ${p}">T${p}</button>`).join('')}</div>
       <span class="sep2"></span>
-      ${NIVEAUX.map(n => `<div class="filtres">${[`<button type="button" aria-pressed="${n === svNiv && !svCl}" data-svniv="${n}" title="Toutes les classes de ${NOMS[n]}">${NOMS[n]}</button>`]
-        .concat(classesNiveau(n).map(c => `<button type="button" aria-pressed="${c === svCl}" data-svcl="${c}">${c}</button>`)).join('')}</div>`).join('')}
-      <button class="bouton leger petit" type="button" data-gen-niv>✦ Appréciations du niveau</button>
+      ${NIVEAUX.map(n => `<div class="filtres">${classesNiveau(n).map(c => `<button type="button" aria-pressed="${c === svCl}" data-svcl="${c}">${c}</button>`).join('')}</div>`).join('')}
       <span class="fin"></span>${blocNoms()}
       <span class="sous" title="Clique sur une case de classe : publier sur Pronote, corriger, facultative, arrêter. Clique sur un élève : statistiques et appréciation. Barré = note non comptée · · = ouverte non rendue · ✎ = rendue, pas corrigée.">ⓘ</span>
       <button class="bouton leger petit" type="button" data-actualiser title="Résumé du ${esc(SV.maj || '?')}">↻</button>
