@@ -335,6 +335,7 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .ac-gauche{display:flex;flex-direction:column;gap:8px;min-width:0}
 #prog .journee-col{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px;position:sticky;top:8px}
 #prog .journee-col h3{margin:0 0 2px;font-size:14px}
+@media (min-width:901px){#prog .journee-col{margin-top:-62px;z-index:2}}   /* emploi du temps remonté sur la barre des onglets : moins de vide sous le plan */
 #prog .journee-col .jc{display:grid;grid-template-columns:44px auto 1fr;gap:6px;align-items:center;text-align:left;width:100%;padding:6px 8px;font-size:13px;white-space:normal}
 #prog .journee-col .jc .h{color:var(--muted);font-variant-numeric:tabular-nums}
 #prog .journee-col .jc.choisi .h,#prog .journee-col .jc.choisi .a{color:#fff}
@@ -2241,7 +2242,7 @@ ${A ? `<span class="sep2"></span>
     </div>
     <div class="attente" hidden></div>
     ${!A ? '<div class="info">Aucune activité pour cette classe.</div>' : `
-    <div class="carte2 plan-carte"><h3>Plan de classe <span class="sous">${enCours ? '<span class="pt co" style="display:inline-block"></span> présent · <span class="pt abs" style="display:inline-block"></span> pas connecté · <b>' + nbCo + ' présent' + (nbCo > 1 ? 's' : '') + ' / ' + ids.length + '</b>' : ''}</span></h3>${eleves}</div>
+    <div class="carte2 plan-carte"><h3>Plan de classe <span class="sous">${enCours ? '<span class="pt co" style="display:inline-block"></span> présent · <span class="pt abs" style="display:inline-block"></span> pas connecté · <b>' + nbCo + ' présent' + (nbCo > 1 ? 's' : '') + ' / ' + ids.length + '</b>' : ''}</span></h3>${eleves}</div></div>${journeeHtml}</div>
     <div class="ac-titres"><div class="txt">
       <div class="s">Séance ${esc(String(META[k] ? META[k].seance : (cleCode(acCode) || [''])[0]))}${(() => { const t = (META[k] && META[k].seanceTitre) || String(A.titre || '').replace(/^Séance\s*\d+\s*/i, '').replace(/\s*Activité\s*\d+\s*$/i, ''); return t ? ' · ' + esc(t) : ''; })()}</div>
       <h2>Activité ${esc(String(META[k] ? META[k].num : (cleCode(acCode) || ['', ''])[1]))}${V.titre ? ' · ' + esc(V.titre) : ''}</h2>
@@ -2264,8 +2265,7 @@ ${A ? `<span class="sep2"></span>
         <h3 style="margin-top:14px">Correction <span class="sous">${Object.keys(bar).length ? total(bar) + ' pts' : ''}</span>${k ? `<button class="bouton leger petit" type="button" data-atelier="${esc(k)}" style="margin-left:auto" title="Discuter avec Claude ici, dans la page">✦ Modifier avec Claude</button>` : ''}</h3>
         ${Object.entries(bar).map(([l, v]) => `<p class="cons"><b>${esc(l)}</b> · <span class="edx" data-edx="cor|${esc(l)}|max">${esc(v.max)}</span> pts${A.reussite && A.reussite[l] != null ? ` <span class="sous">(réussite ${A.reussite[l]} %)</span>` : ''}</p>${criteres(v).map((x, j) => `<div class="crit"><i><span class="edx" data-edx="cor|${esc(l)}|${j}|points">${esc(x.points || '?')}</span> pt · </i><span class="edx" data-edx="cor|${esc(l)}|${j}|texte">${esc(x.texte)}</span></div>`).join('')}`).join('') || '<div class="sous">Pas de barème dans la progression.</div>'}
       </div>
-    </div>`}
-    </div>${journeeHtml}</div>`;   // colonne de gauche (barre, plan, activité) · emploi du temps à droite, sans trou sous le plan
+    </div>`}`;
   majAttente();
 }
 
