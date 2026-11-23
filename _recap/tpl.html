@@ -353,9 +353,11 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .elv .att .n{min-width:24px;text-align:center;padding:0 3px;font-weight:700}
 #prog .elv .att button{display:none}#prog .elv .att.ouvert button{display:inline-block}   /* − / + seulement après un clic sur la note */
 #prog .elv .att .n{cursor:pointer}
-#prog .elv.deux{flex-direction:column;align-items:stretch;gap:5px;padding:7px 9px}
+#prog .elv.deux{gap:6px;padding:7px 8px}   /* tout sur une ligne : prénom (coupé si besoin) puis moyenne · comportement · attitude */
 #prog .elv .l1,#prog .elv .l2{display:flex;align-items:center;gap:6px;min-width:0}
-#prog .elv .l2{gap:4px;flex-wrap:wrap}
+#prog .elv .l1{flex:1}
+#prog .elv .l2{gap:4px;flex:none;flex-wrap:nowrap}
+#prog .elv .l2 .mg{border:2px solid currentColor;border-radius:6px;padding:0 4px}
 #prog .elv .l2 .tg{cursor:pointer;border:0;font:inherit;font-size:11px;font-weight:700;padding:1px 6px;border-radius:999px}
 #prog .elv .l2 .tg.vide{background:var(--bg);color:var(--muted)}
 #prog .elv select.compsel{font:inherit;font-size:12px;max-width:120px;padding:1px 2px;border-radius:6px}
