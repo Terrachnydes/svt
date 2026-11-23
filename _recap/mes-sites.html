@@ -1357,6 +1357,7 @@ $('#pg-recharger').addEventListener('click', async () => { try { await chargerTo
 // Les noms des élèves ne viennent jamais de Google : fichier eleves.csv chargé depuis l'ordinateur.
 // =====================================================================
 let IPID = '', SV = null, CO = null, ELEVES = {}, ENVOIS = [], PLANS = {}, MODIFS = {}, MODIFS_LIGNES = [];
+let ETAT_APPR = '', minuteurEtat = null;   // génération des appréciations en cours (onglet « État »)
 let svNiv = '3', svPer = '', svCl = '', acCl = '', acCode = '', svTimer = null, acTimer = null;
 const EDT_SECOURS = {   // copie de EDT_CLASSES (CorrectionAuto.js) si la synchro n'a pas encore donné les créneaux du jour
   1: [['08:30', '3H', 'A'], ['09:28', '4H', ''], ['10:40', '6I', ''], ['11:35', '6H', 'A'], ['11:35', '5H', 'B'], ['14:03', '3G', ''], ['16:13', '6G', 'B']],
@@ -1494,11 +1495,31 @@ function suivreCommandes() {
 }
 function majAttente() {
   const L = ENVOIS.filter(c => c.cmd !== 'actualiser');   // les relectures (« Mettre à jour ») ont leur compte à rebours
+  const textes = [];
+  if (L.length) textes.push(`⏳ ${L.length} demande${L.length > 1 ? 's' : ''} en attente (${L.map(c => c.libelle).join(', ')}) : appliqué par le cahier dans les 5 min`);
+  if (ETAT_APPR) textes.push('✦ ' + ETAT_APPR);
   document.querySelectorAll('#prog .attente').forEach(x => {
-    x.hidden = !L.length;
-    x.textContent = `⏳ ${L.length} demande${L.length > 1 ? 's' : ''} en attente (${L.map(c => c.libelle).join(', ')}) : appliqué par le cahier dans les 5 min`;
+    x.hidden = !textes.length;
+    x.textContent = textes.join(' · ');
   });
 }
+
+// Génération des appréciations en arrière-plan : message affiché tant qu'elle n'est pas finie
+// (le cahier écrit l'état dans l'onglet « État » du classeur de l'interface : A1 vide = terminé)
+async function lireEtatAppr() {
+  clearTimeout(minuteurEtat);
+  try {
+    if (await assurerIP()) {
+      const v = await lireIP('État!A1:A1');
+      const avant = ETAT_APPR;
+      ETAT_APPR = String(((v[0] || [])[0]) || '').trim();
+      if (avant && !ETAT_APPR) { toast('Appréciations générées pour toutes les classes.'); try { await chargerSuivi(); rafraichirProf(); } catch (e) {} }
+    }
+  } catch (e) { /* onglet pas encore créé : rien en cours */ }
+  majAttente();
+  minuteurEtat = setTimeout(lireEtatAppr, ETAT_APPR ? 60000 : 300000);   // 1 min pendant la génération, sinon 5 min
+}
+setTimeout(lireEtatAppr, 3000);
 
 // ---------- Noms des élèves (eleves.csv, jamais envoyé nulle part) ----------
 const CLE_NOMS = 'profElevesCsv';
@@ -2426,6 +2447,8 @@ $('#prog').addEventListener('click', e => {
     }
     b.disabled = true;
     commande('appreciationsToutes', '', { periode: t }, `Appréciations du T${t} (toutes les classes)`);
+    ETAT_APPR = `Les appréciations du T${t} sont en train d'être générées…`; majAttente();
+    clearTimeout(minuteurEtat); minuteurEtat = setTimeout(lireEtatAppr, 90000);
   }
   else if (b.dataset.pact) { const [cl, k] = b.dataset.pact.split('|'); popActivite(b, cl, k); }
   else if (b.dataset.op) { const [cl, k] = b.dataset.k.split('|'); operation(b.dataset.op, cl, k); }
