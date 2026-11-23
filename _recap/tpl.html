@@ -135,11 +135,10 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .pub.ok{background:var(--vert);color:#fff}
 #prog .pub:hover{filter:brightness(1.1)}
 #prog .pub:disabled{opacity:.6;cursor:wait}
-#prog .moy{position:absolute;top:36px;right:4px;min-width:30px;text-align:center;font-size:11.5px;font-weight:700;padding:1px 4px;border-radius:6px;cursor:help;font-variant-numeric:tabular-nums}
+#prog .moy{position:absolute;top:6px;right:6px;min-width:30px;text-align:center;font-size:11.5px;font-weight:700;padding:1px 4px;border-radius:6px;cursor:help;font-variant-numeric:tabular-nums}
 #prog .moy.bon{background:#d6f0e4;color:#14603f}
 #prog .moy.moyen{background:#fdf0c8;color:#7a5a00}
 #prog .moy.faible{background:#fbdcd8;color:#9b2c20}
-#prog .ca .pb{padding-right:30px}
 #prog .docs{display:flex;gap:12px;justify-content:center;font-size:12px}
 #prog .docs a{color:var(--cl);font-weight:700;text-decoration:none}
 #prog .docs a:hover{text-decoration:underline}
@@ -164,10 +163,18 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .duo-site{display:flex;gap:5px}
 #prog .duo-site .creer{font-size:11.5px;padding:0 4px;white-space:nowrap}
 #prog .duo-site .creer{flex:9 1 0;min-width:0}
-#prog .duo-site select.recup{flex:12 1 0}
-#prog select.recup{appearance:none;-webkit-appearance:none;text-align:center;text-align-last:center;padding:0 6px;color:var(--cl);background:transparent;overflow:hidden;text-overflow:ellipsis}
-#prog select.recup:hover{color:#fff;background:var(--cl)}
-#prog select.recup option,#prog select.recup optgroup{color:#1d2420;background:#fff;text-align:left}
+#prog .duo-site label.recup{flex:12 1 0;min-width:0}
+#prog label.recup{position:relative;padding:0 8px;overflow:hidden;white-space:nowrap}
+#prog label.recup select{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font:inherit;font-size:13px}
+#prog label.recup option,#prog label.recup optgroup{color:#1d2420;background:#fff}
+/* Ligne de boutons d'une carte : Consignes · Correction / Créer / Récupérer / publier, chacun à sa taille */
+#prog .rang{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+#prog .rang .duo-site{display:contents}
+#prog .rang .claude,#prog .rang .duo-site .creer{width:auto;flex:none;min-width:0;height:24px;padding:0 6px;font-size:11.5px;white-space:nowrap}
+#prog .rang .claude{border-radius:7px}
+/* Onglet « Liens » : cartes en grille */
+#prog .lcol.seul{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));align-items:start;padding:10px 0}
+#prog .lcol.seul .tete{grid-column:1/-1}
 #prog .creer:hover{background:var(--cl);color:#fff}
 #prog .encours{font-size:12.5px;color:var(--muted)}
 #pg-pan{position:fixed;top:0;right:0;bottom:0;width:min(620px,100%);background:var(--surface);color:var(--fg);box-shadow:-8px 0 30px rgba(0,0,0,.25);z-index:20;display:flex;flex-direction:column;transform:translateX(105%);transition:transform .2s}
@@ -934,12 +941,12 @@ function carte(n, s, a) {
   META[k] = { type: 'activité', niveau: n, seance: s.numero, num: a.numero, doc: idDoc(a.act), act: a.act, cor: a.cor, seanceTitre: s.titre };
   const b = brouillon(k), st = infoSite(b.site), cs = js(b.cons, []);
   return `<div class="ca">
-    ${boutonPub(k)}${badgeMoyenne(k)}
+    ${badgeMoyenne(k)}
     <div class="l1"><b>S${s.numero}.${a.numero}</b><span class="ed${b.titre ? '' : ' vide'}" data-k="${esc(k)}" data-f="titre" title="Cliquer pour modifier">${esc(b.titre || 'Titre à définir')}</span></div>
     <div class="pb">❓ <span class="ed${b.pb ? '' : ' vide'}" data-k="${esc(k)}" data-f="pb" title="Cliquer pour modifier">${esc(b.pb || 'Problématique à définir')}</span></div>
-    <button class="claude${cs.length ? '' : ' vide'}" type="button" data-atelier="${esc(k)}">✦ Consignes · Correction</button>
+    <div class="rang"><button class="claude${cs.length ? '' : ' vide'}" type="button" data-atelier="${esc(k)}">✦ Consignes · Correction</button>${st && !st.externe ? '' : duoSite(k)}${boutonPub(k, true)}</div>
     ${st && !st.externe ? vignette(st, k)
-      : (st ? `<a class="ext" href="${esc(st.url)}" target="_blank" rel="noopener">🔗 ${esc(st.titre)}</a>` : '') + duoSite(k)}
+      : (st ? `<a class="ext" href="${esc(st.url)}" target="_blank" rel="noopener">🔗 ${esc(st.titre)}</a>` : '')}
     ${a.act || a.cor ? `<div class="docs">${a.act ? `<a href="${esc(a.act)}" target="_blank" rel="noopener">📄 Doc</a>` : ''}${a.cor ? `<a href="${esc(a.cor)}" target="_blank" rel="noopener">✅ Correction</a>` : ''}</div>` : ''}
   </div>`;
 }
@@ -947,7 +954,7 @@ function carte(n, s, a) {
 function duoSite(k) {
   const opts = data.map(([g, items]) => `<optgroup label="${esc(g)}">${items.filter(i => i.f).map(i => `<option value="${esc(i.f)}">${esc(i.t)}</option>`).join('')}</optgroup>`).join('');
   return `<div class="duo-site"><a class="creer" href="${lienCreer(k)}" target="_blank" rel="noopener" data-creer="${esc(k)}">Créer un site</a>` +
-    `<select class="creer recup" data-recup="${esc(k)}" aria-label="Récupérer un site existant"><option value="">Récupérer un site</option>${opts}</select></div>`;
+    `<label class="creer recup">Récupérer un site<select data-recup="${esc(k)}" aria-label="Récupérer un site existant"><option value="">Récupérer un site</option>${opts}</select></label></div>`;
 }
 let cleVierge = 'LIEN-' + Date.now().toString(36);
 function colonneLiens() {
@@ -970,7 +977,7 @@ function colonneLiens() {
     </div>`;
   }).join('');
   META[cleVierge] = { type: 'lien', niveau: 'tous' };
-  return `<div class="lcol"><div class="tete">Lien</div>${html}
+  return `<div class="lcol seul"><div class="tete">Liens</div>${html}
     <div class="ca vierge"><div class="l1">Nouveau site</div>${duoSite(cleVierge)}</div></div>`;
 }
 
@@ -985,6 +992,8 @@ function afficher() {
   rafraichirProf();
 }
 function afficherSansGarde() {
+  $('#pg-filtres').innerHTML = ['Tous', ...NIVEAUX, 'Liens'].map(v => `<button type="button" aria-pressed="${v === vue}" data-vue="${v}">${NOMS[v] || v}</button>`).join('');
+  if (vue === 'Liens') { $('#pg-main').innerHTML = colonneLiens(); if (atelier) dessinerAtelier(); return; }
   const nv = vue === 'Tous' ? NIVEAUX : [vue];
   const lignes = [];
   for (let s = 1; s <= 12; s++) {
@@ -998,9 +1007,7 @@ function afficherSansGarde() {
         actives[i].map(a => carte(n, x, a)).join('') + '</div>';
     }).join(''));
   }
-  $('#pg-filtres').innerHTML = ['Tous', ...NIVEAUX].map(v => `<button type="button" aria-pressed="${v === vue}" data-vue="${v}">${v === 'Tous' ? 'Tous' : NOMS[v]}</button>`).join('');
-  const liens = vue === 'Tous' || vue === '3' ? colonneLiens() : '';
-  $('#pg-main').innerHTML = `<div class="defile"><div class="duo">${liens}<div class="grille${nv.length === 1 ? ' un' : ''}" style="--n:${nv.length}">${nv.map(n => `<div class="tete">${NOMS[n]}</div>`).join('')}${lignes.join('')}</div></div></div>`;
+  $('#pg-main').innerHTML = `<div class="defile"><div class="duo"><div class="grille${nv.length === 1 ? ' un' : ''}" style="--n:${nv.length}">${nv.map(n => `<div class="tete">${NOMS[n]}</div>`).join('')}${lignes.join('')}</div></div></div>`;
   if (atelier) dessinerAtelier();
 }
 
