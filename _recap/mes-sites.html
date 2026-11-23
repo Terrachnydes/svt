@@ -1301,7 +1301,18 @@ const COUL_COMP = { Exemplaire: 'cp1', Moteur: 'cp2', 'Sérieux': 'cp4', Dynamiq
   Calme: 'cj1', Discret: 'cj2', 'Réservé': 'cj3', Passif: 'cj4', Avachi: 'cj4',
   Bavard: 'cr1', 'Agité': 'cr2', Distrait: 'cr3', Perturbateur: 'cr4', Insolent: 'cr5' };
 const tagComp = c => c ? `<span class="tg ${COUL_COMP[c] || (COMP_NEG.includes(c) ? 'faible' : COMP_POS.includes(c) ? 'bon' : '')}">${esc(c)}</span>` : '';
-const tagTravail = t => { const x = TRAVAIL[t]; return x ? `<span class="tg ${x[1]}" title="${esc(x[2])}">${esc(x[0])}</span>` : (t ? `<span class="tg">${esc(t)}</span>` : ''); };
+// Travail : profil de résultats (colonne I du cahier), même logique de couleurs que le comportement.
+// L'assiduité (H) n'apparaît en plus que si des activités manquent.
+const COUL_RES = { 'Excellent niveau': ['cp1', 'Excellent'], 'Très bon niveau': ['cp2', 'Très bon'], 'Résultats très satisfaisants': ['cp3', 'Très satisfaisant'], 'Résultats satisfaisants': ['cp5', 'Satisfaisant'],
+  'Résultats fragiles': ['cj1', 'Fragile'], 'Résultats irréguliers': ['cj2', 'Irrégulier'], 'Potentiel inexploité': ['cj3', 'Potentiel inexploité'], 'Non représentatif': ['cj4', 'Non représentatif'],
+  'Résultats très fragiles': ['cr1', 'Très fragile'], 'Résultats insuffisants': ['cr3', 'Insuffisant'], 'Résultats très insuffisants': ['cr5', 'Très insuffisant'] };
+const tagTravail = (res, assid) => {
+  const x = COUL_RES[res];
+  const t = res ? `<span class="tg ${x ? x[0] : ''}" title="${esc(res)}">${esc(x ? x[1] : res)}</span>` : '';
+  const a = assid === 'Abs' ? `<span class="tg cr2" title="Plus de 30 % des activités non rendues">Activités manquantes</span>`
+    : assid === 'Abs+' ? `<span class="tg cr4" title="Plus de la moitié des activités non rendues">Peu de travail</span>` : '';
+  return t + (t && a ? ' ' : '') + a;
+};
 const tagProfil = p => p ? `<span class="prf" title="${esc(PROFILS[p] || '')}">${esc(p)}</span>` : '';
 const PROFILS = { D: 'Évaluation aménagée', NE: 'Non évalué', M: 'Travail à la maison', T: 'Avec un tuteur' };
 const ETATS = { '-': 'pas ouverte', o: 'ouverte, pas encore rendue', r: 'a répondu', c: 'corrigée (pas encore affichée)', v: 'correction vue', x: 'correction reçue (absent)', a: 'absent' };
@@ -1573,7 +1584,7 @@ function dessinerSuivi() {
       const m = num(p.moy);
       const nA = num((p.notes || {}).A);
       lignes.push(`<tr class="el"><td class="nom ${genreEleve(id)}" data-pel="${cl}|${id}" title="${esc(id)}">${esc(nomEleve(id))}</td>
-        <td>${tagProfil(E.profil)}</td><td>${tagComp(E.comportement)}</td><td>${tagTravail(E.assiduite)}</td>
+        <td>${tagProfil(E.profil)}</td><td>${tagComp(E.comportement)}</td><td>${tagTravail(E.resultats, E.assiduite)}</td>
         <td><span class="n ${classeNote(nA)}">${fr(nA)}</span></td>
         <td><span class="n ${classeNote(m)}">${fr(m)}</span></td>
         ${codes.map(k => { const n = noteEleve(cl, id, k, svPer); return `<td title="${esc(n.nc ? 'Note non comptée (facultative ou sous le seuil du profil)' : n.titre || '')}"><span class="n ${n.nc ? 'nc' : n.v == null ? 'vide' : classeNote(n.v)}">${esc(n.txt)}</span></td>`; }).join('')}
@@ -1597,7 +1608,7 @@ function dessinerSuivi() {
       <button class="bouton leger petit" type="button" data-actualiser title="Résumé du ${esc(SV.maj || '?')}">↻</button>
     </div>
     <div class="attente" hidden></div>
-    ${vues.length ? `<div class="tabl"><table class="sv"><thead><tr><th class="nom">Élève</th><th title="Profil particulier (D, NE, M, T)">Profil</th><th>Comportement</th><th title="Activités rendues ou non">Travail</th><th title="Note d'attitude (A)">Attitude</th><th>Moy.</th>${codes.map(k => `<th>${esc(k)}</th>`).join('')}<th>Défauts fréquents</th><th>Appréciation T${svPer}</th></tr></thead>
+    ${vues.length ? `<div class="tabl"><table class="sv"><thead><tr><th class="nom">Élève</th><th title="Profil particulier (D, NE, M, T)">Profil</th><th>Comportement</th><th title="Profil de résultats du trimestre (+ activités manquantes si besoin)">Travail</th><th title="Note d'attitude (A)">Attitude</th><th>Moy.</th>${codes.map(k => `<th>${esc(k)}</th>`).join('')}<th>Défauts fréquents</th><th>Appréciation T${svPer}</th></tr></thead>
       <tbody>${lignes.join('')}</tbody></table></div>` : '<div class="info">Aucune classe avec des élèves à ce niveau.</div>'}`;
   majAttente();
 }
