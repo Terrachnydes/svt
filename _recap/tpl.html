@@ -337,6 +337,10 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .jc.passe{opacity:.55}
 #prog .jc.maint{border-color:var(--accent);box-shadow:0 0 0 2px rgba(34,163,90,.2)}
 #prog .jc.choisi{background:var(--accent);border-color:var(--accent);color:#fff}#prog .jc.choisi span{color:#e6f4ec}
+#prog .elv .att{display:inline-flex;align-items:center;gap:2px}
+#prog .elv .att button{width:20px;height:20px;padding:0;border:1px solid var(--line);border-radius:5px;background:var(--surface);color:var(--fg);font-weight:800;font-size:13px;line-height:1;cursor:pointer}
+#prog .elv .att button:hover{background:var(--accent-soft);border-color:var(--accent)}
+#prog .elv .att .n{min-width:24px;text-align:center;padding:0 3px;font-weight:700}
 #prog .elv .nf{color:var(--muted);font-weight:600;font-size:11px}
 #prog .plan .prf{margin-left:0;align-self:flex-start}
 #prog .elv.vide{background:transparent;border-style:dashed;min-height:26px;justify-content:center;cursor:pointer}
@@ -1357,6 +1361,7 @@ async function chargerSuivi() {
     else if (t === 'activite') (s.acts[cl] = s.acts[cl] || {})[k] = d;
   });
   SV = s;
+  reappliquerAttitudes();
 }
 // Plans de classe modifiés dans la page (onglet Plans du classeur de l'interface, identifiants seulement)
 const CLASSES_PLAN = ['3G', '3H', '3I', '3J', '4G', '4H', '4I', '4J', '5G', '5H', '5I', '5J', '6G', '6H', '6I', '6J'];
@@ -1607,6 +1612,54 @@ async function recharger(classe) {
 // =====================================================================
 // SUIVI DES ÉLÈVES
 // =====================================================================
+// ---------- Note d'attitude (A) : boutons − / + sur le plan de classe ----------
+// La colonne A des blocs période est une formule qui lit le tableau Référence (O9:Q38 : P1, P2, P3).
+// On écrit donc dans O / P / Q, sur la ligne de l'élève dans D9:D38, pour le trimestre en cours (N7).
+const COL_ATT = { 1: 'O', 2: 'P', 3: 'Q' }, LIGNES_REF = {}, ATT_ATTENTE = {}, ATT_LOCAL = {};
+const ATT_DEPART = 15;   // note de départ si l'élève n'a pas encore de note d'attitude
+const perCourante = cl => String((SV.classes[cl] || {}).trimestre || '1');
+function noteAttitude(cl, id) { const p = (((SV.eleves[cl] || {})[id] || {}).p || {})[perCourante(cl)]; return num(((p || {}).notes || {}).A); }
+function ctrlAttitude(cl, id) {
+  const v = noteAttitude(cl, id), k = cl + '|' + id;
+  return `<small class="att" title="Note d'attitude du trimestre ${perCourante(cl)}"><button type="button" data-att="${k}|-1">−</button><span class="n ${classeNote(v)}" data-attv="${k}">${fr(v)}</span><button type="button" data-att="${k}|1">+</button></small>`;
+}
+async function ligneRef(cl, id) {
+  if (!LIGNES_REF[cl]) {
+    const v = await lire(fA1(cl, 'D9:D38')), m = {};
+    v.forEach((l, k) => { const x = String((l || [])[0] || '').trim(); if (x) m[x] = 9 + k; });
+    LIGNES_REF[cl] = m;
+  }
+  return LIGNES_REF[cl][id];
+}
+function poserAttitude(cl, id, per, v) {
+  const E = (SV.eleves[cl] || {})[id]; if (!E) return;
+  E.p[per] = E.p[per] || { notes: {} }; E.p[per].notes = E.p[per].notes || {};
+  E.p[per].notes.A = String(v);
+}
+function changerAttitude(cl, id, delta) {
+  const per = perCourante(cl), k = cl + '|' + id;
+  let v = noteAttitude(cl, id); v = Math.max(0, Math.min(20, Math.round(v == null ? ATT_DEPART : v) + delta));
+  poserAttitude(cl, id, per, v);
+  ATT_LOCAL[k + '|' + per] = v;   // gardée jusqu'à ce que le résumé du cahier ait la même valeur
+  document.querySelectorAll(`[data-attv="${k}"]`).forEach(x => { x.textContent = fr(v); x.className = 'n ' + classeNote(v); });
+  clearTimeout(ATT_ATTENTE[k]);
+  ATT_ATTENTE[k] = setTimeout(async () => {
+    try {
+      const l = await ligneRef(cl, id);
+      if (!l) throw new Error('Élève introuvable dans la feuille ' + cl);
+      await ecrire(fA1(cl, COL_ATT[per] + l), [[v]]);
+      toast(`Attitude de ${nomEleve(id)} : ${v}/20`);
+    } catch (e) { toast(e.message || erreurMcp(e), true); }
+  }, 1200);   // plusieurs clics rapides = une seule écriture
+}
+function reappliquerAttitudes() {
+  Object.entries(ATT_LOCAL).forEach(([k, v]) => {
+    const [cl, id, per] = k.split('|');
+    const p = (((SV.eleves[cl] || {})[id] || {}).p || {})[per];
+    if (p && num((p.notes || {}).A) === v) delete ATT_LOCAL[k]; else poserAttitude(cl, id, per, v);
+  });
+}
+
 // Petite fenêtre au survol d'une appréciation (texte complet, compact)
 (() => {
   const b = document.createElement('div'); b.id = 'bulle-app'; b.hidden = true; document.body.appendChild(b);
@@ -2008,7 +2061,7 @@ function dessinerActivite() {
   const carte = (id, place) => {
     const s = (A && A.el[id]) || '-', e = s[0], note = s.slice(1), E = SV.eleves[acCl][id];
     const nm = ELEVES[id], titre = id + ' · ' + (ETATS[e] || '') + (vus[id] ? ' · cahier ouvert à ' + vus[id] : (enCours ? ' · pas connecté' : ''));
-    return `<div class="elv"${place ? ` data-place="${place}"` : ''} title="${esc(titre)}"><span class="pt ${pres(id)}"></span><b class="${genreEleve(id)}">${nm ? `${esc(nm.prenom)} <small class="nf">${esc(nm.nom)}</small>` : esc(id)}${E.profil ? `<span class="prf">${esc(E.profil)}</span>` : ''}</b><small>${note ? `<span class="n ${classeNote(num(note))}">${esc(note)}</span>` : esc({ o: 'ouverte', r: 'rendue', a: 'absent', x: 'absent', '-': '—' }[e] || '')}</small></div>`;
+    return `<div class="elv"${place ? ` data-place="${place}"` : ''} title="${esc(titre)}"><span class="pt ${pres(id)}"></span><b class="${genreEleve(id)}">${nm ? `${esc(nm.prenom)} <small class="nf">${esc(nm.nom)}</small>` : esc(id)}${E.profil ? `<span class="prf">${esc(E.profil)}</span>` : ''}</b>${ctrlAttitude(acCl, id)}</div>`;
   };
   // Plan de classe : celui modifié ici (onglet Plans) sinon celui du cahier (I1:AU6). Tables [1] · [4] · [2].
   // Clic sur une place → liste déroulante pour y mettre un autre élève (échange de places).
@@ -2081,6 +2134,8 @@ ${A ? `<span class="sep2"></span>
 // ---------- Événements des deux onglets ----------
 $('#prog').addEventListener('click', e => {
   const t = e.target;
+  const at = t.closest('[data-att]');
+  if (at) { const [cl, id, d] = at.dataset.att.split('|'); changerAttitude(cl, id, +d); return; }
   const b = t.closest('[data-svniv],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place],[data-jplus]');
   if (!b) return;
   if (b.dataset.jour) { const [cl, code] = b.dataset.jour.split('|'); acCl = cl; acCode = code; dessinerActivite(); return; }
