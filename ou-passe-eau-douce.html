@@ -75,6 +75,12 @@ main{max-width:1240px;margin:0 auto;padding-block:20px 48px;padding-left:max(16p
 .c-w{fill:var(--water)} .c-w2{fill:var(--water-2)} .c-ws{fill:var(--water-soft)} .c-p{fill:var(--plain)} .c-s{fill:var(--soil)} .c-s2{fill:var(--soil-2)}
 .c-r{fill:var(--rock)} .c-m{fill:var(--mount)} .c-wall{fill:var(--wall)} .c-wall2{fill:var(--wall-2)} .c-roof{fill:var(--roof)} .c-win{fill:var(--win)}
 .c-metal{fill:var(--metal)} .c-g{fill:var(--green)} .c-g2{fill:var(--green-2)} .c-a{fill:var(--agri)} .c-i{fill:var(--indus)} .c-gr{fill:var(--grey)}
+.zone{fill-opacity:.08;stroke-width:3;stroke-dasharray:12 8;stroke-linejoin:round;pointer-events:none}
+.zone-b{cursor:pointer}
+.zone-b rect{fill:var(--surface);stroke-width:4}
+.zone-b text{font:800 18px var(--f-display);fill:var(--ink);letter-spacing:.01em}
+.zone-b:hover rect,.zone-b:focus-visible rect{fill:var(--surface-2)}
+.zone-b:focus-visible{outline:none}.zone-b:focus-visible rect{stroke-width:6}
 .c-h{fill:var(--home)} .c-k{fill:var(--ink)} .c-snow{fill:var(--snow)} .c-ice{fill:var(--ice)} .c-cow{fill:var(--cow)} .c-pig{fill:var(--pig)} .c-surf{fill:var(--surface)}
 .lbl-s{font:400 15px var(--f-body);fill:var(--muted)}
 .flow{stroke-dasharray:8 12;animation:flow 1.2s linear infinite}
@@ -142,6 +148,31 @@ main{max-width:1240px;margin:0 auto;padding-block:20px 48px;padding-left:max(16p
 .mini-leg .sw{width:10px;height:10px}
 .def{font-size:.8rem;color:var(--muted)}
 
+/* récapitulatif */
+.recap{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.recap h2{font-size:1.45rem;display:flex;gap:10px;align-items:center}
+.recap h2 .ico{width:28px;height:28px;color:var(--water)}
+.rc-leg{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.88rem;font-weight:700}
+.rc-leg span{display:inline-flex;gap:6px;align-items:center}
+.rc-leg i{width:28px;height:14px;border-radius:4px;display:inline-block;background:var(--grey)}
+.rc-leg i.l{opacity:.35}
+.rc-grp{border-left:6px solid var(--c);border-radius:0 14px 14px 0;background:var(--surface-2);padding:12px 16px;display:flex;flex-direction:column;gap:6px}
+.rc-grp h3{font-size:1.25rem;display:flex;gap:8px;align-items:center}
+.rc-grp h3 .ico{width:26px;height:26px;color:var(--c)}
+.rc-grp h3 small{font:400 .85rem var(--f-body);color:var(--muted)}
+.rc-u{font:700 .76rem var(--f-body);color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-top:6px}
+.rc-row{display:grid;grid-template-columns:minmax(170px,250px) minmax(0,1fr) 240px;gap:4px 14px;align-items:center;padding:5px 6px;margin:0 -6px;border:0;border-radius:10px;background:none;text-align:left;cursor:pointer;width:calc(100% + 12px)}
+.rc-row:hover,.rc-row:focus-visible{background:var(--surface)}
+.rc-l{display:flex;gap:8px;align-items:center;font-weight:700;font-size:.95rem;min-width:0}
+.rc-l .ico{width:22px;height:22px;color:var(--c)}
+.rc-t{position:relative;height:26px;background:var(--track);border-radius:7px;overflow:hidden}
+.rc-t i{position:absolute;inset:0 auto 0 0;width:0;background:var(--c);border-radius:7px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.rc-t i.l{opacity:.35}
+.rc-v{font-variant-numeric:tabular-nums;font-size:.9rem;text-align:right;line-height:1.3}
+.rc-v b{font-size:1rem}
+.rc-row.note{grid-template-columns:minmax(170px,250px) minmax(0,1fr)}
+.rc-row.note .rc-v{text-align:left}
+@media (max-width:700px){.rc-row,.rc-row.note{grid-template-columns:1fr}.rc-v,.rc-row.note .rc-v{text-align:left}.rc-t{grid-row:3}}
 /* bas de page */
 .words{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:10px}
 .words div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;font-size:.92rem}
@@ -291,7 +322,7 @@ details.sources a{color:var(--water-deep);font-weight:700}
 
   <div class="explorer">
     <figure class="plate">
-      <svg id="scene" viewBox="0 0 1400 830" role="img" aria-label="Territoire : montagne et glacier, lac, rivière, canal, champs, verger, serre, élevages, centrale électrique, usines, ville, maison en coupe, usine d’eau potable, château d’eau, station d’épuration et nappe phréatique"></svg>
+      <svg id="scene" viewBox="0 0 1400 830" role="img" aria-label="Territoire : montagne et glacier, lac, rivière et nappe phréatique ; zone agriculture (champs, irrigation, serre, potager, verger) ; zone élevage (vaches, porcs, moutons, volailles) ; zone industrie et énergie (centrale électrique, usines, canal) ; zone maisons et ville (ville, maison en coupe, usine d’eau potable, château d’eau, station d’épuration)"></svg>
       <figcaption class="plate-foot">
         <div class="legend">
           <span><i class="sw" style="background:var(--water)"></i>Ressources en eau</span>
@@ -305,6 +336,15 @@ details.sources a{color:var(--water-deep);font-weight:700}
     </figure>
     <aside class="panel" id="panel" aria-live="polite"></aside>
   </div>
+
+  <section class="recap" id="recap" aria-labelledby="recapT">
+    <div>
+      <h2 id="recapT"><svg class="ico" aria-hidden="true"><use href="#i-drop"/></svg>Récapitulatif : tous les éléments du schéma</h2>
+      <p class="def" style="font-size:.92rem">Les éléments sont regroupés comme dans le schéma. Les barres qui ont la même unité sont à la même échelle. Clique sur une ligne pour voir l’élément dans le schéma.</p>
+    </div>
+    <div class="rc-leg"><span style="font-weight:400;color:var(--muted)">Litres par habitant et par jour :</span><span><i class="l"></i>Eau prélevée (ou utilisée)</span><span><i></i>Eau vraiment consommée</span></div>
+    <div id="recapBody" style="display:flex;flex-direction:column;gap:14px"></div>
+  </section>
 
   <div class="words">
     <div><b>Eau prélevée</b><span>Eau retirée d’une rivière, d’un lac ou d’une nappe.</span></div>
@@ -386,7 +426,7 @@ add(`<defs>
 // ciel
 add(`<rect id="sky" width="1400" height="262" fill="url(#gSky)"/>`);
 add(`<circle cx="1335" cy="58" r="30" class="c-a" opacity=".9"/>`);
-add(cloud(640,70,1)+cloud(980,52,.8)+cloud(1180,90,.7));
+add(cloud(640,62,1)+cloud(980,48,.8));
 // nuage de pluie sur la montagne
 let rain="";for(let i=0;i<14;i++)rain+=`<rect x="${420+i*9}" y="${88+(i%3)*12}" width="2.5" height="12" rx="1" class="fall" style="animation-delay:${(i*.23)%1}s"/>`;
 add(`<g class="c-w2">${rain}</g>`+`<g class="c-gr" opacity=".75"><ellipse cx="480" cy="72" rx="62" ry="20"/><ellipse cx="500" cy="58" rx="36" ry="20"/><ellipse cx="458" cy="62" rx="28" ry="16"/></g>`);
@@ -411,27 +451,35 @@ add(hot("lac","Lac",`<ellipse cx="190" cy="284" rx="168" ry="34" class="c-w"/><e
 // rivière
 const RIV="M350 290 C 470 296, 540 346, 690 350 S 950 332, 1080 348 S 1290 372, 1400 362";
 add(hot("riviere","Rivière",`<path d="${RIV}" stroke="var(--water)" stroke-width="28" fill="none" stroke-linecap="round"/><path d="${RIV}" stroke="var(--water-2)" stroke-width="4" fill="none" class="flow-slow"/>`));
-// moutons sur la colline
-add(hot("moutons","Élevage de moutons",`<path d="M418 290 Q 508 224 604 302 Z" class="c-g2"/>${sheep(460,268)}${sheep(505,256)}${sheep(548,266)}${sheep(578,283)}`));
+// zones : chaque secteur regroupé dans un cadre
+const ZONES=[["agri","M4 380 H644 V648 H4Z",14,380],["elev","M648 380 H892 V648 H648Z",656,380],
+  ["indus","M604 96 H1078 V330 H604Z",612,96],["home","M1082 96 H1398 V648 H896 V380 H1082Z",1090,96]];
+add(ZONES.map(([z,d])=>`<path d="${d}" style="fill:${SEC[z].c};stroke:${SEC[z].c}" class="zone"/>`).join(""));
+// canal + péniche (zone industrie et énergie)
+add(hot("canal","Canal et péniche",`<path d="M1056 313 C 1072 313, 1078 326, 1080 346" stroke="var(--water)" stroke-width="22" fill="none"/>
+  <rect x="822" y="302" width="240" height="22" rx="4" class="c-w"/>
+  <path d="M828 313 H 1060" stroke="var(--water-2)" stroke-width="3" class="flow-slow"/>
+  <rect x="938" y="298" width="7" height="30" class="c-s2"/><rect x="1036" y="298" width="7" height="30" class="c-s2"/>
+  <g class="bob"><rect x="966" y="306" width="56" height="13" rx="6" class="c-h"/><rect x="1004" y="301" width="13" height="8" class="c-snow"/></g>`));
 // centrale électrique
-add(hot("centrale","Centrale électrique",`${tower(622,66,170,334)}${tower(698,66,170,334)}
+add(hot("centrale","Centrale électrique",`<g transform="translate(0 -36)">${tower(622,66,170,334)}${tower(698,66,170,334)}
   <rect x="772" y="282" width="46" height="52" class="c-metal"/><path d="M772 284 a23 23 0 0 1 46 0Z" class="c-wall2" stroke="var(--grey)" stroke-width="2"/>
   <path d="M796 298 l-7 13 h7 l-4 12 l11 -16 h-7 l4 -9Z" class="c-a"/>
   <g class="c-snow">${steam(655,156,20,0)}${steam(640,146,16,1.4)}${steam(731,156,20,.7)}${steam(746,146,16,2.1)}${steam(665,150,14,2.8)}</g>
-  <path d="M760 334 V 352" stroke="var(--water)" stroke-width="6"/><path d="M760 352 V 334" stroke="var(--water-2)" stroke-width="2" class="flow"/>`));
+  <path d="M760 334 V 382" stroke="var(--water)" stroke-width="6"/><path d="M760 382 V 334" stroke="var(--water-2)" stroke-width="2" class="flow"/></g>`));
 // usine de fabrication
-add(hot("usine","Usine de fabrication",`<rect x="832" y="268" width="120" height="66" class="c-metal"/>
+add(hot("usine","Usine de fabrication",`<g transform="translate(0 -36)"><rect x="832" y="268" width="120" height="66" class="c-metal"/>
   <path d="M832 268 l24 -20 v20 l24 -20 v20 l24 -20 v20 l24 -20 v20 l24 -20 v20Z" class="c-gr"/>
   <rect x="922" y="188" width="16" height="64" class="c-i"/>
   <g class="c-metal">${steam(930,178,10,0)}${steam(936,170,12,1.6)}</g>
   ${[842,866,890].map(x=>`<rect x="${x}" y="286" width="16" height="13" class="c-win"/>`).join("")}<rect x="912" y="300" width="24" height="34" class="c-i"/>
-  <path d="M892 334 V 342" stroke="var(--water)" stroke-width="6"/>`));
+  <path d="M892 334 V 342" stroke="var(--water)" stroke-width="6"/></g>`));
 // industrie alimentaire
-add(hot("agro","Industrie alimentaire",`<rect x="966" y="282" width="104" height="52" class="c-wall"/><rect x="966" y="276" width="104" height="9" class="c-a"/>
+add(hot("agro","Industrie alimentaire",`<g transform="translate(0 -36)"><rect x="966" y="282" width="104" height="52" class="c-wall"/><rect x="966" y="276" width="104" height="9" class="c-a"/>
   <rect x="976" y="212" width="26" height="66" rx="12" class="c-metal"/><rect x="1008" y="226" width="26" height="52" rx="12" class="c-metal"/>
   <circle cx="990" cy="306" r="11" class="c-a"/><path d="M984 306 h12 M990 300 v12" stroke="var(--surface)" stroke-width="3"/>
   <rect x="1012" y="296" width="44" height="18" class="c-win"/>
-  <path d="M1040 334 V 345" stroke="var(--water)" stroke-width="6"/>`));
+  <path d="M1040 334 V 345" stroke="var(--water)" stroke-width="6"/></g>`));
 // ville
 const BLD=[[1088,200,50,136],[1142,150,56,186],[1203,214,42,122],[1250,118,62,218],[1316,178,40,158],[1360,228,38,108]];
 add(hot("ville","Ville et immeubles",BLD.map(([x,y,w,h],i)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" class="${i%2?"c-wall2":"c-metal"}"/>`+wins(x,y,w,h)).join("")));
@@ -457,28 +505,25 @@ add(hot("serre","Serre de tomates",`<path d="M434 466 V 424 Q 491 374 548 424 V 
 let pg="";for(let y=490;y<640;y+=24)for(let x=448;x<545;x+=22)pg+=`<circle cx="${x}" cy="${y}" r="8" class="c-g2"/><circle cx="${x}" cy="${y}" r="4" class="c-g"/>`;
 add(hot("potager","Potager : pommes de terre et salades",`<rect x="434" y="476" width="114" height="166" class="c-s2"/>${pg}`));
 // verger
-let tr="";for(const x of [585,622,659])for(const y of [414,460,506,552,598])tr+=tree(x,y);
-add(hot("verger","Verger de pommiers",`<rect x="562" y="392" width="118" height="250" class="c-g2" opacity=".6"/>${tr}`));
+let tr="";for(const x of [582,621])for(const y of [414,460,506,552,598])tr+=tree(x,y);
+add(hot("verger","Verger de pommiers",`<rect x="562" y="392" width="78" height="250" class="c-g2" opacity=".6"/>${tr}`));
 // vaches
-add(hot("vaches","Élevage de vaches",`<rect x="694" y="392" width="160" height="110" class="c-g2"/>
-  <path d="M694 402 h160 M694 494 h160" stroke="var(--soil-2)" stroke-width="3"/>
+add(hot("vaches","Élevage de vaches",`<rect x="652" y="392" width="236" height="110" class="c-g2"/>
+  <path d="M652 402 h236 M652 494 h236" stroke="var(--soil-2)" stroke-width="3"/>
   <rect x="702" y="414" width="62" height="40" class="c-roof"/><polygon points="696,416 733,394 770,416" class="c-s2"/><rect x="724" y="430" width="18" height="24" class="c-wall2"/>
   ${cow(802,428,.9)}${cow(822,470,.9)}${cow(742,476,.85)}
   <rect x="784" y="486" width="34" height="10" rx="3" class="c-metal"/><rect x="787" y="487" width="28" height="5" class="c-w2"/>`));
 // porcs
-add(hot("porcs","Élevage de porcs",`<rect x="694" y="510" width="160" height="62" class="c-wall2" opacity=".55"/>
-  <rect x="702" y="526" width="74" height="40" class="c-wall2" stroke="var(--soil-2)" stroke-width="1.5"/><polygon points="696,528 739,508 782,528" class="c-roof"/>
-  ${pig(806,540)}${pig(832,558)}`));
+add(hot("porcs","Élevage de porcs",`<rect x="652" y="508" width="116" height="66" class="c-wall2" opacity=".55"/>
+  <rect x="658" y="530" width="52" height="38" class="c-wall2" stroke="var(--soil-2)" stroke-width="1.5"/><polygon points="653,532 684,513 715,532" class="c-roof"/>
+  ${pig(733,543)}${pig(746,561)}`));
+// moutons
+add(hot("moutons","Élevage de moutons",`<rect x="772" y="508" width="116" height="66" class="c-g2"/>${sheep(792,530)}${sheep(838,528)}${sheep(810,556)}${sheep(856,554)}`));
 // volailles
-add(hot("volailles","Élevage de volailles",`<rect x="694" y="580" width="160" height="62" class="c-p" stroke="var(--soil-2)" stroke-width="1.5"/>
+add(hot("volailles","Élevage de volailles",`<rect x="652" y="580" width="236" height="62" class="c-p" stroke="var(--soil-2)" stroke-width="1.5"/>
   <rect x="702" y="598" width="86" height="34" class="c-wall"/><polygon points="696,600 745,582 794,600" class="c-s2"/>
   ${[712,732,752,772].map(x=>`<rect x="${x}" y="608" width="10" height="8" class="c-win"/>`).join("")}
   ${hen(808,624)}${hen(830,612)}${hen(838,632)}`));
-// canal + péniche
-add(hot("canal","Canal et péniche",`<rect x="866" y="350" width="26" height="296" class="c-w"/>
-  <path d="M879 360 V 640" stroke="var(--water-2)" stroke-width="3" class="flow-slow"/>
-  <rect x="860" y="468" width="38" height="7" class="c-s2"/><rect x="860" y="500" width="38" height="7" class="c-s2"/>
-  <g class="bob"><rect x="870" y="540" width="18" height="62" rx="7" class="c-h"/><rect x="872" y="584" width="14" height="13" class="c-snow"/></g>`));
 // maison (structure)
 add(hot("maison","Maison",`<polygon points="898,456 1020,392 1142,456" class="c-roof"/><rect x="1086" y="404" width="18" height="34" class="c-roof"/>
   <rect x="910" y="452" width="220" height="178" class="c-wall"/>
@@ -530,16 +575,18 @@ add(hot("chateau","Château d’eau",`<rect x="1338" y="512" width="18" height="
 add(`<path d="M1347 648 H 1124" stroke="var(--water)" stroke-width="5"/><path d="M1347 648 H 1124" stroke="var(--water-2)" stroke-width="2" class="flow"/>`);
 
 const TAGS=[
-  ["glacier",286,22,"Glacier","res"],["lac",150,286,"Lac","res"],["riviere",600,328,"Rivière","res"],["nappe",640,740,"Nappe phréatique","res"],
-  ["moutons",510,232,"Moutons","elev"],["centrale",697,118,"Centrale électrique","indus"],["usine",884,160,"Usine","indus"],["agro",1018,198,"Industrie alimentaire","indus"],
-  ["ville",1250,100,"Ville","home"],["ble",110,416,"Blé","agri"],["mais",320,604,"Maïs","agri"],["pivot",321,432,"Irrigation","agri"],
-  ["serre",491,386,"Serre","agri"],["potager",491,560,"Potager","agri"],["verger",621,384,"Verger","agri"],
-  ["vaches",795,380,"Vaches","elev"],["porcs",780,512,"Porcs","elev"],["volailles",790,580,"Volailles","elev"],["canal",879,440,"Canal","indus"],
+  ["glacier",286,22,"Glacier","res"],["lac",150,286,"Lac","res"],["riviere",480,312,"Rivière","res"],["nappe",640,740,"Nappe phréatique","res"],
+  ["moutons",830,508,"Moutons","elev"],["centrale",697,200,"Centrale électrique","indus"],["usine",900,130,"Usine","indus"],["agro",1018,164,"Industrie alimentaire","indus"],
+  ["ville",1322,150,"Ville","home"],["ble",110,416,"Blé","agri"],["mais",320,604,"Maïs","agri"],["pivot",321,432,"Irrigation","agri"],
+  ["serre",491,386,"Serre","agri"],["potager",491,560,"Potager","agri"],["verger",601,410,"Verger","agri"],
+  ["vaches",840,408,"Vaches","elev"],["porcs",710,508,"Porcs","elev"],["volailles",790,580,"Volailles","elev"],["canal",880,313,"Canal","indus"],
   ["maison",1020,428,"Maison","home"],["douche",968,478,"Douche","home"],["wc",1076,474,"WC","home"],["vaisselle",966,570,"Vaisselle","home"],
   ["linge",1076,560,"Lave-linge","home"],["jardin",1050,640,"Jardin","home"],["step",1280,392,"Station d’épuration","home"],
   ["potable",1238,488,"Usine d’eau potable","home"],["chateau",1328,462,"Château d’eau","home"]];
+add(`<g class="zones">${ZONES.map(([z,,x,y])=>`<g class="zone-b" data-z="${z}" transform="translate(${x} ${y})" role="button" tabindex="0" aria-label="${SEC[z].n} : voir le récapitulatif"><rect x="0" y="-17" width="200" height="34" rx="17" style="stroke:${SEC[z].c}"/><circle cx="20" cy="0" r="7" style="fill:${SEC[z].c}"/><text x="35" y="6">${SEC[z].n}</text></g>`).join("")}</g>`);
 add(`<g class="tags" id="tags">${TAGS.map(([k,x,y,t,s])=>{const w=t.length*8.6+26;return `<g class="tag" data-for="${k}" transform="translate(${x} ${y})"><rect x="${-w/2}" y="-15" width="${w}" height="30" rx="15" style="stroke:${SEC[s].c}"/><text y="6" text-anchor="middle">${t}</text></g>`;}).join("")}</g>`);
 const scene=$("#scene"); scene.innerHTML=R.join("");
+$$(".zone-b",scene).forEach(g=>{try{$("rect",g).setAttribute("width",$("text",g).getBBox().width+52);}catch(e){}});
 
 /* ============ EXPLICATIONS AU SURVOL DES BARRES ============ */
 const TIP={
@@ -812,12 +859,57 @@ function select(k){
   render(k||"default");
   if(k&&matchMedia("(max-width:1000px)").matches)panel.scrollIntoView({behavior:REDUCE?"auto":"smooth",block:"start"});
 }
-scene.addEventListener("click",ev=>{const h=ev.target.closest(".hot");select(h?(h.dataset.k===current?null:h.dataset.k):null);});
+scene.addEventListener("click",ev=>{const z=ev.target.closest(".zone-b");if(z){goRecap(z.dataset.z);return;}const h=ev.target.closest(".hot");select(h?(h.dataset.k===current?null:h.dataset.k):null);});
 $$(".hot",scene).forEach(h=>h.addEventListener("keydown",ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();select(h.dataset.k);}}));
 document.addEventListener("keydown",ev=>{if(ev.key==="Escape")select(null);});
 $("#resetBtn").addEventListener("click",()=>select(null));
 $("#tagBtn").addEventListener("click",ev=>{const b=ev.currentTarget,on=b.getAttribute("aria-pressed")==="true";b.setAttribute("aria-pressed",!on);$("#tags").classList.toggle("off",on);$("span",b).textContent=on?"Afficher les noms":"Masquer les noms";});
 select(null);
+
+/* ============ RÉCAPITULATIF ============ */
+const kgOf=(list,key)=>{const r=list.find(x=>x[0]===key);return rnd(r[2]+r[3]+r[4]);};
+const frOf=key=>FR.find(x=>x[0]===key);
+const domOf=key=>DOM.find(x=>x[0]===key)[2];
+const kgRow=(k,l,list,key,what)=>({k,l,s:"kg",v:kgOf(list,key),t:`<b>≈ ${fmt(kgOf(list,key))} L</b> pour 1 kg de ${what}`});
+const jRow=(k,l,key,extra)=>{const f=frOf(key);return {k,l,s:"j",v:f[4],c:f[2],t:`<b>≈ ${fmt(f[4])} L prélevés</b> · ≈ ${fmt(f[2])} L consommés${extra||""}`};};
+const RECAP=[
+ {sec:"agri",i:"tractor",blocks:[
+   {u:"Litres d’eau pour produire 1 kg (empreinte eau, moyenne mondiale)",rows:[
+     kgRow("ble","Champ de blé",CROPS,"ble","blé"),kgRow("mais","Champ de maïs",CROPS,"mais","maïs"),kgRow("verger","Verger",CROPS,"pommes","pommes"),
+     kgRow("potager","Potager",CROPS,"pdt","pommes de terre"),kgRow("serre","Serre",CROPS,"tomate","tomates")]},
+   {u:"Litres par habitant et par jour en France",rows:[jRow("pivot","Irrigation","agri")]}]},
+ {sec:"elev",i:"cow",blocks:[
+   {u:"Litres d’eau pour produire 1 kg (empreinte eau, moyenne mondiale)",rows:[
+     kgRow("vaches","Vaches",ANIM,"boeuf","bœuf"),kgRow("moutons","Moutons",ANIM,"mouton","mouton"),kgRow("porcs","Porcs",ANIM,"porc","porc"),kgRow("volailles","Volailles",ANIM,"poulet","poulet")]}]},
+ {sec:"indus",i:"factory",blocks:[
+   {u:"Litres par habitant et par jour en France",rows:[jRow("centrale","Centrale électrique","energie"),jRow("canal","Canal","canaux"),jRow("usine","Usine","indus")]},
+   {rows:[{k:"agro",l:"Industrie alimentaire",note:"Comptée avec l’industrie. Eau cachée : <b>≈ 1 240 L</b> dans une pizza."}]}]},
+ {sec:"home",i:"house",blocks:[
+   {u:"Litres par habitant et par jour en France",rows:[jRow("ville","Ville (eau potable)","potable"),
+     ...[["maison","Maison",148],["douche","Douche et baignoire",domOf("douche")],["wc","Toilettes",domOf("wc")],["linge","Lave-linge",domOf("linge")],["vaisselle","Vaisselle",domOf("vaisselle")],["jardin","Jardin",domOf("jardin")]]
+       .map(([k,l,v])=>({k,l,s:"j",v,t:`<b>≈ ${fmt(v)} L</b> utilisés`}))]},
+   {rows:[{k:"potable",l:"Usine d’eau potable",note:"Rend potable l’eau pompée dans la nappe ou la rivière."},
+     {k:"chateau",l:"Château d’eau",note:"<b>1 L sur 5</b> est perdu dans les fuites des tuyaux."},
+     {k:"step",l:"Station d’épuration",note:"<b>≈ 9 L sur 10</b> de l’eau de la maison y sont nettoyés puis rendus à la rivière."}]}]}];
+function renderRecap(){
+  const max={};RECAP.forEach(g=>g.blocks.forEach(b=>b.rows.forEach(r=>{if(r.s)max[r.s]=Math.max(max[r.s]||0,r.v);})));
+  $("#recapBody").innerHTML=RECAP.map(g=>{
+    const n=g.blocks.reduce((a,b)=>a+b.rows.length,0);
+    return `<div class="rc-grp" id="rc-${g.sec}" style="--c:${SEC[g.sec].c}"><h3>${ico(g.i)}${SEC[g.sec].n} <small>· ${n} éléments</small></h3>${g.blocks.map(b=>`${b.u?`<span class="rc-u">${b.u}</span>`:""}${b.rows.map(r=>{
+      const icon=E[r.k]?.icon||g.i;
+      if(r.note)return `<button class="rc-row note" data-k="${r.k}"><span class="rc-l">${ico(icon)}${r.l}</span><span class="rc-v">${r.note}</span></button>`;
+      const w=v=>Math.max(v/max[r.s]*100,.6);
+      const bar=r.s==="kg"?`<i data-w="${w(r.v)}"></i>`:`<i class="l" data-w="${w(r.v)}"></i>${r.c!=null?`<i data-w="${r.c?w(r.c):0}"></i>`:""}`;
+      return `<button class="rc-row" data-k="${r.k}"><span class="rc-l">${ico(icon)}${r.l}</span><span class="rc-t">${bar}</span><span class="rc-v">${r.t}</span></button>`;}).join("")}`).join("")}</div>`;}).join("")
+    +`<p class="def">Unités différentes : l’empreinte eau (litres pour 1 kg) compte toute l’eau utilisée pour produire un aliment, surtout de la pluie ; les litres par habitant et par jour sont l’eau prélevée dans les rivières, les lacs et les nappes en France. Barre claire : eau prélevée (ou utilisée à la maison) ; barre foncée : la part vraiment consommée.</p>`;
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){$$("[data-w]",e.target).forEach(i=>i.style.width=i.dataset.w+"%");io.unobserve(e.target);}}),{threshold:.1});
+  $$(".rc-grp").forEach(g=>io.observe(g));
+}
+renderRecap();
+$("#recapBody").addEventListener("click",ev=>{const b=ev.target.closest(".rc-row");if(!b)return;select(b.dataset.k);
+  $(".explorer").scrollIntoView({behavior:REDUCE?"auto":"smooth",block:"start"});});
+const goRecap=z=>$("#rc-"+z)?.scrollIntoView({behavior:REDUCE?"auto":"smooth",block:"start"});
+$$(".zone-b",scene).forEach(g=>g.addEventListener("keydown",ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();goRecap(g.dataset.z);}}));
 
 /* ============ ONGLET « MES GESTES » ============ */
 const GCAT={bain:{n:"Salle de bain",c:"var(--water)"},maison:{n:"Maison, jardin et voiture",c:"var(--home)"},alim:{n:"Alimentation",c:"var(--agri)"},vet:{n:"Vêtements",c:"var(--indus)"},trans:{n:"Transports",c:"var(--trans)"},num:{n:"Numérique",c:"var(--num)"}};
