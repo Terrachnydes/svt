@@ -1430,6 +1430,9 @@ function ordreEleves(a, b) {
   if (x && y) return (x.nom + x.prenom).localeCompare(y.nom + y.prenom, 'fr');
   return a.localeCompare(b, 'fr', { numeric: true });
 }
+// Élèves affichés : quand eleves.csv est chargé, un identifiant sans nom (élève parti, place vide : ex. 4H-16) est masqué.
+const eleveVisible = id => !Object.keys(ELEVES).length || !!ELEVES[id];
+const elevesClasse = cl => Object.keys((SV && SV.eleves[cl]) || {}).filter(eleveVisible).sort(ordreEleves);
 function blocNoms() {
   const n = Object.keys(ELEVES).length;
   let garde = false; try { garde = !!localStorage.getItem(CLE_NOMS); } catch (e) {}
@@ -1537,7 +1540,7 @@ function dessinerSuivi() {
 
   const lignes = [], toutesMoy = {}, toutesGen = [], toutesAtt = [];
   vues.forEach(cl => {
-    const C = SV.classes[cl], P = C.periodes[svPer] || { devoirs: [] }, ids = Object.keys(SV.eleves[cl] || {}).sort(ordreEleves);
+    const C = SV.classes[cl], P = C.periodes[svPer] || { devoirs: [] }, ids = elevesClasse(cl);
     const moyCl = {}, gen = [], att = [];
     ids.forEach(id => {
       const p = SV.eleves[cl][id].p[svPer]; gen.push(p ? num(p.moy) : null); att.push(p ? num(p.notes.A) : null);
@@ -1600,7 +1603,7 @@ function celluleClasse(cl, P, k, m) {
 }
 function defautsClasse(cl) {
   const t = {};
-  Object.values(SV.eleves[cl] || {}).forEach(e => (e.defauts || []).forEach(([f, n]) => t[f] = (t[f] || 0) + n));
+  Object.entries(SV.eleves[cl] || {}).filter(([id]) => eleveVisible(id)).forEach(([, e]) => (e.defauts || []).forEach(([f, n]) => t[f] = (t[f] || 0) + n));
   return Object.entries(t).sort((a, b) => b[1] - a[1]);
 }
 
@@ -1642,7 +1645,7 @@ function popHeure(cible, date, hh) {
 // Choix de l'élève d'une place (échange si l'élève choisi est déjà assis ailleurs)
 function popPlace(cible, cl, place) {
   const [r, c] = place.split('|').map(Number), plan = planClasse(cl), actuel = plan[r][c];
-  const ids = Object.keys(SV.eleves[cl] || {}).sort(ordreEleves);
+  const ids = elevesClasse(cl);
   ouvrirPop(cible, `<h4>Place rangée ${r + 1}, table ${c + 1}</h4>
     <select data-choix-place>${['<option value="">— place vide —</option>'].concat(ids.map(id => `<option value="${esc(id)}" ${id === actuel ? 'selected' : ''}>${esc(nomEleve(id))}${plan.some(l => l.includes(id)) && id !== actuel ? ' (déjà placé)' : ''}</option>`)).join('')}</select>
     <div class="sous">Si l'élève est déjà assis ailleurs, les deux échangent leurs places.</div>`);
@@ -1722,7 +1725,7 @@ function panneauEleve(cl, id) {
   });
 }
 function panneauClasse(cl) {
-  const C = SV.classes[cl], P = C.periodes[svPer] || {}, ids = Object.keys(SV.eleves[cl] || {});
+  const C = SV.classes[cl], P = C.periodes[svPer] || {}, ids = elevesClasse(cl);
   const sans = ids.filter(id => !((SV.eleves[cl][id].p[svPer] || {}).app)).length;
   const def = defautsClasse(cl), max = Math.max(1, ...def.map(d => d[1]));
   const acts = Object.entries(SV.acts[cl] || {}).filter(([, a]) => a.periode === String(svPer) && a.moy != null).sort((x, y) => ordreCode(x[0], y[0]));
@@ -1887,7 +1890,7 @@ function dessinerActivite() {
   // Élèves de la classe + présence : pendant le cours (10 min avant → 5 min après), vert = a ouvert son
   // cahier depuis le début du cours, rouge = pas encore connecté. Hors cours : pas de pastille.
   const vus = ((CO && CO.eleves) || {})[acCl] || {};
-  const ids = Object.keys(SV.eleves[acCl] || {}).sort(ordreEleves);
+  const ids = elevesClasse(acCl);
   const debut = leCours ? minutes(leCours[0]) : null;
   const enCours = debut != null && h.min >= debut - 10 && h.min < debut + 60, demiGroupe = leCours ? leCours[2] || '' : '';
   const pres = id => { if (!enCours) return ''; const t = vus[id]; return t && minutes(t) >= debut - 10 && minutes(t) <= h.min + 1 ? 'co' : (demiGroupe ? '' : 'abs'); };
@@ -1906,7 +1909,7 @@ function dessinerActivite() {
   const rangs = plan.slice(0, nbRangs).map((r, ri) => r.map((id, c) => {
     const sep = c === 1 || c === 5 ? '<div class="allee"></div>' : '';
     if (ri === 6 && c > 0) return sep + '<div></div>';   // 7e rangée : seulement la place de gauche
-    if (id && id !== '?' && SV.eleves[acCl][id]) { places.add(id); return sep + carte(id, `${ri}|${c}`); }
+    if (id && id !== '?' && SV.eleves[acCl][id] && eleveVisible(id)) { places.add(id); return sep + carte(id, `${ri}|${c}`); }
     return sep + `<div class="elv vide" data-place="${ri}|${c}" title="Place libre : clique pour y mettre un élève">${id === '?' ? '<small>?</small>' : ''}</div>`;
   }).join('')).join('');
   const eleves = `<div class="plan-defile"><div class="plan">${rangs}</div></div>
