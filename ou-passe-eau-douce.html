@@ -612,7 +612,8 @@ const domBars=hl=>({title:"À la maison en France : litres par personne et par j
 // empreinte eau, moyenne mondiale (L/kg) : verte, bleue, grise
 const CROPS=[["ble","Blé",1277,342,207,"wheat"],["riz","Riz",1146,341,187,"bowl"],["mais","Maïs",947,81,194,"sprout"],["pommes","Pommes",561,133,127,"apple"],["pdt","Pommes de terre",191,33,63,"potato"],["salade","Salade",133,28,77,"leaf"],["tomate","Tomates",108,63,43,"tomato"]];
 const ANIM=[["boeuf","Bœuf",14414,550,451,"cow"],["mouton","Mouton",9813,522,76,"sheep"],["porc","Porc",4907,459,622,"pig"],["poulet","Poulet",3545,313,467,"hen"],["oeufs","Œufs",2592,244,429,"egg"],["lait","Lait (par litre)",863,86,72,"milk"]];
-const fpBars=(list,hl,title)=>({title,unit:"litres pour 1 kg (moyenne mondiale)",stack:true,long:true,rows:list.map(([k,l,g,b,gr,i])=>({k,l,i,parts:[g,b,gr],v:g+b+gr,t:`≈ ${fmt(rnd(g+b+gr))} L ${k==="lait"?"pour 1 L":"pour 1 kg"}`,tip:`<b>Pluie (eau verte) ≈ ${fmt(rnd(g))} L · irrigation (eau bleue) ≈ ${fmt(rnd(b))} L · eau grise ≈ ${fmt(rnd(gr))} L</b> ${k==="lait"?"pour 1 L":"pour 1 kg"}. ${TIP[k]||""}`})),hl});
+// simple = une seule barre, sans distinguer eau verte / bleue / grise (cultures)
+const fpBars=(list,hl,title,simple)=>({title,unit:"litres pour 1 kg (moyenne mondiale)",stack:!simple,long:true,rows:list.map(([k,l,g,b,gr,i])=>({k,l,i,parts:[g,b,gr],v:g+b+gr,t:`≈ ${fmt(rnd(g+b+gr))} L ${k==="lait"?"pour 1 L":"pour 1 kg"}`,tip:simple?TIP[k]:`<b>Pluie (eau verte) ≈ ${fmt(rnd(g))} L · irrigation (eau bleue) ≈ ${fmt(rnd(b))} L · eau grise ≈ ${fmt(rnd(gr))} L</b> ${k==="lait"?"pour 1 L":"pour 1 kg"}. ${TIP[k]||""}`})),hl});
 const FRESH=[["glace","Glaces et glaciers",68.7,"snow"],["nappe","Nappes souterraines",30.1,"layers"],["surface","Lacs, rivières, marais, sols, air",1.2,"wave"]];
 const freshBars=hl=>({title:"Où se trouve l’eau douce de la Terre ?",unit:"pourcentage de toute l’eau douce",rows:FRESH.map(([k,l,v,i])=>({k,l,v,i,t:`${fmt(v)} % de l’eau douce`,c:"var(--water)"})),hl});
 const pct=(a,b)=>a/b*100;
@@ -620,8 +621,8 @@ const rnd=v=>v>=1000?Math.round(v/100)*100:Math.round(v/10)*10;
 
 function crop(k,key,title,icon,extra){
   const c=CROPS.find(x=>x[0]===key), tot=c[2]+c[3]+c[4];
-  return {sec:"agri",title,icon,kpi:{n:`≈ ${fmt(rnd(tot))} L`,u:`d’eau pour produire 1 kg de ${c[1].toLowerCase()}`,x:`Dont seulement ≈ ${fmt(rnd(c[3]))} L d’eau prélevée (eau bleue) : le reste est surtout de la pluie. ${extra}`},
-    c1:fpBars(CROPS,key,"Eau pour produire 1 kg de culture (empreinte eau)"),
+  return {sec:"agri",title,icon,kpi:{n:`≈ ${fmt(rnd(tot))} L`,u:`d’eau pour produire 1 kg de ${c[1].toLowerCase()}`,x:extra},
+    c1:fpBars(CROPS,key,"Eau pour produire 1 kg de culture",true),
     c2:{title:"Quelle part ?",rows:[{l:`Eau de pluie (eau verte) dans l’empreinte ${c[1]==="Pommes"?"des pommes":c[1]==="Tomates"?"des tomates":"de la culture"}`,p:pct(c[2],tot),c:"var(--green)"},...P.agri]},
     text:"La plus grande partie de cette eau est de la pluie utilisée par la plante. L’eau bleue est l’eau d’irrigation prélevée dans les rivières et les nappes. Dans le monde, l’agriculture prélève 70 % de l’eau ; en France seulement 9 %, mais c’est elle qui en consomme le plus (58 %).",
     src:"Water Footprint Network (Mekonnen et Hoekstra, 2011) ; FAO AQUASTAT ; SDES 2010-2019."};
@@ -732,7 +733,7 @@ const E={
 };
 
 /* ============ TEXTES : comment / pourquoi l'eau est consommée ============ */
-const WHY_CROP="<b>Pourquoi cette eau est consommée ?</b> La plante absorbe l’eau du sol par ses racines. Presque toute cette eau ressort par ses feuilles sous forme de vapeur (c’est la transpiration) : elle part dans l’air et ne revient pas à la rivière. Une petite partie reste dans la plante. Cette eau est surtout de la pluie (eau verte) ; l’eau bleue est l’eau d’irrigation pompée dans les rivières et les nappes.";
+const WHY_CROP="<b>Pourquoi cette eau est consommée ?</b> La plante absorbe l’eau du sol par ses racines. Presque toute cette eau ressort par ses feuilles sous forme de vapeur (c’est la transpiration) : elle part dans l’air et ne revient pas à la rivière. Une petite partie reste dans la plante. Cette eau vient surtout de la pluie, et parfois de l’irrigation.";
 const WHY_ANIM="<b>Pourquoi cette eau est consommée ?</b> Presque toute cette eau a servi à faire pousser l’herbe, les céréales et le soja que l’animal a mangés pendant sa vie. C’est surtout de la pluie tombée sur les prairies et les champs : les plantes l’ont absorbée puis rejetée dans l’air par leurs feuilles. L’eau bue par l’animal ne compte que pour une toute petite part.";
 const WHY={
   "default":"<b>Prélevée ou consommée ?</b> L’eau prélevée est retirée des rivières, des lacs et des nappes. Elle est consommée quand elle ne revient pas à la nature : elle s’évapore, elle est absorbée par les plantes ou elle reste dans les produits. Dans le monde, c’est surtout l’agriculture qui prélève et consomme l’eau, car les plantes irriguées la rejettent dans l’air par leurs feuilles.",
