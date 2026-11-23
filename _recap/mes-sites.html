@@ -212,6 +212,17 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 .wrap.prof{padding-block:6px 24px;gap:8px}
 .wrap.prof header{display:none}
 .wrap.prof .tabs>button{padding:6px 12px;font-size:.92rem}
+#prog .sv-haut{display:flex;gap:8px;align-items:flex-start}
+#prog .sv-haut .barre2{flex:1;min-width:0;flex-direction:column;align-items:stretch;gap:4px!important}
+#prog .barre2 .lg{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center}
+#prog .barre2 .filtres button{padding:2px 8px;font-size:12.5px}
+#prog .mini-plan{flex:none;display:grid;grid-template-columns:repeat(1,52px) 6px repeat(4,52px) 6px repeat(2,52px);gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px;align-content:start}
+#prog .mini-plan i{display:block}
+#prog .mini-plan .mp{font:inherit;font-size:10px;line-height:1.3;padding:0 2px;border:0;border-radius:4px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:var(--thumb);color:var(--fg)}
+#prog .mini-plan .mp.bon{background:#d6f0e4;color:#14603f}#prog .mini-plan .mp.moyen{background:#fdf0c8;color:#7a5a00}#prog .mini-plan .mp.faible{background:#fbdcd8;color:#9b2c20}
+#prog .mini-plan .mp:hover{outline:2px solid var(--accent)}
+#prog .mini-plan .mp-vide{border:1px dashed var(--line);border-radius:4px;min-height:13px}
+@media (max-width:900px){#prog .sv-haut{flex-direction:column}#prog .mini-plan{align-self:flex-start;max-width:100%;overflow-x:auto}}
 #prog .barre{padding:6px 8px!important;gap:6px 8px!important;border-radius:10px!important}
 #prog .barre select{padding:4px 6px!important;font-size:13px!important}
 #prog .barre .filtres button{padding:3px 10px;font-size:13px}
@@ -318,7 +329,7 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .pt{width:10px;height:10px;border-radius:50%;background:#d5dbd7;flex:none}
 #prog .pt.co{background:#22a35a;box-shadow:0 0 0 3px rgba(34,163,90,.2)}
 #prog .pt.abs{background:#d93a2b;box-shadow:0 0 0 3px rgba(217,58,43,.18)}
-#prog .plan-defile{max-width:100%}
+#prog .plan-defile{max-width:100%;overflow-x:auto}
 #prog .plan{display:grid;grid-template-columns:minmax(0,1fr) 34px repeat(4,minmax(0,1fr)) 34px repeat(2,minmax(0,1fr));gap:5px}
 /* Allées entre la 1re et la 2e colonne de tables, et entre la 5e et la 6e : trait vertical bien visible */
 #prog .plan .allee{align-self:stretch;background:linear-gradient(var(--muted),var(--muted)) center/3px 100% no-repeat;opacity:.45;border-radius:2px}
@@ -1818,19 +1829,35 @@ function dessinerSuivi() {
     ${codes.map(k => { const m = moyenne(toutesMoy[k] || []); return `<td><span class="n ${classeNote(m)}">${fr(m)}</span></td>`; }).join('')}<td></td></tr>`);
 
   $('#sv-main').innerHTML = `
-    <div class="barre">
+    <div class="sv-haut"><div class="barre barre2"><div class="lg">
       <div class="filtres">${[1, 2, 3].map(p => `<button type="button" aria-pressed="${String(p) === String(svPer)}" data-svper="${p}" title="Trimestre ${p}">T${p}</button>`).join('')}</div>
       <span class="sep2"></span>
       ${NIVEAUX.map(n => `<div class="filtres">${classesNiveau(n).map(c => `<button type="button" aria-pressed="${c === svCl}" data-svcl="${c}">${c}</button>`).join('')}</div>`).join('')}
+      </div><div class="lg">
       ${(() => { const t = +((SV.classes[svCl] || {}).trimestre || 1); return t < 3 ? `<button class="bouton leger petit" type="button" data-cloturer="${t}" title="Toutes les classes passent au T${t + 1}. Les activités du T${t} qui ne sont pas terminées (sans note, demi-groupe pas passé, copies à corriger) passent entières au T${t + 1}.">🔒 Clôturer le T${t}</button>` : ''; })()}
       <span class="fin"></span>${blocNoms()}
       <span class="sous" title="Clique sur une case de classe : publier sur Pronote, corriger, facultative, arrêter. Clique sur un élève : statistiques et appréciation. Barré = note non comptée · · = ouverte non rendue · ✎ = rendue, pas corrigée.">ⓘ</span>
       <button class="bouton leger petit" type="button" data-actualiser title="Résumé du ${esc(SV.maj || '?')}">↻</button>
-    </div>
+    </div></div>${miniPlan(svCl)}</div>
     <div class="attente" hidden></div>
     ${vues.length ? `<div class="tabl"><table class="sv"><thead><tr><th class="nom">Élève</th><th title="Profil particulier (D, NE, M, T)">Profil</th><th>Comportement</th><th title="Profil de résultats du trimestre (+ activités manquantes si besoin)">Travail</th><th>Moy.</th><th title="Note d'attitude (A)">Attitude</th>${codes.map(k => `<th>${esc(k)}</th>`).join('')}<th>Appréciation T${svPer}</th></tr></thead>
       <tbody>${lignes.join('')}</tbody></table></div>` : '<div class="info">Aucune classe avec des élèves à ce niveau.</div>'}`;
   majAttente();
+}
+// Plan de classe simplifié (Suivi) : prénom coloré selon la moyenne du trimestre, clic = fiche de l'élève
+function miniPlan(cl) {
+  if (!cl || !SV.classes[cl]) return '';
+  const plan = planClasse(cl);
+  if (!plan.some(r => r.some(x => x && x !== '?'))) return '';
+  const cases = plan.map((r, ri) => r.map((id, c) => {
+    const sep = c === 1 || c === 5 ? '<i></i>' : '';
+    if (ri === 6 && c > 0) return sep + '<span></span>';
+    const E = id && (SV.eleves[cl] || {})[id];
+    if (!E || !eleveVisible(id)) return sep + '<span class="mp-vide"></span>';
+    const m = num((E.p[svPer] || {}).moy), e = ELEVES[id];
+    return sep + `<button type="button" class="mp ${classeNote(m)}" data-pel="${cl}|${id}" title="${esc(nomEleve(id) + ' · ' + fr(m))}">${esc(e ? e.prenom : id)}</button>`;
+  }).join('')).join('');
+  return `<div class="mini-plan" title="Plan de classe ${cl} (couleur = moyenne du T${svPer})">${cases}</div>`;
 }
 function celluleClasse(cl, P, k, m) {
   const d = (P.devoirs || []).find(x => x.code === k), a = (SV.acts[cl] || {})[k];
