@@ -541,6 +541,56 @@ const TAGS=[
 add(`<g class="tags" id="tags">${TAGS.map(([k,x,y,t,s])=>{const w=t.length*8.6+26;return `<g class="tag" data-for="${k}" transform="translate(${x} ${y})"><rect x="${-w/2}" y="-15" width="${w}" height="30" rx="15" style="stroke:${SEC[s].c}"/><text y="6" text-anchor="middle">${t}</text></g>`;}).join("")}</g>`);
 const scene=$("#scene"); scene.innerHTML=R.join("");
 
+/* ============ EXPLICATIONS AU SURVOL DES BARRES ============ */
+const TIP={
+  a:"L’eau sert surtout à irriguer les champs. Les plantes l’absorbent puis la rejettent dans l’air par leurs feuilles : c’est l’usage qui consomme le plus d’eau.",
+  i:"L’eau refroidit les centrales et les machines, et sert à fabriquer. Elle est presque toute rendue aux rivières, un peu plus chaude ; seule une petite partie s’évapore.",
+  h:"C’est l’eau potable des maisons, des écoles et des commerces. Après usage, elle part à l’égout, est nettoyée puis rendue à la rivière.",
+  glace:"Les glaces des pôles et les glaciers : de l’eau douce gelée, presque impossible à utiliser directement. En fondant, les glaciers alimentent les rivières.",
+  nappe:"L’eau cachée dans les roches du sous-sol. On la pompe par des forages pour l’eau potable et l’irrigation. Elle se recharge lentement avec la pluie.",
+  surface:"La seule eau douce facile à utiliser. Elle se renouvelle avec la pluie, mais une partie s’évapore chaque été.",
+  ble:"Le blé pousse surtout en hiver et au printemps, quand il pleut : il est rarement irrigué en France. Il rejette l’eau dans l’air par ses feuilles.",
+  riz:"Le riz pousse souvent dans des champs inondés : beaucoup d’eau s’évapore à la surface du champ.",
+  mais:"Le maïs grandit en été, quand il pleut peu : on l’irrigue souvent. Il rejette cette eau dans l’air par ses feuilles.",
+  pommes:"Le pommier rejette beaucoup d’eau par ses feuilles pendant tout l’été.",
+  pdt:"La pomme de terre contient beaucoup d’eau et un champ en produit beaucoup de kilos : il faut peu d’eau pour 1 kg.",
+  salade:"La salade est faite presque uniquement d’eau et pousse vite : il faut peu d’eau pour 1 kg.",
+  tomate:"Un plant de tomates produit beaucoup de kilos, souvent en serre avec un arrosage au goutte-à-goutte : peu d’eau est perdue.",
+  boeuf:"Une vache vit environ 3 ans avant l’abattoir et mange beaucoup d’herbe et de céréales : c’est la viande qui demande le plus d’eau.",
+  mouton:"Le mouton mange surtout l’herbe des prairies, qui pousse grâce à la pluie.",
+  porc:"Le porc mange surtout des céréales et du soja, et grandit plus vite qu’une vache.",
+  poulet:"Le poulet grandit très vite et mange peu : il demande moins d’eau que le bœuf ou le porc.",
+  oeufs:"Cette eau a surtout servi à faire pousser les céréales mangées par les poules.",
+  lait:"Cette eau a surtout servi à faire pousser l’herbe et les céréales mangées par la vache laitière.",
+  douche:"≈ 12 L par minute de douche. L’eau repart à l’égout puis à la station d’épuration ; seule la buée s’évapore.",
+  wc:"≈ 6 à 9 L par chasse d’eau. Toute l’eau part à l’égout : de l’eau potable sert juste à évacuer les déchets.",
+  linge:"≈ 40 à 60 L par lavage. L’eau part à l’égout ; celle qui reste dans le linge s’évapore quand il sèche.",
+  vaisselle:"≈ 12 L par cycle de lave-vaisselle, ≈ 12 L par minute au robinet. L’eau part à l’égout ; seule l’eau qui sèche sur la vaisselle s’évapore.",
+  cuisine:"Eau pour laver et cuire les aliments. Une partie s’évapore pendant la cuisson, le reste part à l’égout.",
+  jardin:"≈ 15 L par minute avec un tuyau. L’eau est absorbée par les plantes ou s’évapore : elle est vraiment consommée.",
+  divers:"Ménage, lavage des mains, animaux… Cette eau part surtout à l’égout.",
+  boisson:"Seulement ≈ 1,5 L par personne et par jour : c’est l’eau que l’on boit. Elle est consommée par notre corps.",
+  sub:"On inonde le champ : beaucoup d’eau s’évapore ou s’infiltre trop profond avant d’atteindre les racines.",
+  asp:"L’eau est projetée en pluie : une partie s’évapore dans l’air ou est emportée par le vent avant d’arriver aux racines.",
+  gag:"L’eau arrive goutte à goutte au pied de chaque plante : presque rien n’est perdu.",
+  jean:"De la culture du coton jusqu’aux lavages à la maison. Le coton est souvent irrigué : il absorbe l’eau et la rejette par ses feuilles.",
+  ts:"Presque toute cette eau a servi à faire pousser les ≈ 250 g de coton du T-shirt.",
+  ch:"Surtout l’eau consommée par les cacaoyers, dans les pays tropicaux.",
+  be:"Il faut ≈ 20 L de lait pour 1 kg de beurre : c’est surtout l’eau de la nourriture des vaches.",
+  pz:"L’eau du blé de la pâte, des tomates de la sauce et de la nourriture des vaches qui donnent le lait du fromage.",
+  pa:"Surtout l’eau consommée par le blé qui donne la farine.",
+  la:"L’eau de l’herbe et des céréales mangées par la vache laitière.",
+  oe:"L’eau des céréales mangées par la poule.",
+  pt:"Les pâtes sont faites avec du blé dur : c’est surtout l’eau du champ de blé.",
+  ca:"L’eau consommée par les caféiers pour produire les grains de café.",
+  fr:"Il faut ≈ 10 L de lait pour 1 kg de fromage : c’est surtout l’eau de la nourriture des vaches.",
+  th:"Une tasse de thé ne demande que quelques grammes de feuilles : peu d’eau.",
+  rob:"L’eau arrive au robinet sous pression grâce à la hauteur du château d’eau.",
+  fui:"L’eau fuit par des tuyaux abîmés et s’infiltre dans le sol : elle a été pompée et traitée pour rien.",
+  eg:"Douche, WC, vaisselle, linge : cette eau part à l’égout, est nettoyée puis rendue à la rivière. Elle n’est pas consommée.",
+  no:"Arrosage, boisson, lavage de la voiture : cette eau ne repart pas à l’égout. Elle est absorbée par les plantes, bue ou évaporée : elle est consommée."
+};
+
 /* ============ DONNÉES ============ */
 // France : eau prélevée par personne et par jour (SDES, moyenne 2010-2019, 66 M hab.)
 // Eau vraiment consommée par habitant et par jour (SDES : 4,1 milliards de m³ par an ; agriculture 58 %, eau potable 26 %, énergie 12 %, industrie 4 %) ; 5e valeur = eau prélevée
@@ -550,7 +600,7 @@ const FR=[
  ["energie","Refroidir les centrales électriques",20,"bolt",700,"Cette eau refroidit la centrale puis retourne au fleuve, un peu plus chaude. Seule l’eau évaporée par les tours de refroidissement est consommée."],
  ["indus","Industrie",7,"factory",110,"L’eau sert à refroidir, laver et fabriquer. Elle est presque toute rendue à la rivière après traitement ; un peu s’évapore ou reste dans les produits."],
  ["canaux","Alimenter les canaux",0,"boat",215,"L’eau remplit les canaux et les écluses puis retourne presque entièrement aux rivières : elle n’est presque pas consommée."]];
-const frBars=hl=>({title:"En France : eau vraiment consommée par habitant et par jour",unit:"litres par habitant et par jour",long:true,rows:FR.map(([k,l,v,i,p,x])=>({k,l,v,i,t:`≈ ${fmt(v)} L par habitant et par jour`,tip:`<b>Eau prélevée : ≈ ${fmt(p)} L</b> par habitant et par jour. ${x}`})),hl,foot:"Total ≈ 170 L par habitant et par jour. Passe la souris sur une barre pour voir l’eau prélevée."});
+const frBars=hl=>({title:"En France : eau vraiment consommée par habitant et par jour",unit:"litres par habitant et par jour",long:true,rows:FR.map(([k,l,v,i,p,x])=>({k,l,v,i,t:`≈ ${fmt(v)} L par habitant et par jour`,tip:`<b>Eau prélevée : ≈ ${fmt(p)} L</b> par habitant et par jour. ${x}`})),hl,foot:"Total ≈ 170 L par habitant et par jour."});
 const P={
   agri:[{l:"Monde · eau prélevée",p:70},{l:"France · eau prélevée",p:9},{l:"France · eau consommée",p:58}],
   home:[{l:"Monde · eau prélevée (villes et foyers)",p:10},{l:"France · eau prélevée (eau potable)",p:16},{l:"France · eau consommée (eau potable)",p:26}],
@@ -562,7 +612,7 @@ const domBars=hl=>({title:"À la maison en France : litres par personne et par j
 // empreinte eau, moyenne mondiale (L/kg) : verte, bleue, grise
 const CROPS=[["ble","Blé",1277,342,207,"wheat"],["riz","Riz",1146,341,187,"bowl"],["mais","Maïs",947,81,194,"sprout"],["pommes","Pommes",561,133,127,"apple"],["pdt","Pommes de terre",191,33,63,"potato"],["salade","Salade",133,28,77,"leaf"],["tomate","Tomates",108,63,43,"tomato"]];
 const ANIM=[["boeuf","Bœuf",14414,550,451,"cow"],["mouton","Mouton",9813,522,76,"sheep"],["porc","Porc",4907,459,622,"pig"],["poulet","Poulet",3545,313,467,"hen"],["oeufs","Œufs",2592,244,429,"egg"],["lait","Lait (par litre)",863,86,72,"milk"]];
-const fpBars=(list,hl,title)=>({title,unit:"litres pour 1 kg (moyenne mondiale)",stack:true,long:true,rows:list.map(([k,l,g,b,gr,i])=>({k,l,i,parts:[g,b,gr],v:g+b+gr,t:`≈ ${fmt(rnd(g+b+gr))} L ${k==="lait"?"pour 1 L":"pour 1 kg"}`})),hl});
+const fpBars=(list,hl,title)=>({title,unit:"litres pour 1 kg (moyenne mondiale)",stack:true,long:true,rows:list.map(([k,l,g,b,gr,i])=>({k,l,i,parts:[g,b,gr],v:g+b+gr,t:`≈ ${fmt(rnd(g+b+gr))} L ${k==="lait"?"pour 1 L":"pour 1 kg"}`,tip:`<b>Pluie (eau verte) ≈ ${fmt(rnd(g))} L · irrigation (eau bleue) ≈ ${fmt(rnd(b))} L · eau grise ≈ ${fmt(rnd(gr))} L</b> ${k==="lait"?"pour 1 L":"pour 1 kg"}. ${TIP[k]||""}`})),hl});
 const FRESH=[["glace","Glaces et glaciers",68.7,"snow"],["nappe","Nappes souterraines",30.1,"layers"],["surface","Lacs, rivières, marais, sols, air",1.2,"wave"]];
 const freshBars=hl=>({title:"Où se trouve l’eau douce de la Terre ?",unit:"pourcentage de toute l’eau douce",rows:FRESH.map(([k,l,v,i])=>({k,l,v,i,t:`${fmt(v)} % de l’eau douce`,c:"var(--water)"})),hl});
 const pct=(a,b)=>a/b*100;
@@ -715,11 +765,13 @@ function barsHTML(c,col){
   const max=Math.max(...c.rows.map(r=>r.v));
   const hasHl=c.hl!=null;
   return `<div class="bars ${hasHl?"has-hl":""} ${c.long?"long":""}">${c.rows.map(r=>{
+    if(!r.tip&&TIP[r.k])r.tip=TIP[r.k];
     const fill=c.stack?r.parts.map((p,j)=>`<i data-w="${p/max*100}" style="background:${["var(--green)","var(--water)","var(--grey)"][j]}"></i>`).join("")
       :`<i data-w="${Math.max(r.v/max*100,.6)}" style="background:${r.c||col}"></i>`;
     return `<div class="br ${r.k===c.hl?"hl":""}${r.tip?" has-tip":""}"${r.tip?' tabindex="0"':""}><span class="bl">${r.i?`<span style="color:${r.c||col}">${ico(r.i)}</span>`:""}<span>${r.l}</span></span><span class="bv">${r.t}</span><span class="bt">${fill}</span>${r.tip?`<span class="tip" role="tooltip">${r.tip}</span>`:""}</div>`;}).join("")}</div>
     ${c.stack?`<div class="mini-leg"><span><i class="sw" style="background:var(--green)"></i>eau verte (pluie)</span><span><i class="sw" style="background:var(--water)"></i>eau bleue (irrigation, prélevée)</span><span><i class="sw" style="background:var(--grey)"></i>eau grise (pour diluer la pollution)</span></div>`:""}
-    ${c.foot?`<p class="def">${c.foot}</p>`:""}`;
+    ${c.foot?`<p class="def">${c.foot}</p>`:""}
+    ${c.rows.some(r=>r.tip)?`<p class="def">ⓘ Passe la souris sur une barre (ou touche-la) pour avoir une explication.</p>`:""}`;
 }
 function partsHTML(c,col){
   const pf=p=>p<10?nf.format(Math.round(p*10)/10):nf.format(Math.round(p));
