@@ -558,13 +558,13 @@ const P={
   energie:[{l:"France · eau prélevée",p:51},{l:"France · eau consommée",p:12},{l:"Eau rendue au fleuve par une centrale à tours",p:77,c:"var(--water)"}],
 };
 const DOM=[["douche","Bains et douches",58,"shower",39],["wc","Toilettes",30,"wc",20],["linge","Linge",18,"washer",12],["vaisselle","Vaisselle",15,"dish",10],["cuisine","Cuisine",9,"pot",6],["jardin","Jardin et voiture",9,"sprout",6],["divers","Divers",9,"dots",6],["boisson","Boisson",1.5,"glass",1]];
-const domBars=hl=>({title:"À la maison en France : litres par personne et par jour",unit:"litres / personne / jour",rows:DOM.map(([k,l,v,i])=>({k,l,v,i,t:`≈ ${fmt(v)} L`})),hl,foot:"Total ≈ 148 L par personne et par jour."});
+const domBars=hl=>({title:"À la maison en France : litres par personne et par jour",unit:"litres / personne / jour",long:true,rows:DOM.map(([k,l,v,i])=>({k,l,v,i,t:`≈ ${fmt(v)} L par personne et par jour`})),hl,foot:"Total ≈ 148 L par personne et par jour."});
 // empreinte eau, moyenne mondiale (L/kg) : verte, bleue, grise
 const CROPS=[["ble","Blé",1277,342,207,"wheat"],["riz","Riz",1146,341,187,"bowl"],["mais","Maïs",947,81,194,"sprout"],["pommes","Pommes",561,133,127,"apple"],["pdt","Pommes de terre",191,33,63,"potato"],["salade","Salade",133,28,77,"leaf"],["tomate","Tomates",108,63,43,"tomato"]];
 const ANIM=[["boeuf","Bœuf",14414,550,451,"cow"],["mouton","Mouton",9813,522,76,"sheep"],["porc","Porc",4907,459,622,"pig"],["poulet","Poulet",3545,313,467,"hen"],["oeufs","Œufs",2592,244,429,"egg"],["lait","Lait (par litre)",863,86,72,"milk"]];
-const fpBars=(list,hl,title)=>({title,unit:"litres pour 1 kg (moyenne mondiale)",stack:true,rows:list.map(([k,l,g,b,gr,i])=>({k,l,i,parts:[g,b,gr],v:g+b+gr,t:`≈ ${fmt(rnd(g+b+gr))} L`})),hl});
+const fpBars=(list,hl,title)=>({title,unit:"litres pour 1 kg (moyenne mondiale)",stack:true,long:true,rows:list.map(([k,l,g,b,gr,i])=>({k,l,i,parts:[g,b,gr],v:g+b+gr,t:`≈ ${fmt(rnd(g+b+gr))} L ${k==="lait"?"pour 1 L":"pour 1 kg"}`})),hl});
 const FRESH=[["glace","Glaces et glaciers",68.7,"snow"],["nappe","Nappes souterraines",30.1,"layers"],["surface","Lacs, rivières, marais, sols, air",1.2,"wave"]];
-const freshBars=hl=>({title:"Où se trouve l’eau douce de la Terre ?",unit:"pourcentage de toute l’eau douce",rows:FRESH.map(([k,l,v,i])=>({k,l,v,i,t:`${fmt(v)} %`,c:"var(--water)"})),hl});
+const freshBars=hl=>({title:"Où se trouve l’eau douce de la Terre ?",unit:"pourcentage de toute l’eau douce",rows:FRESH.map(([k,l,v,i])=>({k,l,v,i,t:`${fmt(v)} % de l’eau douce`,c:"var(--water)"})),hl});
 const pct=(a,b)=>a/b*100;
 const rnd=v=>v>=1000?Math.round(v/100)*100:Math.round(v/10)*10;
 
@@ -596,7 +596,7 @@ function dom(k,title,icon,x){
 const E={
   "default":{sec:null,title:"Vue générale",icon:"globe",kpi:{n:"≈ 1 400 L",u:"d’eau douce prélevée chaque jour dans le monde, si on la partage entre tous les habitants",x:"En France : ≈ 1 360 L prélevés, dont ≈ 170 L vraiment consommés. À la maison, une personne n’utilise que ≈ 148 L par jour."},
     c1:{type:"drops",title:"Sur 100 gouttes d’eau douce prélevées dans le monde"},
-    c2:{title:"Dans le monde : eau prélevée, partagée entre tous les habitants",unit:"litres par habitant et par jour",rows:[{k:"a",l:"Agriculture",i:"tractor",v:980,t:"≈ 980 L",c:"var(--agri)"},{k:"i",l:"Industrie et énergie",i:"factory",v:280,t:"≈ 280 L",c:"var(--indus)"},{k:"h",l:"Villes et foyers",i:"house",v:140,t:"≈ 140 L",c:"var(--home)"}]},
+    c2:{title:"Dans le monde : eau prélevée, partagée entre tous les habitants",unit:"litres par habitant et par jour",long:true,rows:[{k:"a",l:"Agriculture",i:"tractor",v:980,t:"≈ 980 L par habitant et par jour",c:"var(--agri)"},{k:"i",l:"Industrie et énergie",i:"factory",v:280,t:"≈ 280 L par habitant et par jour",c:"var(--indus)"},{k:"h",l:"Villes et foyers",i:"house",v:140,t:"≈ 140 L par habitant et par jour",c:"var(--home)"}]},
     text:"Ces chiffres comptent l’eau retirée des rivières, des lacs et des nappes pour toute la société, pas seulement l’eau de ta maison. Clique sur un élément du schéma pour voir où elle va.",
     src:"FAO AQUASTAT : ordres de grandeur mondiaux (≈ 4 000 km³ par an, 8 milliards d’habitants). SDES pour la France."},
 
@@ -623,7 +623,7 @@ const E={
   potager:crop("potager","pdt","Potager","potato","Les légumes demandent beaucoup moins d’eau par kilo que les céréales ou la viande."),
   serre:crop("serre","tomate","Serre de tomates","tomato","Dans une serre, il ne pleut pas : on arrose souvent au goutte-à-goutte."),
   pivot:{sec:"agri",title:"Irrigation",icon:"drop",kpi:{n:"≈ 980 L",u:"prélevés chaque jour dans le monde pour l’agriculture, si on les partage entre tous les habitants",x:"En France : ≈ 120 L par habitant et par jour."},
-    c1:{title:"Litres prélevés pour que 100 L arrivent aux racines",unit:"litres prélevés",rows:[{k:"sub",l:"Submersion (on inonde le champ)",i:"wave",v:170,t:"≈ 170 L"},{k:"asp",l:"Aspersion (pivot, canon à eau)",i:"drop",v:135,t:"≈ 135 L"},{k:"gag",l:"Goutte-à-goutte",i:"drop",v:110,t:"≈ 110 L"}],hl:"asp",foot:"Le reste se perd : évaporation, vent, ruissellement, infiltration trop profonde."},
+    c1:{title:"Litres prélevés pour que 100 L arrivent aux racines",unit:"litres prélevés",rows:[{k:"sub",l:"Submersion (on inonde le champ)",i:"wave",v:170,t:"≈ 170 L prélevés pour 100 L utiles"},{k:"asp",l:"Aspersion (pivot, canon à eau)",i:"drop",v:135,t:"≈ 135 L prélevés pour 100 L utiles"},{k:"gag",l:"Goutte-à-goutte",i:"drop",v:110,t:"≈ 110 L prélevés pour 100 L utiles"}],long:true,hl:"asp",foot:"Le reste se perd : évaporation, vent, ruissellement, infiltration trop profonde."},
     c2:{title:"Quelle part ?",rows:[{l:"Terres cultivées irriguées dans le monde",p:20},{l:"Nourriture mondiale produite sur ces terres irriguées",p:40},{l:"Surface agricole irriguée en France",p:7}]},
     text:"Le pivot pompe l’eau de la nappe par un forage et l’arrose en pluie sur le champ. Irriguer permet de produire beaucoup plus, mais c’est l’usage qui consomme le plus d’eau.",src:"FAO (efficacité typique des méthodes ; 20 % des terres irriguées, 40 % de la nourriture) ; Agreste, recensement agricole 2020."},
 
@@ -636,21 +636,21 @@ const E={
     c1:frBars("energie"),
     text:"<b>Pourquoi faut-il de l’eau pour produire de l’électricité ?</b> Dans une centrale, la chaleur (du nucléaire, du gaz ou du charbon) fait bouillir de l’eau. La vapeur fait tourner une turbine reliée à un alternateur, qui produit l’électricité. Il faut ensuite refroidir cette vapeur pour la retransformer en eau liquide : on utilise pour cela beaucoup d’eau pompée dans le fleuve. Une partie de cette eau s’évapore par les tours de refroidissement (c’est le panache blanc) : c’est l’eau consommée.",src:"SDES 2010-2019 ; EDF (centrale de Belleville-sur-Loire, étude ACV 2022)."},
   usine:{sec:"indus",title:"Usine de fabrication",icon:"factory",kpi:{n:"≈ 110 L",u:"prélevés chaque jour en France pour l’industrie, si on les partage entre tous les habitants",x:"L’eau sert à refroidir, laver, fabriquer et transformer les matières premières."},
-    c1:{title:"Eau cachée dans quelques objets",unit:"litres par objet (empreinte eau)",rows:[{k:"jean",l:"Un jean (de la culture du coton aux lavages à la maison)",i:"jean",v:3800,t:"≈ 3 800 L"},{k:"ts",l:"Un T-shirt en coton (250 g)",i:"shirt",v:2500,t:"≈ 2 500 L"}],foot:"L’essentiel de cette eau a servi à faire pousser le coton. La fabrication en usine en représente une petite partie."},
+    c1:{title:"Eau cachée dans quelques objets",unit:"litres par objet (empreinte eau)",rows:[{k:"jean",l:"Un jean (de la culture du coton aux lavages à la maison)",i:"jean",v:3800,t:"≈ 3 800 L par jean"},{k:"ts",l:"Un T-shirt en coton (250 g)",i:"shirt",v:2500,t:"≈ 2 500 L par T-shirt"}],long:true,foot:"L’essentiel de cette eau a servi à faire pousser le coton. La fabrication en usine en représente une petite partie."},
     c2:{title:"Quelle part ?",rows:P.indus},
     text:"Une usine prélève de l’eau, l’utilise puis en rend la plus grande partie après traitement. Réutiliser l’eau en circuit fermé permet d’en prélever beaucoup moins.",src:"SDES 2010-2019 ; Levi Strauss & Co, analyse de cycle de vie du jean 501 (2015) ; Water Footprint Network (T-shirt)."},
   agro:{sec:"indus",title:"Industrie alimentaire",icon:"factory",kpi:{n:"≈ 1 240 L",u:"d’eau cachée dans une pizza",x:"Presque toute cette eau a servi à faire pousser le blé et les tomates, et à nourrir les vaches qui donnent le lait du fromage. L’usine n’en utilise qu’une petite partie."},
-    c1:{title:"Eau cachée dans quelques aliments transformés",unit:"litres par portion (empreinte eau, moyenne mondiale)",rows:[
-      {k:"ch",l:"Tablette de chocolat (100 g)",i:"choc",v:1720,t:"≈ 1 720 L"},
-      {k:"be",l:"Plaquette de beurre (250 g)",i:"milk",v:1390,t:"≈ 1 390 L"},
-      {k:"pz",l:"Pizza (1 entière)",i:"bread",v:1240,t:"≈ 1 240 L"},
-      {k:"pa",l:"Baguette de pain (250 g)",i:"bread",v:400,t:"≈ 400 L"},
-      {k:"la",l:"Verre de lait (25 cl)",i:"milk",v:255,t:"≈ 255 L"},
-      {k:"oe",l:"Un œuf",i:"egg",v:196,t:"≈ 200 L"},
-      {k:"pt",l:"Assiette de pâtes (100 g sèches)",i:"bowl",v:185,t:"≈ 185 L"},
-      {k:"ca",l:"Tasse de café",i:"coffee",v:130,t:"≈ 130 L"},
-      {k:"fr",l:"Portion de fromage (30 g)",i:"milk",v:95,t:"≈ 95 L"},
-      {k:"th",l:"Tasse de thé",i:"coffee",v:27,t:"≈ 27 L"}],foot:"Comme pour le bœuf, la plus grande partie de cette eau est de la pluie tombée sur les champs."},
+    c1:{title:"Eau cachée dans quelques aliments transformés",long:true,unit:"litres par portion (empreinte eau, moyenne mondiale)",rows:[
+      {k:"ch",l:"Tablette de chocolat (100 g)",i:"choc",v:1720,t:"≈ 1 720 L par tablette"},
+      {k:"be",l:"Plaquette de beurre (250 g)",i:"milk",v:1390,t:"≈ 1 390 L par plaquette"},
+      {k:"pz",l:"Pizza (1 entière)",i:"bread",v:1240,t:"≈ 1 240 L par pizza"},
+      {k:"pa",l:"Baguette de pain (250 g)",i:"bread",v:400,t:"≈ 400 L par baguette"},
+      {k:"la",l:"Verre de lait (25 cl)",i:"milk",v:255,t:"≈ 255 L par verre"},
+      {k:"oe",l:"Un œuf",i:"egg",v:196,t:"≈ 200 L par œuf"},
+      {k:"pt",l:"Assiette de pâtes (100 g sèches)",i:"bowl",v:185,t:"≈ 185 L par assiette"},
+      {k:"ca",l:"Tasse de café",i:"coffee",v:130,t:"≈ 130 L par tasse"},
+      {k:"fr",l:"Portion de fromage (30 g)",i:"milk",v:95,t:"≈ 95 L par portion"},
+      {k:"th",l:"Tasse de thé",i:"coffee",v:27,t:"≈ 27 L par tasse"}],foot:"Comme pour le bœuf, la plus grande partie de cette eau est de la pluie tombée sur les champs."},
     c2:{title:"Quelle part ?",rows:P.indus},
     text:"À l’usine, l’eau sert à laver les aliments, cuire, refroidir et nettoyer les cuves. Elle entre aussi dans certains produits, comme les boissons.",src:"Water Footprint Network (Mekonnen et Hoekstra) : chocolat 17 196 L/kg, beurre 5 553 L/kg, pain 1 608 L/kg, pâtes 1 849 L/kg, fromage 3 178 L/kg, pizza 1 239 L, verre de lait 255 L, œuf 196 L, café 130 L, thé 27 L."},
   canal:{sec:"indus",title:"Canal",icon:"boat",kpi:{n:"≈ 215 L",u:"prélevés chaque jour en France pour alimenter les canaux, si on les partage entre tous les habitants",x:"Cette eau n’est presque pas consommée : elle retourne aux rivières. Les péniches transportent des marchandises (céréales, sable…)."},
@@ -672,14 +672,42 @@ const E={
     c1:frBars("potable"),c2:{title:"D’où vient l’eau potable en France ?",rows:[{l:"Eau tirée des nappes souterraines",p:65,c:"var(--water)"},{l:"Eau tirée des rivières et des lacs",p:35,c:"var(--water)"}]},
     text:"L’eau douce n’est pas forcément potable. L’usine la rend propre à la consommation avant de l’envoyer dans le réseau.",src:"SDES 2010-2019 ; eaufrance (origine de l’eau potable, ordre de grandeur)."},
   chateau:{sec:"home",title:"Château d’eau",icon:"tower",kpi:{n:"1 L sur 5",u:"d’eau potable est perdu dans les fuites avant d’arriver au robinet",x:"Le château d’eau stocke l’eau en hauteur pour qu’elle arrive avec de la pression dans les maisons."},
-    c1:{title:"Pour 100 L d’eau potable envoyés dans les tuyaux",unit:"litres",rows:[{k:"rob",l:"Arrivent au robinet",i:"tap",v:80,t:"≈ 80 L",c:"var(--water)"},{k:"fui",l:"Perdus en fuites",i:"drop",v:20,t:"≈ 20 L",c:"var(--home)"}],hl:"fui"},
+    c1:{title:"Pour 100 L d’eau potable envoyés dans les tuyaux",unit:"litres",rows:[{k:"rob",l:"Arrivent au robinet",i:"tap",v:80,t:"≈ 80 L sur 100 L",c:"var(--water)"},{k:"fui",l:"Perdus en fuites",i:"drop",v:20,t:"≈ 20 L sur 100 L",c:"var(--home)"}],long:true,hl:"fui"},
     c2:{title:"Quelle part ?",rows:[{l:"Eau potable perdue dans les fuites des canalisations en France",p:20}]},
     text:"Réparer les fuites des canalisations est l’un des moyens les plus efficaces d’économiser l’eau potable.",src:"Observatoire SISPEA (OFB) : rendement moyen des réseaux d’environ 80 %."},
   step:{sec:"home",title:"Station d’épuration",icon:"recycle",kpi:{n:"≈ 9 L sur 10",u:"de l’eau utilisée à la maison repartent par les égouts vers la station d’épuration",x:"Estimation à partir de la répartition des usages domestiques."},
-    c1:{title:"Que devient l’eau de la maison ?",unit:"litres / personne / jour (estimation)",rows:[{k:"eg",l:"Part à l’égout puis à la station",i:"recycle",v:138,t:"≈ 138 L"},{k:"no",l:"Ne repart pas à l’égout (arrosage, boisson…)",i:"sprout",v:10,t:"≈ 10 L"}],hl:"eg"},
+    c1:{title:"Que devient l’eau de la maison ?",unit:"litres / personne / jour (estimation)",rows:[{k:"eg",l:"Part à l’égout puis à la station",i:"recycle",v:138,t:"≈ 138 L par personne et par jour"},{k:"no",l:"Ne repart pas à l’égout (arrosage, boisson…)",i:"sprout",v:10,t:"≈ 10 L par personne et par jour"}],long:true,hl:"eg"},
     c2:{title:"Quelle part ?",rows:[{l:"Eau de la maison qui rejoint la station d’épuration",p:93}]},
     text:"La station retire les déchets, laisse tomber les boues au fond, puis des bactéries mangent la pollution. L’eau traitée retourne à la rivière : elle est plus propre, mais pas potable.",src:"Estimation d’après CIEau (jardin, voiture et boisson ≈ 7 % de l’eau de la maison)."}
 };
+
+/* ============ TEXTES : comment / pourquoi l'eau est consommée ============ */
+const WHY_CROP="<b>Pourquoi cette eau est consommée ?</b> La plante absorbe l’eau du sol par ses racines. Presque toute cette eau ressort par ses feuilles sous forme de vapeur (c’est la transpiration) : elle part dans l’air et ne revient pas à la rivière. Une petite partie reste dans la plante. Cette eau est surtout de la pluie (eau verte) ; l’eau bleue est l’eau d’irrigation pompée dans les rivières et les nappes.";
+const WHY_ANIM="<b>Pourquoi cette eau est consommée ?</b> Presque toute cette eau a servi à faire pousser l’herbe, les céréales et le soja que l’animal a mangés pendant sa vie. C’est surtout de la pluie tombée sur les prairies et les champs : les plantes l’ont absorbée puis rejetée dans l’air par leurs feuilles. L’eau bue par l’animal ne compte que pour une toute petite part.";
+const WHY={
+  "default":"<b>Prélevée ou consommée ?</b> L’eau prélevée est retirée des rivières, des lacs et des nappes. Elle est consommée quand elle ne revient pas à la nature : elle s’évapore, elle est absorbée par les plantes ou elle reste dans les produits. Dans le monde, c’est surtout l’agriculture qui prélève et consomme l’eau, car les plantes irriguées la rejettent dans l’air par leurs feuilles.",
+  glacier:"<b>Comment cette eau est-elle utilisée ?</b> Les glaciers stockent l’eau douce sous forme de glace. En fondant au printemps et en été, ils alimentent les torrents, les lacs et les rivières, où l’on prélève ensuite l’eau. Avec le réchauffement climatique, les glaciers fondent plus vite qu’ils ne se reforment : cette réserve diminue.",
+  lac:"<b>Comment cette eau est-elle utilisée ?</b> Un lac se remplit avec la pluie, la fonte des neiges et les cours d’eau. On y prélève de l’eau pour boire, irriguer ou refroidir des usines. Une partie de l’eau du lac s’évapore chaque été : elle retourne dans l’air.",
+  riviere:"<b>Comment cette eau est-elle utilisée ?</b> On pompe l’eau de la rivière pour l’eau potable, les champs, les usines et les centrales. La plus grande partie y retourne après usage, parfois plus chaude ou plus sale. Seule l’eau évaporée ou absorbée par les plantes est consommée : elle ne revient pas à la rivière.",
+  nappe:"<b>Comment cette eau est-elle utilisée ?</b> Une nappe est de l’eau cachée dans les roches du sous-sol. On la pompe par des forages pour l’eau potable et l’irrigation. Elle se recharge lentement avec la pluie qui s’infiltre, surtout en hiver : si on pompe plus vite qu’elle ne se recharge, son niveau baisse.",
+  ble:WHY_CROP, mais:WHY_CROP, verger:WHY_CROP, potager:WHY_CROP, serre:WHY_CROP,
+  pivot:"<b>Pourquoi cette eau est consommée ?</b> L’eau arrosée sur le champ est absorbée par les racines puis rejetée dans l’air par les feuilles des plantes. Une autre partie s’évapore avant d’arriver aux racines, surtout avec le vent et la chaleur. Cette eau ne revient pas à la nappe : c’est pour ça que l’irrigation est l’usage qui consomme le plus d’eau. Le goutte-à-goutte en perd beaucoup moins.",
+  vaches:WHY_ANIM, porcs:WHY_ANIM, volailles:WHY_ANIM, moutons:WHY_ANIM,
+  usine:"<b>Pourquoi cette eau est consommée ?</b> À l’usine, l’eau sert à refroidir les machines, à laver et à fabriquer. Elle est presque toute nettoyée puis rendue à la rivière. Est consommée l’eau qui s’évapore pendant le refroidissement ou qui reste dans les produits. Pour un jean ou un T-shirt, la plus grande partie de l’eau a été consommée avant l’usine, par les champs de coton.",
+  agro:"<b>Pourquoi cette eau est consommée ?</b> Presque toute l’eau cachée dans un aliment a été consommée dans les champs : les plantes (blé, cacao, tomates…) l’ont rejetée dans l’air par leurs feuilles. À l’usine, l’eau sert à laver, cuire, refroidir et nettoyer : elle est surtout rendue à la rivière, sauf celle qui s’évapore ou qui entre dans le produit (boissons, sauces).",
+  canal:"<b>Pourquoi cette eau n’est presque pas consommée ?</b> L’eau sert à remplir les canaux et à faire fonctionner les écluses pour que les péniches passent. Elle s’écoule ensuite vers les rivières : elle est prélevée, mais presque pas consommée. Seule une petite partie s’évapore en été.",
+  ville:"<b>Pourquoi cette eau est consommée ?</b> Après usage, l’eau des villes part à l’égout, est nettoyée à la station d’épuration puis rendue à la rivière. Est consommée l’eau qui ne revient pas : l’eau bue et l’eau d’arrosage des parcs et des jardins, absorbée par les plantes ou évaporée.",
+  maison:"<b>Pourquoi cette eau est consommée ?</b> Presque toute l’eau de la maison repart à l’égout puis à la station d’épuration, qui la nettoie et la rend à la rivière. Est vraiment consommée l’eau qui ne repart pas : l’eau bue, l’eau d’arrosage du jardin (absorbée par les plantes ou évaporée) et l’eau du linge qui sèche.",
+  douche:"<b>Pourquoi cette eau est consommée ?</b> L’eau de la douche part presque entièrement à l’égout : elle est salie, puis nettoyée à la station d’épuration et rendue à la rivière. Seule une petite partie s’évapore (buée, serviette qui sèche). Mais cette eau a été pompée et rendue potable : en utiliser moins, c’est moins prélever dans la nature.",
+  wc:"<b>Pourquoi cette eau est consommée ?</b> L’eau des toilettes part entièrement à l’égout puis à la station d’épuration : elle n’est presque pas consommée, mais elle est salie et il faut la nettoyer. On utilise de l’eau potable juste pour évacuer les déchets.",
+  vaisselle:"<b>Pourquoi cette eau est consommée ?</b> L’eau de la vaisselle part à l’égout, puis à la station d’épuration qui la nettoie et la rend à la rivière. Seule l’eau qui s’évapore quand la vaisselle sèche est consommée.",
+  linge:"<b>Pourquoi cette eau est consommée ?</b> L’eau du lavage part à l’égout puis à la station d’épuration. L’eau qui reste dans le linge s’évapore quand il sèche : celle-là est consommée.",
+  jardin:"<b>Pourquoi cette eau est consommée ?</b> L’eau d’arrosage est absorbée par les plantes puis rejetée dans l’air par leurs feuilles, ou s’évapore du sol : elle ne repart pas à l’égout. C’est l’usage de la maison qui consomme le plus vraiment l’eau.",
+  potable:"<b>Pourquoi cette eau n’est presque pas consommée ici ?</b> L’usine rend l’eau potable : elle la filtre, la désinfecte et la contrôle, puis l’envoie dans les tuyaux vers les maisons. Elle sera consommée plus tard, surtout quand elle est bue ou utilisée pour arroser. L’eau douce n’est pas forcément potable : il faut la traiter avant de la boire.",
+  chateau:"<b>Que devient l’eau perdue ?</b> Le château d’eau stocke l’eau en hauteur pour qu’elle arrive avec de la pression dans les maisons. L’eau perdue dans les fuites des tuyaux s’infiltre dans le sol : elle n’est pas vraiment consommée, mais elle a été pompée et traitée pour rien. Réparer les fuites permet d’économiser beaucoup d’eau potable.",
+  step:"<b>Pourquoi cette eau n’est presque pas consommée ?</b> La station retire les déchets, laisse tomber les boues au fond, puis des bactéries mangent la pollution. L’eau nettoyée retourne à la rivière : elle n’est donc pas consommée. Elle est plus propre, mais pas potable."
+};
+for(const k in WHY) if(E[k]) E[k].text=WHY[k];
 
 /* ============ PANNEAU ============ */
 const panel=$("#panel");
@@ -700,7 +728,7 @@ function partsHTML(c,col){
 }
 function dropsHTML(){
   let h="";for(let i=0;i<100;i++){const c=i<70?"var(--agri)":i<90?"var(--indus)":"var(--home)";h+=`<svg viewBox="0 0 24 32" style="color:${c};transition-delay:${i*10}ms"><use href="#i-drop"/></svg>`;}
-  return `<div class="drops" id="drops">${h}</div><div class="mini-leg" style="font-size:.9rem;color:var(--ink);font-weight:700"><span><i class="sw" style="background:var(--agri)"></i>70 agriculture</span><span><i class="sw" style="background:var(--indus)"></i>20 industrie et énergie</span><span><i class="sw" style="background:var(--home)"></i>10 villes et foyers</span></div>`;
+  return `<div class="drops" id="drops">${h}</div><div class="mini-leg" style="font-size:.9rem;color:var(--ink);font-weight:700"><span><i class="sw" style="background:var(--agri)"></i>70 gouttes : agriculture</span><span><i class="sw" style="background:var(--indus)"></i>20 gouttes : industrie et énergie</span><span><i class="sw" style="background:var(--home)"></i>10 gouttes : villes et foyers</span></div>`;
 }
 const isParts=c=>!!(c.rows&&c.rows[0]&&"p" in c.rows[0]);
 function chartHTML(n,c,col){
@@ -804,11 +832,11 @@ const fL=v=>v<1?nf.format(Math.round(v*100)/100):fmt(v);
 $("#gCats").innerHTML=Object.values(GCAT).map(c=>`<span><i class="sw" style="background:${c.c}"></i>${c.n}</span>`).join("");
 const gmx=Math.max(...G.map(g=>g.a));
 $("#gChart").innerHTML=GRP.map(gr=>{const L=G.filter(g=>g.g===gr.k),A=L.reduce((x,g)=>x+g.a,0),B=L.reduce((x,g)=>x+g.b,0),d=A-B;
-  return `<div class="gc-grp"><h3><span style="color:${gr.c}">${ico(gr.i)}</span>${gr.n}</h3><span class="tot">Total : ${fL(A)} L → ${fL(B)} L par jour · <b>− ${fL(d)} L (− ${Math.round(d/A*100)} %)</b></span><span class="sub">${gr.sub}</span></div>`+
+  return `<div class="gc-grp"><h3><span style="color:${gr.c}">${ico(gr.i)}</span>${gr.n}</h3><span class="tot">Total : ${fL(A)} L → ${fL(B)} L par jour · <b>− ${fL(d)} L économisés par jour (− ${Math.round(d/A*100)} %)</b></span><span class="sub">${gr.sub}</span></div>`+
   L.map(g=>{const id=G.indexOf(g),c=GCAT[g.c].c,dd=g.a-g.b;return `<div class="gr" style="--c:${c}">
     <span class="gl"><span style="color:${c}">${gi(g)}</span><span>${g.t}</span><button class="qm" aria-expanded="false" aria-controls="gx-${id}" aria-label="Explication : ${g.t}">?</button></span>
     <span class="gt"><i class="ga" data-w="${Math.max(g.a/gmx*100,.35)}"></i><i class="gb" data-w="${g.b?Math.max(g.b/gmx*100,.2):0}"></i></span>
-    <span class="gv"><span class="n0">${fL(g.a)} L</span><span>→</span><b>${fL(g.b)} L</b><em>− ${fL(dd)} L économisés</em></span>
+    <span class="gv"><span class="n0">${fL(g.a)} L par jour</span><span>→</span><b>${fL(g.b)} L par jour</b><em>− ${fL(dd)} L économisés par jour</em></span>
     <div class="gx" id="gx-${id}" hidden>${g.x}<span class="s">Source : ${g.s}</span></div></div>`;}).join("");}).join("");
 $$("#gChart .qm").forEach(b=>b.addEventListener("click",()=>{const x=$("#"+b.getAttribute("aria-controls"));x.hidden=!x.hidden;b.setAttribute("aria-expanded",!x.hidden);}));
 function gUpdate(){$$("#gChart [data-w]").forEach(i=>i.style.width=i.dataset.w+"%");}
