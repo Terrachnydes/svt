@@ -380,6 +380,8 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .edx{border-radius:4px;padding:0 2px;cursor:text;outline:1px dashed transparent}
 #prog .edx:hover{outline-color:var(--line);background:var(--accent-soft)}
 #prog .edx[contenteditable="true"]{outline:2px solid var(--accent);background:var(--surface)}
+#prog .cpt-maj{font-weight:700;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+#prog .cpt-maj.fini{color:var(--accent)}
 #prog .bouton.orange{background:var(--orange);border-color:var(--orange);color:#fff}
 #prog .tag2{font-size:11.5px;font-weight:700;border-radius:6px;padding:1px 6px;background:#fdf0c8;color:#7a5a00}
 @media (max-width:900px){#prog .duo2,#prog .duo2.duo-site{grid-template-columns:1fr}}
@@ -2179,7 +2181,7 @@ ${A ? `<span class="sep2"></span>
       <div class="s">Séance ${esc(String(META[k] ? META[k].seance : (cleCode(acCode) || [''])[0]))}${(() => { const t = (META[k] && META[k].seanceTitre) || String(A.titre || '').replace(/^Séance\s*\d+\s*/i, '').replace(/\s*Activité\s*\d+\s*$/i, ''); return t ? ' · ' + esc(t) : ''; })()}</div>
       <h2>Activité ${esc(String(META[k] ? META[k].num : (cleCode(acCode) || ['', ''])[1]))}${V.titre ? ' · ' + esc(V.titre) : ''}</h2>
       <div class="pb">❓ ${V.pb ? esc(V.pb) : '<i>Problématique à définir</i>'}</div></div>
-      <button class="bouton${differe ? ' orange' : ''}" type="button" data-majact="${esc(k)}" data-cl="${acCl}" title="${differe ? 'Les élèves n\'ont pas encore la dernière version (consignes, barème, correction) : clique pour la publier' : 'Relit les données de la page et demande au cahier de refaire le résumé de la ' + acCl}">↻ Mettre à jour</button>
+      <button class="bouton${differe ? ' orange' : ''}" type="button" data-majact="${esc(k)}" data-cl="${acCl}" title="${differe ? 'Les élèves n\'ont pas encore la dernière version (consignes, barème, correction) : clique pour la publier' : 'Relit les données de la page et demande au cahier de refaire le résumé de la ' + acCl}">↻ Mettre à jour</button>${compteur(k)}
     </div>
     <div class="duo2 duo-site">
       <div class="carte2 site-carte">
@@ -2239,10 +2241,23 @@ $('#prog').addEventListener('focusout', async e => {
   if (!ch) { ed.textContent = ed.dataset.avant || ''; toast('Valeur non valable (un nombre est attendu pour les points).', true); return; }
   if (await sauver(k, ch, 'Enregistré. « Mettre à jour » le publie pour les élèves.', true)) dessinerActivite();
 });
+// Compte à rebours de 5 min après une publication (temps de la synchro du cahier vers les élèves)
+const FIN_MAJ = {};
+function compteur(k) {
+  const fin = FIN_MAJ[k]; if (!fin) return '';
+  return `<span class="cpt-maj" data-fin="${fin}" title="La synchro du cahier envoie la nouvelle version aux élèves dans les 5 min. Les élèves déjà connectés doivent cliquer sur Actualiser."></span>`;
+}
+setInterval(() => {
+  document.querySelectorAll('#prog .cpt-maj[data-fin]').forEach(x => {
+    const r = Math.ceil((+x.dataset.fin - Date.now()) / 1000);
+    if (r > 0) { x.classList.remove('fini'); x.textContent = `⏱ ${Math.floor(r / 60)}:${String(r % 60).padStart(2, '0')}`; }
+    else { x.classList.add('fini'); x.textContent = '✓ À vérifier côté élève'; }
+  });
+}, 1000);
 async function mettreAJourActivite(b) {
   const k = b.dataset.majact, cl = b.dataset.cl;
   b.disabled = true;
-  if (k && etat(k) !== 'ok') await publier(k, null);   // les élèves reçoivent la dernière version
+  if (k && etat(k) !== 'ok') { await publier(k, null); if (etat(k) === 'ok') FIN_MAJ[k] = Date.now() + 5 * 60 * 1000; }   // les élèves reçoivent la dernière version
   commande('actualiser', cl, {}, 'Relecture de la ' + cl);
   await recharger();
 }
