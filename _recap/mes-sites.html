@@ -1796,7 +1796,23 @@ function ouvrirPop(cible, html) {
 document.addEventListener('click', e => { if (!e.target.closest('#prog .pop,[data-pact],[data-place],[data-jplus],[data-oeil]')) fermerPop(); });
 // Aperçu : cahier de l'élève n° 30 de la classe (identifiant + code lus dans le bloc activité de la feuille)
 const CAHIER_URL = 'https://script.google.com/macros/s/AKfycbyrPE5UScnPcqV20LvqP3PjUBOu_3iXwhR3yshbfDmPcSzG1_seXV8THf2vLLjoqeJr5w/exec';
-const CODES_30 = {};
+const CODES_30 = {}, CODES_30_EN_COURS = {};
+// Lien direct (un clic) vers le cahier de l'élève n° 30, connecté automatiquement ; code chargé en arrière-plan
+function lienApercu(cl) {
+  const id = cl + '-30', code = CODES_30[cl];
+  if (!code) {
+    if (!CODES_30_EN_COURS[cl]) {
+      CODES_30_EN_COURS[cl] = true;
+      lire(fA1(cl, 'B130:C220')).then(v => {
+        const l = v.find(x => String((x || [])[0] || '').trim() === id);
+        if (l && l[1]) { CODES_30[cl] = String(l[1]).trim(); document.querySelectorAll(`[data-oeil="${cl}"]`).forEach(b => { b.outerHTML = lienApercu(cl); }); }
+      }).catch(() => { CODES_30_EN_COURS[cl] = false; });
+    }
+    return `<button type="button" class="jplus" data-oeil="${esc(cl)}" title="Chargement du cahier de ${esc(id)}…">👁</button>`;
+  }
+  const url = CAHIER_URL + '#eleve=' + encodeURIComponent(id) + '&code=' + encodeURIComponent(code);
+  return `<a class="jplus" style="display:grid;place-items:center;text-decoration:none" href="${esc(url)}" target="_blank" rel="noopener" title="Ouvrir le cahier de ${esc(id)} (vue élève), connecté automatiquement">👁</a>`;
+}
 async function popApercu(cible, cl) {
   const id = cl + '-30';
   ouvrirPop(cible, `<h4>Cahier de ${esc(id)}</h4><div class="sous">Recherche du code…</div>`);
@@ -2137,7 +2153,7 @@ function dessinerActivite() {
     const plus = `<button type="button" class="jplus" data-jplus="${esc(jr.date)}|${esc(c[0])}" title="Changer la classe de cette heure">${c[1] ? '✎' : '+'}</button>`;
     if (!c[1]) return `<div class="jl"><div class="jc vide${passe ? ' passe' : ''}"><span class="h">${esc(c[0])}</span><span class="a">pas cours</span></div>${plus}</div>`;
     const code = activiteDuCours(c[1]), a = (SV.acts[c[1]] || {})[code], ti = a ? titreActivite(c[1], code, a) : '';
-    const oeil = `<button type="button" class="jplus" data-oeil="${esc(c[1])}" title="Voir le cahier de l'élève n° 30 de la ${esc(c[1])} (aperçu de l'activité)">👁</button>`;
+    const oeil = lienApercu(c[1]);
     return `<div class="jl"><button type="button" class="jc${passe ? ' passe' : maint ? ' maint' : ''}${c[1] === acCl ? ' choisi' : ''}" data-jour="${esc(c[1])}|${esc(code)}" title="${esc(ti)}"><span class="h">${esc(c[0])}</span><b>${esc(c[1])}${c[2] ? `<small class="dg">½G${esc(c[2])}</small>` : ''}</b><span class="a">${esc(code || '—')}${ti ? ' · ' + esc(ti) : ''}</span></button>${plus}${oeil}</div>`;
   }).join('')}</aside>`;
 
