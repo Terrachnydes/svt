@@ -1835,6 +1835,7 @@ function dessinerSuivi() {
       <span class="sep2"></span>
       ${NIVEAUX.map(n => `<div class="filtres">${classesNiveau(n).map(c => `<button type="button" aria-pressed="${c === svCl}" data-svcl="${c}">${c}</button>`).join('')}</div>`).join('')}
       ${(() => { const t = +((SV.classes[svCl] || {}).trimestre || 1); return t < 3 ? `<button class="bouton leger petit" type="button" data-cloturer="${t}" title="Toutes les classes passent au T${t + 1}. Les activités du T${t} qui ne sont pas terminées (sans note, demi-groupe pas passé, copies à corriger) passent entières au T${t + 1}.">🔒 Clôturer le T${t}</button>` : ''; })()}
+      <button class="bouton leger petit" type="button" data-genall="${svPer}" title="Génère les appréciations du bulletin (élèves + appréciation générale) du T${svPer} pour toutes les classes qui ont des élèves. Celles déjà écrites sont remplacées. En arrière-plan, environ 5 min par classe.">✦ Générer les appréciations du T${svPer}</button>
       <span class="fin"></span>${blocNoms()}
       <span class="sous" title="Clique sur une case de classe : publier sur Pronote, corriger, facultative, arrêter. Clique sur un élève : statistiques et appréciation. Barré = note non comptée · · = ouverte non rendue · ✎ = rendue, pas corrigée.">ⓘ</span>
       <button class="bouton leger petit" type="button" data-actualiser title="Résumé du ${esc(SV.maj || '?')}">↻</button>
@@ -2414,6 +2415,17 @@ $('#prog').addEventListener('click', e => {
     }
     b.disabled = true;
     commande('cloturer', '', { periode: t }, `Clôture du T${t}`);
+  }
+  else if (b.dataset.genall) {
+    const t = +b.dataset.genall;
+    if (b.dataset.confirme !== '1') {   // 2 clics : les fenêtres de confirmation sont bloquées dans la page
+      b.dataset.confirme = '1'; b.classList.remove('leger'); b.classList.add('orange');
+      b.textContent = `⚠ Confirmer : remplacer toutes les appréciations du T${t} ?`;
+      setTimeout(() => { if (b.isConnected) { b.dataset.confirme = ''; b.classList.add('leger'); b.classList.remove('orange'); b.textContent = `✦ Générer les appréciations du T${t}`; } }, 6000);
+      return;
+    }
+    b.disabled = true;
+    commande('appreciationsToutes', '', { periode: t }, `Appréciations du T${t} (toutes les classes)`);
   }
   else if (b.dataset.pact) { const [cl, k] = b.dataset.pact.split('|'); popActivite(b, cl, k); }
   else if (b.dataset.op) { const [cl, k] = b.dataset.k.split('|'); operation(b.dataset.op, cl, k); }
