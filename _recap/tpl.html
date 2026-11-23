@@ -374,6 +374,10 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .apercu2 img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
 #prog .apercu2 span{font-size:48px}
 #prog .apercu2:hover{outline:3px solid var(--accent)}
+#prog .edx{border-radius:4px;padding:0 2px;cursor:text;outline:1px dashed transparent}
+#prog .edx:hover{outline-color:var(--line);background:var(--accent-soft)}
+#prog .edx[contenteditable="true"]{outline:2px solid var(--accent);background:var(--surface)}
+#prog .bouton.orange{background:var(--orange);border-color:var(--orange);color:#fff}
 #prog .tag2{font-size:11.5px;font-weight:700;border-radius:6px;padding:1px 6px;background:#fdf0c8;color:#7a5a00}
 @media (max-width:900px){#prog .duo2,#prog .duo2.duo-site{grid-template-columns:1fr}}
 @media (max-width:480px){#prog .eleves{grid-template-columns:1fr 1fr}#prog table.sv .nom{min-width:110px;max-width:130px}#prog .barre .fin{margin-left:0}}
@@ -1606,7 +1610,7 @@ async function ouvrirActivite() {
   acTimer = setInterval(async () => {
     if ($('#ac-main').hidden) { clearInterval(acTimer); acTimer = null; return; }
     await chargerConnectes();
-    if (!$('#ac-main').hidden && !document.querySelector('#prog .pop')) dessinerActivite();
+    if (!$('#ac-main').hidden && !document.querySelector('#prog .pop') && !document.querySelector('#ac-main .edx[contenteditable="true"]')) dessinerActivite();
   }, 60000);
 }
 async function recharger(classe) {
@@ -2093,7 +2097,7 @@ function dessinerActivite() {
     return `<div class="jl"><button type="button" class="jc${passe ? ' passe' : maint ? ' maint' : ''}${c[1] === acCl ? ' choisi' : ''}" data-jour="${esc(c[1])}|${esc(code)}" title="${esc(ti)}"><span class="h">${esc(c[0])}</span><b>${esc(c[1])}${c[2] ? `<small class="dg">½G${esc(c[2])}</small>` : ''}</b><span class="a">${esc(code || '—')}${ti ? ' · ' + esc(ti) : ''}</span></button>${plus}</div>`;
   }).join('')}</aside>`;
 
-  const cs = js(V.cons, []), bar = js(V.cor, {}), st = infoSite(V.site || '');
+  const cs = js(B.cons, []), bar = js(B.cor, {}), st = infoSite(V.site || '');   // brouillon affiché et modifiable ici ; « Mettre à jour » le publie
   const mN = MOYENNES[k];
   const differe = k && etat(k) !== 'ok';
   $('#ac-main').innerHTML = `
@@ -2105,7 +2109,7 @@ ${A ? `<span class="sep2"></span>
       <button class="bouton petit${A.ouverte ? ' on' : ' leger'}" type="button" data-op="${A.ouverte ? 'fermer' : 'ouvrir'}" data-k="${acCl}|${acCode}" title="${A.ouverte ? 'Ouverte pour toute la classe : clique pour la refermer' : 'Ouvrir l\'activité à toute la classe'}">${A.ouverte ? '🔓 Ouverte' : '🔓 Forcer l\'ouverture'}</button>
       <button class="bouton leger petit${A.arretee ? ' on' : ''}" type="button" data-op="arret" data-k="${acCl}|${acCode}">${A.arretee ? '■ Arrêtée' : '■ Arrêter l\'activité'}</button>
       <button class="bouton leger petit${A.facForcee ? ' on' : ''}" type="button" data-op="fac" data-k="${acCl}|${acCode}">${A.facForcee ? '✓ Facultative' : A.facAuto ? 'Facultative (auto)' : 'Rendre facultative'}</button>
-      ${k ? `<button class="bouton petit${etat(k) === 'ok' ? ' leger' : ''}" type="button" data-pub="${esc(k)}" title="${esc(ETAT[etat(k)])}">${etat(k) === 'ok' ? '✓ Publiée' : '⬆ Publier'}</button>` : ''}` : ''}
+` : ''}
       <span class="fin"></span>${minuteurHtml(leCours)}
     </div>
     <div class="attente" hidden></div>
@@ -2115,7 +2119,7 @@ ${A ? `<span class="sep2"></span>
       <div class="s">Séance ${esc(String(META[k] ? META[k].seance : (cleCode(acCode) || [''])[0]))}${(() => { const t = (META[k] && META[k].seanceTitre) || String(A.titre || '').replace(/^Séance\s*\d+\s*/i, '').replace(/\s*Activité\s*\d+\s*$/i, ''); return t ? ' · ' + esc(t) : ''; })()}</div>
       <h2>Activité ${esc(String(META[k] ? META[k].num : (cleCode(acCode) || ['', ''])[1]))}${V.titre ? ' · ' + esc(V.titre) : ''}</h2>
       <div class="pb">❓ ${V.pb ? esc(V.pb) : '<i>Problématique à définir</i>'}</div></div>
-      <button class="bouton" type="button" data-actualiser="${acCl}" title="Relit tout de suite les données de la page, et demande au cahier de refaire le résumé de la ${acCl} (dans les 5 min)">↻ Mettre à jour</button>
+      <button class="bouton${differe ? ' orange' : ''}" type="button" data-majact="${esc(k)}" data-cl="${acCl}" title="${differe ? 'Les élèves n\'ont pas encore la dernière version (consignes, barème, correction) : clique pour la publier' : 'Relit les données de la page et demande au cahier de refaire le résumé de la ' + acCl}">↻ Mettre à jour</button>
     </div>
     <div class="duo2 duo-site">
       <div class="carte2 site-carte">
@@ -2129,17 +2133,65 @@ ${A ? `<span class="sep2"></span>
       </div>
       <div class="carte2">
         <h3>Consignes ${V.publiee ? '' : '<span class="tag2">brouillon, pas encore publié</span>'}${V.publiee && differe ? '<span class="tag2">brouillon modifié non publié</span>' : ''}${k ? `<button class="bouton leger petit" type="button" data-atelier="${esc(k)}" style="margin-left:auto" title="Discuter avec Claude ici, dans la page">✦ Modifier avec Claude</button>` : ''}</h3>
-        ${cs.map(c => `<p class="cons"><b>${esc(c.lettre)}</b> · ${esc(c.texte)}</p>`).join('') || '<div class="sous">Pas de consignes dans la progression : les élèves voient celles du Doc activité.</div>'}
+        ${cs.map((c, i) => `<p class="cons"><b>${esc(c.lettre)}</b> · <span class="edx" data-edx="cons|${i}|texte" title="Cliquer pour modifier (enregistré automatiquement)">${esc(c.texte)}</span></p>`).join('') || '<div class="sous">Pas de consignes dans la progression : les élèves voient celles du Doc activité.</div>'}
         <h3 style="margin-top:14px">Correction <span class="sous">${Object.keys(bar).length ? total(bar) + ' pts' : ''}</span>${k ? `<button class="bouton leger petit" type="button" data-atelier="${esc(k)}" style="margin-left:auto" title="Discuter avec Claude ici, dans la page">✦ Modifier avec Claude</button>` : ''}</h3>
-        ${Object.entries(bar).map(([l, v]) => `<p class="cons"><b>${esc(l)}</b> · ${esc(v.max)} pts${A.reussite && A.reussite[l] != null ? ` <span class="sous">(réussite ${A.reussite[l]} %)</span>` : ''}</p>${criteres(v).map(x => `<div class="crit">${x.points ? `<i>${esc(x.points)} pt · </i>` : ''}${esc(x.texte)}</div>`).join('')}`).join('') || '<div class="sous">Pas de barème dans la progression.</div>'}
+        ${Object.entries(bar).map(([l, v]) => `<p class="cons"><b>${esc(l)}</b> · <span class="edx" data-edx="cor|${esc(l)}|max">${esc(v.max)}</span> pts${A.reussite && A.reussite[l] != null ? ` <span class="sous">(réussite ${A.reussite[l]} %)</span>` : ''}</p>${criteres(v).map((x, j) => `<div class="crit"><i><span class="edx" data-edx="cor|${esc(l)}|${j}|points">${esc(x.points || '?')}</span> pt · </i><span class="edx" data-edx="cor|${esc(l)}|${j}|texte">${esc(x.texte)}</span></div>`).join('')}`).join('') || '<div class="sous">Pas de barème dans la progression.</div>'}
       </div>
     </div>`}`;
   majAttente();
 }
 
+// ---------- Activité : modifier consignes / barème / correction en direct (brouillon, enregistré tout seul) ----------
+function champEdx(k, chemin, valeur) {
+  const B = brouillon(k), p = chemin.split('|');
+  if (p[0] === 'cons') {
+    const cs = js(B.cons, []); if (!cs[+p[1]]) return null;
+    cs[+p[1]].texte = valeur; return { cons: JSON.stringify(cs) };
+  }
+  const bar = js(B.cor, {}), b = bar[p[1]]; if (!b) return null;
+  if (p[2] === 'max') { const n = num(valeur); if (n == null) return null; b.max = n; }
+  else {
+    if (!b.criteres || !b.criteres.length) b.criteres = criteres(b).map(x => ({ points: x.points, texte: x.texte }));
+    const c = b.criteres[+p[2]]; if (!c) return null;
+    if (p[3] === 'points') { const n = num(valeur); if (n == null) return null; c.points = n; } else c.texte = valeur;
+  }
+  return { cor: JSON.stringify(bar) };
+}
+$('#prog').addEventListener('click', e => {
+  const ed = e.target.closest('#ac-main .edx');
+  if (!ed || ed.isContentEditable) return;
+  ed.dataset.avant = ed.textContent; ed.contentEditable = 'true'; ed.focus();
+  const rg = document.createRange(); rg.selectNodeContents(ed); rg.collapse(false); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(rg);
+});
+$('#prog').addEventListener('keydown', e => {
+  const ed = e.target.closest && e.target.closest('#ac-main .edx[contenteditable="true"]');
+  if (!ed) return;
+  if (e.key === 'Enter') { e.preventDefault(); ed.blur(); }
+  if (e.key === 'Escape') { ed.textContent = ed.dataset.avant || ''; ed.blur(); }
+});
+$('#prog').addEventListener('focusout', async e => {
+  const ed = e.target.closest && e.target.closest('#ac-main .edx[contenteditable="true"]');
+  if (!ed) return;
+  ed.contentEditable = 'false';
+  const v = ed.textContent.replace(/\s+/g, ' ').trim();
+  if (v === (ed.dataset.avant || '').trim()) return;
+  const k = prepMeta(acCl, acCode), ch = k && champEdx(k, ed.dataset.edx, v);
+  if (!ch) { ed.textContent = ed.dataset.avant || ''; toast('Valeur non valable (un nombre est attendu pour les points).', true); return; }
+  if (await sauver(k, ch, 'Enregistré. « Mettre à jour » le publie pour les élèves.', true)) dessinerActivite();
+});
+async function mettreAJourActivite(b) {
+  const k = b.dataset.majact, cl = b.dataset.cl;
+  b.disabled = true;
+  if (k && etat(k) !== 'ok') await publier(k, null);   // les élèves reçoivent la dernière version
+  commande('actualiser', cl, {}, 'Relecture de la ' + cl);
+  await recharger();
+}
+
 // ---------- Événements des deux onglets ----------
 $('#prog').addEventListener('click', e => {
   const t = e.target;
+  const mj = t.closest('[data-majact]');
+  if (mj) { mettreAJourActivite(mj); return; }
   const at = t.closest('[data-att]');
   if (at) { const [cl, id, d] = at.dataset.att.split('|'); changerAttitude(cl, id, +d); return; }
   const b = t.closest('[data-svniv],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place],[data-jplus]');
