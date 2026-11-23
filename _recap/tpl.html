@@ -1760,6 +1760,7 @@ function dessinerSuivi() {
       <div class="filtres">${[1, 2, 3].map(p => `<button type="button" aria-pressed="${String(p) === String(svPer)}" data-svper="${p}" title="Trimestre ${p}">T${p}</button>`).join('')}</div>
       <span class="sep2"></span>
       ${NIVEAUX.map(n => `<div class="filtres">${classesNiveau(n).map(c => `<button type="button" aria-pressed="${c === svCl}" data-svcl="${c}">${c}</button>`).join('')}</div>`).join('')}
+      ${(() => { const t = +((SV.classes[svCl] || {}).trimestre || 1); return t < 3 ? `<button class="bouton leger petit" type="button" data-cloturer="${t}" title="Toutes les classes passent au T${t + 1}. Les activités du T${t} qui ne sont pas terminées (sans note, demi-groupe pas passé, copies à corriger) passent entières au T${t + 1}.">🔒 Clôturer le T${t}</button>` : ''; })()}
       <span class="fin"></span>${blocNoms()}
       <span class="sous" title="Clique sur une case de classe : publier sur Pronote, corriger, facultative, arrêter. Clique sur un élève : statistiques et appréciation. Barré = note non comptée · · = ouverte non rendue · ✎ = rendue, pas corrigée.">ⓘ</span>
       <button class="bouton leger petit" type="button" data-actualiser title="Résumé du ${esc(SV.maj || '?')}">↻</button>
@@ -2275,7 +2276,7 @@ $('#prog').addEventListener('click', e => {
   if (mj) { mettreAJourActivite(mj); return; }
   const at = t.closest('[data-att]');
   if (at) { const [cl, id, d] = at.dataset.att.split('|'); changerAttitude(cl, id, +d); return; }
-  const b = t.closest('[data-svniv],[data-svcl],[data-svper],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place],[data-jplus],[data-jnav],[data-oeil]');
+  const b = t.closest('[data-svniv],[data-svcl],[data-svper],[data-cloturer],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place],[data-jplus],[data-jnav],[data-oeil]');
   if (!b) return;
   if (b.dataset.jour) { const [cl, code] = b.dataset.jour.split('|'); acCl = cl; acCode = code; dessinerActivite(); return; }
   if (b.dataset.jplus) { const [d, hh] = b.dataset.jplus.split('|'); popHeure(b, d, hh); return; }
@@ -2296,6 +2297,17 @@ $('#prog').addEventListener('click', e => {
   if (b.dataset.svniv) { svNiv = b.dataset.svniv; svCl = ''; dessinerSuivi(); }
   else if (b.dataset.svcl) { svCl = b.dataset.svcl; svNiv = svCl[0]; dessinerSuivi(); }
   else if (b.dataset.svper) { svPer = b.dataset.svper; dessinerSuivi(); }
+  else if (b.dataset.cloturer) {
+    const t = +b.dataset.cloturer;
+    if (b.dataset.confirme !== '1') {   // 2 clics : les fenêtres de confirmation sont bloquées dans la page
+      b.dataset.confirme = '1'; b.classList.remove('leger'); b.classList.add('orange');
+      b.textContent = `⚠ Confirmer : clôturer le T${t} pour toutes les classes ?`;
+      setTimeout(() => { if (b.isConnected) { b.dataset.confirme = ''; b.classList.add('leger'); b.classList.remove('orange'); b.textContent = `🔒 Clôturer le T${t}`; } }, 6000);
+      return;
+    }
+    b.disabled = true;
+    commande('cloturer', '', { periode: t }, `Clôture du T${t}`);
+  }
   else if (b.dataset.pact) { const [cl, k] = b.dataset.pact.split('|'); popActivite(b, cl, k); }
   else if (b.dataset.op) { const [cl, k] = b.dataset.k.split('|'); operation(b.dataset.op, cl, k); }
   else if (b.dataset.pel) { const [cl, id] = b.dataset.pel.split('|'); panneauEleve(cl, id); }
