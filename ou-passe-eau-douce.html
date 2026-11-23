@@ -42,7 +42,7 @@ button{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--water);outline-offset:2px}
 .ico{width:22px;height:22px;flex:none;vertical-align:middle}
 
-main{max-width:1600px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+main{max-width:1240px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
 .head{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
 .head h1{font-size:clamp(1.9rem,4vw,2.9rem);font-weight:800;letter-spacing:-.02em;display:flex;gap:12px;align-items:center}
 .head h1 svg{width:.9em;height:1.1em;color:var(--water)}
@@ -112,6 +112,7 @@ main{max-width:1600px;margin:0 auto;padding-block:20px 48px;padding-left:max(16p
 .br .bl{display:flex;gap:6px;align-items:center;font-size:.9rem;font-weight:700;min-width:0}
 .br .bl .ico{width:18px;height:18px}
 .br .bv{font-variant-numeric:tabular-nums;font-weight:700;font-size:.9rem;white-space:nowrap;text-align:right}
+.br .bv .bc{display:block;font-weight:400;font-size:.78rem;color:var(--muted)}
 .br .bt{grid-column:1/-1;height:16px;background:var(--track);border-radius:6px;overflow:hidden;display:flex}
 .br .bt i{display:block;height:100%;width:0;transition:width .8s cubic-bezier(.2,.8,.2,1)}
 .bars.has-hl .br:not(.hl){opacity:.42}
@@ -309,7 +310,7 @@ details.sources a{color:var(--water-deep);font-weight:700}
     <summary>Sources et méthode</summary>
     <ul>
       <li><a href="https://www.fao.org/aquastat/fr/" target="_blank" rel="noopener">FAO – AQUASTAT</a> : prélèvements mondiaux ≈ 4 000 km³ par an, dont ≈ 70 % agriculture, 20 % industrie et énergie, 10 % villes et foyers. Par personne : ≈ 4 000 km³ ÷ 8 milliards d’habitants ÷ 365 jours ≈ 1 400 L par jour (arrondi).</li>
-      <li><a href="https://www.statistiques.developpement-durable.gouv.fr/leau-en-france-ressource-et-utilisation-synthese-des-connaissances-en-2023" target="_blank" rel="noopener">SDES – L’eau en France : ressource et utilisation</a> (moyenne 2010-2019, hors hydroélectricité) : 32,8 milliards de m³ prélevés par an (énergie 16,8 ; eau potable 5,3 ; canaux 5,2 ; agriculture 2,9 ; industrie 2,6) et 4,1 milliards de m³ consommés (agriculture 58 %, eau potable 26 %, énergie 12 %, industrie 4 %). Valeurs par personne calculées avec 66 millions d’habitants.</li>
+      <li><a href="https://www.statistiques.developpement-durable.gouv.fr/leau-en-france-ressource-et-utilisation-synthese-des-connaissances-en-2023" target="_blank" rel="noopener">SDES – L’eau en France : ressource et utilisation</a> (moyenne 2010-2019, hors hydroélectricité) : 32,8 milliards de m³ prélevés par an (énergie 16,8 ; eau potable 5,3 ; canaux 5,2 ; agriculture 2,9 ; industrie 2,6) et 4,1 milliards de m³ consommés (agriculture 58 %, eau potable 26 %, énergie 12 %, industrie 4 %). Valeurs par habitant calculées avec 66 millions d’habitants : ≈ 1 360 L prélevés et ≈ 170 L consommés par jour (agriculture ≈ 99 L, eau potable ≈ 44 L, énergie ≈ 20 L, industrie ≈ 7 L).</li>
       <li><a href="https://www.cieau.com/" target="_blank" rel="noopener">Centre d’information sur l’eau (CIEau)</a> : environ 148 L d’eau du robinet par personne et par jour à la maison ; répartition : bains et douches 39 %, WC 20 %, linge 12 %, vaisselle 10 %, cuisine 6 %, jardin et voiture 6 %, divers 6 %, boisson 1 %.</li>
       <li><a href="https://www.waterfootprint.org/" target="_blank" rel="noopener">Water Footprint Network</a> (Mekonnen et Hoekstra, 2011 et 2012) : empreintes eau moyennes mondiales des cultures et des produits animaux, avec eau verte, bleue et grise ; aliments transformés par portion.</li>
       <li><a href="https://www.levistrauss.com/2015/03/26/3-surprising-insights-about-those-501-jeans/" target="_blank" rel="noopener">Levi Strauss & Co (2015)</a> : analyse de cycle de vie d’un jean 501 : ≈ 3 781 L d’eau, de la culture du coton aux lavages à la maison.</li>
@@ -535,8 +536,9 @@ const scene=$("#scene"); scene.innerHTML=R.join("");
 
 /* ============ DONNÉES ============ */
 // France : eau prélevée par personne et par jour (SDES, moyenne 2010-2019, 66 M hab.)
-const FR=[["energie","Refroidir les centrales électriques",700,"bolt"],["potable","Eau potable (maisons, écoles, commerces…)",220,"tap"],["canaux","Alimenter les canaux",215,"boat"],["agri","Agriculture (irrigation, élevage)",120,"tractor"],["indus","Industrie",110,"factory"]];
-const frBars=hl=>({title:"En France : eau prélevée par personne et par jour",unit:"litres / personne / jour",rows:FR.map(([k,l,v,i])=>({k,l,v,i,t:`≈ ${fmt(v)} L`})),hl,foot:"Total ≈ 1 360 L par personne et par jour, toutes activités confondues."});
+// 5e valeur : eau vraiment consommée (SDES : 4,1 milliards de m³ par an, agriculture 58 %, eau potable 26 %, énergie 12 %, industrie 4 %)
+const FR=[["energie","Refroidir les centrales électriques",700,"bolt",20],["potable","Eau potable (maisons, écoles, commerces…)",220,"tap",44],["canaux","Alimenter les canaux",215,"boat",0],["agri","Agriculture (irrigation, élevage)",120,"tractor",99],["indus","Industrie",110,"factory",7]];
+const frBars=hl=>({title:"En France : l’eau prélevée par tout le pays, partagée entre les habitants",unit:"litres par habitant et par jour",cons:true,rows:FR.map(([k,l,v,i,c])=>({k,l,v,i,cv:c,t:`≈ ${fmt(v)} L prélevés`})),hl,foot:"Total ≈ 1 360 L prélevés, dont ≈ 170 L vraiment consommés. Attention : ce n’est pas l’eau qu’utilise une personne ! C’est l’eau de tout le pays (centrales, canaux, champs, usines, maisons) divisée par ses 66 millions d’habitants. À la maison, une personne utilise ≈ 148 L par jour."});
 const P={
   agri:[{l:"Monde · eau prélevée",p:70},{l:"France · eau prélevée",p:9},{l:"France · eau consommée",p:58}],
   home:[{l:"Monde · eau prélevée (villes et foyers)",p:10},{l:"France · eau prélevée (eau potable)",p:16},{l:"France · eau consommée (eau potable)",p:26}],
@@ -580,9 +582,9 @@ function dom(k,title,icon,x){
 }
 
 const E={
-  "default":{sec:null,title:"Vue générale",icon:"globe",kpi:{n:"≈ 1 400 L",u:"d’eau douce prélevée par personne et par jour dans le monde",x:"En France, c’est presque pareil : ≈ 1 360 L par personne et par jour."},
+  "default":{sec:null,title:"Vue générale",icon:"globe",kpi:{n:"≈ 1 400 L",u:"d’eau douce prélevée chaque jour dans le monde, si on la partage entre tous les habitants",x:"En France : ≈ 1 360 L prélevés, dont ≈ 170 L vraiment consommés. À la maison, une personne n’utilise que ≈ 148 L par jour."},
     c1:{type:"drops",title:"Sur 100 gouttes d’eau douce prélevées dans le monde"},
-    c2:{title:"Dans le monde : eau prélevée par personne et par jour",unit:"litres / personne / jour",rows:[{k:"a",l:"Agriculture",i:"tractor",v:980,t:"≈ 980 L",c:"var(--agri)"},{k:"i",l:"Industrie et énergie",i:"factory",v:280,t:"≈ 280 L",c:"var(--indus)"},{k:"h",l:"Villes et foyers",i:"house",v:140,t:"≈ 140 L",c:"var(--home)"}]},
+    c2:{title:"Dans le monde : eau prélevée, partagée entre tous les habitants",unit:"litres par habitant et par jour",rows:[{k:"a",l:"Agriculture",i:"tractor",v:980,t:"≈ 980 L",c:"var(--agri)"},{k:"i",l:"Industrie et énergie",i:"factory",v:280,t:"≈ 280 L",c:"var(--indus)"},{k:"h",l:"Villes et foyers",i:"house",v:140,t:"≈ 140 L",c:"var(--home)"}]},
     text:"Ces chiffres comptent l’eau retirée des rivières, des lacs et des nappes pour toute la société, pas seulement l’eau de ta maison. Clique sur un élément du schéma pour voir où elle va.",
     src:"FAO AQUASTAT : ordres de grandeur mondiaux (≈ 4 000 km³ par an, 8 milliards d’habitants). SDES pour la France."},
 
@@ -608,7 +610,7 @@ const E={
   verger:crop("verger","pommes","Verger de pommiers","apple","Une pomme de 150 g ≈ 120 L d’eau."),
   potager:crop("potager","pdt","Potager","potato","Les légumes demandent beaucoup moins d’eau par kilo que les céréales ou la viande."),
   serre:crop("serre","tomate","Serre de tomates","tomato","Dans une serre, il ne pleut pas : on arrose souvent au goutte-à-goutte."),
-  pivot:{sec:"agri",title:"Irrigation",icon:"drop",kpi:{n:"≈ 980 L",u:"prélevés par personne et par jour dans le monde pour l’agriculture",x:"En France : ≈ 120 L par personne et par jour."},
+  pivot:{sec:"agri",title:"Irrigation",icon:"drop",kpi:{n:"≈ 980 L",u:"prélevés chaque jour dans le monde pour l’agriculture, si on les partage entre tous les habitants",x:"En France : ≈ 120 L par habitant et par jour."},
     c1:{title:"Litres prélevés pour que 100 L arrivent aux racines",unit:"litres prélevés",rows:[{k:"sub",l:"Submersion (on inonde le champ)",i:"wave",v:170,t:"≈ 170 L"},{k:"asp",l:"Aspersion (pivot, canon à eau)",i:"drop",v:135,t:"≈ 135 L"},{k:"gag",l:"Goutte-à-goutte",i:"drop",v:110,t:"≈ 110 L"}],hl:"asp",foot:"Le reste se perd : évaporation, vent, ruissellement, infiltration trop profonde."},
     c2:{title:"Quelle part ?",rows:[{l:"Terres cultivées irriguées dans le monde",p:20},{l:"Nourriture mondiale produite sur ces terres irriguées",p:40},{l:"Surface agricole irriguée en France",p:7}]},
     text:"Le pivot pompe l’eau de la nappe par un forage et l’arrose en pluie sur le champ. Irriguer permet de produire beaucoup plus, mais c’est l’usage qui consomme le plus d’eau.",src:"FAO (efficacité typique des méthodes ; 20 % des terres irriguées, 40 % de la nourriture) ; Agreste, recensement agricole 2020."},
@@ -618,10 +620,10 @@ const E={
   volailles:animal("volailles","poulet","Élevage de volailles","hen","0,2 à 0,3 L par jour"),
   moutons:animal("moutons","mouton","Élevage de moutons","sheep","4 à 7 L par jour"),
 
-  centrale:{sec:"indus",title:"Centrale électrique",icon:"bolt",kpi:{n:"≈ 700 L",u:"prélevés par personne et par jour en France pour refroidir les centrales",x:"Mais seulement ≈ 20 L par personne et par jour sont vraiment consommés (évaporés) : le reste retourne au fleuve. Une centrale à tours prélève ≈ 10 L par kWh et en rend ≈ 7,7 L."},
+  centrale:{sec:"indus",title:"Centrale électrique",icon:"bolt",kpi:{n:"≈ 700 L",u:"prélevés chaque jour en France pour refroidir les centrales, si on les partage entre tous les habitants",x:"Mais sur ces 700 L, seulement ≈ 20 L sont vraiment consommés (évaporés) : le reste retourne au fleuve. Une centrale à tours prélève ≈ 10 L par kWh et en rend ≈ 7,7 L."},
     c1:frBars("energie"),c2:{title:"Quelle part ?",rows:P.energie},
     text:"L’eau refroidit la centrale. La plus grande partie retourne au fleuve, un peu plus chaude. Le reste s’évapore par les tours : c’est le panache blanc, de la vapeur d’eau.",src:"SDES 2010-2019 ; EDF (centrale de Belleville-sur-Loire, étude ACV 2022)."},
-  usine:{sec:"indus",title:"Usine de fabrication",icon:"factory",kpi:{n:"≈ 110 L",u:"prélevés par personne et par jour en France pour l’industrie",x:"L’eau sert à refroidir, laver, fabriquer et transformer les matières premières."},
+  usine:{sec:"indus",title:"Usine de fabrication",icon:"factory",kpi:{n:"≈ 110 L",u:"prélevés chaque jour en France pour l’industrie, si on les partage entre tous les habitants",x:"L’eau sert à refroidir, laver, fabriquer et transformer les matières premières."},
     c1:{title:"Eau cachée dans quelques objets",unit:"litres par objet (empreinte eau)",rows:[{k:"jean",l:"Un jean (de la culture du coton aux lavages à la maison)",i:"jean",v:3800,t:"≈ 3 800 L"},{k:"ts",l:"Un T-shirt en coton (250 g)",i:"shirt",v:2500,t:"≈ 2 500 L"}],foot:"L’essentiel de cette eau a servi à faire pousser le coton. La fabrication en usine en représente une petite partie."},
     c2:{title:"Quelle part ?",rows:P.indus},
     text:"Une usine prélève de l’eau, l’utilise puis en rend la plus grande partie après traitement. Réutiliser l’eau en circuit fermé permet d’en prélever beaucoup moins.",src:"SDES 2010-2019 ; Levi Strauss & Co, analyse de cycle de vie du jean 501 (2015) ; Water Footprint Network (T-shirt)."},
@@ -639,11 +641,11 @@ const E={
       {k:"th",l:"Tasse de thé",i:"coffee",v:27,t:"≈ 27 L"}],foot:"Comme pour le bœuf, la plus grande partie de cette eau est de la pluie tombée sur les champs."},
     c2:{title:"Quelle part ?",rows:P.indus},
     text:"À l’usine, l’eau sert à laver les aliments, cuire, refroidir et nettoyer les cuves. Elle entre aussi dans certains produits, comme les boissons.",src:"Water Footprint Network (Mekonnen et Hoekstra) : chocolat 17 196 L/kg, beurre 5 553 L/kg, pain 1 608 L/kg, pâtes 1 849 L/kg, fromage 3 178 L/kg, pizza 1 239 L, verre de lait 255 L, œuf 196 L, café 130 L, thé 27 L."},
-  canal:{sec:"indus",title:"Canal",icon:"boat",kpi:{n:"≈ 215 L",u:"prélevés par personne et par jour en France pour alimenter les canaux",x:"Cette eau n’est presque pas consommée : elle retourne aux rivières. Les péniches transportent des marchandises (céréales, sable…)."},
+  canal:{sec:"indus",title:"Canal",icon:"boat",kpi:{n:"≈ 215 L",u:"prélevés chaque jour en France pour alimenter les canaux, si on les partage entre tous les habitants",x:"Cette eau n’est presque pas consommée : elle retourne aux rivières. Les péniches transportent des marchandises (céréales, sable…)."},
     c1:frBars("canaux"),c2:{title:"Quelle part ?",rows:[{l:"France · eau prélevée",p:16}]},
     text:"Il faut beaucoup d’eau pour remplir les canaux et faire fonctionner les écluses. Cette eau est prélevée, mais elle retourne presque entièrement aux rivières.",src:"SDES 2010-2019."},
 
-  ville:{sec:"home",title:"Ville",icon:"city",kpi:{n:"≈ 220 L",u:"d’eau potable prélevés par personne et par jour en France",x:"Dont ≈ 148 L utilisés à la maison. Le reste : écoles, commerces, hôpitaux, nettoyage des rues… et fuites."},
+  ville:{sec:"home",title:"Ville",icon:"city",kpi:{n:"≈ 220 L",u:"d’eau potable prélevés chaque jour en France, si on les partage entre tous les habitants",x:"Dont ≈ 148 L utilisés à la maison. Le reste : écoles, commerces, hôpitaux, nettoyage des rues… et fuites."},
     c1:frBars("potable"),c2:{title:"Quelle part ?",rows:P.home},
     text:"Dans le monde, les villes et les foyers prélèvent environ 10 % de l’eau douce. Cette eau doit être rendue potable avant d’être distribuée.",src:"FAO AQUASTAT ; SDES 2010-2019 ; CIEau."},
   maison:{sec:"home",title:"Maison",icon:"house",kpi:{n:"≈ 148 L",u:"d’eau du robinet par personne et par jour",x:"Soit environ 100 bouteilles de 1,5 L chaque jour."},
@@ -654,7 +656,7 @@ const E={
   vaisselle:dom("vaisselle","Évier et lave-vaisselle","dish","Un lave-vaisselle récent ≈ 12 L par cycle ; un robinet ouvert ≈ 12 L par minute."),
   linge:dom("linge","Lave-linge","washer","Un lave-linge récent ≈ 40 à 60 L par cycle."),
   jardin:dom("jardin","Jardin et arrosage","sprout","Un tuyau d’arrosage ≈ 15 L par minute : 20 minutes ≈ 300 L."),
-  potable:{sec:"home",title:"Usine d’eau potable",icon:"tap",kpi:{n:"≈ 220 L",u:"prélevés par personne et par jour en France pour produire de l’eau potable",x:"L’eau est pompée dans la nappe ou la rivière, filtrée, désinfectée puis contrôlée."},
+  potable:{sec:"home",title:"Usine d’eau potable",icon:"tap",kpi:{n:"≈ 220 L",u:"prélevés chaque jour en France pour produire de l’eau potable, si on les partage entre tous les habitants",x:"L’eau est pompée dans la nappe ou la rivière, filtrée, désinfectée puis contrôlée."},
     c1:frBars("potable"),c2:{title:"D’où vient l’eau potable en France ?",rows:[{l:"Eau tirée des nappes souterraines",p:65,c:"var(--water)"},{l:"Eau tirée des rivières et des lacs",p:35,c:"var(--water)"}]},
     text:"L’eau douce n’est pas forcément potable. L’usine la rend propre à la consommation avant de l’envoyer dans le réseau.",src:"SDES 2010-2019 ; eaufrance (origine de l’eau potable, ordre de grandeur)."},
   chateau:{sec:"home",title:"Château d’eau",icon:"tower",kpi:{n:"1 L sur 5",u:"d’eau potable est perdu dans les fuites avant d’arriver au robinet",x:"Le château d’eau stocke l’eau en hauteur pour qu’elle arrive avec de la pression dans les maisons."},
@@ -674,9 +676,11 @@ function barsHTML(c,col){
   const hasHl=c.hl!=null;
   return `<div class="bars ${hasHl?"has-hl":""}">${c.rows.map(r=>{
     const fill=c.stack?r.parts.map((p,j)=>`<i data-w="${p/max*100}" style="background:${["var(--green)","var(--water)","var(--grey)"][j]}"></i>`).join("")
+      :c.cons?`<i data-w="${r.cv/max*100}" style="background:${r.c||col}"></i><i data-w="${(r.v-r.cv)/max*100}" style="background:${r.c||col};opacity:.38"></i>`
       :`<i data-w="${Math.max(r.v/max*100,.6)}" style="background:${r.c||col}"></i>`;
-    return `<div class="br ${r.k===c.hl?"hl":""}"><span class="bl">${r.i?`<span style="color:${r.c||col}">${ico(r.i)}</span>`:""}<span>${r.l}</span></span><span class="bv">${r.t}</span><span class="bt">${fill}</span></div>`;}).join("")}</div>
+    return `<div class="br ${r.k===c.hl?"hl":""}"><span class="bl">${r.i?`<span style="color:${r.c||col}">${ico(r.i)}</span>`:""}<span>${r.l}</span></span><span class="bv">${r.t}${c.cons?`<small class="bc">dont ≈ ${fmt(r.cv)} L consommés</small>`:""}</span><span class="bt">${fill}</span></div>`;}).join("")}</div>
     ${c.stack?`<div class="mini-leg"><span><i class="sw" style="background:var(--green)"></i>eau verte (pluie)</span><span><i class="sw" style="background:var(--water)"></i>eau bleue (irrigation, prélevée)</span><span><i class="sw" style="background:var(--grey)"></i>eau grise (pour diluer la pollution)</span></div>`:""}
+    ${c.cons?`<div class="mini-leg"><span><i class="sw" style="background:${col}"></i>eau vraiment consommée (ne revient pas à la nature)</span><span><i class="sw" style="background:${col};opacity:.38"></i>eau prélevée puis rendue à la nature</span></div>`:""}
     ${c.foot?`<p class="def">${c.foot}</p>`:""}`;
 }
 function partsHTML(c,col){

@@ -7,7 +7,7 @@
   "Orientation 3e",
   "Le sol"
  ],
- "derniere_maj": "2026-11-21",
+ "derniere_maj": "2026-11-23",
  "sites": [
   {
    "titre": "Inondations et canicules",
@@ -169,8 +169,8 @@
    "theme": "L'eau et le climat",
    "fichier": "ou-passe-eau-douce.html",
    "artifact": "https://claude.ai/artifact/BKkpaDmtVjGjQb3wuxZrLu",
-   "version": "1794306807-2099",
-   "verifie": "2026-11-11"
+   "version": "1795453047-2288",
+   "verifie": "2026-11-23"
   },
   {
    "titre": "Laboratoire des microorganismes",
