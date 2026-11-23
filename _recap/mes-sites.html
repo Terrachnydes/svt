@@ -1453,7 +1453,34 @@ function lireCsv(texte) {
   });
   return res;
 }
+// Noms gardés sur CET ordinateur à deux endroits du navigateur (localStorage + IndexedDB) :
+// si l'un est vidé, l'autre prend le relais. Rien n'est envoyé nulle part.
+const idbNoms = mode => new Promise((ok, ko) => {
+  try {
+    const rq = indexedDB.open('profNoms', 1);
+    rq.onupgradeneeded = () => rq.result.createObjectStore('f');
+    rq.onerror = () => ko(rq.error);
+    rq.onsuccess = () => { const db = rq.result, tx = db.transaction('f', mode === 'lire' ? 'readonly' : 'readwrite'), st = tx.objectStore('f');
+      const op = mode === 'lire' ? st.get(CLE_NOMS) : mode === 'effacer' ? st.delete(CLE_NOMS) : st.put(mode, CLE_NOMS);
+      op.onsuccess = () => ok(op.result); op.onerror = () => ko(op.error); tx.oncomplete = () => db.close(); };
+  } catch (e) { ko(e); }
+});
+function garderNoms(txt) {
+  try { localStorage.setItem(CLE_NOMS, txt); } catch (e) {}
+  idbNoms(txt).catch(() => {});
+}
+function oublierNoms() {
+  try { localStorage.removeItem(CLE_NOMS); } catch (e) {}
+  idbNoms('effacer').catch(() => {});
+}
 try { ELEVES = lireCsv(localStorage.getItem(CLE_NOMS) || ''); } catch (e) { ELEVES = {}; }
+// localStorage vidé ? On reprend la copie IndexedDB (et on recopie dans localStorage).
+if (!Object.keys(ELEVES).length) idbNoms('lire').then(txt => {
+  if (!txt || Object.keys(ELEVES).length) return;
+  ELEVES = lireCsv(txt);
+  try { localStorage.setItem(CLE_NOMS, txt); } catch (e) {}
+  if (typeof rafraichirProf === 'function') rafraichirProf();
+}).catch(() => {});
 // Classe CSS du genre : F → fille (rose), M/G/H → garçon (bleu)
 function genreEleve(id) { const g = String((ELEVES[id] || {}).genre || '').trim().toUpperCase()[0]; return g === 'F' ? 'g-f' : g === 'M' || g === 'G' || g === 'H' ? 'g-m' : ''; }
 function nomEleve(id) { const e = ELEVES[id]; return e ? (e.prenom + ' ' + e.nom).trim() : id; }
@@ -1467,25 +1494,18 @@ const eleveVisible = id => !Object.keys(ELEVES).length || !!ELEVES[id];
 const elevesClasse = cl => Object.keys((SV && SV.eleves[cl]) || {}).filter(eleveVisible).sort(ordreEleves);
 function blocNoms() {
   const n = Object.keys(ELEVES).length;
-  let garde = false; try { garde = !!localStorage.getItem(CLE_NOMS); } catch (e) {}
-  return `<span class="noms" title="Le fichier eleves.csv reste sur l'ordinateur : rien n'est envoyé à Google.">
+  return `<span class="noms" title="Les noms restent sur cet ordinateur (gardés dans le navigateur) : rien n'est envoyé à Google ni ailleurs.">
     <label class="bouton leger petit">📇 ${n ? n + ' noms' : 'Charger eleves.csv'}<input type="file" accept=".csv,text/csv" data-csv></label>
-    <label class="sous"><input type="checkbox" data-garder ${garde ? 'checked' : ''}> garder</label></span>`;
+    ${n ? '<button class="bouton leger petit" type="button" data-oublier title="Effacer les noms de cet ordinateur (ordinateur partagé)">✕</button>' : ''}</span>`;
 }
 $('#prog').addEventListener('change', async e => {
   if (e.target.matches('[data-csv]')) {
     const f = e.target.files[0]; if (!f) return;
     const txt = await f.text();
     ELEVES = lireCsv(txt);
-    const g = $('#prog [data-garder]');
-    try { if (g && g.checked) localStorage.setItem(CLE_NOMS, txt); else localStorage.removeItem(CLE_NOMS); } catch (er) {}
-    toast(Object.keys(ELEVES).length + ' élèves chargés.');
+    garderNoms(txt);
+    toast(Object.keys(ELEVES).length + ' élèves chargés et gardés sur cet ordinateur.');
     rafraichirProf();
-  } else if (e.target.matches('[data-garder]')) {
-    try {
-      if (!e.target.checked) { localStorage.removeItem(CLE_NOMS); toast('Noms retirés de cet ordinateur (ils restent affichés jusqu\'à la fermeture).'); }
-      else toast('Recharge eleves.csv pour le garder sur cet ordinateur.');
-    } catch (er) {}
   } else if (e.target.matches('[data-sv]')) {
     const k = e.target.dataset.sv;
     if (k === 'niv') { svNiv = e.target.value; svCl = ''; }
@@ -1496,6 +1516,13 @@ $('#prog').addEventListener('change', async e => {
     if (e.target.dataset.ac === 'cl') { acCl = e.target.value; acCode = ''; } else acCode = e.target.value;
     dessinerActivite();
   }
+});
+
+$('#prog').addEventListener('click', e => {
+  if (!e.target.closest('[data-oublier]')) return;
+  oublierNoms(); ELEVES = {};
+  toast('Noms effacés de cet ordinateur.');
+  rafraichirProf();
 });
 
 // ---------- Démarrage commun ----------
