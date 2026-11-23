@@ -312,7 +312,10 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .pt.co{background:#22a35a;box-shadow:0 0 0 3px rgba(34,163,90,.2)}
 #prog .pt.abs{background:#d93a2b;box-shadow:0 0 0 3px rgba(217,58,43,.18)}
 #prog .plan-defile{overflow-x:auto;max-width:100%}
-#prog .plan{display:grid;grid-template-columns:minmax(92px,1fr) 14px repeat(4,minmax(92px,1fr)) 14px repeat(2,minmax(92px,1fr));gap:4px;min-width:720px;max-width:1100px}
+#prog .plan{display:grid;grid-template-columns:minmax(150px,1fr) 34px repeat(4,minmax(150px,1fr)) 34px repeat(2,minmax(150px,1fr));gap:5px;min-width:1000px}
+/* Allées entre la 1re et la 2e colonne de tables, et entre la 5e et la 6e : trait vertical bien visible */
+#prog .plan .allee{align-self:stretch;margin:-3px 0;background:linear-gradient(var(--muted),var(--muted)) center/3px 100% no-repeat;opacity:.45;border-radius:2px}
+#prog .plan .mg{font-weight:800;min-width:30px;text-align:center}
 #prog .plan .elv,#prog .hors .elv{padding:3px 6px;font-size:12.5px;gap:5px;border-radius:7px;cursor:pointer}
 #prog .plan .elv:hover,#prog .hors .elv:hover{outline:2px solid var(--accent)}
 #prog .plan .elv b{font-size:12.5px}
@@ -2062,7 +2065,7 @@ function dessinerActivite() {
   const carte = (id, place) => {
     const s = (A && A.el[id]) || '-', e = s[0], note = s.slice(1), E = SV.eleves[acCl][id];
     const nm = ELEVES[id], titre = id + ' · ' + (ETATS[e] || '') + (vus[id] ? ' · cahier ouvert à ' + vus[id] : (enCours ? ' · pas connecté' : ''));
-    return `<div class="elv"${place ? ` data-place="${place}"` : ''} title="${esc(titre)}"><span class="pt ${pres(id)}"></span><b class="${genreEleve(id)}">${nm ? `${esc(nm.prenom)} <small class="nf">${esc(nm.nom)}</small>` : esc(id)}${E.profil ? `<span class="prf">${esc(E.profil)}</span>` : ''}</b>${ctrlAttitude(acCl, id)}</div>`;
+    return `<div class="elv"${place ? ` data-place="${place}"` : ''} title="${esc(titre)}"><span class="pt ${pres(id)}"></span><b class="${genreEleve(id)}">${nm ? `${esc(nm.prenom)} <small class="nf">${esc(nm.nom)}</small>` : esc(id)}${E.profil ? `<span class="prf">${esc(E.profil)}</span>` : ''}</b>${(m => `<span class="n mg ${classeNote(m)}" title="Moyenne générale du trimestre ${perCourante(acCl)}">${fr(m)}</span>`)(num(((E.p || {})[perCourante(acCl)] || {}).moy))}${ctrlAttitude(acCl, id)}</div>`;
   };
   // Plan de classe : celui modifié ici (onglet Plans) sinon celui du cahier (I1:AU6). Tables [1] · [4] · [2].
   // Clic sur une place → liste déroulante pour y mettre un autre élève (échange de places).
