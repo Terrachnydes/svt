@@ -112,7 +112,11 @@ main{max-width:1240px;margin:0 auto;padding-block:20px 48px;padding-left:max(16p
 .br .bl{display:flex;gap:6px;align-items:center;font-size:.9rem;font-weight:700;min-width:0}
 .br .bl .ico{width:18px;height:18px}
 .br .bv{font-variant-numeric:tabular-nums;font-weight:700;font-size:.9rem;white-space:nowrap;text-align:right}
-.br .bv .bc{display:block;font-weight:400;font-size:.78rem;color:var(--muted)}
+.br.has-tip{position:relative;cursor:help;border-radius:8px}
+.br .tip{display:none;position:absolute;left:0;right:0;top:100%;z-index:5;margin-top:4px;background:var(--ink);color:var(--surface);padding:8px 12px;border-radius:10px;font-size:.86rem;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+.br .tip b{color:inherit}
+.br.has-tip:hover .tip,.br.has-tip:focus .tip{display:block}
+.bars.has-hl .br.has-tip:hover,.bars.has-hl .br.has-tip:focus{opacity:1}
 .br .bt{grid-column:1/-1;height:16px;background:var(--track);border-radius:6px;overflow:hidden;display:flex}
 .br .bt i{display:block;height:100%;width:0;transition:width .8s cubic-bezier(.2,.8,.2,1)}
 .bars.has-hl .br:not(.hl){opacity:.42}
@@ -536,9 +540,14 @@ const scene=$("#scene"); scene.innerHTML=R.join("");
 
 /* ============ DONNÉES ============ */
 // France : eau prélevée par personne et par jour (SDES, moyenne 2010-2019, 66 M hab.)
-// 5e valeur : eau vraiment consommée (SDES : 4,1 milliards de m³ par an, agriculture 58 %, eau potable 26 %, énergie 12 %, industrie 4 %)
-const FR=[["energie","Refroidir les centrales électriques",700,"bolt",20],["potable","Eau potable (maisons, écoles, commerces…)",220,"tap",44],["canaux","Alimenter les canaux",215,"boat",0],["agri","Agriculture (irrigation, élevage)",120,"tractor",99],["indus","Industrie",110,"factory",7]];
-const frBars=hl=>({title:"En France : l’eau prélevée par tout le pays, partagée entre les habitants",unit:"litres par habitant et par jour",cons:true,rows:FR.map(([k,l,v,i,c])=>({k,l,v,i,cv:c,t:`≈ ${fmt(v)} L prélevés`})),hl,foot:"Total ≈ 1 360 L prélevés, dont ≈ 170 L vraiment consommés. Attention : ce n’est pas l’eau qu’utilise une personne ! C’est l’eau de tout le pays (centrales, canaux, champs, usines, maisons) divisée par ses 66 millions d’habitants. À la maison, une personne utilise ≈ 148 L par jour."});
+// Eau vraiment consommée par habitant et par jour (SDES : 4,1 milliards de m³ par an ; agriculture 58 %, eau potable 26 %, énergie 12 %, industrie 4 %) ; 5e valeur = eau prélevée
+const FR=[
+ ["agri","Agriculture (irrigation, élevage)",99,"tractor",120,"L’eau d’irrigation est absorbée par les plantes puis évaporée par leurs feuilles, ou s’évapore du sol : elle ne revient presque pas à la rivière. C’est pour ça que l’agriculture consomme le plus d’eau."],
+ ["potable","Eau potable (maisons, écoles, commerces…)",44,"tap",220,"Après usage, la plus grande partie part à l’égout, est nettoyée à la station d’épuration puis rendue à la rivière. Est consommée l’eau bue, évaporée (arrosage, linge qui sèche…) ou mise dans les aliments."],
+ ["energie","Refroidir les centrales électriques",20,"bolt",700,"Cette eau refroidit la centrale puis retourne au fleuve, un peu plus chaude. Seule l’eau évaporée par les tours de refroidissement est consommée."],
+ ["indus","Industrie",7,"factory",110,"L’eau sert à refroidir, laver et fabriquer. Elle est presque toute rendue à la rivière après traitement ; un peu s’évapore ou reste dans les produits."],
+ ["canaux","Alimenter les canaux",0,"boat",215,"L’eau remplit les canaux et les écluses puis retourne presque entièrement aux rivières : elle n’est presque pas consommée."]];
+const frBars=hl=>({title:"En France : eau vraiment consommée par habitant et par jour",unit:"litres par habitant et par jour",rows:FR.map(([k,l,v,i,p,x])=>({k,l,v,i,t:`≈ ${fmt(v)} L`,tip:`<b>Eau prélevée : ≈ ${fmt(p)} L</b> par habitant et par jour. ${x}`})),hl,foot:"Total ≈ 170 L par habitant et par jour. Passe la souris sur une barre (ou touche-la) pour voir combien d’eau a été prélevée."});
 const P={
   agri:[{l:"Monde · eau prélevée",p:70},{l:"France · eau prélevée",p:9},{l:"France · eau consommée",p:58}],
   home:[{l:"Monde · eau prélevée (villes et foyers)",p:10},{l:"France · eau prélevée (eau potable)",p:16},{l:"France · eau consommée (eau potable)",p:26}],
@@ -676,11 +685,9 @@ function barsHTML(c,col){
   const hasHl=c.hl!=null;
   return `<div class="bars ${hasHl?"has-hl":""}">${c.rows.map(r=>{
     const fill=c.stack?r.parts.map((p,j)=>`<i data-w="${p/max*100}" style="background:${["var(--green)","var(--water)","var(--grey)"][j]}"></i>`).join("")
-      :c.cons?`<i data-w="${r.cv/max*100}" style="background:${r.c||col}"></i><i data-w="${(r.v-r.cv)/max*100}" style="background:${r.c||col};opacity:.38"></i>`
       :`<i data-w="${Math.max(r.v/max*100,.6)}" style="background:${r.c||col}"></i>`;
-    return `<div class="br ${r.k===c.hl?"hl":""}"><span class="bl">${r.i?`<span style="color:${r.c||col}">${ico(r.i)}</span>`:""}<span>${r.l}</span></span><span class="bv">${r.t}${c.cons?`<small class="bc">dont ≈ ${fmt(r.cv)} L consommés</small>`:""}</span><span class="bt">${fill}</span></div>`;}).join("")}</div>
+    return `<div class="br ${r.k===c.hl?"hl":""}${r.tip?" has-tip":""}"${r.tip?' tabindex="0"':""}><span class="bl">${r.i?`<span style="color:${r.c||col}">${ico(r.i)}</span>`:""}<span>${r.l}</span></span><span class="bv">${r.t}</span><span class="bt">${fill}</span>${r.tip?`<span class="tip" role="tooltip">${r.tip}</span>`:""}</div>`;}).join("")}</div>
     ${c.stack?`<div class="mini-leg"><span><i class="sw" style="background:var(--green)"></i>eau verte (pluie)</span><span><i class="sw" style="background:var(--water)"></i>eau bleue (irrigation, prélevée)</span><span><i class="sw" style="background:var(--grey)"></i>eau grise (pour diluer la pollution)</span></div>`:""}
-    ${c.cons?`<div class="mini-leg"><span><i class="sw" style="background:${col}"></i>eau vraiment consommée (ne revient pas à la nature)</span><span><i class="sw" style="background:${col};opacity:.38"></i>eau prélevée puis rendue à la nature</span></div>`:""}
     ${c.foot?`<p class="def">${c.foot}</p>`:""}`;
 }
 function partsHTML(c,col){
