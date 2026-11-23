@@ -179,7 +179,12 @@ main{max-width:1240px;margin:0 auto;padding-block:20px 48px;padding-left:max(16p
 .rc-grp.narrow .rc-t{grid-row:3;height:18px}
 .rc-grp.narrow .rc-l{font-size:.9rem}
 .rc-grp.has-hl .rc-row:not(.hl){opacity:.5}
-.rc-grp.has-hl .rc-row:not(.hl):hover{opacity:.85}
+.rc-grp.has-hl .rc-row:not(.hl):hover,.rc-grp.has-hl .rc-row:not(.hl):focus-visible{opacity:1}
+.rc-row{position:relative}
+.rc-row .tip{display:none;position:absolute;left:6px;right:6px;top:100%;z-index:6;margin-top:2px;background:var(--ink);color:var(--surface);padding:8px 12px;border-radius:10px;font-size:.88rem;font-weight:400;line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,.3);pointer-events:none}
+.rc-row .tip::before{content:"Comment l’eau est dépensée";display:block;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;opacity:.75;margin-bottom:2px}
+.rc-row:hover .tip,.rc-row:focus-visible .tip{display:block}
+@media (hover:none){.rc-row.hl .tip{display:block;position:static;grid-column:1/-1;margin-top:6px}}
 .rc-row.hl{background:var(--surface-2);box-shadow:inset 0 0 0 2px var(--c)}
 .rc-grp.narrow .rc-row.hl .rc-t{height:24px}
 details.more{border-top:1px solid var(--line);padding-top:10px}
@@ -917,6 +922,33 @@ const GROUPS=[
      {sec:"home",k:"chateau",l:"Château d’eau",note:"<b>1 L sur 5</b> est perdu dans les fuites des tuyaux."},
      {sec:"home",k:"step",l:"Station d’épuration",note:"<b>≈ 9 L sur 10</b> de l’eau de la maison y sont nettoyés puis rendus à la rivière."}]}]}];
 const grpOf=sec=>GROUPS.find(g=>g.secs.includes(sec));
+// texte au survol : comment l'eau est dépensée dans chaque élément
+const HOW={
+  vaches:"L’eau sert surtout à faire pousser l’herbe, les céréales et le soja que la vache mange pendant toute sa vie (environ 3 ans). L’eau qu’elle boit ne compte presque pas.",
+  moutons:"Les moutons mangent surtout l’herbe des prairies, qui pousse grâce à la pluie. L’eau qu’ils boivent ne compte presque pas.",
+  porcs:"L’eau sert surtout à cultiver les céréales et le soja mangés par les porcs. Un peu sert à les abreuver et à nettoyer les bâtiments.",
+  volailles:"L’eau sert surtout à cultiver les céréales mangées par les poulets. Ils grandissent vite et mangent peu : il faut moins d’eau que pour le bœuf.",
+  ble:"Les racines du blé absorbent l’eau de pluie, puis les feuilles la rejettent dans l’air sous forme de vapeur (transpiration). Le blé est rarement irrigué.",
+  mais:"Le maïs pousse en été, quand il pleut peu : on l’irrigue souvent. Ses racines absorbent l’eau et ses feuilles la rejettent dans l’air.",
+  verger:"Les pommiers absorbent l’eau du sol par leurs racines et la rejettent dans l’air par leurs nombreuses feuilles pendant tout l’été.",
+  potager:"Les légumes absorbent l’eau de pluie et d’arrosage. Ils sont gorgés d’eau et un champ en produit beaucoup de kilos : il faut peu d’eau par kilo.",
+  serre:"Dans la serre, il ne pleut pas : on arrose au goutte-à-goutte, au pied de chaque plant. Presque toute l’eau va aux racines, peu est perdue.",
+  pivot:"L’eau est pompée dans la nappe ou la rivière et arrosée en pluie sur le champ. Les plantes l’absorbent puis l’évaporent par leurs feuilles : presque rien ne revient à la rivière.",
+  centrale:"L’eau du fleuve sert à refroidir la vapeur qui fait tourner la turbine. Presque toute cette eau retourne au fleuve, un peu plus chaude ; seule la vapeur qui sort des tours (le panache blanc) est perdue.",
+  canal:"L’eau remplit le canal et les écluses pour que les péniches puissent naviguer. Elle retourne ensuite presque entièrement à la rivière.",
+  usine:"L’eau sert à refroidir les machines, à laver et à fabriquer les objets. Elle est nettoyée puis rendue à la rivière ; un peu s’évapore ou reste dans les produits.",
+  agro:"À l’usine, l’eau sert à laver les aliments, à cuire, à refroidir et à nettoyer les cuves ; elle entre aussi dans les boissons. Mais la plus grande partie de l’eau cachée d’un aliment vient des champs.",
+  ville:"L’eau est pompée, rendue potable puis envoyée aux maisons, écoles, commerces et hôpitaux, et sert à nettoyer les rues. Une partie se perd dans les fuites. Après usage, elle part à l’égout.",
+  maison:"À la maison, l’eau du robinet sert surtout à se laver, à tirer la chasse, à laver le linge et la vaisselle. Elle repart presque toute à l’égout ; on n’en boit qu’environ 1 %.",
+  douche:"≈ 12 L par minute de douche, ≈ 150 L pour un bain. L’eau sert à se laver puis part à l’égout ; seule la buée s’évapore.",
+  wc:"≈ 6 à 9 L à chaque chasse d’eau : de l’eau potable sert juste à évacuer les déchets vers l’égout.",
+  linge:"≈ 40 à 60 L par lavage. L’eau sale part à l’égout ; celle qui reste dans le linge s’évapore quand il sèche.",
+  vaisselle:"≈ 12 L par cycle de lave-vaisselle, ≈ 12 L par minute au robinet. L’eau part à l’égout ; seule l’eau qui sèche sur la vaisselle s’évapore.",
+  jardin:"≈ 15 L par minute avec un tuyau d’arrosage. Les plantes absorbent cette eau ou elle s’évapore : elle ne revient pas à l’égout, elle est vraiment consommée.",
+  potable:"L’usine pompe l’eau de la nappe ou de la rivière, la filtre, la désinfecte et la contrôle. Elle ne la dépense pas : elle la rend propre à boire avant de l’envoyer dans les tuyaux.",
+  chateau:"Le château d’eau stocke l’eau en hauteur pour qu’elle arrive avec de la pression au robinet. En chemin, 1 L sur 5 fuit des tuyaux abîmés et s’infiltre dans le sol.",
+  step:"L’eau sale des égouts est nettoyée : on retire les déchets, puis des bactéries mangent la pollution. L’eau propre est ensuite rendue à la rivière."
+};
 const MAX={};GROUPS.forEach(g=>g.blocks.forEach(b=>b.rows.forEach(r=>{if(r.s)MAX[r.s]=Math.max(MAX[r.s]||0,r.v);})));
 function groupHTML(g,hl,narrow){
   const n=g.blocks.reduce((a,b)=>a+b.rows.length,0), hasJ=g.blocks.some(b=>b.rows.some(r=>r.s==="j"));
@@ -924,10 +956,12 @@ function groupHTML(g,hl,narrow){
     ${narrow?"":`<h3>${ico(g.i)}${g.n} <small>· ${n} éléments</small></h3>`}
     ${g.blocks.map(b=>`${b.u?`<span class="rc-u">${b.u}</span>`:""}${b.rows.map(r=>{
       const icon=E[r.k]?.icon||g.i, st=`style="--c:${SEC[r.sec].c}"`, cl=r.k===hl?" hl":"";
-      if(r.note)return `<button class="rc-row note${cl}" data-k="${r.k}" ${st}><span class="rc-l">${ico(icon)}${r.l}</span><span class="rc-v">${r.note}</span></button>`;
+      const tip=HOW[r.k]?`<span class="tip" role="tooltip">${HOW[r.k]}</span>`:"";
+      if(r.note)return `<button class="rc-row note${cl}" data-k="${r.k}" ${st}><span class="rc-l">${ico(icon)}${r.l}</span><span class="rc-v">${r.note}</span>${tip}</button>`;
       const w=v=>Math.max(v/MAX[r.s]*100,.6);
       const bar=r.s==="kg"?`<i data-w="${w(r.v)}"></i>`:`<i class="l" data-w="${w(r.v)}"></i>${r.c!=null?`<i data-w="${r.c?w(r.c):0}"></i>`:""}`;
-      return `<button class="rc-row${cl}" data-k="${r.k}" ${st}><span class="rc-l">${ico(icon)}${r.l}</span><span class="rc-t">${bar}</span><span class="rc-v">${r.t}</span></button>`;}).join("")}`).join("")}
+      return `<button class="rc-row${cl}" data-k="${r.k}" ${st}><span class="rc-l">${ico(icon)}${r.l}</span><span class="rc-t">${bar}</span><span class="rc-v">${r.t}</span>${tip}</button>`;}).join("")}`).join("")}
+    <p class="def">ⓘ Passe la souris sur une ligne (ou touche-la) pour savoir comment l’eau y est dépensée.</p>
     ${narrow&&hasJ?`<p class="def">Litres par habitant et par jour : barre claire = eau prélevée (ou utilisée), barre foncée = eau vraiment consommée.</p>`:""}</div>`;
 }
 function renderRecap(){
