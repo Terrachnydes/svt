@@ -1754,9 +1754,10 @@ function dessinerSuivi() {
 
   $('#sv-main').innerHTML = `
     <div class="barre">
-      <div class="filtres">${NIVEAUX.map(n => `<button type="button" aria-pressed="${n === svNiv}" data-svniv="${n}">${NOMS[n]}</button>`).join('')}</div>
-      <div class="grp"><select data-sv="per" aria-label="Trimestre">${[1, 2, 3].map(p => `<option value="${p}" ${String(p) === String(svPer) ? 'selected' : ''}>Trimestre ${p}</option>`).join('')}</select>
-      <select data-sv="cl" aria-label="Classe"><option value="">Toutes les classes</option>${cls.map(c => `<option ${c === svCl ? 'selected' : ''}>${c}</option>`).join('')}</select></div>
+      <div class="filtres">${[1, 2, 3].map(p => `<button type="button" aria-pressed="${String(p) === String(svPer)}" data-svper="${p}" title="Trimestre ${p}">T${p}</button>`).join('')}</div>
+      <span class="sep2"></span>
+      ${NIVEAUX.map(n => `<div class="filtres">${[`<button type="button" aria-pressed="${n === svNiv && !svCl}" data-svniv="${n}" title="Toutes les classes de ${NOMS[n]}">${NOMS[n]}</button>`]
+        .concat(classesNiveau(n).map(c => `<button type="button" aria-pressed="${c === svCl}" data-svcl="${c}">${c}</button>`)).join('')}</div>`).join('')}
       <button class="bouton leger petit" type="button" data-gen-niv>✦ Appréciations du niveau</button>
       <span class="fin"></span>${blocNoms()}
       <span class="sous" title="Clique sur une case de classe : publier sur Pronote, corriger, facultative, arrêter. Clique sur un élève : statistiques et appréciation. Barré = note non comptée · · = ouverte non rendue · ✎ = rendue, pas corrigée.">ⓘ</span>
@@ -2273,7 +2274,7 @@ $('#prog').addEventListener('click', e => {
   if (mj) { mettreAJourActivite(mj); return; }
   const at = t.closest('[data-att]');
   if (at) { const [cl, id, d] = at.dataset.att.split('|'); changerAttitude(cl, id, +d); return; }
-  const b = t.closest('[data-svniv],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place],[data-jplus],[data-jnav],[data-oeil]');
+  const b = t.closest('[data-svniv],[data-svcl],[data-svper],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place],[data-jplus],[data-jnav],[data-oeil]');
   if (!b) return;
   if (b.dataset.jour) { const [cl, code] = b.dataset.jour.split('|'); acCl = cl; acCode = code; dessinerActivite(); return; }
   if (b.dataset.jplus) { const [d, hh] = b.dataset.jplus.split('|'); popHeure(b, d, hh); return; }
@@ -2291,7 +2292,9 @@ $('#prog').addEventListener('click', e => {
     else try { w.focus(); } catch (e) {}
     return;
   }
-  if (b.dataset.svniv) { svNiv = b.dataset.svniv; svCl = ''; svPer = ''; dessinerSuivi(); }
+  if (b.dataset.svniv) { svNiv = b.dataset.svniv; svCl = ''; dessinerSuivi(); }
+  else if (b.dataset.svcl) { svCl = b.dataset.svcl; svNiv = svCl[0]; dessinerSuivi(); }
+  else if (b.dataset.svper) { svPer = b.dataset.svper; dessinerSuivi(); }
   else if (b.dataset.pact) { const [cl, k] = b.dataset.pact.split('|'); popActivite(b, cl, k); }
   else if (b.dataset.op) { const [cl, k] = b.dataset.k.split('|'); operation(b.dataset.op, cl, k); }
   else if (b.dataset.pel) { const [cl, id] = b.dataset.pel.split('|'); panneauEleve(cl, id); }
