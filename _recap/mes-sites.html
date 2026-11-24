@@ -1844,7 +1844,7 @@ function dessinerSuivi() {
         <td>${tagProfil(E.profil)}</td><td>${tagComp(E.comportement)}</td><td>${tagTravail(E.resultats, E.assiduite)}</td>
         <td><span class="n n-moy ${classeNote(m)}">${fr(m)}</span></td>
         <td><span class="n ${classeNote(nA)}">${fr(nA)}</span></td>
-        ${codes.map(k => { const n = noteEleve(cl, id, k, svPer), arr = (SV.eleves[cl][id] || {}).arrivee || '';
+        ${codes.map(k => { const n = noteEleve(cl, id, k, svPer), arr = ARRIVEES[id] || '';
           const avant = arr && ordreCode(k, arr) < 0, ici = arr && k === arr;
           const titre = avant ? `Pas encore dans la classe (arrivé(e) à partir de ${arr})` : ici ? `Arrivé(e) dans la classe à partir de ${arr}` : n.nc ? 'Note non comptée (facultative ou sous le seuil du profil)' : n.titre || '';
           return `<td class="${avant ? 'avant-arr' : ici ? 'arr-ici' : ''}" data-arr="${cl}|${id}|${k}" title="${esc(titre + (titre ? ' · ' : '') + 'Clic : date d\'arrivée')}"><span class="n ${n.nc ? 'nc' : n.v == null ? 'vide' : classeNote(n.v)}">${esc(n.txt)}</span></td>`; }).join('')}
@@ -2006,10 +2006,22 @@ function popActivite(cible, cl, k) {
     <button class="bouton leger" type="button" data-op="voir" data-k="${cl}|${k}">➜ Ouvrir dans l'onglet Activité</button>` : ''}`);
 }
 // Élève arrivé en cours d'année : clic sur une note → « arrivé(e) à partir de ce devoir ».
-// Enregistré en colonne L (L9:L38) de la feuille de classe : le cahier ne compte plus les devoirs
+// Enregistré dans l'onglet « Arrivées » du classeur de l'interface : le cahier ne compte plus les devoirs
 // d'avant l'arrivée comme des absences (assiduité, profil, appréciations).
+// Onglet « Arrivées » du classeur de l'interface (A identifiant, B devoir d'arrivée, C modifié le)
+let ARRIVEES = {}, ARRIVEES_IDS = [];
+async function chargerArrivees() {
+  try {
+    if (!(await assurerIP())) return;
+    const v = await lireIP('Arrivées!A2:B300');
+    ARRIVEES = {}; ARRIVEES_IDS = v.map(l => String(l[0] || '').trim());
+    v.forEach(l => { const id = String(l[0] || '').trim(), c = String(l[1] || '').trim().toUpperCase(); if (id && c) ARRIVEES[id] = c; });
+    if (SV) dessinerSuivi();
+  } catch (e) { /* onglet absent : aucun élève arrivé en cours d'année */ }
+}
+setTimeout(chargerArrivees, 2000);
 function popArrivee(cible, cl, id, k) {
-  const E = SV.eleves[cl][id] || {}, arr = E.arrivee || '';
+  const arr = ARRIVEES[id] || '';
   ouvrirPop(cible, `<h4>${esc(nomEleve(id))} · ${esc(k)}</h4>
     <div class="sous">${arr ? `Arrivé(e) dans la classe à partir de <b>${esc(arr)}</b>.` : 'Élève présent(e) depuis le début de l\'année.'}</div>
     ${arr !== k ? `<button class="bouton leger" type="button" data-arrset="${cl}|${id}|${k}">↦ Arrivé(e) dans la classe à partir de ${esc(k)}</button>` : ''}
@@ -2018,11 +2030,12 @@ function popArrivee(cible, cl, id, k) {
 }
 async function definirArrivee(cl, id, k) {
   fermerPop();
-  const E = SV.eleves[cl][id];
-  if (!E || !E.ligneRef) { toast('Ligne de l\'élève introuvable : clique sur ↻ puis réessaie.', true); return; }
   try {
-    await ecrire(fA1(cl, 'L' + E.ligneRef), [[k]]);
-    E.arrivee = k;
+    if (!(await assurerIP())) throw new Error('Classeur de l\'interface introuvable.');
+    const i = ARRIVEES_IDS.indexOf(id), ligne = [id, k, maintenant()];
+    if (i >= 0) await mcp.callTool('Google Sheets', 'update_values', { spreadsheetId: IPID, range: `'Arrivées'!A${i + 2}:C${i + 2}`, values: [ligne] });
+    else { await mcp.callTool('Google Sheets', 'append_values', { spreadsheetId: IPID, range: `'Arrivées'!A1`, values: [ligne] }); ARRIVEES_IDS.push(id); }
+    if (k) ARRIVEES[id] = k; else delete ARRIVEES[id];
     toast(k ? `${nomEleve(id)} : arrivé(e) à partir de ${k}.` : `${nomEleve(id)} : date d'arrivée retirée.`);
     dessinerSuivi();
   } catch (e) { toast(erreurMcp(e), true); }
