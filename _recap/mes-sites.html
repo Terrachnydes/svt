@@ -281,6 +281,8 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog td.avant-arr{background:repeating-linear-gradient(135deg,transparent 0 6px,rgba(0,0,0,.04) 6px 12px)}
 #prog td.arr-ici .n::before{content:'↦ ';color:#2b6cb0;font-weight:700}
 #prog td[data-arr]{cursor:pointer}
+#prog th.calc{cursor:pointer;white-space:nowrap}
+#prog th.calc:hover{color:var(--cl);text-decoration:underline}
 #prog td.act{cursor:pointer}
 #prog td.act:hover{outline:2px solid var(--accent);outline-offset:-2px}
 #prog .ic{display:flex;gap:2px;justify-content:center;font-size:10.5px;line-height:1.2;margin-top:2px;font-weight:700}
@@ -1388,6 +1390,10 @@ const tagTravail = (res, assid) => {
     : assid === 'Abs+' ? `<span class="tg cr4" title="Plus de la moitié des activités non rendues">Peu de travail</span>` : '';
   return t + (t && a ? ' ' : '') + a;
 };
+// Assiduité : colonne H du cahier (Non / Abs / Abs+), même calcul que la case H8
+const tagAssid = a => a === 'Abs' ? `<span class="tg cr2" title="Plus de 30 % des activités non rendues">Activités manquantes</span>`
+  : a === 'Abs+' ? `<span class="tg cr4" title="Plus de la moitié des activités non rendues">Peu de travail</span>`
+  : a === 'Non' ? `<span class="tg cp5" title="Activités rendues">Régulier</span>` : '';
 const tagProfil = p => p ? `<span class="prf" title="${esc(PROFILS[p] || '')}">${esc(p)}</span>` : '';
 const PROFILS = { D: 'Évaluation aménagée', NE: 'Non évalué', M: 'Travail à la maison', T: 'Avec un tuteur' };
 const ETATS = { '-': 'pas ouverte', o: 'ouverte, pas encore rendue', r: 'a répondu', c: 'corrigée (pas encore affichée)', v: 'correction vue', x: 'correction reçue (absent)', a: 'absent' };
@@ -1738,20 +1744,20 @@ function changerAttitude(cl, id, delta) {
 // ---------- Comportement (J9:J38) : clic sur l'étiquette → liste déroulante ----------
 const COMPORTEMENTS = ['Exemplaire', 'Moteur', 'Dynamique', 'Sérieux', 'Agréable', 'Participatif', 'Calme', 'Discret', 'Réservé', 'Passif', 'Distrait', 'Bavard', 'Agité', 'Perturbateur', 'Insolent'];
 const COMP_LOCAL = {};
-function tagCompModif(cl, id, c) {
-  return `<button type="button" class="tg ${c ? (COUL_COMP[c] || '') : 'vide'}" data-comp="${cl}|${id}" title="${esc(c ? c + ' (cliquer pour modifier)' : 'Comportement : cliquer pour choisir')}">${esc(c ? c.slice(0, 5) : '+')}</button>`;
+function tagCompModif(cl, id, c, complet) {
+  return `<button type="button" class="tg ${c ? (COUL_COMP[c] || '') : 'vide'}" data-comp="${cl}|${id}"${complet ? ' data-complet="1"' : ''} title="${esc(c ? c + ' (cliquer pour modifier)' : 'Comportement : cliquer pour choisir')}">${esc(c ? (complet ? c : c.slice(0, 5)) : '+')}</button>`;
 }
 function ouvrirComp(b) {
-  const [cl, id] = b.dataset.comp.split('|'), E = (SV.eleves[cl] || {})[id] || {};
+  const [cl, id] = b.dataset.comp.split('|'), E = (SV.eleves[cl] || {})[id] || {}, complet = !!b.dataset.complet;
   b.outerHTML = `<select class="compsel" data-compsel="${cl}|${id}" aria-label="Comportement"><option value="">—</option>${COMPORTEMENTS.map(c => `<option ${c === E.comportement ? 'selected' : ''}>${c}</option>`).join('')}</select>`;
   const sel = document.querySelector(`#prog select[data-compsel="${cl}|${id}"]`);
   if (!sel) return;
   sel.focus();
-  sel.addEventListener('blur', () => { if (sel.isConnected) sel.outerHTML = tagCompModif(cl, id, (SV.eleves[cl][id] || {}).comportement); });
+  sel.addEventListener('blur', () => { if (sel.isConnected) sel.outerHTML = tagCompModif(cl, id, (SV.eleves[cl][id] || {}).comportement, complet); });
   sel.addEventListener('change', async () => {
     const v = sel.value, E2 = SV.eleves[cl][id];
     E2.comportement = v; COMP_LOCAL[cl + '|' + id] = v;
-    sel.outerHTML = tagCompModif(cl, id, v);
+    sel.outerHTML = tagCompModif(cl, id, v, complet);
     try {
       const l = await ligneRef(cl, id);
       if (!l) throw new Error('Élève introuvable dans la feuille ' + cl);
@@ -1831,7 +1837,7 @@ function dessinerSuivi() {
     toutesGen.push(...gen); toutesAtt.push(...att);
     const mg = moyenne(gen), ma = moyenne(att), dA = (P.devoirs || []).find(x => x.code === 'A');
     lignes.push(`<tr class="rcl"><td class="nom"><div class="tcl"><span class="cl-nom">${cl}</span><span class="n n-moy ${classeNote(mg)}" title="Moyenne de la classe (T${svPer})">${fr(mg)}</span><button class="bouton leger petit" type="button" data-pcl="${cl}">${ids.length} élèves ⚙</button></div></td>
-      <td colspan="3" class="sous">${ids.filter(id => SV.eleves[cl][id].profil).length} profil(s) particulier(s)</td>
+      <td colspan="4" class="sous">${ids.filter(id => SV.eleves[cl][id].profil).length} profil(s) particulier(s)</td>
       <td><span class="n n-moy ${classeNote(mg)}">${fr(mg)}</span></td>
       ${dA ? celluleClasse(cl, P, 'A', ma) : `<td><span class="n ${classeNote(ma)}">${fr(ma)}</span></td>`}
       ${codes.map(k => celluleClasse(cl, P, k, moyenne(moyCl[k] || []))).join('')}
@@ -1841,7 +1847,7 @@ function dessinerSuivi() {
       const m = num(p.moy);
       const nA = num((p.notes || {}).A);
       lignes.push(`<tr class="el"><td class="nom ${genreEleve(id)}" data-pel="${cl}|${id}" title="${esc(id)}">${esc(nomEleve(id))}</td>
-        <td>${tagProfil(E.profil)}</td><td>${tagComp(E.comportement)}</td><td>${tagTravail(E.resultats, E.assiduite)}</td>
+        <td>${tagProfil(E.profil)}</td><td>${tagCompModif(cl, id, E.comportement, true)}</td><td>${tagTravail(E.resultats, '')}</td><td>${tagAssid(E.assiduite)}</td>
         <td><span class="n n-moy ${classeNote(m)}">${fr(m)}</span></td>
         <td><span class="n ${classeNote(nA)}">${fr(nA)}</span></td>
         ${codes.map(k => { const n = noteEleve(cl, id, k, svPer), arr = ARRIVEES[id] || '';
@@ -1853,7 +1859,7 @@ function dessinerSuivi() {
   });
   const mn = moyenne(toutesGen);
   const mAt = moyenne(toutesAtt);
-  if (vues.length > 1) lignes.push(`<tr class="niv"><td class="nom">Niveau ${NOMS[svNiv]}</td><td colspan="3"></td><td><span class="n n-moy ${classeNote(mn)}">${fr(mn)}</span></td><td><span class="n ${classeNote(mAt)}">${fr(mAt)}</span></td>
+  if (vues.length > 1) lignes.push(`<tr class="niv"><td class="nom">Niveau ${NOMS[svNiv]}</td><td colspan="4"></td><td><span class="n n-moy ${classeNote(mn)}">${fr(mn)}</span></td><td><span class="n ${classeNote(mAt)}">${fr(mAt)}</span></td>
     ${codes.map(k => { const m = moyenne(toutesMoy[k] || []); return `<td><span class="n ${classeNote(m)}">${fr(m)}</span></td>`; }).join('')}<td></td></tr>`);
 
   $('#sv-main').innerHTML = `
@@ -1868,7 +1874,7 @@ function dessinerSuivi() {
       <button class="bouton leger petit" type="button" data-actualiser title="Résumé du ${esc(SV.maj || '?')}">↻</button>
     </div></div>${miniPlan(svCl)}</div>
     <div class="attente" hidden></div>
-    ${vues.length ? `<div class="tabl"><table class="sv"><thead><tr><th class="nom">Élève</th><th title="Profil particulier (D, NE, M, T)">Profil</th><th>Comportement</th><th title="Profil de résultats du trimestre (+ activités manquantes si besoin)">Travail</th><th>Moy.</th><th title="Note d'attitude (A)">Attitude</th>${codes.map(k => `<th>${esc(k)}</th>`).join('')}<th>Appréciation T${svPer}</th></tr></thead>
+    ${vues.length ? `<div class="tabl"><table class="sv"><thead><tr><th class="nom">Élève</th><th title="Profil particulier (D, NE, M, T)">Profil</th><th title="Cliquer sur le comportement d'un élève pour le modifier">Comportement</th><th class="calc" data-analyse="resultats" title="Profil de résultats (colonne I du cahier). Cliquer pour le recalculer pour ${esc(svCl)} (T${svPer}), comme la case I8.">Travail ↻</th><th class="calc" data-analyse="assiduite" title="Assiduité (colonne H du cahier). Cliquer pour la recalculer pour ${esc(svCl)} (T${svPer}), comme la case H8.">Assiduité ↻</th><th>Moy.</th><th title="Note d'attitude (A)">Attitude</th>${codes.map(k => `<th>${esc(k)}</th>`).join('')}<th>Appréciation T${svPer}</th></tr></thead>
       <tbody>${lignes.join('')}</tbody></table></div>` : '<div class="info">Aucune classe avec des élèves à ce niveau.</div>'}`;
   majAttente();
 }
@@ -2447,7 +2453,7 @@ $('#prog').addEventListener('click', e => {
   if (ao) { const g = ao.closest('.att'); document.querySelectorAll('#prog .att.ouvert').forEach(x => { if (x !== g) x.classList.remove('ouvert'); }); g.classList.toggle('ouvert'); return; }
   const at = t.closest('[data-att]');
   if (at) { const [cl, id, d] = at.dataset.att.split('|'); changerAttitude(cl, id, +d); return; }
-  const b = t.closest('[data-svniv],[data-svcl],[data-svper],[data-cloturer],[data-genall],[data-arr],[data-arrset],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place],[data-jplus],[data-jnav],[data-oeil]');
+  const b = t.closest('[data-svniv],[data-svcl],[data-svper],[data-cloturer],[data-genall],[data-analyse],[data-arr],[data-arrset],[data-pact],[data-op],[data-pel],[data-pcl],[data-actualiser],[data-gen-niv],[data-acote],[data-jour],[data-place],[data-jplus],[data-jnav],[data-oeil]');
   if (!b) return;
   if (b.dataset.jour) { const [cl, code] = b.dataset.jour.split('|'); acCl = cl; acCode = code; dessinerActivite(); return; }
   if (b.dataset.jplus) { const [d, hh] = b.dataset.jplus.split('|'); popHeure(b, d, hh); return; }
@@ -2478,6 +2484,11 @@ $('#prog').addEventListener('click', e => {
     }
     b.disabled = true;
     commande('cloturer', '', { periode: t }, `Clôture du T${t}`);
+  }
+  else if (b.dataset.analyse) {
+    if (!svCl) return;
+    const quoi = b.dataset.analyse;
+    commande('analyse', svCl, { periode: svPer, quoi }, `${quoi === 'assiduite' ? 'Assiduité' : 'Travail'} ${svCl} (T${svPer})`);
   }
   else if (b.dataset.arr) { const [cl, id, k] = b.dataset.arr.split('|'); popArrivee(b, cl, id, k); }
   else if (b.dataset.arrset !== undefined) { const [cl, id, k] = b.dataset.arrset.split('|'); definirArrivee(cl, id, k); }
