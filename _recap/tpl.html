@@ -1420,10 +1420,17 @@ function participation(cl, id) {
   return { faits, total: devoirs.length };
 }
 function tagAssid(cl, id, a) {
-  if (!a) return '';
-  const pa = participation(cl, id), det = pa ? `${pa.faits} devoir(s) rendu(s) sur ${pa.total} (${Math.round(100 * pa.faits / pa.total)} %). ` : '';
-  const cls = a === 'Abs+' ? 'cr4' : a === 'Abs' ? 'cr2' : 'cp5';
-  return `<span class="tg ${cls}" title="${esc(det + REGLE_ASSID)}">${esc(a)}</span>`;
+  // Valeur calculée ici avec la règle de la colonne H (arrivées comprises) ; si elle diffère de la
+  // colonne H du cahier, on affiche la valeur calculée et on signale que le cahier est à recalculer.
+  const E = SV.eleves[cl][id] || {}, pa = participation(cl, id);
+  let calc = a;
+  if (['D', 'M', 'T', 'NE'].includes(String(E.profil || '').toUpperCase())) calc = 'Non';
+  else if (pa) { const r = pa.faits / pa.total; calc = r < 0.5 ? 'Abs+' : r < 0.7 ? 'Abs' : 'Non'; }
+  if (!calc) return '';
+  const det = pa ? `${pa.faits} devoir(s) rendu(s) sur ${pa.total} (${Math.round(100 * pa.faits / pa.total)} %)${ARRIVEES[id] ? ', depuis son arrivée en ' + ARRIVEES[id] : ''}. ` : '';
+  const ecart = a && a !== calc ? `Le cahier (colonne H) indique encore « ${a} » : clique sur l'en-tête « Assiduité ↻ » pour le recalculer. ` : '';
+  const cls = calc === 'Abs+' ? 'cr4' : calc === 'Abs' ? 'cr2' : 'cp5';
+  return `<span class="tg ${cls}" title="${esc(det + ecart + REGLE_ASSID)}">${esc(calc)}${ecart ? ' *' : ''}</span>`;
 }
 const tagProfil = p => p ? `<span class="prf" title="${esc(PROFILS[p] || '')}">${esc(p)}</span>` : '';
 const PROFILS = { D: 'Évaluation aménagée', NE: 'Non évalué', M: 'Travail à la maison', T: 'Avec un tuteur' };
