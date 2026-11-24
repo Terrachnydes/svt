@@ -1397,6 +1397,13 @@ function compsFrequents(cl, ids) {
   return Object.entries(n).sort((a, b) => b[1] - a[1]).slice(0, 2)
     .map(([c, k]) => `${tagComp(c)} <small>× ${k}</small>`).join(' ');
 }
+// Les 2 profils de travail (colonne I) qui reviennent le plus dans la classe
+function travauxFrequents(cl, ids) {
+  const n = {};
+  ids.forEach(id => { const r = (SV.eleves[cl][id] || {}).resultats; if (r) n[r] = (n[r] || 0) + 1; });
+  return Object.entries(n).sort((a, b) => b[1] - a[1]).slice(0, 2)
+    .map(([r, k]) => `${tagTravail(r, '')} <small>× ${k}</small>`).join(' ');
+}
 // Assiduité : colonne H du cahier (Non / Abs / Abs+), même calcul que la case H8
 const tagAssid = a => a === 'Abs' ? `<span class="tg cr2" title="Plus de 30 % des activités non rendues">Activités manquantes</span>`
   : a === 'Abs+' ? `<span class="tg cr4" title="Plus de la moitié des activités non rendues">Peu de travail</span>`
@@ -1844,7 +1851,7 @@ function dessinerSuivi() {
     toutesGen.push(...gen); toutesAtt.push(...att);
     const mg = moyenne(gen), ma = moyenne(att), dA = (P.devoirs || []).find(x => x.code === 'A');
     lignes.push(`<tr class="rcl"><td class="nom"><div class="tcl"><span class="cl-nom">${cl}</span><span class="n n-moy ${classeNote(mg)}" title="Moyenne de la classe (T${svPer})">${fr(mg)}</span><button class="bouton leger petit" type="button" data-pcl="${cl}">${ids.length} élèves ⚙</button></div></td>
-      <td></td><td class="sous" title="Les 2 comportements les plus fréquents dans la classe">${compsFrequents(cl, ids)}</td><td colspan="2"></td>
+      <td></td><td class="sous" title="Les 2 comportements les plus fréquents dans la classe">${compsFrequents(cl, ids)}</td><td class="sous" title="Les 2 profils de travail les plus fréquents dans la classe">${travauxFrequents(cl, ids)}</td><td></td>
       <td><span class="n n-moy ${classeNote(mg)}">${fr(mg)}</span></td>
       ${dA ? celluleClasse(cl, P, 'A', ma) : `<td><span class="n ${classeNote(ma)}">${fr(ma)}</span></td>`}
       ${codes.map(k => celluleClasse(cl, P, k, moyenne(moyCl[k] || []))).join('')}
