@@ -1404,10 +1404,27 @@ function travauxFrequents(cl, ids) {
   return Object.entries(n).sort((a, b) => b[1] - a[1]).slice(0, 2)
     .map(([r, k]) => `${tagTravail(r, '')} <small>× ${k}</small>`).join(' ');
 }
-// Assiduité : colonne H du cahier (Non / Abs / Abs+), même calcul que la case H8
-const tagAssid = a => a === 'Abs' ? `<span class="tg cr2" title="Plus de 30 % des activités non rendues">Activités manquantes</span>`
-  : a === 'Abs+' ? `<span class="tg cr4" title="Plus de la moitié des activités non rendues">Peu de travail</span>`
-  : a === 'Non' ? `<span class="tg cp5" title="Activités rendues">Régulier</span>` : '';
+// Assiduité : valeur de la colonne H du bloc référence du cahier, avec ses règles (case H8) :
+// devoirs comptés = ceux notés pour au moins 13 élèves (et, pour un élève arrivé en cours d'année,
+// seulement ceux à partir de son arrivée) ; rendus < 50 % → Abs+ ; < 70 % → Abs ; sinon Non.
+// Profils D / M / T / NE : toujours Non.
+const REGLE_ASSID = 'Règle de la colonne H : devoirs notés pour au moins 13 élèves (depuis l\'arrivée pour un nouvel élève). Moins de 50 % rendus → Abs+ ; moins de 70 % → Abs ; sinon Non. Profils D, M, T, NE : toujours Non.';
+function participation(cl, id) {
+  const P = (SV.classes[cl].periodes[svPer] || {}), arr = ARRIVEES[id] || '';
+  const ids = elevesClasse(cl);
+  const devoirs = (P.devoirs || []).filter(d => d.code !== 'A' && (!arr || ordreCode(d.code, arr) >= 0)
+    && ids.filter(x => (((SV.eleves[cl][x] || {}).p || {})[svPer] || { notes: {} }).notes[d.code] != null).length >= 13);
+  if (!devoirs.length) return null;
+  const notes = (((SV.eleves[cl][id] || {}).p || {})[svPer] || { notes: {} }).notes;
+  const faits = devoirs.filter(d => notes[d.code] != null && notes[d.code] !== '').length;
+  return { faits, total: devoirs.length };
+}
+function tagAssid(cl, id, a) {
+  if (!a) return '';
+  const pa = participation(cl, id), det = pa ? `${pa.faits} devoir(s) rendu(s) sur ${pa.total} (${Math.round(100 * pa.faits / pa.total)} %). ` : '';
+  const cls = a === 'Abs+' ? 'cr4' : a === 'Abs' ? 'cr2' : 'cp5';
+  return `<span class="tg ${cls}" title="${esc(det + REGLE_ASSID)}">${esc(a)}</span>`;
+}
 const tagProfil = p => p ? `<span class="prf" title="${esc(PROFILS[p] || '')}">${esc(p)}</span>` : '';
 const PROFILS = { D: 'Évaluation aménagée', NE: 'Non évalué', M: 'Travail à la maison', T: 'Avec un tuteur' };
 const ETATS = { '-': 'pas ouverte', o: 'ouverte, pas encore rendue', r: 'a répondu', c: 'corrigée (pas encore affichée)', v: 'correction vue', x: 'correction reçue (absent)', a: 'absent' };
@@ -1861,7 +1878,7 @@ function dessinerSuivi() {
       const m = num(p.moy);
       const nA = num((p.notes || {}).A);
       lignes.push(`<tr class="el"><td class="nom ${genreEleve(id)}" data-pel="${cl}|${id}" title="${esc(id)}">${esc(nomEleve(id))}</td>
-        <td>${tagProfil(E.profil)}</td><td>${tagCompModif(cl, id, E.comportement, true)}</td><td>${tagTravail(E.resultats, '')}</td><td>${tagAssid(E.assiduite)}</td>
+        <td>${tagProfil(E.profil)}</td><td>${tagCompModif(cl, id, E.comportement, true)}</td><td>${tagTravail(E.resultats, '')}</td><td>${tagAssid(cl, id, E.assiduite)}</td>
         <td><span class="n n-moy ${classeNote(m)}">${fr(m)}</span></td>
         <td><span class="n ${classeNote(nA)}">${fr(nA)}</span></td>
         ${codes.map(k => { const n = noteEleve(cl, id, k, svPer), arr = ARRIVEES[id] || '';
