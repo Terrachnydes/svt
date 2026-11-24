@@ -1916,7 +1916,7 @@ function ouvrirPop(cible, html) {
   let x = r.left - base.left; if (r.left + larg > window.innerWidth - 12) x = window.innerWidth - 12 - larg - base.left;
   p.style.left = Math.max(0, x) + 'px'; p.style.top = (r.bottom - base.top + 4) + 'px';
 }
-document.addEventListener('click', e => { if (!e.target.closest('#prog .pop,[data-pact],[data-place],[data-jplus],[data-oeil]')) fermerPop(); });
+document.addEventListener('click', e => { if (!e.target.closest('#prog .pop,[data-pact],[data-place],[data-jplus],[data-oeil],[data-arr]')) fermerPop(); });
 // Aperçu : cahier de l'élève n° 1 de la classe (identifiant + code lus dans le bloc activité de la feuille)
 const CAHIER_URL = 'https://script.google.com/macros/s/AKfycbyrPE5UScnPcqV20LvqP3PjUBOu_3iXwhR3yshbfDmPcSzG1_seXV8THf2vLLjoqeJr5w/exec';
 const CODES_01 = {}, CODES_01_EN_COURS = {};
