@@ -18,7 +18,7 @@
   --g-forest:#7f9c5c; --g-wood:#9c8463; --g-rock:#aaa293; --g-sand:#dcc48e; --g-grass:#b3c278; --g-mix:#a08a6e;
   --leaf:#2f5f2a; --seed:#5b4128; --blade:#4a7a2a; --wood:#6e4f31;
   --accent:#2b6d84; --sun:#d9a521; --dead:#9aa39f; --good:#2f7d46; --bad:#b4372b;
-  --l0:#8a7a5c; --l1:#c48a1c; --l2:#b4472b; --l3:#2f8550; --l4:#2b6d84; --l5:#7a4fa0; --l6:#c25485;
+  --l0:#8a7a5c; --l1:#c48a1c; --l2:#b4472b; --l3:#2f8550; --l4:#2b6d84; --l5:#7a4fa0; --l6:#c25485; --l7:#8a8f1f;
   --display:"Young Serif",Georgia,serif;
   --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
@@ -30,7 +30,7 @@
   --g-forest:#3d5732; --g-wood:#5e5040; --g-rock:#615b52; --g-sand:#85744f; --g-grass:#56633a; --g-mix:#7d6a54;
   --leaf:#7fbf63; --seed:#e0c08f; --blade:#a4cf6c; --wood:#b48a5c;
   --accent:#71b6cf; --sun:#e6bd4d; --dead:#5f6b67; --good:#6cc48c; --bad:#ec7a62;
-  --l0:#b3a37f; --l1:#e2b44a; --l2:#e47d5b; --l3:#6cc48c; --l4:#71b6cf; --l5:#b08bd6; --l6:#e586b0;
+  --l0:#b3a37f; --l1:#e2b44a; --l2:#e47d5b; --l3:#6cc48c; --l4:#71b6cf; --l5:#b08bd6; --l6:#e586b0; --l7:#c7cc5a;
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0f1716; --surface:#172220; --ink:#e4ece9; --muted:#9caaa5; --line:#2b3935;
@@ -39,7 +39,7 @@
   --g-forest:#3d5732; --g-wood:#5e5040; --g-rock:#615b52; --g-sand:#85744f; --g-grass:#56633a; --g-mix:#7d6a54;
   --leaf:#7fbf63; --seed:#e0c08f; --blade:#a4cf6c; --wood:#b48a5c;
   --accent:#71b6cf; --sun:#e6bd4d; --dead:#5f6b67; --good:#6cc48c; --bad:#ec7a62;
-  --l0:#b3a37f; --l1:#e2b44a; --l2:#e47d5b; --l3:#6cc48c; --l4:#71b6cf; --l5:#b08bd6; --l6:#e586b0;
+  --l0:#b3a37f; --l1:#e2b44a; --l2:#e47d5b; --l3:#6cc48c; --l4:#71b6cf; --l5:#b08bd6; --l6:#e586b0; --l7:#c7cc5a;
   color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
@@ -107,7 +107,7 @@ svg text{font-family:var(--body)}
 <header>
   <div class="eyebrow">SVT · Évolution · Archipel des Galápagos</div>
   <h1>Les pinsons des Galápagos</h1>
-  <p class="lead">Un petit groupe d'oiseaux venu d'Amérique du Sud a donné naissance à plusieurs espèces. Suivez le cycle qui se répète d'île en île : migration, mutation, sélection naturelle. <b style="color:var(--ink)">Cliquez sur un oiseau pour voir comment il mange.</b></p>
+  <p class="lead">Un petit groupe d'oiseaux venu d'Amérique du Sud a donné naissance à plusieurs espèces. Suivez le cycle qui se répète d'île en île : migration, mutation, sélection naturelle, puis l'isolement de chaque population et les rares croisements entre îles. <b style="color:var(--ink)">Cliquez sur un oiseau pour voir comment il mange.</b></p>
 </header>
 
 <div class="mapbox"><svg id="map" viewBox="0 0 1000 680" role="img" aria-label="Carte illustrée des îles Galápagos et de la côte de l'Amérique du Sud"></svg></div>
@@ -116,7 +116,7 @@ svg text{font-family:var(--body)}
   <button class="nav" id="prev">◀ Avant</button>
   <div class="txt" aria-live="polite">
     <div class="phases" id="phases">
-      <span data-p="arrivee">Arrivée</span><i>→</i><span data-p="migration">Migration</span><i>→</i><span data-p="mutation">Mutation</span><i>→</i><span data-p="selection">Sélection naturelle</span><i>→</i><span data-p="resultat">Nouvelles espèces</span>
+      <span data-p="arrivee">Arrivée</span><i>→</i><span data-p="migration">Migration</span><i>→</i><span data-p="mutation">Mutation</span><i>→</i><span data-p="selection">Sélection naturelle</span><i>→</i><span data-p="isolement">Isolement</span><i>→</i><span data-p="croisement">Croisements</span><i>→</i><span data-p="resultat">Nouvelles espèces</span>
     </div>
     <div class="when" id="when"></div>
     <h2 id="title"></h2>
@@ -237,8 +237,8 @@ function smooth(pts){const n=pts.length;let d=`M${pts[0][0]},${pts[0][1]}`;
 function blobPts(cx,cy,rx,ry,rot,seed){let s=seed;const rnd=()=>{s=(s*9301+49297)%233280;return s/233280};
   const pts=[],a0=rot*Math.PI/180;for(let i=0;i<14;i++){const a=i/14*2*Math.PI,j=.92+rnd()*.16;
     const x=Math.cos(a)*rx*j,y=Math.sin(a)*ry*j;pts.push([cx+x*Math.cos(a0)-y*Math.sin(a0),cy+x*Math.sin(a0)+y*Math.cos(a0)])}return pts}
-const gIs=el('g',{},map),gVeg=el('g',{},map),gLab=el('g',{},map),gArr=el('g',{},map),gShadow=el('g',{},map),gPop=el('g',{},map),gFx=el('g',{},map),gCall=el('g',{},map),gTag=el('g',{},map),gDemo=el('g',{},map);
-[gShadow,gFx,gCall,gTag,gDemo,gArr,gLab].forEach(l=>l.style.pointerEvents='none');
+const gIs=el('g',{},map),gIso=el('g',{},map),gVeg=el('g',{},map),gLab=el('g',{},map),gArr=el('g',{},map),gShadow=el('g',{},map),gPop=el('g',{},map),gFx=el('g',{},map),gCall=el('g',{},map),gTag=el('g',{},map),gDemo=el('g',{},map);
+[gIso,gShadow,gFx,gCall,gTag,gDemo,gArr,gLab].forEach(l=>l.style.pointerEvents='none');
 for(const [n,I] of Object.entries(ISL)){
   const d=smooth(blobPts(I.cx,I.cy,I.rx,I.ry,I.rot,I.seed));
   el('path',{d,style:'fill:var(--sea-deep)',transform:'translate(3 6)'},gIs);
@@ -259,7 +259,7 @@ for(const [n,I] of Object.entries(ISL)){
 
 /* ================= oiseaux ================= */
 // clé de bec → [couleur, épaisseur, longueur, courbure]
-const BK={anc:['--l0',8,9,1],gros:['--l1',14,13,2],cactus:['--l4',7.5,15,3],petit:['--l3',5.5,7.5,1],pic:['--l6',6.5,17,1],fin:['--l5',3.2,10.5,.5]};
+const BK={anc:['--l0',8,9,1],gros:['--l1',14,13,2],cactus:['--l4',7.5,15,3],petit:['--l3',5.5,7.5,1],pic:['--l6',6.5,17,1],fin:['--l5',3.2,10.5,.5],hyb:['--l7',9.5,10,1.5]};
 const MUTNAME={gros:"bec plus épais",cactus:"bec plus long",petit:"bec plus petit",pic:"bec long et pointu",fin:"bec très fin"};
 const SLOTS=[[-50,-28],[2,-30],[54,-26],[-76,0],[-25,0],[26,2],[76,-2],[-40,28],[12,28]];
 const ORDER=[0,2,4,5,7,8,1,3,6], MORDER=[1,3,6,7,8,0,2,4,5];
@@ -267,26 +267,34 @@ const slotPos=(isl,k)=>{const I=ISL[isl];return [I.cx+SLOTS[k][0],I.cy+SLOTS[k][
 const SC=.62;
 const beakD=(d,L,c)=>{const bx=26,hy=-9,dd=d*1.2,ll=L*1.25;return `M${bx} ${hy-dd/2} Q${bx+ll*.55} ${hy-dd/2+1} ${bx+ll} ${hy+c} L${bx} ${hy+dd/2}Z`};
 const live={};
-function makeBird(id,key,x,y,pale,isl){
+/* oiseau « spécialisé » (après l'isolement) : bec plus marqué et un signe de plumage propre à sa population */
+const SPB={gros:1.2,cactus:1.2,petit:.82,pic:1.2,fin:1.15};
+function makeBird(id,key,x,y,pale,isl,sp){
+  sp=sp&&SPB[key]?SPB[key]:0;
   const bk=BK[key],g=el('g',{},gPop), flip=el('g',{},g);
   const col=`fill:var(${bk[0]});transition:fill 1s ease`;
   const parts=[
     el('path',{d:'M-14 10 L-34 22 L-30 14 L-36 14 L-16 4Z',style:col,stroke:'var(--ink)','stroke-width':1.3,'stroke-linejoin':'round'},flip),
     el('ellipse',{cx:0,cy:4,rx:20,ry:13,transform:'rotate(-18)',style:col,stroke:'var(--ink)','stroke-width':1.3},flip)];
+  if(sp&&key==='fin')el('ellipse',{cx:3,cy:10,rx:11,ry:5,transform:'rotate(-12 3 10)',style:'fill:var(--sun)'},flip);
   if(pale){el('circle',{cx:-6,cy:10,r:4,fill:'#fff'},flip);el('circle',{cx:4,cy:12,r:3,fill:'#fff'},flip)}
   const legs=el('g',{},flip);
   el('line',{x1:-2,y1:16,x2:-4,y2:26,stroke:'var(--ink)','stroke-width':1.7},legs);el('line',{x1:6,y1:15,x2:8,y2:26,stroke:'var(--ink)','stroke-width':1.7},legs);
   const head=el('g',{},flip);
   parts.push(el('circle',{cx:18,cy:-10,r:10,style:col,stroke:'var(--ink)','stroke-width':1.3},head));
   if(pale)el('path',{d:'M10 -17 Q18 -23 26 -15',fill:'none',stroke:'#fff','stroke-width':3.5,'stroke-linecap':'round'},head);
-  el('path',{d:beakD(bk[1],bk[2],bk[3]),fill:'#3a3734',stroke:'var(--ink)','stroke-width':1,'stroke-linejoin':'round'},head);
+  if(sp&&key==='gros')el('path',{d:'M8.5 -12 A10 10 0 0 1 27.5 -13 Q18 -17 8.5 -12Z',fill:'#1d1a17'},head);
+  if(sp&&key==='cactus')el('ellipse',{cx:21,cy:-2,rx:6,ry:3.8,transform:'rotate(-20 21 -2)',fill:'#1d1a17'},head);
+  if(sp&&key==='pic'){const c=el('path',{d:'M11 -16 L7 -29 L14 -19 L15 -32 L20 -19.5Z',style:col,stroke:'var(--ink)','stroke-width':1.2,'stroke-linejoin':'round'},head);parts.push(c);head.insertBefore(c,head.firstChild)}
+  el('path',{d:sp?beakD(bk[1]*sp,bk[2]*sp,bk[3]*sp):beakD(bk[1],bk[2],bk[3]),fill:'#3a3734',stroke:'var(--ink)','stroke-width':1,'stroke-linejoin':'round'},head);
   el('circle',{cx:20,cy:-13,r:2.6,fill:'#fff'},head);el('circle',{cx:20.6,cy:-13,r:1.4,fill:'#111'},head);
+  if(sp&&key==='petit')el('circle',{cx:20,cy:-13,r:4.4,fill:'none',style:'stroke:var(--sun)','stroke-width':2},head);
   const wing=el('path',{d:'M-12 0 Q0 -12 14 -2 Q4 10 -12 0Z',style:col,stroke:'var(--ink)','stroke-width':1.3,'stroke-linejoin':'round'},flip);
   parts.push(wing);
   const sh=el('ellipse',{rx:13,ry:3.5,style:'fill:var(--ink)','fill-opacity':.22},gShadow);
   const b={id,g,flip,head,wing,legs,parts,sh,ring:null,tag:null,x,y,dir:Math.random()<.5?-1:1,
     op:1,flight:null,hop:null,peck:null,born:null,dying:null,nextHop:performance.now()+1200+Math.random()*4000,phase:Math.random()*6};
-  b.key=key;b.pale=pale;b.isl=isl;
+  b.key=key;b.pale=pale;b.isl=isl;b.sp=!!sp;
   g.setAttribute('class','bird');g.setAttribute('tabindex','0');g.setAttribute('role','button');g.setAttribute('aria-label','Voir comment cet oiseau mange');
   const go=ev=>{ev.stopPropagation();birdClick(b)};
   g.addEventListener('click',go);g.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();go(ev)}});
@@ -294,12 +302,12 @@ function makeBird(id,key,x,y,pale,isl){
 }
 function removeBird(b){b.g.remove();b.sh.remove();b.ring&&b.ring.remove();b.tag&&b.tag.remove();delete live[b.id]}
 function addRing(b){b.ring=el('ellipse',{rx:26,ry:8,class:'ring',fill:'none',style:'stroke:var(--sun)','stroke-width':3},gShadow)}
-const TAGC={mut:'--sun',good:'--good',bad:'--bad',neutral:'--muted'};
+const TAGC={mut:'--sun',good:'--good',bad:'--bad',neutral:'--muted',hyb:'--l7'};
 function setTag(b,tag){
   b.tag&&b.tag.remove();b.tag=null;if(!tag)return;
   const [txt,kind]=tag,w=txt.length*6.2+16,g=el('g',{},gTag),gi=el('g',{class:'pop'},g);
   el('rect',{x:-w/2,y:-10,width:w,height:20,rx:10,style:`fill:var(--surface);stroke:var(${TAGC[kind]})`,'stroke-width':2},gi);
-  el('text',{x:0,y:4,'text-anchor':'middle',class:'tagt',style:kind==='good'||kind==='bad'?`fill:var(${TAGC[kind]})`:''},gi).textContent=txt;
+  el('text',{x:0,y:4,'text-anchor':'middle',class:'tagt',style:kind==='good'||kind==='bad'||kind==='hyb'?`fill:var(${TAGC[kind]})`:''},gi).textContent=txt;
   b.tag=g;
 }
 function setColor(b,col){b.parts.forEach(p=>p.style.fill=`var(${col})`)}
@@ -315,9 +323,9 @@ const free=(isl,ord=ORDER)=>{const u=new Set(POP[isl].map(b=>b.slot));for(const 
 const ISLFOOD={"San Cristóbal":'variees',"Santa Cruz":'dure',"Española":'cactus',"Floreana":'petites',"Santiago":'larves',"Isabela":'insectes'};
 const DEMOPOS={"Santa Cruz":[8,52],"Española":[240,468],"Floreana":[4,300],"Santiago":[540,40],"Isabela":[540,40],"San Cristóbal":[540,40]};
 const BEST={"Santa Cruz":'gros',"Española":'cactus',"Floreana":'petit',"Santiago":'pic',"Isabela":'fin'};
-const BEAKNAME={anc:"Bec ancestral",gros:"Bec épais",cactus:"Bec long",petit:"Petit bec",pic:"Bec long et pointu",fin:"Bec très fin"};
-function migrate(ev,from,to,keys,t0){keys.forEach((k,i)=>{const [key,pale]=Array.isArray(k)?k:[k,0],id='b'+uid++,slot=free(to);
-  POP[to].push({id,slot,key,pale});ev.push({type:'fly',id,from,to,slot,key,pale,t:t0+i*.35})})}
+const BEAKNAME={anc:"Bec ancestral",gros:"Bec épais",cactus:"Bec long",petit:"Petit bec",pic:"Bec long et pointu",fin:"Bec très fin",hyb:"Bec intermédiaire"};
+function migrate(ev,from,to,keys,t0){const ids=[];keys.forEach((k,i)=>{const [key,pale,sp]=Array.isArray(k)?k:[k,0,0],id='b'+uid++,slot=free(to);
+  POP[to].push({id,slot,key,pale,sp});ids.push(id);ev.push({type:'fly',id,from,to,slot,key,pale,sp,t:t0+i*.35})});return ids}
 // trois mutations au hasard : une utile ici, une inutile ici, une neutre (plumage)
 function mutations(ev,isl,good,bad,t0){
   const base=POP[isl][0].key;
@@ -351,6 +359,18 @@ function selection(ev,isl,good,t0,win){
   POP[isl].forEach(b=>{if(b.mut){ev.push({type:'tag',id:b.id,tag:null,t:t+1.5});b.mut=null;b.tag=null}});
   return t;
 }
+// isolement : chaque population reste sur son île ; les oiseaux mal adaptés disparaissent peu à peu,
+// puis bec et plumage deviennent propres à l'île (le plumage clair reste : la variation ne disparaît pas)
+function isolation(ev,isl,best,t0,txt){
+  const dead=POP[isl].filter(b=>b.key!==best);
+  dead.forEach((b,k)=>ev.push({type:'die',id:b.id,t:t0+.4+k*.4}));
+  POP[isl]=POP[isl].filter(b=>!dead.includes(b));
+  let t=t0+.6+dead.length*.4;
+  const id='b'+uid++,slot=free(isl);POP[isl].push({id,slot,key:best,pale:1});ev.push({type:'birth',id,isl,slot,key:best,pale:1,t});
+  t+=1.4;
+  POP[isl].forEach((b,k)=>{b.sp=1;ev.push({type:'special',id:b.id,t:t+k*.3})});
+  ev.push({type:'bubble',isl,txt,t:t+.2,hl:1});
+}
 function demo(ev,isl,t){const oldKey=POP[isl].find(b=>!b.mut).key,newKey=POP[isl].find(b=>b.mut==='good').key;
   ev.push({type:'demo',isl,food:ISLFOOD[isl],oldKey,newKey,pos:DEMOPOS[isl],t})}
 const STEPS=[];
@@ -375,8 +395,27 @@ S({p:'migration',cycle:1,w:"Encore plus tard",t:"Le même cycle se répète sur 
   ev=>{migrate(ev,'Santiago','Isabela',['pic','pic','pic','pic'],.3);
        ev.push({type:'phase',p:'mutation',t:3.4});mutations(ev,'Isabela','fin','gros',3.6);
        ev.push({type:'phase',p:'selection',t:7.8});demo(ev,'Isabela',8);selection(ev,'Isabela','fin',12.8,"Le bec très fin devient majoritaire")});
-S({p:'resultat',w:"Aujourd'hui",t:"Des espèces différentes, un seul ancêtre",x:"Isolées par la mer, les populations sont devenues si différentes qu'elles ne pourraient plus se reproduire entre elles : ce sont des espèces différentes, toutes issues du même ancêtre. Il reste des différences entre individus d'une même île : la variation ne disparaît jamais complètement. En réalité, on compte 15 à 18 espèces de pinsons aux Galápagos."},
-  ev=>{[['San Cristóbal',"Population ancestrale",'--l0'],['Santa Cruz',"Géospize à gros bec",'--l1'],['Española',"Géospize des cactus",'--l4'],['Floreana',"Géospize à petit bec",'--l3'],['Santiago',"Pinson pic",'--l6'],['Isabela',"Pinson fauvette",'--l5']]
+S({p:'isolement',iso:1,w:"Pendant des milliers de générations",t:"Chaque population reste sur son île",x:"La mer isole les îles : aucun oiseau ne passe plus d'une île à l'autre, donc les populations n'échangent plus rien. Sur chaque île, mutations et sélection naturelle continuent, chacune de son côté. Les oiseaux mal adaptés disparaissent peu à peu, le bec devient encore plus adapté à la nourriture de l'île, et le plumage et le chant deviennent propres à chaque île (calotte noire, crête, ventre jaune…). Les populations deviennent de plus en plus différentes. Cliquez sur un oiseau pour voir comment il mange."},
+  ev=>{ev.push({type:'iso',t:.2});
+       [['Santa Cruz','gros',"Bec très épais, calotte noire"],['Española','cactus',"Bec très long, gorge noire"],['Floreana','petit',"Bec encore plus petit, œil cerclé"],
+        ['Santiago','pic',"Bec pointu, crête sur la tête"],['Isabela','fin',"Bec très fin, ventre jaune"]]
+       .forEach(([isl,best,txt],k)=>isolation(ev,isl,best,.8+k*.5,txt));
+       ev.push({type:'bubble',isl:'San Cristóbal',txt:"Reste proche de l'ancêtre",t:5.6})});
+S({p:'croisement',iso:1,w:"Rarement, au fil du temps",t:"Quelques oiseaux passent d'une île à l'autre",x:"De temps en temps, un petit groupe d'oiseaux est emporté par le vent vers une autre île. Deux oiseaux de Floreana arrivent sur Santa Cruz : ces deux populations sont encore assez proches, ils se reproduisent avec les oiseaux de l'île. Le petit hérite des caractères de ses deux parents : il a un bec intermédiaire. Ces croisements mélangent les populations. Deux pinsons fauvettes d'Isabela arrivent sur Floreana : ils sont devenus trop différents (bec, plumage, chant) et ne se reproduisent pas avec les oiseaux de l'île. Les deux groupes vivent sur la même île sans se mélanger : ce sont deux espèces différentes."},
+  ev=>{const imm=migrate(ev,'Floreana','Santa Cruz',[['petit',0,1],['petit',0,1]],.3);
+       ev.push({type:'bubble',isl:'Santa Cruz',txt:"Des oiseaux de Floreana arrivent",t:.6});
+       ev.push({type:'bubble',isl:'Santa Cruz',txt:"Croisement avec un oiseau de l'île",t:4.6,hl:1});
+       ev.push({type:'love',ids:[imm[0],POP['Santa Cruz'][0].id],t:4.8});
+       const id='b'+uid++,slot=free('Santa Cruz'),tag=["Hybride : bec intermédiaire",'hyb'];
+       POP['Santa Cruz'].push({id,slot,key:'hyb',mut:'hyb',tag});ev.push({type:'birth',id,isl:'Santa Cruz',slot,key:'hyb',mut:1,tag,t:6.2});
+       ev.push({type:'bubble',isl:'Santa Cruz',txt:"Le petit a un bec intermédiaire",t:7.2,hl:1});
+       const fin=migrate(ev,'Isabela','Floreana',[['fin',0,1],['fin',0,1]],8.4);
+       ev.push({type:'bubble',isl:'Floreana',txt:"Des fauvettes d'Isabela arrivent",t:8.7});
+       {const b=POP['Floreana'].find(x=>x.id===fin[1]);b.tag=["✗ Pas de croisement",'bad'];ev.push({type:'tag',id:b.id,tag:b.tag,t:12.4})}
+       ev.push({type:'bubble',isl:'Floreana',txt:"Trop différents : pas de croisement",t:12.6,hl:1})});
+S({p:'resultat',w:"Aujourd'hui",t:"Des espèces différentes, un seul ancêtre",x:"Isolées par la mer pendant très longtemps, les populations sont devenues si différentes que la plupart ne peuvent plus se reproduire entre elles : ce sont des espèces différentes, toutes issues du même ancêtre. Des croisements restent possibles, mais rares, entre espèces encore très proches. Il reste des différences entre individus d'une même île : la variation ne disparaît jamais complètement. En réalité, on compte 15 à 18 espèces de pinsons aux Galápagos."},
+  ev=>{Object.values(POP).forEach(a=>a.forEach(b=>{if(b.tag){ev.push({type:'tag',id:b.id,tag:null,t:.1});b.tag=null;b.mut=null}}));
+       [['San Cristóbal',"Population ancestrale",'--l0'],['Santa Cruz',"Géospize à gros bec",'--l1'],['Española',"Géospize des cactus",'--l4'],['Floreana',"Géospize à petit bec",'--l3'],['Santiago',"Pinson pic",'--l6'],['Isabela',"Pinson fauvette",'--l5']]
        .forEach(([isl,txt,c],k)=>ev.push({type:'bubble',isl,txt,dot:c,t:.3+k*.35}));ev.push({type:'cheer',t:.2})});
 
 /* ================= zoom : comment le bec permet de manger ================= */
@@ -484,10 +523,13 @@ function bubble({isl,txt,hl,dot}){
   el('text',{x:x+(dot?28:w/2),y:by+4.5,'text-anchor':dot?'start':'middle',class:'call'},g).textContent=txt;
   bubbles[isl]=g;
 }
+/* barrières d'isolement : la mer autour de chaque île */
+function drawIso(anim){gIso.innerHTML='';for(const I of Object.values(ISL))
+  el('ellipse',{cx:I.cx,cy:I.cy,rx:I.rx+16,ry:I.ry+14,transform:`rotate(${I.rot} ${I.cx} ${I.cy})`,class:anim?'pop':'',fill:'none',style:'stroke:var(--coast)','stroke-width':2.5,'stroke-dasharray':'8 6','stroke-opacity':.75},gIso)}
 function setPhase(p){document.querySelectorAll('#phases span').forEach(s=>s.classList.toggle('on',s.dataset.p===p))}
 function snap(state){
   Object.values(live).forEach(removeBird);
-  for(const [isl,arr] of Object.entries(state))arr.forEach(b=>{const [x,y]=slotPos(isl,b.slot);const bd=makeBird(b.id,b.key,x,y,b.pale,isl);if(b.mut==='good'||(b.mut&&b.tag&&b.tag[1]==='mut'))addRing(bd);if(b.tag)setTag(bd,b.tag)});
+  for(const [isl,arr] of Object.entries(state))arr.forEach(b=>{const [x,y]=slotPos(isl,b.slot);const bd=makeBird(b.id,b.key,x,y,b.pale,isl,b.sp);if(b.mut==='good'||(b.mut&&b.tag&&(b.tag[1]==='mut'||b.tag[1]==='hyb')))addRing(bd);if(b.tag)setTag(bd,b.tag)});
 }
 function startFlight(b,x2,y2,dur){
   const x1=b.x,y1=b.y,bend=.18*(x2<x1?1:-1);
@@ -499,7 +541,7 @@ function egg(x,y,mut){const g=el('g',{class:'egg'},gFx);
 const H={
   fly(e){
     const I=ISL[e.from],[x,y]=e.from==='main'?[915+Math.random()*45,250+Math.random()*90]:[I.cx+(Math.random()-.5)*110,I.cy+(Math.random()-.4)*50];
-    const go=()=>{const b=makeBird(e.id,e.key,x,y,e.pale,e.to);b.born=performance.now();
+    const go=()=>{const b=makeBird(e.id,e.key,x,y,e.pale,e.to,e.sp);b.born=performance.now();
       const [x2,y2]=slotPos(e.to,e.slot),dist=Math.hypot(x2-x,y2-y),dur=e.from==='main'?3.4:Math.max(1.5,dist/210);
       b.dir=x2<x?-1:1;
       at(.6,()=>{startFlight(b,x2,y2,dur);
@@ -510,13 +552,19 @@ const H={
   birth(e){
     const [x,y]=slotPos(e.isl,e.slot);
     const egg_=egg(x,y,e.mut);
-    at(.8,()=>{egg_.remove();const b=makeBird(e.id,e.key,x,y,e.pale,e.isl);b.born=performance.now();if(e.mut){addRing(b);sparkle(x+6,y-4);setTag(b,e.tag)}});
+    at(.8,()=>{egg_.remove();const b=makeBird(e.id,e.key,x,y,e.pale,e.isl,e.sp);b.born=performance.now();if(e.mut){addRing(b);sparkle(x+6,y-4);setTag(b,e.tag)}});
   },
   die(e){const b=live[e.id];if(!b)return;b.dying=performance.now();setColor(b,'--dead');b.ring&&b.ring.remove();b.ring=null;b.tag&&b.tag.remove();b.tag=null},
   tag(e){const b=live[e.id];if(!b)return;setTag(b,e.tag);if(!e.tag&&b.ring){b.ring.remove();b.ring=null}},
   bubble(e){bubble(e)},
   phase(e){setPhase(e.p)},
   demo(e){demoPanel(e)},
+  special(e){const o=live[e.id];if(!o||o.dying)return;const {key,pale,isl,x,y,dir}=o;removeBird(o);
+    const b=makeBird(e.id,key,x,y,pale,isl,1);b.dir=dir;b.born=performance.now();sparkle(x+6,y-4)},
+  iso(){drawIso(1)},
+  love(e){const [a,b]=e.ids.map(i=>live[i]);if(!a||!b)return;const x=(a.x+b.x)/2,y=Math.min(a.y,b.y)-34;
+    const g=el('g',{class:'pop'},gFx);el('text',{x,y,'text-anchor':'middle',style:'font-size:24px;fill:var(--bad)'},g).textContent='♥';
+    a.hop={t0:performance.now(),dur:420};b.hop={t0:performance.now(),dur:420};at(2.2,()=>g.remove(),true)},
   cheer(){Object.values(live).forEach((b,k)=>at(k*.04,()=>{b.hop={t0:performance.now(),dur:450}}))}
 };
 const dots=$('#dots');
@@ -527,13 +575,13 @@ function go(i,animate){
   [...dots.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i));
   $('#when').textContent=`Étape ${i+1} sur ${STEPS.length} · ${s.w}`;$('#title').textContent=s.t;$('#text').textContent=s.x;
   $('#prev').disabled=i===0;$('#next').disabled=i===STEPS.length-1;$('#replay').hidden=!s.ev.length;
-  gArr.innerHTML='';gCall.innerHTML='';gFx.innerHTML='';gDemo.innerHTML='';for(const k in bubbles)delete bubbles[k];
+  gArr.innerHTML='';gCall.innerHTML='';gFx.innerHTML='';gDemo.innerHTML='';gIso.innerHTML='';for(const k in bubbles)delete bubbles[k];
   setPhase(s.p);
   if(animate&&i>0&&!RM.matches){
-    snap(STEPS[i-1].state);
+    snap(STEPS[i-1].state);if(STEPS[i-1].iso&&s.iso)drawIso(0);
     s.ev.forEach(e=>at(e.t,()=>H[e.type](e)));
   }else{
-    snap(s.state);
+    snap(s.state);if(s.iso)drawIso(0);
     const last={};s.ev.forEach(e=>{if(e.type==='bubble')last[e.isl]=e;if(e.type==='phase')setPhase(e.p)});
     Object.values(last).forEach(bubble);
   }

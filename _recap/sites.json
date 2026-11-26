@@ -7,7 +7,7 @@
   "Orientation 3e",
   "Le sol"
  ],
- "derniere_maj": "2026-11-23",
+ "derniere_maj": "2026-11-26",
  "sites": [
   {
    "titre": "Inondations et canicules",
@@ -94,8 +94,8 @@
    "theme": "Génétique et évolution",
    "fichier": "Pinsons des Galápagos.html",
    "artifact": "https://claude.ai/artifact/QcnrfmDBnsvzSULRJcuGyb",
-   "version": null,
-   "verifie": "2026-11-08"
+   "version": "1795657448-b34c",
+   "verifie": "2026-11-26"
   },
   {
    "titre": "Labo de la dérive génétique",
