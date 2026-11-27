@@ -435,6 +435,34 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .tag2{font-size:11.5px;font-weight:700;border-radius:6px;padding:1px 6px;background:#fdf0c8;color:#7a5a00}
 @media (max-width:900px){#prog .duo2,#prog .duo2.duo-site{grid-template-columns:1fr}}
 @media (max-width:480px){#prog .eleves{grid-template-columns:1fr 1fr}#prog table.sv .nom{min-width:110px;max-width:130px}#prog .barre .fin{margin-left:0}}
+/* Onglet Correction : détail d'une copie (critères vert / rouge) et bilan d'un devoir */
+#prog table.sv.co td.cn,#prog table.sv.co td.cd{cursor:pointer}
+#prog table.sv.co td.cn:hover .n,#prog table.sv.co td.cd:hover .n,#prog table.sv.co td.ouverte .n{outline:2px solid #1f62b8}
+#prog .co-main{font-size:10px;color:#1f62b8;margin-left:2px;vertical-align:super}
+#prog table.sv.co tr.det>td{background:#fafcfb;text-align:left;white-space:normal;padding:10px 12px;position:static}
+#prog .co-copie{display:flex;flex-direction:column;gap:8px;max-width:1180px}
+#prog .co-haut{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#prog .co-haut .fin{flex:1}
+#prog .co-titre{font-weight:800}
+#prog .co-pts{font-weight:800}
+#prog .co-etat{font-size:12px;padding:1px 8px;border-radius:20px;background:#eef1ef;color:var(--muted)}
+#prog .co-etat.abs{background:#fdf0c8;color:#7a5a00}#prog .co-etat.ne{background:#e9e3f7;color:#5b3d99}#prog .co-etat.okk{background:#d6f0e4;color:#14603f}#prog .co-etat.fac{background:#dcebfb;color:#1f62b8}
+#prog .co-ligne{display:grid;grid-template-columns:minmax(150px,1fr) minmax(200px,1.4fr) minmax(220px,1.6fr);gap:8px}
+#prog .co-ligne>div,#prog .co-comm,#prog .co-box{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:13.5px;line-height:1.4}
+#prog .co-lbl{display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px}
+#prog .co-rep{white-space:pre-wrap}#prog .co-rep.vide{color:#b9c2bc;font-style:italic}
+#prog .co-cr{display:flex;gap:6px;align-items:flex-start;width:100%;text-align:left;border:1px solid;border-radius:7px;padding:4px 7px;margin:3px 0;font:inherit;font-size:13px;cursor:pointer}
+#prog .co-cr.ok{background:#d6f0e4;border-color:#9fd4b9;color:#14603f}#prog .co-cr.ko{background:#fbdcd8;border-color:#f0b2aa;color:#9b2c20}#prog .co-cr.neutre{background:#f3f5f4;border-color:var(--line);color:var(--ink);cursor:default}
+#prog .co-cr[disabled]{cursor:default}#prog .co-cr i{font-style:normal;font-weight:700;white-space:nowrap}
+#prog .co-comm .txt.perime{color:var(--muted)}#prog .co-avert{font-size:12px;color:#7a5a00;margin-top:3px}
+#prog .co-grille{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#prog .co-box{display:flex;flex-direction:column;gap:4px}
+#prog .co-cons{margin-top:4px}
+#prog .co-bar{display:grid;grid-template-columns:1fr 110px 44px;gap:8px;align-items:center;font-size:13px;margin:2px 0 2px 12px}
+#prog .co-jauge{height:9px;background:#eef1ef;border-radius:5px;overflow:hidden}#prog .co-jauge i{display:block;height:100%}
+#prog .co-jauge i.bon{background:#7cc5a0}#prog .co-jauge i.moyen{background:#e8c65a}#prog .co-jauge i.faible{background:#e48f84}
+#prog .co-bar .pc{font-size:12px;text-align:right;color:var(--muted)}
+@media (max-width:800px){#prog .co-ligne,#prog .co-grille{grid-template-columns:1fr}#prog .co-bar{grid-template-columns:1fr 70px 38px;margin-left:4px}}
 </style>
 
 <div class="wrap">
@@ -446,6 +474,7 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
     <button type="button" role="tab" id="t-prog" aria-selected="false" data-tab="progression">Progression SVT</button>
     <button type="button" role="tab" id="t-suivi" aria-selected="false" data-tab="suivi">Suivi des élèves</button>
     <button type="button" role="tab" id="t-act" aria-selected="false" data-tab="activite">Activité</button>
+    <button type="button" role="tab" id="t-cor" aria-selected="false" data-tab="correction">Correction</button>
     <div id="pg-barre" hidden>
       <div class="filtres" id="pg-filtres"></div>
       <span class="sous" id="pg-maj"></span>
@@ -475,6 +504,7 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
     <div id="pg-main"><div class="info">Chargement…</div></div>
     <div id="sv-main" hidden></div>
     <div id="ac-main" hidden></div>
+    <div id="co-main" hidden></div>
     <aside id="pg-pan"></aside>
     <div id="pg-toast" class="cache"></div>
   </div>
@@ -2568,6 +2598,190 @@ $('#prog').addEventListener('click', e => {
 // ---------------------------------------------------------------------
 // Démarrage (Progression)
 // ---------------------------------------------------------------------
+// =====================================================================
+// CORRECTION : notes par devoir, détail d'une copie (critères vert / rouge), bilan d'un devoir
+// Mêmes données que Suivi (résumé) et Activité (consignes, correction, liens) ; copies lues dans la feuille de la classe.
+// =====================================================================
+let coCl = '', coPer = '', coOuvert = '', coBilan = '';
+const CO_BLOCS = {}, CO_NOTES = {};   // copies lues (classe|code) · notes modifiées ici, en attente de la synchro
+const CO_PROFIL_ADAPTE = p => /^(D|M)$/i.test(String(p || '').trim());
+// Réponse « Consigne A : … Consigne B : … » → { A: '…', B: '…' }
+function coSegments(t) {
+  const s = String(t || ''), re = /(?:^|\n)\s*Consigne\s+([A-Z])\s*[:;.]?/gi, pos = [];
+  let m; while ((m = re.exec(s))) pos.push({ l: m[1].toUpperCase(), i: m.index, f: re.lastIndex });
+  const o = {}; pos.forEach((p, n) => { o[p.l] = s.slice(p.f, n + 1 < pos.length ? pos[n + 1].i : s.length).trim(); });
+  if (!pos.length && s.trim()) o._ = s.trim();
+  return o;
+}
+// Barème d'une copie « A : 3/4 (critères 1, 2) » → { A: { pts, max, ok: Set(index 0…) | null } }
+function coBareme(t) {
+  const o = {};
+  String(t || '').split('\n').forEach(x => {
+    const c = x.match(/^\s*([A-Z])\s*:\s*([\d.,]+)\s*\/\s*([\d.,]+)(?:\s*\(critères?\s*([^)]*)\))?/i);
+    if (!c) return;
+    const ok = c[4] == null ? null : new Set(/aucun/i.test(c[4]) ? [] : c[4].split(/[,\s]+/).filter(Boolean).map(n => +n - 1));
+    o[c[1].toUpperCase()] = { pts: num(c[2]), max: num(c[3]), ok };
+  });
+  return o;
+}
+function coActivite(cl, code) {
+  const k = prepMeta(cl, code), V = k && META[k] ? versionPubliee(k) : { cons: '', cor: '', site: '' };
+  return { k, V, cs: js(V.cons, []), bar: js(V.cor, {}), meta: META[k] || {}, a: (SV.acts[cl] || {})[code] || null };
+}
+async function coChargerBloc(cl, code, force) {
+  const cle = cl + '|' + code, a = (SV.acts[cl] || {})[code];
+  if (!a) return null;
+  if (CO_BLOCS[cle] && !force) return CO_BLOCS[cle];
+  const v = await lire(fA1(cl, `A${a.ligne}:X${a.ligne + 31}`));
+  const copies = {};
+  for (let i = 2; i < 32; i++) {
+    const l = v[i] || [], id = String(l[1] || '').trim();
+    if (!id) continue;
+    copies[id] = { ligne: a.ligne + i, absent: String(l[5]).toUpperCase() === 'TRUE', vu: /^(true|t)$/i.test(String(l[9] || '').trim()),
+      note: String(l[13] || '').trim(), bareme: String(l[14] || '').trim(), comm: String(l[16] || '').trim(), rep: String(l[23] || '') };
+    copies[id].b = coBareme(copies[id].bareme); copies[id].seg = coSegments(copies[id].rep);
+  }
+  return (CO_BLOCS[cle] = copies);
+}
+// Note sur 20 comme la correction du Worker (profils D/M : consignes à 0 non évaluées)
+function coNote20(b, profil) {
+  let t = 0, m = 0;
+  Object.keys(b).sort().forEach(l => { if (CO_PROFIL_ADAPTE(profil) && !(b[l].pts > 0)) return; t += b[l].pts || 0; m += b[l].max || 0; });
+  return m ? Math.round(t / m * 20) : 0;
+}
+function coTexteBareme(b) {
+  return Object.keys(b).sort().map(l => `${l} : ${fr(b[l].pts).replace(',', '.')}/${fr(b[l].max).replace(',', '.')}` +
+    (b[l].ok ? ` (critères ${b[l].ok.size ? [...b[l].ok].sort((x, y) => x - y).map(i => i + 1).join(', ') : 'aucun'})` : '')).join('\n');
+}
+
+function dessinerCorrection() {
+  if (!SV) return;
+  if (!coCl || !SV.classes[coCl] || !SV.classes[coCl].effectif) coCl = svCl && SV.classes[svCl] && SV.classes[svCl].effectif ? svCl : Object.keys(SV.classes).filter(c => SV.classes[c].effectif).sort()[0] || '';
+  if (!coPer) coPer = (coCl && SV.classes[coCl].trimestre) || '1';
+  const cl = coCl, P = (SV.classes[cl] || { periodes: {} }).periodes[coPer] || { devoirs: [] }, ids = cl ? elevesClasse(cl) : [];
+  const codes = (P.devoirs || []).map(d => d.code).filter(c => c !== 'A').sort(ordreCode);
+  // activités de la période pas encore notées (à faire / en cours)
+  Object.entries(SV.acts[cl] || {}).forEach(([k, a]) => { if (String(a.periode || '') === String(coPer) && !codes.includes(k)) codes.push(k); });
+  codes.sort(ordreCode);
+  const noteDe = (id, k) => { const loc = CO_NOTES[cl + '|' + k + '|' + id]; return loc != null ? { v: num(loc), txt: loc, main: true } : noteEleve(cl, id, k, coPer); };
+  const moyDev = k => moyenne(ids.map(id => { const n = noteDe(id, k); return n.nc ? null : n.v; }));
+  const etatDev = k => { const a = (SV.acts[cl] || {})[k]; return !a ? '' : a.arretee ? 'arrêtée' : a.terminee ? 'terminée' : (a.ouverte || a.ouverts > 0) ? 'en cours' : 'à faire'; };
+  let h = `<thead><tr><th class="nom">Élève</th><th>Profil</th><th>Moy.</th>${codes.map(k => `<th title="${esc(titreActivite(cl, k, (SV.acts[cl] || {})[k]))}">${esc(k)}</th>`).join('')}</tr></thead><tbody>`;
+  const mcl = moyenne(ids.map(id => num(((SV.eleves[cl][id].p || {})[coPer] || {}).moy)));
+  h += `<tr class="rcl"><td class="nom">Classe ${esc(cl)}</td><td></td><td><span class="n n-moy ${classeNote(mcl)}">${fr(mcl)}</span></td>
+    ${codes.map(k => { const m = moyDev(k), a = (SV.acts[cl] || {})[k], e = etatDev(k);
+      return `<td class="cd${coBilan === k ? ' ouverte' : ''}" data-codev="${esc(k)}" title="Bilan du devoir ${esc(k)} (${e})"><span class="n ${m == null ? 'vide' : classeNote(m)}">${m == null ? (e === 'à faire' ? 'à faire' : e || '–') : fr(m)}</span>${a && (a.facForcee || a.facAuto) ? '<span class="co-main" title="Facultative">F</span>' : ''}</td>`; }).join('')}</tr>`;
+  if (coBilan) h += `<tr class="det"><td colspan="${3 + codes.length}" id="co-det-bilan">${coBilanHtml(cl, coBilan)}</td></tr>`;
+  ids.forEach(id => {
+    const E = SV.eleves[cl][id], p = (E.p || {})[coPer] || {}, m = num(p.moy);
+    h += `<tr class="el"><td class="nom ${genreEleve(id)}" title="${esc(id)}">${esc(nomEleve(id))}</td><td>${tagProfil(E.profil)}</td>
+      <td><span class="n n-moy ${classeNote(m)}">${fr(m)}</span></td>
+      ${codes.map(k => { const n = noteDe(id, k), cle = cl + '|' + k + '|' + id;
+        return `<td class="cn${coOuvert === cle ? ' ouverte' : ''}" data-cocopie="${esc(cle)}" title="${esc(n.titre || 'Détail de la copie')}"><span class="n ${n.nc ? 'nc' : n.v == null ? 'vide' : classeNote(n.v)}">${esc(n.txt || '')}</span>${n.main ? '<span class="co-main" title="Modifiée ici, en attente de la synchro (5 min)">✎</span>' : ''}</td>`; }).join('')}</tr>`;
+    if (coOuvert && coOuvert.startsWith(cl + '|') && coOuvert.endsWith('|' + id)) h += `<tr class="det"><td colspan="${3 + codes.length}" id="co-det-copie">${coCopieHtml(cl, coOuvert.split('|')[1], id)}</td></tr>`;
+  });
+  $('#co-main').innerHTML = `
+    <div class="barre barre2"><div class="lg">
+      <div class="filtres">${[1, 2, 3].map(p => `<button type="button" aria-pressed="${String(p) === String(coPer)}" data-coper="${p}">T${p}</button>`).join('')}</div>
+      <span class="sep2"></span>
+      ${NIVEAUX.map(n => `<div class="filtres">${classesNiveau(n).map(c => `<button type="button" aria-pressed="${c === cl}" data-cocl="${c}">${c}</button>`).join('')}</div>`).join('')}
+      <span class="fin"></span>${blocNoms()}
+      <span class="sous" title="Clic sur la moyenne d'un devoir (ligne de la classe) : bilan du devoir. Clic sur une note : détail de la copie. Clic sur un élément de correction : vert ↔ rouge, la note est recalculée et enregistrée.">ⓘ</span>
+    </div></div>
+    ${cl ? `<div class="tabl"><table class="sv co">${h}</tbody></table></div>` : '<div class="info">Aucune classe avec des élèves.</div>'}`;
+}
+
+function coCopieHtml(cl, code, id) {
+  const bloc = CO_BLOCS[cl + '|' + code];
+  if (!bloc) return '<div class="sous">Lecture de la copie…</div>';
+  const c = bloc[id], A = coActivite(cl, code), E = SV.eleves[cl][id] || {};
+  if (!c) return '<div class="sous">Pas de copie pour cet élève dans cette activité.</div>';
+  const corrigee = c.note !== '' && c.bareme !== '';
+  const ne = /^NE$/i.test(String(E.profil || '').trim());
+  const etat = c.absent && !c.rep.trim() ? '<span class="co-etat abs">Absent : correction affichée, note non comptée</span>'
+    : ne ? '<span class="co-etat ne">Profil NE : correction affichée, pas de note</span>'
+    : corrigee ? `<span class="co-pts">${esc(c.note)} / 20</span>` : c.rep.trim() ? '<span class="co-etat">Rendue, pas encore corrigée</span>' : '<span class="co-etat">Pas de réponse</span>';
+  const lettres = A.cs.length ? A.cs.map(x => x.lettre) : Object.keys(A.bar).sort();
+  const lignes = lettres.map(l => {
+    const consigne = (A.cs.find(x => x.lettre === l) || {}).texte || '', B = A.bar[l] || {}, cr = criteres(B), bl = c.b[l];
+    const rep = c.seg[l] != null ? c.seg[l] : (lettres[0] === l && c.seg._) || '';
+    const cliquable = corrigee && bl && bl.ok;
+    return `<div class="co-ligne">
+      <div><span class="co-lbl">Consigne ${esc(l)} · ${bl ? `<b>${fr(bl.pts)} / ${fr(bl.max)}</b>` : esc(B.max || '?') + ' pts'}</span>${esc(consigne)}</div>
+      <div><span class="co-lbl">Réponse de l'élève</span>${rep ? `<span class="co-rep">${esc(rep)}</span>` : '<span class="co-rep vide">Pas de réponse</span>'}</div>
+      <div><span class="co-lbl">Éléments de correction${cliquable ? ' (clic : vert ↔ rouge)' : ''}</span>${cr.map((x, j) => {
+        const ok = bl && bl.ok ? bl.ok.has(j) : null, cls = ok == null ? 'neutre' : ok ? 'ok' : 'ko';
+        return `<button type="button" class="co-cr ${cls}" ${cliquable ? `data-cocr="${esc(cl + '|' + code + '|' + id + '|' + l + '|' + j)}"` : 'disabled'}><i>${ok == null ? '•' : ok ? '✓' : '✗'} ${esc(x.points || '?')} pt${+x.points > 1 ? 's' : ''}</i><span>${esc(x.texte)}</span></button>`; }).join('') || '<span class="sous">Pas de critères.</span>'}</div></div>`;
+  }).join('');
+  const modif = !!CO_NOTES[cl + '|' + code + '|' + id];
+  return `<div class="co-copie">
+    <div class="co-haut"><span class="co-titre">${esc(nomEleve(id))} · ${esc(code)} — ${esc(titreActivite(cl, code, A.a))}</span>${etat}${modif ? '<span class="co-etat">✎ modifiée ici · visible dans le cahier sous 5 min</span>' : ''}</div>
+    <div class="co-comm"><div class="txt${modif ? ' perime' : ''}"><span class="co-lbl">Commentaire vu par l'élève</span>${esc(c.comm || '—')}
+      ${modif ? '<div class="co-avert">Critères changés : le commentaire ne correspond peut-être plus (régénération par Mistral : prochaine étape).</div>' : ''}</div></div>
+    ${lignes}</div>`;
+}
+
+function coBilanHtml(cl, code) {
+  const A = coActivite(cl, code), a = A.a, bloc = CO_BLOCS[cl + '|' + code];
+  const st = infoSite(A.V.site || ''), ids = elevesClasse(cl);
+  const etat = !a ? '' : a.arretee ? '<span class="co-etat">■ Arrêtée</span>' : a.terminee ? '<span class="co-etat okk">✓ Terminée</span>' : (a.ouverte || a.ouverts > 0) ? `<span class="co-etat">En cours · ${a.repondu} rendue(s), ${a.corriges} corrigée(s)</span>` : '<span class="co-etat">À faire</span>';
+  const fac = a && (a.facForcee || a.facAuto);
+  let stats = '<div class="sous">Lecture des copies…</div>', reussite = {};
+  if (bloc) {
+    const notes = ids.map(id => { const n = noteEleve(cl, id, code, coPer); return n.nc ? null : n.v; }).filter(v => v != null);
+    const copies = ids.map(id => bloc[id]).filter(c => c && c.note !== '' && c.bareme !== '');
+    Object.keys(A.bar).forEach(l => { reussite[l] = criteres(A.bar[l]).map((x, j) => { const avec = copies.filter(c => c.b[l] && c.b[l].ok); return avec.length ? Math.round(100 * avec.filter(c => c.b[l].ok.has(j)).length / avec.length) : null; }); });
+    const t = (lo, hi) => notes.filter(v => v >= lo && v < hi).length, mo = moyenne(notes);
+    const abs = ids.filter(id => bloc[id] && bloc[id].absent && !bloc[id].rep.trim()).length;
+    stats = `<div class="co-grille">
+      <div class="co-box"><span class="co-lbl">Moyenne (notes comptées)</span><span class="n n-moy ${classeNote(mo)}">${fr(mo)}</span>
+        <div class="sous">min ${fr(notes.length ? Math.min(...notes) : null)} · max ${fr(notes.length ? Math.max(...notes) : null)} · ${copies.length} copie(s) corrigée(s) · ${abs} absent(s)</div></div>
+      <div class="co-box"><span class="co-lbl">Répartition des notes</span>${[['< 10', t(0, 10), 'faible'], ['10 – 14', t(10, 14), 'moyen'], ['≥ 14', t(14, 99), 'bon']].map(([l, n, c]) => `<div class="co-bar"><span>${l}</span><span class="co-jauge"><i class="${c}" style="width:${notes.length ? 100 * n / notes.length : 0}%"></i></span><span class="pc">${n}</span></div>`).join('')}</div>
+    </div>`;
+  }
+  const consignes = Object.keys(A.bar).length ? Object.entries(A.bar).map(([l, b]) => `<div class="co-cons"><b>${esc(l)}</b> ${esc((A.cs.find(x => x.lettre === l) || {}).texte || '')} <span class="sous">· ${esc(b.max)} pts</span>${criteres(b).map((x, j) => { const pc = (reussite[l] || [])[j];
+      return `<div class="co-bar"><span>${esc(x.points || '?')} pt · ${esc(x.texte)}</span>${pc == null ? '<span></span><span class="pc">—</span>' : `<span class="co-jauge"><i class="${pc >= 70 ? 'bon' : pc >= 40 ? 'moyen' : 'faible'}" style="width:${pc}%"></i></span><span class="pc">${pc} %</span>`}</div>`; }).join('')}</div>`).join('') : '<div class="sous">Pas encore de correction pour cette activité.</div>';
+  return `<div class="co-copie">
+    <div class="co-haut"><span class="co-titre">${esc(code)} — ${esc(titreActivite(cl, code, a))} · ${esc(cl)}</span>${etat}${fac ? '<span class="co-etat fac">Facultative</span>' : ''}<span class="fin"></span>
+      ${a ? `<button class="bouton leger petit${a.facForcee ? ' on' : ''}" type="button" data-coop="fac|${esc(cl)}|${esc(code)}">${a.facForcee ? '↺ Ne plus la rendre facultative' : '☆ Rendre facultative'}</button>` : ''}
+      <button class="bouton leger petit" type="button" data-coop="voir|${esc(cl)}|${esc(code)}" title="Même activité dans l'onglet Activité (consignes, correction, site)">↗ Ouvrir dans Activité</button></div>
+    ${stats}
+    <div class="co-grille">
+      <div class="co-box"><span class="co-lbl">Consignes et correction${bloc ? ' · % des copies corrigées qui ont chaque élément' : ''}</span>${consignes}</div>
+      <div class="co-box"><span class="co-lbl">Liens</span><div class="liens">${A.meta.act ? `<a href="${esc(A.meta.act)}" target="_blank" rel="noopener">📄 Doc activité</a>` : ''}${A.meta.cor ? `<a href="${esc(A.meta.cor)}" target="_blank" rel="noopener">✅ Doc correction</a>` : ''}${st ? `<a href="${esc(st.url)}" target="_blank" rel="noopener">🌐 ${esc(st.titre)}</a>` : '<span class="sous">Pas de site associé.</span>'}</div></div>
+    </div></div>`;
+}
+
+async function coBasculerCritere(cle) {
+  const [cl, code, id, l, j] = cle.split('|'), bloc = CO_BLOCS[cl + '|' + code], c = bloc && bloc[id], A = coActivite(cl, code);
+  if (!c || !c.b[l] || !c.b[l].ok) return;
+  const cr = criteres(A.bar[l] || {}), ok = c.b[l].ok, i = +j;
+  ok.has(i) ? ok.delete(i) : ok.add(i);
+  c.b[l].pts = Math.min(c.b[l].max, [...ok].reduce((t, x) => t + (num((cr[x] || {}).points) || 0), 0));
+  const note = String(coNote20(c.b, (SV.eleves[cl][id] || {}).profil)), bareme = coTexteBareme(c.b);
+  c.note = note; c.bareme = bareme; CO_NOTES[cl + '|' + code + '|' + id] = note;
+  dessinerCorrection();
+  try { await ecrire(fA1(cl, `N${c.ligne}:O${c.ligne}`), [[note, bareme]]); toast(`${nomEleve(id)} ${code} : ${note}/20 enregistré (dans le cahier sous 5 min).`); }
+  catch (e) { toast(erreurMcp(e), true); }
+}
+
+async function ouvrirCorrection() {
+  if (!SV) $('#co-main').innerHTML = '<div class="info">Chargement…</div>';
+  try { await demarrerProf(); dessinerCorrection(); } catch (e) { $('#co-main').innerHTML = `<div class="info">${esc(e.message || erreurMcp(e))}</div>`; }
+}
+document.addEventListener('click', async ev => {
+  const main = $('#co-main'); if (!main || main.hidden || !main.contains(ev.target)) return;
+  const b = ev.target.closest('[data-cocl],[data-coper],[data-codev],[data-cocopie],[data-cocr],[data-coop]');
+  if (!b) return;
+  if (b.dataset.cocl) { coCl = b.dataset.cocl; coOuvert = coBilan = ''; dessinerCorrection(); return; }
+  if (b.dataset.coper) { coPer = b.dataset.coper; coOuvert = coBilan = ''; dessinerCorrection(); return; }
+  if (b.dataset.cocr) { coBasculerCritere(b.dataset.cocr); return; }
+  if (b.dataset.coop) { const [op, cl, k] = b.dataset.coop.split('|'); await operation(op, cl, k); if (op === 'fac') setTimeout(dessinerCorrection, 300); return; }
+  const charger = async (cl, code) => { try { await coChargerBloc(cl, code); } catch (e) { toast(erreurMcp(e), true); } dessinerCorrection(); };
+  if (b.dataset.codev) { const k = b.dataset.codev; coBilan = coBilan === k ? '' : k; coOuvert = ''; dessinerCorrection(); if (coBilan) charger(coCl, k); return; }
+  if (b.dataset.cocopie) { const cle = b.dataset.cocopie, [cl, code] = cle.split('|'); if (!(SV.acts[cl] || {})[code]) return; coOuvert = coOuvert === cle ? '' : cle; coBilan = ''; dessinerCorrection(); if (coOuvert) charger(cl, code); }
+});
+
 let demarre = false;
 async function demarrer() {
   if (demarre) return; demarre = true;
@@ -2579,25 +2793,27 @@ async function demarrer() {
   catch (e) { demarre = false; $('#pg-main').innerHTML = `<div class="info">${esc(erreurMcp(e))}</div>`; $('#pg-maj').textContent = ''; }
 }
 window.__progression = { demarrer };
-window.__prof = { suivi: ouvrirSuivi, activite: ouvrirActivite };
+window.__prof = { suivi: ouvrirSuivi, activite: ouvrirActivite, correction: ouvrirCorrection };
 })();
 
 /* ===== Onglets (Mes sites / Progression SVT / Suivi des élèves / Activité), mémorisés dans l'adresse ===== */
-const ONGLETS=["sites","progression","suivi","activite"];
+const ONGLETS=["sites","progression","suivi","activite","correction"];
 function ongletHash(){const h=location.hash.slice(1);return ONGLETS.includes(h)?h:"sites"}
 function ongletVoir(t){
   if(!ONGLETS.includes(t))t="sites";
   const p=t!=="sites";
   document.getElementById("tab-sites").hidden=p;document.getElementById("tab-sites").style.display=p?"none":"flex";
-  document.getElementById("prog").hidden=!p;document.querySelector(".wrap").classList.toggle("large",t!=="sites");document.querySelector(".wrap").classList.toggle("prof",t==="suivi"||t==="activite");
+  document.getElementById("prog").hidden=!p;document.querySelector(".wrap").classList.toggle("large",t!=="sites");document.querySelector(".wrap").classList.toggle("prof",t==="suivi"||t==="activite"||t==="correction");
   document.getElementById("pg-barre").hidden=t!=="progression";
   document.getElementById("pg-main").hidden=t!=="progression";
   document.getElementById("sv-main").hidden=t!=="suivi";
   document.getElementById("ac-main").hidden=t!=="activite";
+  document.getElementById("co-main").hidden=t!=="correction";
   document.querySelectorAll(".tabs > button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===t)));
   if(t==="progression")window.__progression.demarrer();
   else if(t==="suivi")window.__prof.suivi();
   else if(t==="activite")window.__prof.activite();
+  else if(t==="correction")window.__prof.correction();
 }
 document.querySelectorAll(".tabs > button").forEach(b=>b.addEventListener("click",()=>{
   try{history.replaceState(null,"","#"+b.dataset.tab)}catch(_){location.hash=b.dataset.tab}
