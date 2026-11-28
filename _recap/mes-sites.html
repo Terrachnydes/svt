@@ -401,6 +401,44 @@ section.om.over{border-color:var(--accent);background:var(--accent-soft)}
 #prog .carte2{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
 #prog .carte2 h3{margin:0 0 8px;font-size:15px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 #prog .duo2.duo-site{grid-template-columns:360px minmax(0,1fr)}
+/* Activité 5 : course bilan (lien, cours, questions) */
+#prog .duo-course{display:grid;grid-template-columns:170px minmax(0,1fr) minmax(0,1.3fr);gap:12px;align-items:start}
+#prog .cr-lien{display:flex;flex-direction:column;gap:8px}
+#prog .cr-lien .gros{font-size:34px;line-height:1;text-align:center;margin:4px 0}
+#prog .cr-lien .bouton{justify-content:center;text-align:center}
+#prog .cr-etat{font-size:12.5px;color:var(--muted);line-height:1.35}
+#prog .cr-etat b{color:var(--fg)}
+#prog .cr-carte h3 .fin{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+#prog .cr-md{font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+#prog .cr-md h3,#prog .cr-md h4,#prog .cr-md h5{margin:12px 0 4px;font-size:15px}
+#prog .cr-md h3{font-size:16.5px;color:var(--cl)}
+#prog .cr-md p{margin:6px 0}#prog .cr-md ul{margin:4px 0;padding-left:20px}
+#prog .cr-md .md-retenir{background:#eef7f1;border-left:3px solid var(--vert);padding:6px 10px;border-radius:6px;margin:8px 0}
+#prog .cr-texte{width:100%;box-sizing:border-box;min-height:420px;font:13.5px/1.5 ui-monospace,Menlo,Consolas,monospace;padding:8px;border:1px solid var(--line);border-radius:8px;resize:vertical}
+#prog .cr-filtres{display:flex;gap:4px;flex-wrap:wrap;margin:0 0 8px}
+#prog .cr-filtres button{font:inherit;font-size:12.5px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer}
+#prog .cr-filtres button.on{background:var(--cl);color:#fff;border-color:var(--cl)}
+#prog .cr-q{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:0 0 8px;display:flex;flex-direction:column;gap:4px}
+#prog .cr-q.off{opacity:.55}
+#prog .cr-q.err{border-color:#e7b4ad;background:#fff8f7}
+#prog .cr-q .tete{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+#prog .cr-q .tete select{font:inherit;font-size:12.5px;padding:1px 4px;border-radius:6px;border:1px solid var(--line);background:#fff}
+#prog .cr-q .tete .fin{margin-left:auto;display:flex;gap:4px;align-items:center}
+#prog .cr-q .tete label{display:flex;gap:4px;align-items:center;cursor:pointer}
+#prog .cr-q textarea,#prog .cr-q input[type=text]{font:inherit;font-size:14px;width:100%;box-sizing:border-box;padding:4px 7px;border:1px solid var(--line);border-radius:6px;background:#fff}
+#prog .cr-q textarea{resize:vertical;min-height:2.6em}
+#prog .cr-q .rep{display:grid;grid-template-columns:22px minmax(0,1fr);gap:4px;align-items:center}
+#prog .cr-q .rep span{text-align:center}
+#prog .cr-q .bonne input{border-color:#9cd3b2;background:#f2fbf5}
+#prog .cr-q .faux input{border-color:#efc3bd;background:#fff8f7}
+#prog .cr-q .alerte{font-size:12.5px;color:var(--rouge)}
+#prog .cr-mini{font:inherit;font-size:12px;padding:2px 7px;border-radius:6px;border:1px solid var(--line);background:var(--surface);cursor:pointer;white-space:nowrap}
+#prog .cr-msg{font-size:13px;margin:6px 0}#prog .cr-msg.mal{color:var(--rouge)}#prog .cr-msg.bien{color:var(--vert)}
+#prog .cr-gen{border:1px solid #f0d78a;background:#fffbea;border-radius:10px;padding:8px 10px;margin:0 0 10px;font-size:13.5px;display:flex;flex-direction:column;gap:6px}
+#prog .cr-gen .jauge{height:6px;background:#f2e6bf;border-radius:4px;overflow:hidden}#prog .cr-gen .jauge i{display:block;height:100%;background:var(--jaune)}
+#prog .cr-gen .ligne{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+@media (max-width:1100px){#prog .duo-course{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}#prog .cr-lien{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;align-items:center}#prog .cr-lien .gros{display:none}}
+@media (max-width:800px){#prog .duo-course{grid-template-columns:minmax(0,1fr)}#prog .cr-texte{min-height:300px}}
 #prog .ac-titres{margin:14px 0 10px;padding:10px 14px;border-left:4px solid var(--accent);background:var(--surface);border-radius:8px;overflow-wrap:anywhere}
 #prog .ac-titres{display:flex;align-items:center;gap:12px;flex-wrap:wrap}#prog .ac-titres .txt{flex:1;min-width:0}
 #prog .ac-titres .s{font-size:13px;color:var(--muted);font-weight:600}
@@ -1758,7 +1796,7 @@ async function ouvrirActivite() {
   acTimer = setInterval(async () => {
     if ($('#ac-main').hidden) { clearInterval(acTimer); acTimer = null; return; }
     await chargerConnectes();
-    if (!$('#ac-main').hidden && !document.querySelector('#prog .pop') && !document.querySelector('#ac-main .edx[contenteditable="true"]') && !document.querySelector('#ac-main select.compsel, #ac-main .att.ouvert')) dessinerActivite();
+    if (!$('#ac-main').hidden && !document.querySelector('#prog .pop') && !document.querySelector('#ac-main .edx[contenteditable="true"]') && !document.querySelector('#ac-main select.compsel, #ac-main .att.ouvert') && !document.querySelector('#ac-main .duo-course :focus')) dessinerActivite();
   }, 60000);
 }
 async function recharger(classe) {
@@ -2418,10 +2456,10 @@ ${A ? `<span class="sep2"></span>
     <div class="ac-titres"><div class="txt">
       <div class="s">Séance ${esc(String(META[k] ? META[k].seance : (cleCode(acCode) || [''])[0]))}${(() => { const t = (META[k] && META[k].seanceTitre) || String(A.titre || '').replace(/^Séance\s*\d+\s*/i, '').replace(/\s*Activité\s*\d+\s*$/i, ''); return t ? ' · ' + esc(t) : ''; })()}</div>
       <h2>Activité ${esc(String(META[k] ? META[k].num : (cleCode(acCode) || ['', ''])[1]))}${V.titre ? ' · ' + esc(V.titre) : ''}</h2>
-      <div class="pb">❓ ${V.pb ? esc(V.pb) : '<i>Problématique à définir</i>'}</div></div>
-      <button class="bouton${differe ? ' orange' : ''}" type="button" data-majact="${esc(k)}" data-cl="${acCl}" title="${differe ? 'Les élèves n\'ont pas encore la dernière version (consignes, barème, correction) : clique pour la publier' : 'Relit les données de la page et demande au cahier de refaire le résumé de la ' + acCl}">↻ Mettre à jour</button>${compteur(k || acCl)}
+      <div class="pb">${estActCourse(acCode) ? '🏁 Course bilan : questions et cours communs à toutes les classes de ' + esc(acCl[0]) + 'e' : `❓ ${V.pb ? esc(V.pb) : '<i>Problématique à définir</i>'}`}</div></div>
+      ${estActCourse(acCode) ? '' : `<button class="bouton${differe ? ' orange' : ''}" type="button" data-majact="${esc(k)}" data-cl="${acCl}" title="${differe ? 'Les élèves n\'ont pas encore la dernière version (consignes, barème, correction) : clique pour la publier' : 'Relit les données de la page et demande au cahier de refaire le résumé de la ' + acCl}">↻ Mettre à jour</button>${compteur(k || acCl)}`}
     </div>
-    <div class="duo2 duo-site">
+    ${estActCourse(acCode) ? `<div id="cr-place" data-cle="${esc(k.replace(/-A\d+$/, ''))}"></div>` : `<div class="duo2 duo-site">
       <div class="carte2 site-carte">
         <h3>${st ? esc(st.titre) : 'Site'}</h3>
         ${st ? `<div class="apercu3">${st.apercu ? `<img src="${esc(st.apercu)}" alt="" data-acote="${esc(st.url)}">` : `<div class="vide3" data-acote="${esc(st.url)}">🌐</div>`}
@@ -2437,10 +2475,237 @@ ${A ? `<span class="sep2"></span>
         <h3 style="margin-top:14px">Correction <span class="sous">${Object.keys(bar).length ? total(bar) + ' pts' : ''}</span>${k ? `<button class="bouton leger petit" type="button" data-atelier="${esc(k)}" style="margin-left:auto" title="Discuter avec Claude ici, dans la page">✦ Modifier avec Claude</button>` : ''}</h3>
         ${Object.entries(bar).map(([l, v]) => `<p class="cons"><b>${esc(l)}</b> · <span class="edx" data-edx="cor|${esc(l)}|max">${esc(v.max)}</span> pts${A.reussite && A.reussite[l] != null ? ` <span class="sous">(réussite ${A.reussite[l]} %)</span>` : ''}</p>${criteres(v).map((x, j) => `<div class="crit"><i><span class="edx" data-edx="cor|${esc(l)}|${j}|points">${esc(x.points || '?')}</span> pt · </i><span class="edx" data-edx="cor|${esc(l)}|${j}|texte">${esc(x.texte)}</span></div>`).join('')}`).join('') || '<div class="sous">Pas de barème dans la progression.</div>'}
       </div>
-    </div>`}`;
+    </div>`}`}`;
+  monterPanneauCourse();
   ajusterJournee();
   majAttente();
 }
+
+// ---------- Activité 5 : course bilan (questions et cours, enregistrés dans la base du Worker) ----------
+// Commun à toutes les classes d'un niveau : clé de séance « 4e-S3 ». Disponible dans l'interface prof (/prof)
+// seulement : window.coursProf (ajouté par le Worker) parle à /course/prof avec le mot de passe prof.
+const estActCourse = code => (cleCode(code) || [])[1] === 5;
+const CRS = {};   // état par séance : { cle, etat, titre, activites, questions, cours, univers, genere, modifie, vue, filtre, msg, gen, el }
+const NB_GEN = [[36, '≈ 36 (court)'], [48, '≈ 48'], [60, '≈ 60'], [72, '≈ 72 (conseillé)'], [96, '≈ 96'], [120, '≈ 120 (max.)']];
+let crNbGen = 72;
+const crNorm = t => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+function crErreurs(q) {
+  const e = [];
+  if (String(q.q || '').trim().length < 10) e.push('énoncé trop court');
+  if (!String(q.bonne || '').trim()) e.push('bonne réponse vide');
+  if ((q.faux || []).filter(f => String(f || '').trim()).length < 3) e.push('il faut 3 réponses fausses');
+  const r = [q.bonne].concat(q.faux || []).map(crNorm).filter(Boolean);
+  if (new Set(r).size < r.length) e.push('deux réponses identiques');
+  return e;
+}
+const crJouable = q => q.actif !== false && !crErreurs(q).length;
+function crMd(md) {   // même rendu que le cahier et la page course
+  const inline = t => esc(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  let html = '', liste = false, para = [], encadre = [];
+  const fermer = () => {
+    if (para.length) { html += '<p>' + inline(para.join(' ')) + '</p>'; para = []; }
+    if (liste) { html += '</ul>'; liste = false; }
+    if (encadre.length) { html += '<div class="md-retenir">' + inline(encadre.join(' ')) + '</div>'; encadre = []; }
+  };
+  String(md || '').split('\n').forEach(l0 => {
+    const l = l0.trim(); let m;
+    if (!l) return fermer();
+    if ((m = l.match(/^(#{1,3})\s+(.*)/))) { fermer(); const n = m[1].length + 2; html += `<h${n}>${inline(m[2])}</h${n}>`; return; }
+    if ((m = l.match(/^>\s?(.*)/))) { if (para.length || liste) fermer(); encadre.push(m[1]); return; }
+    if ((m = l.match(/^[-•*]\s+(.*)/))) { if (para.length || encadre.length) fermer(); if (!liste) { html += '<ul>'; liste = true; } html += '<li>' + inline(m[1]) + '</li>'; return; }
+    if (liste || encadre.length) fermer();
+    para.push(l);
+  });
+  fermer();
+  return html;
+}
+async function crApi(corps) {
+  if (!window.coursProf) throw new Error('Disponible seulement dans l\'interface prof du cahier (/prof).');
+  return window.coursProf(corps);
+}
+function etatCourse(cle) {
+  return CRS[cle] || (CRS[cle] = { cle, etat: 'vide', titre: '', activites: [], questions: [], cours: '', univers: '', genere: null, modifie: false, vue: 'apercu', filtre: 0, msg: '', gen: '', el: null });
+}
+async function chargerCourse(S) {
+  S.etat = 'charge'; majPanneauCourse(S);
+  try {
+    const r = await crApi({ action: 'pool', cle: S.cle });
+    Object.assign(S, { etat: 'ok', titre: r.titre || '', activites: r.activites || [], questions: JSON.parse(JSON.stringify(r.pool.questions || [])),
+      cours: r.pool.cours || '', univers: r.univers || '', genere: r.pool.genere_at || null, modifie: false });
+    if (!S.cours) S.vue = 'edition';
+  } catch (e) { S.etat = 'erreur'; S.msg = e.message; }
+  majPanneauCourse(S);
+}
+// Placé dans la page par dessinerActivite : le même élément est réutilisé à chaque redessin (rien n'est perdu)
+function monterPanneauCourse() {
+  const ph = document.getElementById('cr-place'); if (!ph) return;
+  const S = etatCourse(ph.dataset.cle);
+  if (!S.el) {
+    S.el = document.createElement('div'); S.el.className = 'duo-course';
+    S.el.addEventListener('input', e => crSaisie(S, e));
+    S.el.addEventListener('change', e => crSaisie(S, e));
+    S.el.addEventListener('click', e => crClic(S, e));
+    majPanneauCourse(S);
+    if (window.coursProf) chargerCourse(S);
+  }
+  ph.replaceWith(S.el);
+}
+function majBoutonCourse(S) {
+  const b = S.el && S.el.querySelector('[data-cr="maj"]'); if (!b) return;
+  b.className = 'bouton petit' + (S.modifie ? ' orange' : ' leger');
+  b.textContent = S.modifie ? '↻ Mettre à jour la course' : '✓ À jour';
+  b.disabled = !S.modifie;
+  const n = S.el.querySelector('.cr-nb'); if (n) n.textContent = S.questions.filter(crJouable).length;
+}
+function majPanneauCourse(S) {
+  if (!S.el) return;
+  const niv = S.cle.charAt(0), nbJ = S.questions.filter(crJouable).length;
+  const lien = `<div class="carte2 cr-lien">
+      <h3>🏁 La course</h3><div class="gros">🏎️</div>
+      ${window.coursProf ? `<a class="bouton petit" href="/course" target="_blank" rel="noopener" title="Ouvre la page de la course (choisir « Prof »)">↗ Ouvrir la course</a>` : ''}
+      <div class="cr-etat">Séance <b>${esc(S.cle.split('-S')[1] || '')}</b> · <b class="cr-nb">${nbJ}</b> question${nbJ > 1 ? 's' : ''} jouable${nbJ > 1 ? 's' : ''}${nbJ < 10 && S.etat === 'ok' ? ' <span style="color:var(--rouge)">(10 minimum)</span>' : ''}<br>Commun à toutes les classes de ${esc(niv)}e.${S.genere ? '<br>Générées le ' + esc(new Date(S.genere).toLocaleDateString('fr-FR')) : ''}</div>
+      ${S.etat === 'ok' ? `<button class="bouton petit leger" type="button" data-cr="gen" title="Mistral écrit les questions et le cours à partir des activités 1 à 4">✨ Générer avec Mistral</button>` : ''}
+    </div>`;
+  if (!window.coursProf) { S.el.innerHTML = lien + `<div class="carte2" style="grid-column:span 2"><div class="sous">Questions et cours de la course : à modifier dans l'interface prof du cahier (/prof).</div></div>`; return; }
+  if (S.etat !== 'ok') {
+    S.el.innerHTML = lien + `<div class="carte2" style="grid-column:span 2">${S.etat === 'erreur' ? `<div class="cr-msg mal">⚠️ ${esc(S.msg)}</div><button class="bouton petit leger" type="button" data-cr="recharger">↻ Réessayer</button>` : '<div class="sous">Chargement des questions et du cours…</div>'}</div>`;
+    return;
+  }
+  const genHtml = S.gen ? `<div class="cr-gen">${S.gen}</div>` : '';
+  const cours = `<div class="carte2 cr-carte">
+      <h3>📖 Cours <span class="sous">lu par les élèves dans l'activité 5</span><span class="fin">
+        <button class="cr-mini" type="button" data-cr="vue">${S.vue === 'edition' ? '👁 Aperçu' : '✏️ Modifier'}</button>
+        <button class="cr-mini" type="button" data-cr="regenCours" title="Mistral réécrit le cours à partir des activités 1 à 4">✨ Réécrire</button></span></h3>
+      ${S.vue === 'edition'
+        ? `<textarea class="cr-texte" data-crc="cours" spellcheck="true" placeholder="Titres : # Titre, ## Sous-titre · listes : - élément · à retenir : > phrase · gras : **mot**">${esc(S.cours)}</textarea>
+           <div class="sous" style="font-size:12px"># titre · ## sous-titre · - liste · &gt; encadré « à retenir » · **gras**</div>`
+        : `<div class="cr-md">${S.cours ? crMd(S.cours) : '<div class="sous">Pas encore de cours.</div>'}</div>`}
+    </div>`;
+  const acts = [1, 2, 3, 4].map(a => [a, S.questions.filter(q => (q.act || 1) === a).length]);
+  const liste = S.questions.map((q, i) => [q, i]).filter(([q]) => !S.filtre || (q.act || 1) === S.filtre);
+  const qHtml = ([q, i]) => {
+    const err = crErreurs(q), f = (q.faux || []).concat(['', '', '']).slice(0, 3);
+    return `<div class="cr-q${q.actif === false ? ' off' : ''}${err.length && q.actif !== false ? ' err' : ''}" data-i="${i}">
+      <div class="tete"><b>Q${i + 1}</b>
+        <select data-crq="${i}|act" aria-label="Activité d'origine">${[1, 2, 3, 4].map(a => `<option value="${a}" ${(q.act || 1) === a ? 'selected' : ''}>A${a}</option>`).join('')}</select>
+        <select data-crq="${i}|d" aria-label="Difficulté">${[1, 2, 3].map(d => `<option value="${d}" ${(q.d || 2) === d ? 'selected' : ''}>${'★'.repeat(d)}</option>`).join('')}</select>
+        <select data-crq="${i}|type" aria-label="Type"><option value="connaissance" ${q.type !== 'reflexion' ? 'selected' : ''}>connaissance</option><option value="reflexion" ${q.type === 'reflexion' ? 'selected' : ''}>réflexion</option></select>
+        <span class="fin"><label title="Décoché : la question ne sort pas pendant la course"><input type="checkbox" data-crq="${i}|actif" ${q.actif !== false ? 'checked' : ''}> en jeu</label>
+          <button class="cr-mini" type="button" data-cr="regen|${i}" title="Mistral propose une autre version">🔄</button>
+          <button class="cr-mini" type="button" data-cr="suppr|${i}" title="Supprimer">🗑</button></span></div>
+      <textarea rows="2" data-crq="${i}|q" aria-label="Question">${esc(q.q)}</textarea>
+      <div class="rep bonne"><span title="Bonne réponse">✅</span><input type="text" data-crq="${i}|bonne" value="${esc(q.bonne)}" aria-label="Bonne réponse"></div>
+      ${f.map((x, j) => `<div class="rep faux"><span title="Réponse fausse">❌</span><input type="text" data-crq="${i}|faux|${j}" value="${esc(x)}" aria-label="Réponse fausse ${j + 1}"></div>`).join('')}
+      <div class="rep"><span title="Indice (niveau le plus aidé)">💡</span><input type="text" data-crq="${i}|indice" value="${esc(q.indice || '')}" placeholder="Indice (facultatif)" aria-label="Indice"></div>
+      ${err.length ? `<div class="alerte">⚠️ ${esc(err.join(' · '))}</div>` : ''}
+    </div>`;
+  };
+  const questions = `<div class="carte2 cr-carte">
+      <h3>📝 Questions et réponses <span class="sous"><span class="cr-nb">${nbJ}</span> en jeu / ${S.questions.length}</span><span class="fin">
+        <button class="bouton petit leger" type="button" data-cr="maj">✓ À jour</button></span></h3>
+      ${S.msg ? `<div class="cr-msg ${/^⚠/.test(S.msg) ? 'mal' : 'bien'}">${esc(S.msg)}</div>` : ''}
+      ${genHtml}
+      <div class="cr-filtres"><button type="button" data-cr="filtre|0" class="${!S.filtre ? 'on' : ''}">Toutes (${S.questions.length})</button>${acts.map(([a, n]) => `<button type="button" data-cr="filtre|${a}" class="${S.filtre === a ? 'on' : ''}" title="${esc(S.activites[a - 1] || '')}">A${a} (${n})</button>`).join('')}</div>
+      ${liste.map(qHtml).join('') || '<div class="sous">Aucune question. « ✨ Générer avec Mistral » les écrit à partir des activités 1 à 4.</div>'}
+      <button class="bouton petit leger" type="button" data-cr="ajout">+ Ajouter une question</button>
+    </div>`;
+  S.el.innerHTML = lien + cours + questions;
+  majBoutonCourse(S);
+}
+function crSaisie(S, e) {
+  const t = e.target;
+  if (t.dataset.crc === 'cours') { S.cours = t.value; S.modifie = true; majBoutonCourse(S); return; }
+  if (!t.dataset.crq) return;
+  const [i, champ, j] = t.dataset.crq.split('|'), q = S.questions[+i]; if (!q) return;
+  if (champ === 'faux') { q.faux = (q.faux || []).concat(['', '', '']).slice(0, 3); q.faux[+j] = t.value; }
+  else if (champ === 'actif') q.actif = t.checked;
+  else if (champ === 'act' || champ === 'd') q[champ] = +t.value;
+  else q[champ] = t.value;
+  S.modifie = true;
+  if (e.type === 'change') { const carte = t.closest('.cr-q'), err = crErreurs(q);
+    carte.classList.toggle('off', q.actif === false); carte.classList.toggle('err', !!err.length && q.actif !== false);
+    let a = carte.querySelector('.alerte'); if (err.length) { if (!a) { a = document.createElement('div'); a.className = 'alerte'; carte.appendChild(a); } a.textContent = '⚠️ ' + err.join(' · '); } else if (a) a.remove(); }
+  majBoutonCourse(S);
+}
+async function crClic(S, e) {
+  const b = e.target.closest('[data-cr]'); if (!b) return;
+  const [a, x] = b.dataset.cr.split('|');
+  if (a === 'recharger') return chargerCourse(S);
+  if (a === 'vue') { S.vue = S.vue === 'edition' ? 'apercu' : 'edition'; return majPanneauCourse(S); }
+  if (a === 'filtre') { S.filtre = +x; return majPanneauCourse(S); }
+  if (a === 'ajout') {
+    S.questions.push({ q: '', bonne: '', faux: ['', '', ''], indice: '', d: 2, act: S.filtre || 1, type: 'connaissance', actif: true });
+    S.modifie = true; majPanneauCourse(S);
+    const ta = S.el.querySelectorAll('.cr-q textarea'); if (ta.length) { ta[ta.length - 1].focus(); ta[ta.length - 1].scrollIntoView({ block: 'center' }); }
+    return;
+  }
+  if (a === 'suppr') { S.questions.splice(+x, 1); S.modifie = true; return majPanneauCourse(S); }
+  if (a === 'maj') return enregistrerCourse(S, b);
+  if (a === 'regen') {
+    const q = S.questions[+x]; b.disabled = true; b.textContent = '⏳';
+    try { const r = await crApi({ action: 'regenerer', cle: S.cle, question: q, autres: S.questions.filter(y => y !== q).map(y => y.q) }); Object.assign(q, r.question); S.modifie = true; S.msg = ''; }
+    catch (err) { S.msg = '⚠️ ' + err.message; }
+    return majPanneauCourse(S);
+  }
+  if (a === 'regenCours') {
+    b.disabled = true;
+    const c = await crCours(S.cle, k => { b.textContent = k <= 4 ? `⏳ ${k}/4…` : '⏳ bilan…'; });
+    if (c.cours) { S.cours = c.cours; S.modifie = true; S.vue = 'apercu'; }
+    S.msg = c.erreurs.length ? '⚠️ ' + c.erreurs.join(' · ') : (c.cours ? 'Cours réécrit : relis-le puis « Mettre à jour la course ».' : '');
+    return majPanneauCourse(S);
+  }
+  if (a === 'gen') {
+    S.gen = `<b>Générer les questions et le cours de l'activité 5 ?</b><span>Mistral lit les consignes, les corrections et les sites des activités 1 à 4${S.titre ? ' de « ' + esc(S.titre) + ' »' : ''}. Compte 2 à 3 minutes. <b>Ça remplace les questions et le cours actuels.</b></span>
+      <div class="ligne"><label>Nombre de questions <select data-cr-nb>${NB_GEN.map(([v, t]) => `<option value="${v}" ${v === crNbGen ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
+      <button class="bouton petit" type="button" data-cr="genOui">✨ Générer</button><button class="bouton petit leger" type="button" data-cr="genNon">Annuler</button></div>`;
+    majPanneauCourse(S); S.el.querySelector('.cr-gen').scrollIntoView({ block: 'nearest' }); return;
+  }
+  if (a === 'genNon') { S.gen = ''; return majPanneauCourse(S); }
+  if (a === 'genOui') return genererCourse(S);
+}
+async function crCours(cle, etape) {
+  const parties = [], erreurs = [];
+  for (let k = 1; k <= 4; k++) {
+    etape(k);
+    try { parties.push((await crApi({ action: 'cours', cle, act: k })).partie); } catch (e) { erreurs.push('cours, partie ' + k + ' : ' + e.message); }
+  }
+  if (!parties.length) return { cours: '', erreurs };
+  etape(5);
+  try { return { cours: (await crApi({ action: 'cours', cle, act: 0, parties })).cours, erreurs }; }
+  catch (e) { erreurs.push('assemblage du cours : ' + e.message); return { cours: parties.join('\n\n'), erreurs }; }
+}
+async function genererCourse(S) {
+  const s = S.el.querySelector('[data-cr-nb]'); if (s) crNbGen = +s.value || 72;
+  const cle = S.cle, toutes = [], erreurs = [], sites = [];
+  const etape = (txt, k) => { S.gen = `<b>✨ Génération en cours</b> <span class="sous">(2 à 3 minutes, ne ferme pas la page)</span><span>${txt}</span><div class="jauge"><i style="width:${Math.round(10 * k)}%"></i></div>`; majPanneauCourse(S); };
+  for (let k = 1; k <= 4; k++) {
+    etape(`Mistral écrit les questions de l'activité ${k} (${k}/4)…`, k - 1);
+    try { const r = await crApi({ action: 'generer', cle, act: k, nb: crNbGen }); toutes.push(...r.questions); if (r.site === 'lu') sites.push('A' + k); }
+    catch (e) { erreurs.push(e.message); }
+  }
+  if (!toutes.length) { S.gen = ''; S.msg = '⚠️ Aucune question n\'a pu être générée. ' + erreurs.join(' · '); return majPanneauCourse(S); }
+  const c = await crCours(cle, k => etape(k <= 4 ? `Mistral écrit le cours, partie ${k} sur 4…` : 'Introduction, bilan et vocabulaire du cours…', 4 + k));
+  erreurs.push(...c.erreurs);
+  etape('Choix de l\'univers de la piste, suppression des doublons, enregistrement…', 9);
+  let univers = null; try { univers = (await crApi({ action: 'univers', cle })).univers; } catch (e) {}
+  try { await crApi({ action: 'enregistrer', cle, questions: toutes, univers, universProf: null, genere: true, dedoublonner: true, cours: c.cours || undefined }); }
+  catch (e) { S.gen = ''; S.msg = '⚠️ ' + e.message; return majPanneauCourse(S); }
+  S.gen = '';
+  await chargerCourse(S);
+  S.msg = `✓ ${S.questions.length} questions et le cours générés et déjà dans la course. Relis-les : chaque correction se publie avec « Mettre à jour la course ». Sites lus : ${sites.join(', ') || 'aucun'}.${erreurs.length ? ' ⚠️ ' + erreurs.join(' · ') : ''}`;
+  majPanneauCourse(S);
+}
+async function enregistrerCourse(S, b) {
+  b.disabled = true; b.textContent = '⏳ Enregistrement…';
+  try {
+    const r = await crApi({ action: 'enregistrer', cle: S.cle, questions: S.questions, cours: S.cours });
+    S.questions = JSON.parse(JSON.stringify(r.pool.questions || [])); S.cours = r.pool.cours || '';
+    S.modifie = false; const n = S.questions.filter(crJouable).length;
+    S.msg = `✓ Course mise à jour : ${n} question${n > 1 ? 's' : ''} en jeu et le cours, pour toutes les classes de ${S.cle.charAt(0)}e (séance ${S.cle.split('-S')[1]}).`;
+  } catch (e) { S.msg = '⚠️ Pas enregistré : ' + e.message; }
+  majPanneauCourse(S);
+}
+window.addEventListener('beforeunload', e => { if (Object.values(CRS).some(S => S.modifie)) { e.preventDefault(); e.returnValue = ''; } });
 
 // ---------- Activité : modifier consignes / barème / correction en direct (brouillon, enregistré tout seul) ----------
 function champEdx(k, chemin, valeur) {
