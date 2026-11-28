@@ -2626,7 +2626,10 @@ function coBareme(t) {
 }
 function coActivite(cl, code) {
   const k = prepMeta(cl, code), V = k && META[k] ? versionPubliee(k) : { cons: '', cor: '', site: '' };
-  return { k, V, cs: js(V.cons, []), bar: js(V.cor, {}), meta: META[k] || {}, a: (SV.acts[cl] || {})[code] || null };
+  // Consignes et barème que la correction a utilisés (onglet Consignes, lu dans le Doc) ; à défaut, ceux de Progression
+  const info = META[k] && CONSIGNES[META[k].doc], cs = info && info.consignes.length ? info.consignes : js(V.cons, []);
+  const bar = info && Object.keys(info.bareme || {}).length ? info.bareme : js(V.cor, {});
+  return { k, V: Object.assign({}, V, { site: V.site || (info && info.site) || '' }), cs, bar, meta: META[k] || {}, a: (SV.acts[cl] || {})[code] || null };
 }
 async function coChargerBloc(cl, code, force) {
   const cle = cl + '|' + code, a = (SV.acts[cl] || {})[code];
@@ -2711,7 +2714,7 @@ function coCopieHtml(cl, code, id) {
       <div><span class="co-lbl">Réponse de l'élève</span>${rep ? `<span class="co-rep">${esc(rep)}</span>` : '<span class="co-rep vide">Pas de réponse</span>'}</div>
       <div><span class="co-lbl">Éléments de correction${cliquable ? ' (clic : vert ↔ rouge)' : ''}</span>${cr.map((x, j) => {
         const ok = bl && bl.ok ? bl.ok.has(j) : null, cls = ok == null ? 'neutre' : ok ? 'ok' : 'ko';
-        return `<button type="button" class="co-cr ${cls}" ${cliquable ? `data-cocr="${esc(cl + '|' + code + '|' + id + '|' + l + '|' + j)}"` : 'disabled'}><i>${ok == null ? '•' : ok ? '✓' : '✗'} ${esc(x.points || '?')} pt${+x.points > 1 ? 's' : ''}</i><span>${esc(x.texte)}</span></button>`; }).join('') || '<span class="sous">Pas de critères.</span>'}</div></div>`;
+        return `<button type="button" class="co-cr ${cls}" ${cliquable ? `data-cocr="${esc(cl + '|' + code + '|' + id + '|' + l + '|' + j)}"` : 'disabled'}><i>${ok == null ? '•' : ok ? '✓' : '✗'}${x.points !== '' && x.points != null ? ` ${esc(x.points)} pt${+x.points > 1 ? 's' : ''}` : ''}</i><span>${esc(x.texte)}</span></button>`; }).join('') || '<span class="sous">Pas de critères.</span>'}</div></div>`;
   }).join('');
   const modif = !!CO_NOTES[cl + '|' + code + '|' + id];
   return `<div class="co-copie">
@@ -2740,7 +2743,7 @@ function coBilanHtml(cl, code) {
     </div>`;
   }
   const consignes = Object.keys(A.bar).length ? Object.entries(A.bar).map(([l, b]) => `<div class="co-cons"><b>${esc(l)}</b> ${esc((A.cs.find(x => x.lettre === l) || {}).texte || '')} <span class="sous">· ${esc(b.max)} pts</span>${criteres(b).map((x, j) => { const pc = (reussite[l] || [])[j];
-      return `<div class="co-bar"><span>${esc(x.points || '?')} pt · ${esc(x.texte)}</span>${pc == null ? '<span></span><span class="pc">—</span>' : `<span class="co-jauge"><i class="${pc >= 70 ? 'bon' : pc >= 40 ? 'moyen' : 'faible'}" style="width:${pc}%"></i></span><span class="pc">${pc} %</span>`}</div>`; }).join('')}</div>`).join('') : '<div class="sous">Pas encore de correction pour cette activité.</div>';
+      return `<div class="co-bar"><span>${x.points !== '' && x.points != null ? esc(x.points) + ' pt · ' : ''}${esc(x.texte)}</span>${pc == null ? '<span></span><span class="pc">—</span>' : `<span class="co-jauge"><i class="${pc >= 70 ? 'bon' : pc >= 40 ? 'moyen' : 'faible'}" style="width:${pc}%"></i></span><span class="pc">${pc} %</span>`}</div>`; }).join('')}</div>`).join('') : '<div class="sous">Pas encore de correction pour cette activité.</div>';
   return `<div class="co-copie">
     <div class="co-haut"><span class="co-titre">${esc(code)} — ${esc(titreActivite(cl, code, a))} · ${esc(cl)}</span>${etat}${fac ? '<span class="co-etat fac">Facultative</span>' : ''}<span class="fin"></span>
       ${a ? `<button class="bouton leger petit${a.facForcee ? ' on' : ''}" type="button" data-coop="fac|${esc(cl)}|${esc(code)}">${a.facForcee ? '↺ Ne plus la rendre facultative' : '☆ Rendre facultative'}</button>` : ''}
@@ -2756,8 +2759,12 @@ async function coBasculerCritere(cle) {
   const [cl, code, id, l, j] = cle.split('|'), bloc = CO_BLOCS[cl + '|' + code], c = bloc && bloc[id], A = coActivite(cl, code);
   if (!c || !c.b[l] || !c.b[l].ok) return;
   const cr = criteres(A.bar[l] || {}), ok = c.b[l].ok, i = +j;
-  ok.has(i) ? ok.delete(i) : ok.add(i);
-  c.b[l].pts = Math.min(c.b[l].max, [...ok].reduce((t, x) => t + (num((cr[x] || {}).points) || 0), 0));
+  const ajout = !ok.has(i); ajout ? ok.add(i) : ok.delete(i);
+  if (cr.length && cr.every(x => num(x.points) != null)) c.b[l].pts = Math.min(c.b[l].max, [...ok].reduce((t, x) => t + num(cr[x].points), 0));
+  else {   // éléments sans points (liste « correction ») : chaque élément vaut une part égale de la consigne
+    const pas = Math.round(2 * c.b[l].max / Math.max(1, cr.length)) / 2;
+    c.b[l].pts = Math.max(0, Math.min(c.b[l].max, (c.b[l].pts || 0) + (ajout ? pas : -pas)));
+  }
   const note = String(coNote20(c.b, (SV.eleves[cl][id] || {}).profil)), bareme = coTexteBareme(c.b);
   c.note = note; c.bareme = bareme; CO_NOTES[cl + '|' + code + '|' + id] = note;
   dessinerCorrection();
